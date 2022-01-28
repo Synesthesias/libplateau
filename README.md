@@ -8,6 +8,7 @@
 
 ### Windows
 - Visual Studio 2019
+  - cmake使うためVisual Studio Installerから`C++によるデスクトップ開発`のインストールが必要
 
 ## インストール
 ### リポジトリクローン
