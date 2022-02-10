@@ -3,11 +3,6 @@ cmake_minimum_required(VERSION 3.8)
 project("libplateau")
 
 
-# Library generation
-add_library(libplateau src/dummy.cpp)
-target_link_libraries(libplateau citygml xerces-c)
-
-
 # dependencies
 ### Replace dynamic linking to static linking to build libcitygml samples.
 if(MSVC)
@@ -35,9 +30,14 @@ add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
 
+# Library generation
+add_subdirectory("src")
+
+
 # Examples
 add_subdirectory("examples/log_skipped_elements")
+add_subdirectory("examples/export_obj")
 
 
 # Copy data for testing
-add_custom_command(TARGET libplateau POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/data" "${libplateau_BINARY_DIR}/data")
+file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")

@@ -31,6 +31,9 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
 
 パース出来なかった要素をすべて列挙してくれる。
 
+### export_obj
+.obj, .mtlをエクスポートしてくれる。
+
 ## ディレクトリ構成
 - 3rdparty
   - 外部ライブラリはすべてここにsubmoduleで追加する。
@@ -43,7 +46,7 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
 - examples
   - サンプルを置く。
 - include
-  - 外部向けヘッダを置く。
+  - ヘッダファイル一式を置く。
 - src
   - 内部実装のソースコードを置く。
 - wrappers
