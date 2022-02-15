@@ -12,7 +12,8 @@ public:
     void write(const std::string& file_path, const citygml::CityModel& city_model);
 
 private:
-    void writeVertices(const std::vector<TVec3d>& vertices);
+    unsigned int writeVertices(const std::vector<TVec3d>& vertices);
+    void writeIndices(const std::vector<unsigned int>& indices, unsigned int ix_offset);
 
     std::ofstream ofs_;
 };
