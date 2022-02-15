@@ -11,6 +11,7 @@
 #include "obj_writer.h"
 
 void ObjWriter::write(const std::string& file_path, const citygml::CityModel& city_model) {
+    
     unsigned int v_cnt = 0, cnt;
 
     ofs_ = std::ofstream(file_path);
@@ -18,27 +19,30 @@ void ObjWriter::write(const std::string& file_path, const citygml::CityModel& ci
         throw std::runtime_error(std::string("Failed to open : ") + file_path);
     }
 
-    ofs_ << std::fixed << std::setprecision(8);
+    ofs_ << std::fixed << std::setprecision(8);//有効桁数8桁でOK？
 
-    {
-        const auto& target_object = city_model.getRootCityObject(0).getChildCityObject(0);
+    //とりあえず8つの建物のうちの先頭の建物ID「13111-bldg-147301」のみ対象
+    std::cout << "建物ID : " << city_model.getRootCityObject(0).getAttribute("建物ID") << std::endl;
+    std::cout << "NumRootCityObjects : " << city_model.getNumRootCityObjects() << std::endl;
+
+    int cc = city_model.getRootCityObject(0).getChildCityObjectsCount();
+    std::cout << "ChildCityObjectsCount : " << cc << std::endl;
+    for (int i = 0; i < cc; i++) {
+        const auto& target_object = city_model.getRootCityObject(0).getChildCityObject(i);
         ofs_ << "g " << target_object.getId() << std::endl;
-        cnt = writeVertices(target_object.getGeometry(0).getPolygon(0)->getVertices());
-        writeIndices(target_object.getGeometry(0).getPolygon(0)->getIndices(), v_cnt);
-        v_cnt += cnt;
+        int gc = target_object.getGeometriesCount();
+        std::cout << "GeometriesCount : " << gc << std::endl;
+        for (int j = 0; j < gc; j++) {
+            int pc = target_object.getGeometry(j).getPolygonsCount();
+            std::cout << "PolygonsCount : " << pc << std::endl;
+            for (int k = 0; k < pc; k++) {
+                cnt = writeVertices(target_object.getGeometry(j).getPolygon(k)->getVertices());
+                writeIndices(target_object.getGeometry(j).getPolygon(k)->getIndices(), v_cnt);
+                v_cnt += cnt;
+            }
+        }
     }
-    std::cout << "city_model.getNumRootCityObjects() : " <<  city_model.getNumRootCityObjects() << std::endl;
-    std::cout << "city_model.getRootCityObject(0).getChildCityObjectsCount() : " << city_model.getRootCityObject(0).getChildCityObjectsCount() << std::endl;
-    std::cout << "target_object.getGeometriesCount() : " << city_model.getRootCityObject(0).getChildCityObject(0).getGeometriesCount() << std::endl;
-    std::cout << "target_object.getGeometry(0).getPolygonsCount() : " << city_model.getRootCityObject(0).getChildCityObject(0).getGeometry(0).getPolygonsCount() << std::endl;
-    {
-        const auto& target_object = city_model.getRootCityObject(0).getChildCityObject(1);
-        ofs_ << "g " << target_object.getId() << std::endl;
-        cnt = writeVertices(target_object.getGeometry(0).getPolygon(0)->getVertices());
-        writeIndices(target_object.getGeometry(0).getPolygon(0)->getIndices(), v_cnt);
-        v_cnt += cnt;
-    }
-    
+
     ofs_.close();
 }
 
