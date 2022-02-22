@@ -9,7 +9,7 @@
 #include <citygml/polygon.h>
 
 #include "obj_writer.h"
-#include "PolarToPlaneCartesian.h"
+#include "polar_to_plane_cartesian.h"
 
 void ObjWriter::write(const std::string& file_path, const citygml::CityModel& city_model) {
 
@@ -50,7 +50,7 @@ unsigned int ObjWriter::writeVertices(const std::vector<TVec3d>& vertices) {
     std::for_each(vertices.cbegin(), vertices.cend(), [&](const TVec3d& v) {
         double xyz[3];
         for (int i = 0; i < 3; i++) xyz[i] = v[i];
-        PolarToPlaneCartesian().convert(xyz);
+        polar_to_plane_cartesian().convert(xyz);
         ofs_ << "v " << xyz[0] << " " << xyz[1] << " " << xyz[2] << std::endl;
         cnt++;
     });
