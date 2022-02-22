@@ -24,7 +24,7 @@ void ObjWriter::write(const std::string& file_path, const citygml::CityModel& ci
     const auto rc = city_model.getNumRootCityObjects();
     std::cout << "NumRootCityObjects : " << rc << std::endl;
     for (unsigned int h = 0; h < rc; h++) {
-        std::cout << "Œš•¨ID : " << city_model.getRootCityObject(h).getAttribute("Œš•¨ID") << std::endl;
+        std::cout << "å»ºç‰©ID : " << city_model.getRootCityObject(h).getAttribute("å»ºç‰©ID") << std::endl;
         const auto cc = city_model.getRootCityObject(h).getChildCityObjectsCount();
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
         for (unsigned int i = 0; i < cc; i++) {
