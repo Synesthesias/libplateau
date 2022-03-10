@@ -50,8 +50,10 @@ int main()
 {
     std::shared_ptr<const citygml::CityModel> city_model;
     std::string gml_file_path = "../../data/53392642_bldg_6697_op2.gml";
+    ObjWriter writer;
 
-    const citygml::ParserParams params;
+    citygml::ParserParams params;
+    params.optimize = true;
     const auto logger = std::make_shared<StdLogger>();
     try {
         city_model = citygml::load(gml_file_path, params, logger);
@@ -65,7 +67,8 @@ int main()
         std::cout << "Unknown error occurred. GML file might not exist." << std::endl;
         return 1;
     }
-    ObjWriter().write("test.obj", *city_model, gml_file_path);
+    writer.setMergeMeshFlg();
+    writer.write("test.obj", *city_model, gml_file_path);
 
     return 0;
 }
