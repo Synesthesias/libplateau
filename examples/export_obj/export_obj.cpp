@@ -67,7 +67,7 @@ int main()
         std::cout << "Unknown error occurred. GML file might not exist." << std::endl;
         return 1;
     }
-    writer.setMergeMeshFlg();
+    writer.setMergeMeshFlg(true);
     writer.write("test.obj", *city_model, gml_file_path);
 
     return 0;

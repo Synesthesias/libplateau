@@ -10,7 +10,7 @@ public:
     }
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
-    void setMergeMeshFlg();
+    void setMergeMeshFlg(bool value);
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
