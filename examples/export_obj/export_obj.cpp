@@ -1,74 +1,84 @@
 #include <string>
+#include <filesystem>
 
 #include <citygml/citygml.h>
 #include <citygml/citygmllogger.h>
 
 #include <obj_writer.h>
 
-class StdLogger : public citygml::CityGMLLogger {
-public:
+namespace fs = std::filesystem;
 
-    StdLogger(LOGLEVEL level = LOGLEVEL::LL_ERROR)
-    : citygml::CityGMLLogger(level) {}
+namespace {
+    class StdLogger : public citygml::CityGMLLogger {
+    public:
 
-    virtual void log(LOGLEVEL level, const std::string& message, const char* file, int line) const
-    {
-        std::ostream& stream = level == LOGLEVEL::LL_ERROR ? std::cerr : std::cout;
-
-        switch (level) {
-        case LOGLEVEL::LL_DEBUG:
-            stream << "DEBUG";
-            break;
-        case LOGLEVEL::LL_WARNING:
-            stream << "WARNING";
-            break;
-        case LOGLEVEL::LL_TRACE:
-            stream << "TRACE";
-            break;
-        case LOGLEVEL::LL_ERROR:
-            stream << "ERROR";
-            break;
-        case LOGLEVEL::LL_INFO:
-            stream << "INFO";
-            break;
+        StdLogger(LOGLEVEL level = LOGLEVEL::LL_ERROR)
+            : citygml::CityGMLLogger(level) {
         }
 
-        if (file) {
-            stream << " [" << file;
-            if (line > -1) {
-                stream << ":" << line;
+        virtual void log(LOGLEVEL level, const std::string& message, const char* file, int line) const {
+            std::ostream& stream = level == LOGLEVEL::LL_ERROR ? std::cerr : std::cout;
+
+            switch (level) {
+            case LOGLEVEL::LL_DEBUG:
+                stream << "DEBUG";
+                break;
+            case LOGLEVEL::LL_WARNING:
+                stream << "WARNING";
+                break;
+            case LOGLEVEL::LL_TRACE:
+                stream << "TRACE";
+                break;
+            case LOGLEVEL::LL_ERROR:
+                stream << "ERROR";
+                break;
+            case LOGLEVEL::LL_INFO:
+                stream << "INFO";
+                break;
             }
-            stream << "]";
+
+            if (file) {
+                stream << " [" << file;
+                if (line > -1) {
+                    stream << ":" << line;
+                }
+                stream << "]";
+            }
+
+            stream << " " << message << std::endl;
         }
+    };
+}
 
-        stream << " " << message << std::endl;
-    }
-};
-
-
-int main()
-{
-    std::shared_ptr<const citygml::CityModel> city_model;
-    std::string gml_file_path = "../../data/53392642_bldg_6697_op2.gml";
-    ObjWriter writer;
-
-    citygml::ParserParams params;
-    params.optimize = true;
+int main() {
     const auto logger = std::make_shared<StdLogger>();
     try {
-        city_model = citygml::load(gml_file_path, params, logger);
+        fs::path test_data_root_path = "../../data";
+        test_data_root_path.make_preferred();
+
+        for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
+            if (entry.path().extension() != ".gml") {
+                continue;
+            }
+            citygml::ParserParams params;
+            params.optimize = true;
+            const auto city_model = citygml::load(entry.path().string(), params, logger);
+            const auto obj_path = entry.path().stem().string() + ".obj";
+            auto gml_path = entry.path().string();
+            std::replace(gml_path.begin(), gml_path.end(), '\\', '/');
+            ObjWriter writer;
+            writer.setMergeMeshFlg(true);
+            writer.write(obj_path, *city_model, gml_path);
+        }
     }
     catch (std::exception e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
-    catch (...)
-    {
+    catch (...) {
         std::cout << "Unknown error occurred. GML file might not exist." << std::endl;
         return 1;
     }
-    writer.setMergeMeshFlg(true);
-    writer.write("test.obj", *city_model, gml_file_path);
 
     return 0;
 }
