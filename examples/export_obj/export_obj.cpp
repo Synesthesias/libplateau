@@ -13,10 +13,11 @@ namespace {
     public:
 
         StdLogger(LOGLEVEL level = LOGLEVEL::LL_ERROR)
-            : citygml::CityGMLLogger(level) {
+            : CityGMLLogger(level) {
         }
 
-        virtual void log(LOGLEVEL level, const std::string& message, const char* file, int line) const {
+        void log(LOGLEVEL level, const std::string& message, const char* file, int line) const override
+        {
             std::ostream& stream = level == LOGLEVEL::LL_ERROR ? std::cerr : std::cout;
 
             switch (level) {
@@ -51,27 +52,27 @@ namespace {
 }
 
 int main() {
-    const auto logger = std::make_shared<StdLogger>();
     try {
+        const auto logger = std::make_shared<StdLogger>();
         fs::path test_data_root_path = "../../data";
         test_data_root_path.make_preferred();
+        citygml::ParserParams params;
+        params.optimize = true;
+        ObjWriter writer;
+        writer.setMergeMeshFlg(true);
 
         for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
             if (entry.path().extension() != ".gml") {
                 continue;
             }
-            citygml::ParserParams params;
-            params.optimize = true;
-            const auto city_model = citygml::load(entry.path().string(), params, logger);
+            const auto city_model = load(entry.path().string(), params, logger);
             const auto obj_path = entry.path().stem().string() + ".obj";
             auto gml_path = entry.path().string();
             std::replace(gml_path.begin(), gml_path.end(), '\\', '/');
-            ObjWriter writer;
-            writer.setMergeMeshFlg(true);
             writer.write(obj_path, *city_model, gml_path);
         }
     }
-    catch (std::exception e) {
+    catch (std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
