@@ -47,12 +47,18 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     ofs_ << "mtllib " << mat_file_name << std::endl;
     for (unsigned int h = 0; h < rc; h++) {
         std::cout << "建物ID : " << city_model.getRootCityObject(h).getAttribute("建物ID") << std::endl;
+        std::cout << "RootID : " << city_model.getRootCityObject(h).getId() << std::endl;
+        if (merge_mesh_flg_) {
+            ofs_ << "g " << city_model.getRootCityObject(h).getId() << std::endl;
+        }
         const auto cc = city_model.getRootCityObject(h).getChildCityObjectsCount();
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
         for (unsigned int i = 0; i < cc; i++) {
             const auto& target_object = city_model.getRootCityObject(h).getChildCityObject(i);
-            ofs_ << "g " << target_object.getId() << std::endl;
-            std::cout << "ID : " << target_object.getId() << std::endl;
+            if (!merge_mesh_flg_) {
+                ofs_ << "g " << target_object.getId() << std::endl;
+            }
+            std::cout << "ChildID : " << target_object.getId() << std::endl;
             const auto gc = target_object.getGeometriesCount();
             for (unsigned int j = 0; j < gc; j++) {
                 const auto pc = target_object.getGeometry(j).getPolygonsCount();
@@ -122,8 +128,6 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
     size_t ext_i = tex_path.find_last_of(".");
     std::string mat_name = tex_path.substr(path_i, ext_i - path_i);
 
-    ofs_ << "usemtl " << mat_name << std::endl;
-
     bool newmat_flg = true;
     for (const auto& item : mat_list_) {
         if (item == mat_name) {
@@ -131,6 +135,11 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             break;
         }
     }
+
+    if (newmat_flg || !merge_mesh_flg_) {
+        ofs_ << "usemtl " << mat_name << std::endl;
+    }
+
     if (newmat_flg) {
         ofs_mat_ << "newmtl " << mat_name << std::endl;
         ofs_mat_ << "map_Kd ./" << tex_path << std::endl << std::endl;
@@ -163,4 +172,8 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
         }
         ofstr << ifstr.rdbuf();
     }
+}
+
+void ObjWriter::setMergeMeshFlg(bool value) {
+    merge_mesh_flg_ = value;
 }
