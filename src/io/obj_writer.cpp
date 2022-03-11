@@ -19,21 +19,20 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     gml_file_path_ = gml_file_path;
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
-    std::string mat_file_path, mat_file_name;
 
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
         throw std::runtime_error(std::string("Failed to open : ") + obj_file_path_);
     }
-    
-    size_t dir_i = obj_file_path_.find_last_of("/");
-    size_t file_i = obj_file_path_.find_last_of(".");
-    mat_file_path = obj_file_path_.substr(0, file_i) + ".mtl";
+
+    const size_t dir_i = obj_file_path_.find_last_of("/");
+    const size_t file_i = obj_file_path_.find_last_of(".");
+    const std::string mat_file_path = obj_file_path_.substr(0, file_i) + ".mtl";
+    std::string mat_file_name;
     if (dir_i == std::string::npos) {
         mat_file_name = obj_file_path_.substr(0, file_i) + ".mtl";
-    }
-    else {
-        mat_file_name = obj_file_path_.substr(dir_i+1, file_i-dir_i-1) + ".mtl";
+    } else {
+        mat_file_name = obj_file_path_.substr(dir_i + 1, file_i - dir_i - 1) + ".mtl";
     }
 
     ofs_mat_ = std::ofstream(mat_file_path);
@@ -45,16 +44,16 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     const auto rc = city_model.getNumRootCityObjects();
     std::cout << "NumRootCityObjects : " << rc << std::endl;
     ofs_ << "mtllib " << mat_file_name << std::endl;
-    for (unsigned int h = 0; h < rc; h++) {
-        std::cout << "建物ID : " << city_model.getRootCityObject(h).getAttribute("建物ID") << std::endl;
-        std::cout << "RootID : " << city_model.getRootCityObject(h).getId() << std::endl;
+    for (const auto& root_object : city_model.getRootCityObjects()) {
+        std::cout << "建物ID : " << root_object->getAttribute("建物ID") << std::endl;
+        std::cout << "RootID : " << root_object->getId() << std::endl;
         if (merge_mesh_flg_) {
-            ofs_ << "g " << city_model.getRootCityObject(h).getId() << std::endl;
+            ofs_ << "g " << root_object->getId() << std::endl;
         }
-        const auto cc = city_model.getRootCityObject(h).getChildCityObjectsCount();
+        const auto cc = root_object->getChildCityObjectsCount();
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
         for (unsigned int i = 0; i < cc; i++) {
-            const auto& target_object = city_model.getRootCityObject(h).getChildCityObject(i);
+            const auto& target_object = root_object->getChildCityObject(i);
             if (!merge_mesh_flg_) {
                 ofs_ << "g " << target_object.getId() << std::endl;
             }
@@ -68,12 +67,12 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
                     const auto citygmlTex = target_object.getGeometry(j).getPolygon(k)->getTextureFor("rgbTexture");
                     bool tex_flg = false;
                     unsigned int t_cnt = 0;
-                    if(citygmlTex){ 
+                    if (citygmlTex) {
                         tex_flg = true;
                         t_cnt = writeUVs(target_object.getGeometry(j).getPolygon(k)->getTexCoordsForTheme("rgbTexture", true));
                         writeMaterial(citygmlTex->getUrl());
                     }
-                    
+
                     writeIndices(target_object.getGeometry(j).getPolygon(k)->getIndices(), v_offset, t_offset, tex_flg);
                     v_offset += v_cnt;
                     t_offset += t_cnt;
@@ -111,8 +110,7 @@ void ObjWriter::writeIndices(const std::vector<unsigned int>& indices, unsigned 
         if (i == 0) ofs_ << "f ";
         if (tex_flg) {
             ofs_ << *itr + 1 + ix_offset << "/" << *itr + 1 + tx_offset << " ";
-        }
-        else {
+        } else {
             ofs_ << *itr + 1 + ix_offset << " ";
         }
         i++;

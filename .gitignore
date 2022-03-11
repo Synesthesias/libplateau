@@ -15,3 +15,8 @@ _deps
 
 # Visual Studio
 .vs
+
+# Test data
+/data/*
+!53392642*
+!README.md
