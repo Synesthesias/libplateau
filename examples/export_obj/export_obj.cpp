@@ -60,6 +60,7 @@ int main() {
         params.optimize = true;
         ObjWriter writer;
         writer.setMergeMeshFlg(true);
+        writer.setDestAxes(AxesConversion::RUF);
 
         for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
             if (entry.path().extension() != ".gml") {

@@ -89,7 +89,15 @@ unsigned int ObjWriter::writeVertices(const std::vector<TVec3d>& vertices) {
         double xyz[3];
         for (int i = 0; i < 3; i++) xyz[i] = v[i];
         polar_to_plane_cartesian().convert(xyz);
-        ofs_ << "v " << xyz[0] << " " << xyz[1] << " " << xyz[2] << std::endl;
+        if (axes_ == AxesConversion::WNU) {
+            ofs_ << "v " << xyz[0] << " " << xyz[1] << " " << xyz[2] << std::endl;
+        }
+        else if (axes_ == AxesConversion::RUF) {
+            ofs_ << "v " << -xyz[0] << " " << xyz[2] << " " << xyz[1] << std::endl;
+        } 
+        else {
+            throw std::runtime_error("Unknown axes type.");
+        }
         cnt++;
     });
     return cnt;
@@ -174,4 +182,8 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
 
 void ObjWriter::setMergeMeshFlg(bool value) {
     merge_mesh_flg_ = value;
+}
+
+void ObjWriter::setDestAxes(AxesConversion value) {
+    axes_ = value;
 }

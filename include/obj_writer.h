@@ -4,6 +4,11 @@
 
 #include <citygml/citygml.h>
 
+enum class AxesConversion {
+    WNU,
+    RUF
+};
+
 class ObjWriter {
 public:
     ObjWriter() : ofs_() {
@@ -11,6 +16,7 @@ public:
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
     void setMergeMeshFlg(bool value);
+    void setDestAxes(AxesConversion value);
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
@@ -23,4 +29,5 @@ private:
     std::string gml_file_path_, obj_file_path_;
     std::vector<std::string> mat_list_;
     bool merge_mesh_flg_ = false;
+    AxesConversion axes_ = AxesConversion::WNU;
 };
