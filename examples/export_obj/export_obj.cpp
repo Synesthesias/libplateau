@@ -60,6 +60,7 @@ int main() {
         params.optimize = true;
         ObjWriter writer;
         writer.setMergeMeshFlg(true);
+        writer.setDestAxes(AxesConversion::RUF);
 
         for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
             if (entry.path().extension() != ".gml") {
@@ -69,7 +70,6 @@ int main() {
             const auto obj_path = entry.path().stem().string() + ".obj";
             auto gml_path = entry.path().string();
             std::replace(gml_path.begin(), gml_path.end(), '\\', '/');
-            writer.setDestAxes(AxesConversion::RUF);
             writer.write(obj_path, *city_model, gml_path);
         }
     }
