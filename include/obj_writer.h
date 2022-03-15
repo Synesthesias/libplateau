@@ -17,6 +17,9 @@ public:
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
     void setMergeMeshFlg(bool value);
     void setDestAxes(AxesConversion value);
+    void setValidReferencePoint(const citygml::CityModel& city_model);
+    void getReferencePoint(double xyz[]);
+    void setReferencePoint(double xyz[]);
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
@@ -30,4 +33,5 @@ private:
     std::vector<std::string> mat_list_;
     bool merge_mesh_flg_ = false;
     AxesConversion axes_ = AxesConversion::WNU;
+    double ref_point_[3] = {0,0,0};
 };

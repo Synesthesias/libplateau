@@ -89,6 +89,7 @@ unsigned int ObjWriter::writeVertices(const std::vector<TVec3d>& vertices) {
         double xyz[3];
         for (int i = 0; i < 3; i++) xyz[i] = v[i];
         polar_to_plane_cartesian().convert(xyz);
+        for (int i = 0; i < 3; i++) xyz[i] -= ref_point_[i];
         if (axes_ == AxesConversion::WNU) {
             ofs_ << "v " << xyz[0] << " " << xyz[1] << " " << xyz[2] << std::endl;
         }
@@ -186,4 +187,27 @@ void ObjWriter::setMergeMeshFlg(bool value) {
 
 void ObjWriter::setDestAxes(AxesConversion value) {
     axes_ = value;
+}
+
+void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {
+    auto lower_bound = city_model.getEnvelope().getLowerBound();
+    auto upper_bound = city_model.getEnvelope().getUpperBound();
+
+    polar_to_plane_cartesian().convert(lower_bound);
+    polar_to_plane_cartesian().convert(upper_bound);
+    
+    ref_point_[0] = (lower_bound.x + upper_bound.x)/2.0;
+    ref_point_[1] = (lower_bound.y + upper_bound.y) / 2.0;
+    ref_point_[2] = lower_bound.z;
+
+    std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
+}
+
+void ObjWriter::getReferencePoint(double xyz[]) {
+    for (int i = 0; i < 3; i++) xyz[i] = ref_point_[i];
+}
+
+void ObjWriter::setReferencePoint(double xyz[]) {
+    for (int i = 0; i < 3; i++) ref_point_[i] = xyz[i];
+    std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
 }
