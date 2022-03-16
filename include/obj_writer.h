@@ -18,8 +18,8 @@ public:
     void setMergeMeshFlg(bool value);
     void setDestAxes(AxesConversion value);
     void setValidReferencePoint(const citygml::CityModel& city_model);
-    void getReferencePoint(double xyz[]);
-    void setReferencePoint(double xyz[]);
+    void getReferencePoint(double xyz[]) const;
+    void setReferencePoint(const double xyz[]);
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);

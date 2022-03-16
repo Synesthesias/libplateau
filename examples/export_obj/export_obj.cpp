@@ -61,7 +61,6 @@ int main() {
         ObjWriter writer;
         writer.setMergeMeshFlg(true);
         writer.setDestAxes(AxesConversion::RUF);
-        double ref_xyz[3];
         bool first_gml = true;
 
         for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
@@ -72,10 +71,6 @@ int main() {
             if (first_gml) {
                 writer.setValidReferencePoint(*city_model);
                 first_gml = false;
-                writer.getReferencePoint(ref_xyz);
-            }
-            else {
-                writer.setReferencePoint(ref_xyz);
             }
             const auto obj_path = entry.path().stem().string() + ".obj";
             auto gml_path = entry.path().string();

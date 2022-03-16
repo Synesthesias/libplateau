@@ -203,11 +203,11 @@ void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {
     std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
 }
 
-void ObjWriter::getReferencePoint(double xyz[]) {
+void ObjWriter::getReferencePoint(double xyz[]) const{
     for (int i = 0; i < 3; i++) xyz[i] = ref_point_[i];
 }
 
-void ObjWriter::setReferencePoint(double xyz[]) {
+void ObjWriter::setReferencePoint(const double xyz[]) {
     for (int i = 0; i < 3; i++) ref_point_[i] = xyz[i];
     std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
 }
