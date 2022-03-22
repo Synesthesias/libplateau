@@ -45,42 +45,67 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     std::cout << "NumRootCityObjects : " << rc << std::endl;
     ofs_ << "mtllib " << mat_file_name << std::endl;
     for (const auto& root_object : city_model.getRootCityObjects()) {
-        std::cout << "建物ID : " << root_object->getAttribute("建物ID") << std::endl;
+        const std::string rbid = root_object->getAttribute("建物ID");
+        if (!rbid.empty()) {
+            std::cout << "建物ID : " << rbid << std::endl;
+        }
         std::cout << "RootID : " << root_object->getId() << std::endl;
-        if (merge_mesh_flg_) {
+        if (merge_mesh_flg_ && !rbid.empty()) {
             ofs_ << "g " << root_object->getId() << std::endl;
         }
         const auto cc = root_object->getChildCityObjectsCount();
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
         for (unsigned int i = 0; i < cc; i++) {
             const auto& target_object = root_object->getChildCityObject(i);
-            if (!merge_mesh_flg_) {
-                ofs_ << "g " << target_object.getId() << std::endl;
-            }
-            std::cout << "ChildID : " << target_object.getId() << std::endl;
-            const auto gc = target_object.getGeometriesCount();
-            for (unsigned int j = 0; j < gc; j++) {
-                const auto pc = target_object.getGeometry(j).getPolygonsCount();
-                for (unsigned int k = 0; k < pc; k++) {
-                    const auto v_cnt = writeVertices(target_object.getGeometry(j).getPolygon(k)->getVertices());
 
-                    const auto citygmlTex = target_object.getGeometry(j).getPolygon(k)->getTextureFor("rgbTexture");
-                    bool tex_flg = false;
-                    unsigned int t_cnt = 0;
-                    if (citygmlTex) {
-                        tex_flg = true;
-                        t_cnt = writeUVs(target_object.getGeometry(j).getPolygon(k)->getTexCoordsForTheme("rgbTexture", true));
-                        writeMaterial(citygmlTex->getUrl());
-                    }
-
-                    writeIndices(target_object.getGeometry(j).getPolygon(k)->getIndices(), v_offset, t_offset, tex_flg);
-                    v_offset += v_cnt;
-                    t_offset += t_cnt;
-                }
-            }
+            processChildCityObject(target_object, v_offset, t_offset);
         }
     }
     ofs_.close();
+}
+
+void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {
+    const std::string cbid = target_object.getAttribute("建物ID");
+    if (!cbid.empty()) {
+        std::cout << "建物ID : " << cbid << std::endl;
+    }
+    if (!merge_mesh_flg_ || !cbid.empty()) {
+        ofs_ << "g " << target_object.getId() << std::endl;
+    }
+    std::cout << "ChildID : " << target_object.getId() << std::endl;
+
+    const auto gc = target_object.getGeometriesCount();
+    std::cout << "GeometriesCount = " << gc << std::endl;
+    for (unsigned int j = 0; j < gc; j++) {
+        const auto pc = target_object.getGeometry(j).getPolygonsCount();
+        std::cout << "PolygonsCount = " << pc << std::endl;
+        for (unsigned int k = 0; k < pc; k++) {
+            const auto v_cnt = writeVertices(target_object.getGeometry(j).getPolygon(k)->getVertices());
+
+            const auto citygmlTex = target_object.getGeometry(j).getPolygon(k)->getTextureFor("rgbTexture");
+            bool tex_flg = false;
+            unsigned int t_cnt = 0;
+            if (citygmlTex) {
+                tex_flg = true;
+                t_cnt = writeUVs(target_object.getGeometry(j).getPolygon(k)->getTexCoordsForTheme("rgbTexture", true));
+                writeMaterial(citygmlTex->getUrl());
+            }
+
+            writeIndices(target_object.getGeometry(j).getPolygon(k)->getIndices(), v_offset, t_offset, tex_flg);
+            v_offset += v_cnt;
+            t_offset += t_cnt;
+        }
+    }
+
+    const auto cc = target_object.getChildCityObjectsCount();
+    if (cc != 0) {
+        std::cout << "grandChildCityObjectsCount : " << cc << std::endl;
+        for (unsigned int i = 0; i < cc; i++) {
+            const auto& new_target_object = target_object.getChildCityObject(i);
+
+            processChildCityObject(new_target_object, v_offset, t_offset);
+        }
+    }
 }
 
 unsigned int ObjWriter::writeVertices(const std::vector<TVec3d>& vertices) {
@@ -143,9 +168,7 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
         }
     }
 
-    if (newmat_flg || !merge_mesh_flg_) {
-        ofs_ << "usemtl " << mat_name << std::endl;
-    }
+    ofs_ << "usemtl " << mat_name << std::endl;
 
     if (newmat_flg) {
         ofs_mat_ << "newmtl " << mat_name << std::endl;
