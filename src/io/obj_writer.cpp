@@ -54,21 +54,28 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
             ofs_ << "g " << root_object->getId() << std::endl;
         }
 
-        //for LOD1?
-        const auto gc = root_object->getGeometriesCount();
-        std::cout << "RootCityObject:GeometriesCount = " << gc << std::endl;
-        for (unsigned int j = 0; j < gc; j++) {
-            const auto pc = root_object->getGeometry(j).getPolygonsCount();
-            std::cout << "RootCityObject:PolygonsCount = " << pc << std::endl;
-            for (unsigned int k = 0; k < pc; k++) {
-                const auto v_cnt = writeVertices(root_object->getGeometry(j).getPolygon(k)->getVertices());
+        const auto cc = root_object->getChildCityObjectsCount();
 
-                writeIndices(root_object->getGeometry(j).getPolygon(k)->getIndices(), v_offset, t_offset, false);
-                v_offset += v_cnt;
+        //for LOD1
+        if (cc == 0) {
+            const auto gc = root_object->getGeometriesCount();
+            std::cout << "RootCityObject:GeometriesCount = " << gc << std::endl;
+            for (unsigned int j = 0; j < gc; j++) {
+                const auto cgc = root_object->getGeometry(j).getGeometriesCount();
+                std::cout << "RootCityObject:childGeometriesCount = " << cgc << std::endl;
+                for (unsigned int i = 0; i < cgc; i++) {
+                    const auto pc = root_object->getGeometry(j).getGeometry(i).getPolygonsCount();
+                    std::cout << "RootCityObject:PolygonsCount = " << pc << std::endl;
+                    for (unsigned int k = 0; k < pc; k++) {
+                        const auto v_cnt = writeVertices(root_object->getGeometry(j).getGeometry(i).getPolygon(k)->getVertices());
+
+                        writeIndices(root_object->getGeometry(j).getGeometry(i).getPolygon(k)->getIndices(), v_offset, t_offset, false);
+                        v_offset += v_cnt;
+                    }
+                }
             }
         }
-
-        const auto cc = root_object->getChildCityObjectsCount();
+        
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
         for (unsigned int i = 0; i < cc; i++) {
             const auto& target_object = root_object->getChildCityObject(i);
