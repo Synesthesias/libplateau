@@ -40,6 +40,9 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
         throw std::runtime_error(std::string("Failed to open : ") + mat_file_path);
     }
 
+    ofs_mat_ << "newmtl obj_def_mat" << std::endl;
+    ofs_mat_ << "Kd 0.5 0.5 0.5" << std::endl << std::endl;
+
     ofs_ << std::fixed << std::setprecision(6);
     const auto rc = city_model.getNumRootCityObjects();
     std::cout << "NumRootCityObjects : " << rc << std::endl;
@@ -58,22 +61,9 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
         //for LOD1
         if (cc == 0) {
-            const auto gc = root_object->getGeometriesCount();
-            std::cout << "RootCityObject:GeometriesCount = " << gc << std::endl;
-            for (unsigned int j = 0; j < gc; j++) {
-                const auto cgc = root_object->getGeometry(j).getGeometriesCount();
-                std::cout << "RootCityObject:childGeometriesCount = " << cgc << std::endl;
-                for (unsigned int i = 0; i < cgc; i++) {
-                    const auto pc = root_object->getGeometry(j).getGeometry(i).getPolygonsCount();
-                    std::cout << "RootCityObject:PolygonsCount = " << pc << std::endl;
-                    for (unsigned int k = 0; k < pc; k++) {
-                        const auto v_cnt = writeVertices(root_object->getGeometry(j).getGeometry(i).getPolygon(k)->getVertices());
+            const auto& target_object = *root_object;
 
-                        writeIndices(root_object->getGeometry(j).getGeometry(i).getPolygon(k)->getIndices(), v_offset, t_offset, false);
-                        v_offset += v_cnt;
-                    }
-                }
-            }
+            writeGeometry(target_object, v_offset, t_offset, true);
         }
         
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
@@ -96,28 +86,7 @@ void ObjWriter::processChildCityObject(const citygml::CityObject& target_object,
     }
     std::cout << "ChildID : " << target_object.getId() << std::endl;
 
-    const auto gc = target_object.getGeometriesCount();
-    std::cout << "GeometriesCount = " << gc << std::endl;
-    for (unsigned int j = 0; j < gc; j++) {
-        const auto pc = target_object.getGeometry(j).getPolygonsCount();
-        std::cout << "PolygonsCount = " << pc << std::endl;
-        for (unsigned int k = 0; k < pc; k++) {
-            const auto v_cnt = writeVertices(target_object.getGeometry(j).getPolygon(k)->getVertices());
-
-            const auto citygmlTex = target_object.getGeometry(j).getPolygon(k)->getTextureFor("rgbTexture");
-            bool tex_flg = false;
-            unsigned int t_cnt = 0;
-            if (citygmlTex) {
-                tex_flg = true;
-                t_cnt = writeUVs(target_object.getGeometry(j).getPolygon(k)->getTexCoordsForTheme("rgbTexture", true));
-                writeMaterial(citygmlTex->getUrl());
-            }
-
-            writeIndices(target_object.getGeometry(j).getPolygon(k)->getIndices(), v_offset, t_offset, tex_flg);
-            v_offset += v_cnt;
-            t_offset += t_cnt;
-        }
-    }
+    writeGeometry(target_object, v_offset, t_offset, false);
 
     const auto cc = target_object.getChildCityObjectsCount();
     if (cc != 0) {
@@ -255,4 +224,45 @@ void ObjWriter::getReferencePoint(double xyz[]) const{
 void ObjWriter::setReferencePoint(const double xyz[]) {
     for (int i = 0; i < 3; i++) ref_point_[i] = xyz[i];
     std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
+}
+
+void ObjWriter::writeGeometry(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
+    const auto gc = target_object.getGeometriesCount();
+    std::cout << "GeometriesCount = " << gc << std::endl;
+    for (unsigned int j = 0; j < gc; j++) {
+        processChildGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
+    }
+}
+
+void ObjWriter::processChildGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
+    const auto pc = target_geometry.getPolygonsCount();
+    std::cout << "PolygonsCount = " << pc << std::endl;
+    for (unsigned int k = 0; k < pc; k++) {
+        const auto v_cnt = writeVertices(target_geometry.getPolygon(k)->getVertices());
+
+        const auto citygmlTex = target_geometry.getPolygon(k)->getTextureFor("rgbTexture");
+        bool tex_flg = false;
+        unsigned int t_cnt = 0;
+        if (citygmlTex) {
+            tex_flg = true;
+            t_cnt = writeUVs(target_geometry.getPolygon(k)->getTexCoordsForTheme("rgbTexture", true));
+            writeMaterial(citygmlTex->getUrl());
+        } else {
+            ofs_ << "usemtl obj_def_mat" << std::endl;
+        }
+
+        writeIndices(target_geometry.getPolygon(k)->getIndices(), v_offset, t_offset, tex_flg);
+        v_offset += v_cnt;
+        t_offset += t_cnt;
+    }
+
+    const auto cgc = target_geometry.getGeometriesCount();
+    if (cgc != 0 && recursive_flg) {
+        std::cout << "childGeometriesCount : " << cgc << std::endl;
+        for (unsigned int i = 0; i < cgc; i++) {
+            const auto& new_target_geometry = target_geometry.getGeometry(i);
+
+            processChildGeometry(new_target_geometry, v_offset, t_offset, recursive_flg);
+        }
+    }
 }
