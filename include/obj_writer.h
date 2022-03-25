@@ -27,6 +27,8 @@ private:
     unsigned int writeUVs(const std::vector<TVec2f>& uvs);
     void writeMaterial(const std::string& tex_path);
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
+    void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
+    void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
 
     std::ofstream ofs_;
     std::ofstream ofs_mat_;
