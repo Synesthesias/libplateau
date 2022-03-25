@@ -63,7 +63,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
         if (cc == 0) {
             const auto& target_object = *root_object;
 
-            writeGeometry(target_object, v_offset, t_offset, true);
+            writeCityObject(target_object, v_offset, t_offset, true);
         }
         
         std::cout << "ChildCityObjectsCount : " << cc << std::endl;
@@ -86,7 +86,7 @@ void ObjWriter::processChildCityObject(const citygml::CityObject& target_object,
     }
     std::cout << "ChildID : " << target_object.getId() << std::endl;
 
-    writeGeometry(target_object, v_offset, t_offset, false);
+    writeCityObject(target_object, v_offset, t_offset, false);
 
     const auto cc = target_object.getChildCityObjectsCount();
     if (cc != 0) {
@@ -226,15 +226,15 @@ void ObjWriter::setReferencePoint(const double xyz[]) {
     std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
 }
 
-void ObjWriter::writeGeometry(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
+void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto gc = target_object.getGeometriesCount();
     std::cout << "GeometriesCount = " << gc << std::endl;
     for (unsigned int j = 0; j < gc; j++) {
-        processChildGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
+        writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
     }
 }
 
-void ObjWriter::processChildGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
+void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto pc = target_geometry.getPolygonsCount();
     std::cout << "PolygonsCount = " << pc << std::endl;
     for (unsigned int k = 0; k < pc; k++) {
@@ -262,7 +262,7 @@ void ObjWriter::processChildGeometry(const citygml::Geometry& target_geometry, u
         for (unsigned int i = 0; i < cgc; i++) {
             const auto& new_target_geometry = target_geometry.getGeometry(i);
 
-            processChildGeometry(new_target_geometry, v_offset, t_offset, recursive_flg);
+            writeGeometry(new_target_geometry, v_offset, t_offset, recursive_flg);
         }
     }
 }
