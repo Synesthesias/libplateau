@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\src\plateau.dll $(TargetDir)&#xD;&#xA;copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\3rdparty\libcitygml\lib\citygml.dll $(TargetDir)&#xD;&#xA;copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\wrappers\c\plateau_c.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
+    <Exec Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
   </Target>
 
 </Project>

@@ -17,9 +17,20 @@ namespace LibPLATEAU.NET
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CitygmlParserParams
+    {
+        public int Optimize;
+    }
+
     internal static class NativeMethods
     {
         private const string kDllName = "plateau_c";
+
+        [DllImport(kDllName)]
+        internal static extern IntPtr plateau_load_citygml(
+            [In] string gmlPath,
+            [In] CitygmlParserParams parserParams);
 
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_create_obj_writer();
@@ -31,6 +42,7 @@ namespace LibPLATEAU.NET
         internal static extern void plateau_obj_writer_write(
             [In] IntPtr objWriter,
             [In] string objPath,
+            [In] IntPtr cityModel,
             [In] string gmlPath);
 
         [DllImport(kDllName)]
@@ -41,5 +53,10 @@ namespace LibPLATEAU.NET
         internal static extern void plateau_obj_writer_set_reference_point(
             [In] IntPtr objWriter,
             [In] PlateauVector3d referencePoint);
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_obj_writer_set_valid_reference_point(
+            [In] IntPtr objWriter,
+            [In] IntPtr cityModel);
     }
 }

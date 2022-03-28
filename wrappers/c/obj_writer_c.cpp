@@ -4,7 +4,7 @@
 #include <obj_writer.h>
 
 #include "libplateau_c.h"
-
+#include "city_model_c.h"
 
 extern "C" {
     struct plateau_vector3d {
@@ -38,15 +38,23 @@ extern "C" {
         }
     }
 
-    // TODO: gml->citymodelˆ—‚ÌObjWriter‘¤‚Ö‚ÌˆÏ÷‚Ü‚½‚ÍCityModelƒNƒ‰ƒX‚ÌWrapperì¬
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_write(ObjWriter* obj_writer, const char* obj_path, const char* gml_path) {
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_write(ObjWriter* obj_writer, const char* obj_path, const CityModelHandle* city_model, const char* gml_path) {
         try {
-            citygml::ParserParams params;
-            params.optimize = true;
-            const auto city_model = load(gml_path, params, nullptr);
-            obj_writer->setValidReferencePoint(*city_model);
             // TODO: replace '\\' -> '/' in ObjWriter
-            obj_writer->write(obj_path, *city_model, gml_path);
+            obj_writer->write(obj_path, city_model->getCityModel(), gml_path);
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cout << "Unknown error occurred." << std::endl;
+        }
+    }
+
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_valid_reference_point(ObjWriter* obj_writer, const CityModelHandle* city_model) {
+        try {
+            // TODO: replace '\\' -> '/' in ObjWriter
+            obj_writer->setValidReferencePoint(city_model->getCityModel());
         }
         catch (std::exception& e) {
             std::cout << e.what() << std::endl;
@@ -72,7 +80,7 @@ extern "C" {
         return plateau_vector3d{ 0, 0, 0 };
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_reference_point(ObjWriter* obj_writer, plateau_vector3d reference_point) {
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_reference_point(ObjWriter* obj_writer, const plateau_vector3d reference_point) {
         try {
             const double ref[3]{ reference_point.x, reference_point.y, reference_point.z };
             obj_writer->setReferencePoint(ref);

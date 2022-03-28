@@ -38,11 +38,11 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
 ### Unity
 1. libplateauビルド(Release)
 2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
-3. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.Test/bin/Release/net6.0の以下のファイルをUnityプロジェクトにコピー
-   1. LibPLATEAU.NET.dll
-   2. citygml.dll
-   3. plateau.dll
-   4. plateau_c.dll
+3. 以下のファイルをUnityプロジェクトにコピー
+   1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/net6.0/LibPLATEAU.NET.dll
+   2. out/build/x64-Release/bin/citygml.dll
+   3. out/build/x64-Release/bin/plateau.dll
+   4. out/build/x64-Release/bin/plateau_c.dll
 
 ## ディレクトリ構成
 - 3rdparty
