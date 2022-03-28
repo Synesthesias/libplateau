@@ -7,10 +7,10 @@
 - CMake 3.8以降
 
 ### Windows
-- Visual Studio 2019
+- Visual Studio 2022
   - cmake使うためVisual Studio Installerから`C++によるデスクトップ開発`のインストールが必要
 
-## インストール
+## セットアップ
 ### リポジトリクローン
 ```
 git clone https://github.com/Synesthesias/libplateau
@@ -33,6 +33,16 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
 
 ### export_obj
 .obj, .mtlをエクスポートしてくれる。
+
+## デプロイ
+### Unity
+1. libplateauビルド(Release)
+2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
+3. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.Test/bin/Release/net6.0の以下のファイルをUnityプロジェクトにコピー
+   1. LibPLATEAU.NET.dll
+   2. citygml.dll
+   3. plateau.dll
+   4. plateau_c.dll
 
 ## ディレクトリ構成
 - 3rdparty

@@ -12,6 +12,8 @@ _deps
 
 # Output
 /out
+obj
+bin
 
 # Visual Studio
 .vs
