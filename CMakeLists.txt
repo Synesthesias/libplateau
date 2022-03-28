@@ -7,6 +7,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project("libplateau")
 
+set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
 
 # dependencies
 ### Replace dynamic linking to static linking to build libcitygml samples.
@@ -29,11 +30,11 @@ set(XERCESC_LIBRARY xerces-c)
 
 ## libcitygml
 ### TODO: GDAL Support
+### TODO: cmakeèââÒÉRÉPÇÈñ‚ëËÅ@
 set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
-set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
+set(LIBCITYGML_DYNAMIC ON CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
-
 
 # Library generation
 add_subdirectory("src")
@@ -43,6 +44,9 @@ add_subdirectory("src")
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
+
+# Wrappers
+add_subdirectory("wrappers/c")
 
 # Copy data for testing
 file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")

@@ -3,13 +3,14 @@
 #include <fstream>
 
 #include <citygml/citygml.h>
+#include <libplateau_api.h>
 
 enum class AxesConversion {
     WNU,
     RUF
 };
 
-class ObjWriter {
+class LIBPLATEAU_EXPORT ObjWriter {
 public:
     ObjWriter() : ofs_() {
     }

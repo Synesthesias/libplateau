@@ -54,7 +54,7 @@ namespace {
 int main() {
     try {
         const auto logger = std::make_shared<StdLogger>();
-        fs::path test_data_root_path = "../../data";
+        fs::path test_data_root_path = "../data";
         test_data_root_path.make_preferred();
         citygml::ParserParams params;
         params.optimize = true;
