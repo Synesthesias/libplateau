@@ -35,7 +35,7 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void GetDestAxes_Returns_The_Same_Value_As_Get()
+        public void GetDestAxes_Returns_The_Same_Value_As_Set()
         {
             var writer = new ObjWriter();
             writer.SetDestAxes(AxesConversion.RUF);
