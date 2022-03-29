@@ -58,6 +58,41 @@ namespace LibPLATEAU.NET
             NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
         }
 
+
+        /// <summary>
+        /// MergeMeshフラグを設定します。
+        /// </summary>
+        public void SetMergeMeshFlg(bool value)
+        {
+            NativeMethods.plateau_obj_writer_set_merge_mesh_flg(this.handle, value);
+        }
+
+        /// <summary>
+        /// 現在のMergeMeshフラグを返します。
+        /// </summary>
+        public bool GetMergeMeshFlg()
+        {
+            return NativeMethods.plateau_obj_writer_get_merge_mesh_flg(this.handle);
+        }
+
+
+        /// <summary>
+        /// 座標軸を設定します。
+        /// </summary>
+        public void SetDestAxes(AxesConversion value)
+        {
+            NativeMethods.plateau_obj_writer_set_dest_axes(this.handle, value);
+        }
+
+        /// <summary>
+        /// 現在の座標軸設定を返します。
+        /// </summary>
+        public AxesConversion GetDestAxes()
+        {
+            return (AxesConversion)NativeMethods.plateau_obj_writer_get_dest_axes(this.handle);
+        }
+
+
         /// <summary>
         /// <see cref="ReferencePoint"/>を<paramref name="cityModel"/>の<see cref="Envelope"/>の中心に設定します。
         /// </summary>

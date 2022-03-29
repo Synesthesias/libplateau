@@ -199,8 +199,16 @@ void ObjWriter::setMergeMeshFlg(bool value) {
     merge_mesh_flg_ = value;
 }
 
+bool ObjWriter::getMergeMeshFlg() const {
+    return merge_mesh_flg_;
+}
+
 void ObjWriter::setDestAxes(AxesConversion value) {
     axes_ = value;
+}
+
+AxesConversion ObjWriter::getDestAxes() const {
+    return axes_;
 }
 
 void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {

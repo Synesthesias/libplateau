@@ -23,6 +23,11 @@ namespace LibPLATEAU.NET
         public int Optimize;
     }
 
+    public enum AxesConversion
+    {
+        WNU, RUF
+    }
+
     internal static class NativeMethods
     {
         private const string kDllName = "plateau_c";
@@ -44,6 +49,25 @@ namespace LibPLATEAU.NET
             [In] string objPath,
             [In] IntPtr cityModel,
             [In] string gmlPath);
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_obj_writer_set_merge_mesh_flg(
+            [In] IntPtr objWriter,
+            bool value);
+
+        [DllImport(kDllName)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool plateau_obj_writer_get_merge_mesh_flg(
+            [In] IntPtr objWriter);
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_obj_writer_set_dest_axes(
+            [In] IntPtr objWriter,
+            AxesConversion value);
+
+        [DllImport(kDllName)]
+        internal static extern AxesConversion plateau_obj_writer_get_dest_axes(
+            [In] IntPtr objWriter);
 
         [DllImport(kDllName)]
         internal static extern PlateauVector3d plateau_obj_writer_get_reference_point(
