@@ -207,6 +207,10 @@ void ObjWriter::setDestAxes(AxesConversion value) {
     axes_ = value;
 }
 
+AxesConversion ObjWriter::getDestAxes() {
+    return axes_;
+}
+
 void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {
     auto lower_bound = city_model.getEnvelope().getLowerBound();
     auto upper_bound = city_model.getEnvelope().getUpperBound();

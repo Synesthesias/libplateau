@@ -19,6 +19,7 @@ public:
     void setMergeMeshFlg(bool value);
     bool getMergeMeshFlg();
     void setDestAxes(AxesConversion value);
+    AxesConversion getDestAxes();
     void setValidReferencePoint(const citygml::CityModel& city_model);
     void getReferencePoint(double xyz[]) const;
     void setReferencePoint(const double xyz[]);

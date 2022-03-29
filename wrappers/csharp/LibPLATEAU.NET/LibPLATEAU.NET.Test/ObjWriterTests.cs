@@ -35,6 +35,16 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
+        public void GetDestAxes_Returns_The_Same_Value_As_Get()
+        {
+            var writer = new ObjWriter();
+            writer.SetDestAxes(AxesConversion.RUF);
+            Assert.AreEqual(writer.GetDestAxes(), AxesConversion.RUF);
+            writer.SetDestAxes(AxesConversion.WNU);
+            Assert.AreEqual(writer.GetDestAxes(), AxesConversion.WNU);
+        }
+
+        [TestMethod]
         public void GetReferencePoint_Returns_The_Same_Value_As_Set()
         {
             var expectedValue = new PlateauVector3d(100000d, -30000d, 0.1d);

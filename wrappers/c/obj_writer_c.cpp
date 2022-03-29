@@ -88,6 +88,21 @@ extern "C" {
         }
     }
 
+
+    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_obj_writer_get_dest_axes(ObjWriter* obj_writer) {
+        try {
+            return (int)(obj_writer->getDestAxes());
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cout << "Unknown error occured." << std::endl;
+        }
+        return 0;
+    }
+
+
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_valid_reference_point(ObjWriter* obj_writer, const CityModelHandle* city_model) {
         try {
             // TODO: replace '\\' -> '/' in ObjWriter
