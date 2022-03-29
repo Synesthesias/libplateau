@@ -51,6 +51,30 @@ extern "C" {
         }
     }
 
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_merge_mesh_flg(ObjWriter* obj_writer, const bool value) {
+        try {
+            obj_writer->setMergeMeshFlg(value);
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cout << "Unknown error occured." << std::endl;
+        }
+    }
+
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_dest_axes(ObjWriter* obj_writer, AxesConversion value) {
+        try {
+            obj_writer->setDestAxes(value);
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cout << "Unknown error occured." << std::endl;
+        }
+    }
+
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_valid_reference_point(ObjWriter* obj_writer, const CityModelHandle* city_model) {
         try {
             // TODO: replace '\\' -> '/' in ObjWriter
