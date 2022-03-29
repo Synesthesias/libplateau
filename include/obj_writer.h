@@ -17,6 +17,7 @@ public:
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
     void setMergeMeshFlg(bool value);
+    bool getMergeMeshFlg();
     void setDestAxes(AxesConversion value);
     void setValidReferencePoint(const citygml::CityModel& city_model);
     void getReferencePoint(double xyz[]) const;

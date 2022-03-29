@@ -53,7 +53,12 @@ namespace LibPLATEAU.NET
         [DllImport(kDllName)]
         internal static extern void plateau_obj_writer_set_merge_mesh_flg(
             [In] IntPtr objWriter,
-            [In] bool value);
+            bool value);
+
+        [DllImport(kDllName)]
+        [return: MarshalAs(UnmanagedType.U1)]
+        internal static extern bool plateau_obj_writer_get_merge_mesh_flg(
+            [In] IntPtr objWriter);
 
         [DllImport(kDllName)]
         internal static extern void plateau_obj_writer_set_dest_axes(

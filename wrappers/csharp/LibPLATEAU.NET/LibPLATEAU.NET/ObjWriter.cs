@@ -67,6 +67,14 @@ namespace LibPLATEAU.NET
             NativeMethods.plateau_obj_writer_set_merge_mesh_flg(this.handle, value);
         }
 
+        /// <summary>
+        /// 現在のMergeMeshフラグを返します。
+        /// </summary>
+        public bool GetMergeMeshFlg()
+        {
+            return NativeMethods.plateau_obj_writer_get_merge_mesh_flg(this.handle);
+        }
+
 
         /// <summary>
         /// 座標軸を設定します。

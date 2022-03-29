@@ -63,6 +63,19 @@ extern "C" {
         }
     }
 
+    LIBPLATEAU_C_EXPORT bool LIBPLATEAU_C_API plateau_obj_writer_get_merge_mesh_flg(ObjWriter* obj_writer) {
+        try {
+            return obj_writer->getMergeMeshFlg();
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cout << "Unknown error occured." << std::endl;
+        }
+        return false;
+    }
+
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_dest_axes(ObjWriter* obj_writer, AxesConversion value) {
         try {
             obj_writer->setDestAxes(value);

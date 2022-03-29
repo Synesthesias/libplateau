@@ -25,6 +25,16 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
+        public void GetMergeMeshFlg_Returns_The_Same_Value_As_Set()
+        {
+            var writer = new ObjWriter();
+            writer.SetMergeMeshFlg(true);
+            Assert.AreEqual(writer.GetMergeMeshFlg(), true);
+            writer.SetMergeMeshFlg(false);
+            Assert.AreEqual(writer.GetMergeMeshFlg(), false);
+        }
+
+        [TestMethod]
         public void GetReferencePoint_Returns_The_Same_Value_As_Set()
         {
             var expectedValue = new PlateauVector3d(100000d, -30000d, 0.1d);
