@@ -66,7 +66,7 @@ namespace LibPLATEAU.NET
             AxesConversion value);
 
         [DllImport(kDllName)]
-        internal static extern int plateau_obj_writer_get_dest_axes(
+        internal static extern AxesConversion plateau_obj_writer_get_dest_axes(
             [In] IntPtr objWriter);
 
         [DllImport(kDllName)]

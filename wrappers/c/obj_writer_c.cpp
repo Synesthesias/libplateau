@@ -89,9 +89,9 @@ extern "C" {
     }
 
 
-    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_obj_writer_get_dest_axes(ObjWriter* obj_writer) {
+    LIBPLATEAU_C_EXPORT AxesConversion LIBPLATEAU_C_API plateau_obj_writer_get_dest_axes(ObjWriter* obj_writer) {
         try {
-            return (int)(obj_writer->getDestAxes());
+            return (obj_writer->getDestAxes());
         }
         catch (std::exception& e) {
             std::cout << e.what() << std::endl;
@@ -99,7 +99,7 @@ extern "C" {
         catch (...) {
             std::cout << "Unknown error occured." << std::endl;
         }
-        return 0;
+        return AxesConversion::RUF;
     }
 
 
