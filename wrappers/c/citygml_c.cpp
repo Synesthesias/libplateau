@@ -17,11 +17,12 @@ extern "C" {
     };
 
     LIBPLATEAU_C_EXPORT CityModelHandle* LIBPLATEAU_C_API plateau_load_citygml(const char* gml_path, const plateau_citygml_parser_params params) {
-        API_TRY
+        API_TRY{
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
             return new CityModelHandle(citygml::load(gml_path, parser_params, nullptr));
-        API_CATCH
-            return nullptr;
+        }
+        API_CATCH;
+        return nullptr;
     }
 }

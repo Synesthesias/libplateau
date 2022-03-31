@@ -8,9 +8,9 @@
 #endif
 
 // À‘•‚ğ API_TRY ‚Æ API_CATCH ‚ÅˆÍ‚Ş‚±‚Æ‚Å—áŠO‚ğo—Í‚Å‚«‚Ü‚·B
-#define API_TRY try {
+#define API_TRY try
 
-#define API_CATCH }\
+#define API_CATCH \
 catch (std::exception& e) {\
     std::cout << e.what() << std::endl;\
 }\
