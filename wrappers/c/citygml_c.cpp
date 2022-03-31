@@ -17,17 +17,11 @@ extern "C" {
     };
 
     LIBPLATEAU_C_EXPORT CityModelHandle* LIBPLATEAU_C_API plateau_load_citygml(const char* gml_path, const plateau_citygml_parser_params params) {
-        try {
+        API_TRY
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
             return new CityModelHandle(citygml::load(gml_path, parser_params, nullptr));
-        }
-        catch (std::exception& e) {
-            std::cout << e.what() << std::endl;
-        }
-        catch (...) {
-            std::cout << "Unknown error occurred." << std::endl;
-        }
-        return nullptr;
+        API_CATCH
+            return nullptr;
     }
 }

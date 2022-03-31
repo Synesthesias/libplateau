@@ -6,3 +6,14 @@
 #  define LIBPLATEAU_C_API
 #  define LIBPLATEAU_C_EXPORT
 #endif
+
+// À‘•‚ğ API_TRY ‚Æ API_CATCH ‚ÅˆÍ‚Ş‚±‚Æ‚Å—áŠO‚ğo—Í‚Å‚«‚Ü‚·B
+#define API_TRY try {
+
+#define API_CATCH }\
+catch (std::exception& e) {\
+    std::cout << e.what() << std::endl;\
+}\
+catch (...) {\
+    std::cout << "Unknown error occured." << std::endl;\
+}
