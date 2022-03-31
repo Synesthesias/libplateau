@@ -4,3 +4,6 @@
 [submodule "3rdparty/libcitygml"]
 	path = 3rdparty/libcitygml
 	url = https://github.com/Synesthesias/libcitygml.git
+[submodule "wrappers/python/pybind11"]
+	path = wrappers/python/pybind11
+	url = https://github.com/pybind/pybind11.git
