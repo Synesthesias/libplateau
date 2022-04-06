@@ -11,7 +11,7 @@ add_subdirectory(io)
 
 # TODO: citygmlが更新されてもplateau側が更新されていないとdllが反映されない問題
 if(WIN32)
-  if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+  if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(LIBCITYGML_DLL_PATH "${libcitygml_BINARY_DIR}/lib/citygmld.dll")
   else()
     set(LIBCITYGML_DLL_PATH "${libcitygml_BINARY_DIR}/lib/citygml.dll")
