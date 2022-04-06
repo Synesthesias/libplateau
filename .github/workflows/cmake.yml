@@ -20,11 +20,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install ninja-build tool
+      uses: seanmiddleditch/gha-setup-ninja@v3
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-      run: cmake -G "Ninja" -D CMAKE_BUILD_TYPE:STRING=${{env.BUILDTYPE}}}" -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl -D CMAKE_INSTALL_PROGRAM="ninja" ${{github.workspace}}
+      run: cmake -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}}" -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl -D CMAKE_INSTALL_PROGRAM="ninja" ${{github.workspace}}
   
     - name: Build
       # Build your program with the given configuration
