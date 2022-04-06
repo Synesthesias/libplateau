@@ -20,15 +20,16 @@ set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
 
 # dependencies
 ## Xerces-C
-set(BUILD_SHARED_LIBS false)
+### libcitygmlのFindXercesを通すために全てキャッシュ化
+set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/xerces-c")
-set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src")
-set(XERCESC_LIBRARY xerces-c)
+set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
+set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
 
 ## libcitygml
 ### TODO: GDAL Support
 set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
-### TODO: 初回cmakeがlibcitygmlのFindXercescでコケる問題
+### libcitygmlのFindXercesを通すために手動で設定
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
 set(LIBCITYGML_DYNAMIC ON CACHE BOOL "" FORCE)
