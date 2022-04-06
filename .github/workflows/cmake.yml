@@ -20,6 +20,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Update Submodules
+    - run: git submodule update --remote --recursive
+
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
 
