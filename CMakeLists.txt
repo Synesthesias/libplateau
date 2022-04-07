@@ -14,6 +14,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+# Xerces-C ライブラリの問題を修正するための措置です。
+# C言語で Windows かどうかチェックするには通常 #if define (_WIN32) と書きますが、
+# Xerces-C の作者は _WIN32 のアンダースコアを書き忘れてしまいました。
+# WIN32 と _WIN32 が同等の働きをするかは不明瞭であり、環境によってビルドが通ることも通らないこともあります。
+# そこで WIN32 を定義することでビルドを通します。
+if(WIN32) # CMake文法上の WIN32
+  add_definitions(-D WIN32) # C言語のプリプロセッサ上の WIN32
+endif()
+
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)

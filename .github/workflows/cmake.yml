@@ -53,13 +53,16 @@ jobs:
     
 
     # cmakeの構成時に渡す引数のうち、UbuntuとMacのみで利用するものを GITHUB_ENV に追記します。
-    # wオプションで警告を抑制します（そうしないと数万のログが出るので）。
-    - name: CMake configure option (Ubuntu & Mac)
-      if: ${{ (runner.os == 'Linux') || (runner.os == 'macOS') }} 
-      run: echo "CMAKE_CONFIGURE_OPTION=${{env.CMAKE_CONFIGURE_OPTION}} -w"
+    # 今のところ特にすることはないです。
+    #- name: CMake configure option (Ubuntu & Mac)
+    #  if: ${{ (runner.os == 'Linux') || (runner.os == 'macOS') }} 
+    #  run: 
 
 
     # cmakeの構成時に渡す引数のうち、Windowsのみで利用するものを GITHUB_ENV に追記します。
+    #- name: CMake configure option (Windows)
+    #  if: runner.os == 'Windows'
+    #  run: echo "CMAKE_CONFIGURE_OPTION=${{env.CMAKE_CONFIGURE_OPTION}} "
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
