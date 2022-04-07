@@ -36,14 +36,23 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-      run: cmake -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" -D CMAKE_INSTALL_PROGRAM="ninja" ${{github.workspace}}
+      run: >
+        cmake
+        -S ${{github.workspace}} 
+        -B ${{github.workspace}}/out/build/x64-Release 
+        -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
+        -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
+        -D CMAKE_INSTALL_PROGRAM="ninja" 
+        
       # -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
+
+    #- name: Prepare Build Directory
+    # TODO ‚±‚ê‚Í•s—v‚©‚à‚µ‚ê‚È‚¢
+    #  run: mkdir -p ${{github.workspace}}/out/build/x64-Release
 
     - name: Build
       # Build your program with the given configuration
-      run: |
-        mkdir -p ${{github.workspace}}/out/build/x64-Release
-        cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
 
 #    - name: Test
 #      working-directory: ${{github.workspace}}/build
