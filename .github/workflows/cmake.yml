@@ -40,35 +40,21 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-    # cmakeの構成時に渡す引数のうち、各OSで共通の部分を GITHUB_ENV に格納します。
-    - name: CMake configure option (Common)
-      run: echo "CMAKE_CONFIGURE_OPTION=
+
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: >
+        cmake
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
         -D CMAKE_INSTALL_PROGRAM="ninja" 
-        -D CMAKE_CXX_FLAGS="-w"" >> $GITHUB_ENV
-    
-
-    # cmakeの構成時に渡す引数のうち、UbuntuとMacのみで利用するものを GITHUB_ENV に追記します。
-    # 今のところ特にすることはないです。
-    #- name: CMake configure option (Ubuntu & Mac)
-    #  if: ${{ (runner.os == 'Linux') || (runner.os == 'macOS') }} 
-    #  run: 
-
-
-    # cmakeの構成時に渡す引数のうち、Windowsのみで利用するものを GITHUB_ENV に追記します。
-    #- name: CMake configure option (Windows)
-    #  if: runner.os == 'Windows'
-    #  run: echo "CMAKE_CONFIGURE_OPTION=${{env.CMAKE_CONFIGURE_OPTION}} "
-
-    - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-      run: cmake ${{env.CMAKE_CONFIGURE_OPTION}}
+        -D CMAKE_CXX_FLAGS="-w"
    
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
         
