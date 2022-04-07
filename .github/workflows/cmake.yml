@@ -41,8 +41,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: CMake configure option (common)
-      run: echo "
-        CMAKE_CONFIGURE_OPTION='
+      run: echo "CMAKE_CONFIGURE_OPTION='
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
