@@ -40,7 +40,8 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: CMake configure option (common)
+    # cmakeの構成時に渡す引数のうち、各OSで共通の部分を GITHUB_ENV に格納します。
+    - name: CMake configure option (Common)
       run: echo "CMAKE_CONFIGURE_OPTION=
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
@@ -49,6 +50,12 @@ jobs:
         -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
         -D CMAKE_INSTALL_PROGRAM="ninja" 
         -D CMAKE_CXX_FLAGS="-w"" >> $GITHUB_ENV
+    
+
+    # cmakeの構成時に渡す引数のうち、UbuntuとMacのみで利用するものを GITHUB_ENV に追記します。
+    # wオプションで警告を抑制します（そうしないと数万のログが出るので）。
+    - name: CMake configure option (Ubuntu & Mac)
+      run: echo "CMAKE_CONFIGURE_OPTION=${{env.CMAKE_CONFIGURE_OPTION}} -w"
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
