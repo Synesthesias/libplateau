@@ -41,16 +41,7 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
 
     - name: CMake configure option (common)
-    - run: >
-        echo "CMAKE_CONFIGURE_OPTION=
-        -S ${{github.workspace}} 
-        -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Ninja" 
-        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
-        -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
-        -D CMAKE_INSTALL_PROGRAM="ninja" 
-        -D CMAKE_CXX_FLAGS="-w""
-        >> $GITHUB_ENV
+    - run: echo "CMAKE_CONFIGURE_OPTION='-S ${{github.workspace}} -B ${{github.workspace}}/out/build/x64-Release -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"" >> $GITHUB_ENV
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
