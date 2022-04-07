@@ -33,9 +33,12 @@ jobs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
       # Windowsのみ
-    - name: Install Mingw on Windows
+    #- name: Install Mingw on Windows
+      #if: runner.os == 'Windows'
+      #run: choco install mingw -yes --version=10.2.0
+    - name: Setup MSVC for Windows
       if: runner.os == 'Windows'
-      run: choco install mingw -yes --version=10.2.0
+      uses: ilammy/msvc-dev-cmd@v1
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -51,7 +54,7 @@ jobs:
         -D CMAKE_INSTALL_PROGRAM="ninja" 
         -D CMAKE_CXX_FLAGS="-w"
    
-    # TODO 10万行超えの警告が出るので一時的な処置として警告を抑制
+    # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
         
       # -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
