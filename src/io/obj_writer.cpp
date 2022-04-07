@@ -2,8 +2,11 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
-#include <direct.h>
 #include <sys/stat.h>
+
+#if defined(_WIN32)
+#include <direct.h>
+#endif
 
 #include <citygml/citygml.h>
 #include <citygml/citymodel.h>
@@ -179,7 +182,13 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
         struct stat statBuf;
         std::string to_dir = path_to.substr(0, path_to.find_last_of("/"));
         if (stat(to_dir.c_str(), &statBuf) != 0) {
-            if (_mkdir(to_dir.c_str()) != 0) {
+            int mkdirResult;
+#if defined(_WIN32)
+            mkdirResult = _mkdir(to_dir.c_str());
+#else
+            mkdirResult = mkdir(to_dir.c_str(), 0777);
+#endif
+            if (mkdirResult != 0) {
                 throw std::runtime_error(std::string("Failed to make directory : ") + to_dir);
             }
         }
