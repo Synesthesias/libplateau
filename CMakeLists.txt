@@ -17,7 +17,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") # Linuxでshared libraryを作るときに必要なオプション？
+
+# Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
+# ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
+if(COMPILER_SUPPORTS_PIC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 # dependencies
 ## Xerces-C
