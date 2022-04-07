@@ -17,6 +17,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") # Linuxでshared libraryを作るときに必要なオプション？
 
 # dependencies
 ## Xerces-C
