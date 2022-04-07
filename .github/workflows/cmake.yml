@@ -42,7 +42,7 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: |
-        mkdir ${{github.workspace}}/out/build/x64-Release
+        mkdir -p ${{github.workspace}}/out/build/x64-Release
         cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
 
 #    - name: Test
