@@ -1,6 +1,5 @@
 #include <exception>
 #include <iostream>
-#include <memory>
 
 #include <citygml/citygml.h>
 
