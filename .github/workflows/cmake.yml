@@ -14,7 +14,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-lateest, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
@@ -45,9 +45,13 @@ jobs:
         cmake
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
+        -G "Ninja" 
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
         -D CMAKE_INSTALL_PROGRAM="ninja" 
+        -D CMAKE_CXX_FLAGS="-w"
+   
+    # TODO 10万行超えの警告が出るので一時的な処置として警告を抑制
         
       # -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
