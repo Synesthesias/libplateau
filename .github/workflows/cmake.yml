@@ -1,13 +1,8 @@
 name: CMake
 
-on:
-  push:
-#    branches: [ main ]
-  pull_request:
-#    branches: [ main ]
+on: [push, pull_request]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: RelWithDebInfo
 
 jobs:
@@ -15,7 +10,11 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-lateest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v3
@@ -28,8 +27,9 @@ jobs:
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
 
-      # Ubuntuでのビルドに必要です
+      # Ubuntuでビルドを通すには OpenGL API のインストールが必要です。
     - name: Install OpenGL API on Ubuntu machine
+      if: runner.os == 'Linux'
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
     - name: Configure CMake
