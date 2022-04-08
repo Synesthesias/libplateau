@@ -21,7 +21,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # WIN32 と _WIN32 が同等の働きをするかは不明瞭であり、環境によってビルドが通ることも通らないこともあります。
 # そこで WIN32 を定義することでビルドを通します。
 if(WIN32) # CMake文法上の WIN32
-  add_definitions(-D WIN32) # C言語のプリプロセッサ上の WIN32
+  add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
 project("libplateau")

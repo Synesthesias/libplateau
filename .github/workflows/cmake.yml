@@ -1,3 +1,6 @@
+
+# Github Actions で自動テストを行う方法を記述したものです。
+
 name: CMake
 
 on: [push, pull_request]
@@ -7,9 +10,7 @@ env:
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+
     runs-on: ${{matrix.os}}
 
     strategy:
@@ -33,9 +34,6 @@ jobs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
       # Windowsのみ
-    #- name: Install Mingw on Windows
-      #if: runner.os == 'Windows'
-      #run: choco install mingw -yes --version=10.2.0
     - name: Setup MSVC for Windows
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
@@ -43,9 +41,6 @@ jobs:
 
 
     - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      #run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -55,15 +50,28 @@ jobs:
         -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
         -D CMAKE_INSTALL_PROGRAM="ninja" 
         -D CMAKE_CXX_FLAGS="-w"
-   
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
         
-      # -D CMAKE_C_COMPILER=cl -D CMAKE_CXX_COMPILER=cl
 
 
-    - name: Build
-      # Build your program with the given configuration
+    - name: Build by CMake
       run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
+
+    - name: cd to .sln dir
+      run: cd ${{github.workspace}}/wrappers/LibPLATEAU.NETS
+     
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v2
+
+    - name: Install dependencies
+      run: dotnet restore
+    
+    - name: Build C# Wrapper
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run Test of C# Wrapper
+      run: dotnet test --no-restore --verbosity normal
+
 
 #    - name: Test
 #      working-directory: ${{github.workspace}}/build
