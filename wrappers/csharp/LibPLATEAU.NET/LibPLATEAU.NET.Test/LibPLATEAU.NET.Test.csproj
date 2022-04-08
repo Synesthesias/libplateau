@@ -18,8 +18,10 @@
     <ProjectReference Include="..\LibPLATEAU.NET\LibPLATEAU.NET.csproj" />
   </ItemGroup>
 
+  <!-- コマンドは Windows向けとUnix向けで2パターン書きます。-->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
+    <Exec Condition="!$([MSBuild]::IsOSUnixLike())" Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
+	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="cp $(SolutionDir)../../../out/build/x64-Release/bin/*.dll $(TargetDir);  cp -rT $(SolutionDir)../../../data/ $(TargetDir)/data/" />
   </Target>
 
 </Project>
