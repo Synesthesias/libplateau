@@ -67,11 +67,13 @@ jobs:
     #- name: Install dependencies
     #  run: dotnet restore ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
     
+    # TODO Platform="Any CPU" としているのはあくまで仮です。
+    # どの値に設定すべきか要検討です。
     - name: Build C# Wrapper
       run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
     - name: Run Test of C# Wrapper
-      run: dotnet test --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      run: dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
 
 #    - name: Test
