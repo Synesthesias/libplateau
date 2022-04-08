@@ -25,7 +25,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
 	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="find $(SolutionDir)../../../out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $(TargetDir)" />
-	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Comnand="cp -R $(SolutionDir)../../../data/* $(TargetDir)data/" />
+	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="cp -R $(SolutionDir)../../../data/* $(TargetDir)data/" />
   </Target>
 
 </Project>
