@@ -1,5 +1,5 @@
 
-![](https://github.com/Synesthesias/libplateau/workflows/build-and-test)
+![test status](https://github.com/Synesthesias/libplateau/workflows/build-and-test)
 
 # LibPLATEAU
 
