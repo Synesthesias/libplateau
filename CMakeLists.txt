@@ -1,3 +1,4 @@
+# github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
 
 # MSVC_RUNTIME_LIBRARYプロパティを有効化
