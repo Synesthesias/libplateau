@@ -65,7 +65,7 @@ jobs:
         dotnet-version: 6.0.x
 
     - name: Install dependencies
-      run: dotnet restore ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      run: dotnet restore --configuration Release ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
     
     - name: Build C# Wrapper
       run: dotnet build --configuration Release --no-restore ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
