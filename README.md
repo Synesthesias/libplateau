@@ -1,3 +1,6 @@
+
+![](https://github.com/Synesthesias/libplateau/workflows/build-and-test)
+
 # LibPLATEAU
 
 - クロスプラットフォーム(iOS, android, windows, ubuntu)
