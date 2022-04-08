@@ -58,7 +58,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
 
     - name: cd to .sln dir
-      run: cd ${{github.workspace}}/wrappers/LibPLATEAU.NETS
+      run: cd ${{github.workspace}}/wrappers/LibPLATEAU.NET
      
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v2
