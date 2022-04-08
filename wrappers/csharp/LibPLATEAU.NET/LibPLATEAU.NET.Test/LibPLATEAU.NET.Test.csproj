@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <!-- コマンドは Windows向けとUnix向けで2パターン書きます。-->
+  <!-- C++でビルドしたライブラリの出力場所が両者で異なることに注意してください。ライブラリとテスト用データを本プロジェクトにコピーします。-->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Condition="!$([MSBuild]::IsOSUnixLike())" Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-Release\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data $(TargetDir)\data\" />
 	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="find $(SolutionDir)../../../out/build/x64-Release -name *.so | xargs -i cp {} $(TargetDir) ; cp -rT $(SolutionDir)../../../data/ $(TargetDir)/data/" />
