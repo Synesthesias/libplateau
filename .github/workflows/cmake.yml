@@ -57,20 +57,18 @@ jobs:
     - name: Build by CMake
       run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
 
-    - name: cd to .sln dir
-      run: cd ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
      
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v2
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
     
     - name: Build C# Wrapper
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
     - name: Run Test of C# Wrapper
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
 
 #    - name: Test
