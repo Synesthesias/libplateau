@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.13)
 
 # MSVC_RUNTIME_LIBRARYプロパティを有効化
 # 参考：https://cmake.org/cmake/help/latest/policy/CMP0091.html
