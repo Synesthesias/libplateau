@@ -164,22 +164,24 @@ namespace LibPLATEAU.NET
             [In] IntPtr cityObject);
 
         
-        // Object_c.cpp
+        // ***************
+        //  Object_c.cpp
+        // ***************
 
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_id(
             [In] IntPtr obj);
 
-        [DllImport(kDllName)]
+        [DllImport(kDllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr plateau_object_get_attribute(
             [In] IntPtr plateauObject,
-            [In] string name);
+            string name);
 
-        [DllImport(kDllName)]
+        [DllImport(kDllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void plateau_object_set_attribute(
             [In] IntPtr plateauObject,
-            [In] string name,
-            [In] string value,
+            string name,
+            string value,
             AttributeType type,
             bool overwrite);
     }

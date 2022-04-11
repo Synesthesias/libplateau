@@ -6,19 +6,11 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class CityObjectTests
     {
-        private const string gmlPath = "data/53392642_bldg_6697_op2.gml";
-
-        private readonly CityModel cityModel;
         private readonly CityObject cityObject;
 
-        public CityObjectTests()
-        {
+        public CityObjectTests() {
             // Load処理が重いため最初のみ実行して使いまわす。
-            var parserParams = new CitygmlParserParams
-            {
-                Optimize = 0
-            };
-            cityModel = CityGml.Load(gmlPath, parserParams);
+            CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
             cityObject = cityModel.RootCityObjects[0];
         }
 

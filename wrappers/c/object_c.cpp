@@ -20,7 +20,9 @@ extern "C" {
         const Object* object,
         const char* name
     ) {
-        return object->getAttribute(std::string(name)).c_str();
+        auto attrVal = object->getAttribute(std::string(name));
+        auto attrValNew = new std::string(attrVal);
+        return attrValNew->c_str();
     }
 
 
@@ -31,9 +33,11 @@ extern "C" {
         const AttributeType type,
         bool overwrite
     ) {
+        auto newName = new std::string(name);
+        auto newValue = new std::string(value);
         object->setAttribute(
-            std::string(name),
-            std::string(value),
+            *newName,
+            *newValue,
             type, overwrite
         );
     }
