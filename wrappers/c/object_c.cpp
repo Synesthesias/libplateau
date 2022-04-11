@@ -16,13 +16,17 @@ extern "C" {
         return nullptr;
     }
 
-    LIBPLATEAU_C_EXPORT const char* LIBPLATEAU_C_API plateau_object_get_attribute(
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_get_attribute(
         const Object* object,
-        const char* name
+        const char* name,
+        char* outStrBuffer,
+        int outStrBufferSize
     ) {
-        auto attrVal = object->getAttribute(std::string(name));
-        auto attrValNew = new std::string(attrVal);
-        return attrValNew->c_str();
+        auto attrValueStr = object->getAttribute(std::string(name));
+        auto attrValueChars = attrValueStr.c_str();
+
+        // TODO バッファーサイズが足りない場合のハンドリング
+        strcpy_s(outStrBuffer, outStrBufferSize, attrValueChars);
     }
 
 
@@ -33,7 +37,10 @@ extern "C" {
         const AttributeType type,
         bool overwrite
     ) {
-        object->setAttribute(name, value, type, overwrite);
+        API_TRY{
+            object->setAttribute(name, value, type, overwrite);
+        }
+        API_CATCH;
     }
 
     

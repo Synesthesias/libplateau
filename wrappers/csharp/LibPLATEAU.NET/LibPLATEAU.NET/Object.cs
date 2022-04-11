@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LibPLATEAU.NET
 {
@@ -40,11 +42,13 @@ namespace LibPLATEAU.NET
 
         /// <summary>
         /// 属性データを取得します。
+        /// 属性値の最大文字数を引数で指定します。
         /// </summary>
-        public string GetAttribute(string name)
-        {
-            string attr = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_attribute(this.handle, name)) ?? "";
-            return attr;
+        public string GetAttribute(string name, int returnStrMaxSize) {
+            StringBuilder sb = new (returnStrMaxSize);
+            
+            NativeMethods.plateau_object_get_attribute(this.handle, name, sb, sb.Capacity);
+            return sb.ToString();
         }
 
 

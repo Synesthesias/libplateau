@@ -17,7 +17,7 @@ namespace LibPLATEAU.NET.Test {
 		// [DataRow("特殊文字属性名🎵🙂", "特殊文字属性値🎵🙂")]
 		public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal) {
 			plateauObject.SetAttribute(attrName, attrVal, AttributeType.String, true);
-			string getResult = plateauObject.GetAttribute(attrName);
+			string getResult = plateauObject.GetAttribute(attrName, 199);
 			Assert.AreEqual(attrVal, getResult);
 		}
 		

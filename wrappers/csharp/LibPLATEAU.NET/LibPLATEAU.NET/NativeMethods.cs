@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LibPLATEAU.NET
 {
@@ -172,12 +173,14 @@ namespace LibPLATEAU.NET
         internal static extern IntPtr plateau_object_get_id(
             [In] IntPtr obj);
 
-        [DllImport(kDllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr plateau_object_get_attribute(
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern void plateau_object_get_attribute(
             [In] IntPtr plateauObject,
-            string name);
+            string name,
+            StringBuilder sb,
+            int bufferSize);
 
-        [DllImport(kDllName, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern void plateau_object_set_attribute(
             [In] IntPtr plateauObject,
             string name,
