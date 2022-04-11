@@ -27,7 +27,7 @@ extern "C" {
         API_CATCH;
     }
 
-    LIBPLATEAU_C_EXPORT unsigned int LIBPLATEAU_C_API plateau_city_model_get_root_city_object_count(
+    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_model_get_root_city_object_count(
         const CityModelHandle* city_model_handle
     ) {
         API_TRY{

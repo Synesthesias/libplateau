@@ -1,8 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-[TestClass]
-public class ObjectTests
-{
+namespace LibPLATEAU.NET.Test {
+	[TestClass]
+	public class ObjectTests
+	{
 	
+	}
 }

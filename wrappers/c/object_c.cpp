@@ -17,7 +17,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT const char* LIBPLATEAU_C_API plateau_object_get_attribute(
-        const Object* object
+        const Object* object,
         const char* name
     ) {
         return object->getAttribute(std::string(name)).c_str();
@@ -25,16 +25,16 @@ extern "C" {
 
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_set_attribute(
-        const Object* object,
+        Object* object,
         const char* name,
         const char* value,
         const AttributeType type,
         bool overwrite
     ) {
-        object->getAttribute(
+        object->setAttribute(
             std::string(name),
             std::string(value),
-            type, overrite
+            type, overwrite
         );
     }
 

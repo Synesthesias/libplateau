@@ -1,4 +1,6 @@
-﻿namespace LibPLATEAU.NET
+﻿using System;
+
+namespace LibPLATEAU.NET
 {
     /// <summary>
     /// CityGMLにおける全ての地物オブジェクトのベースクラスです。

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace LibPLATEAU.NET
 {
@@ -50,9 +51,8 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// 属性データを設定します。
         /// </summary>
-        public string void SetAttribute(string name, string value, AttributeType type, bool doOverride)
-        {
-            NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride)
+        public void SetAttribute(string name, string value, AttributeType type, bool doOverride) {
+            NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride);
         }
     }
 }

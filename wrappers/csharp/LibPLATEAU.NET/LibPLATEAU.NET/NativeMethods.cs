@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace LibPLATEAU.NET
 {
@@ -82,7 +83,7 @@ namespace LibPLATEAU.NET
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
 
-    public enum class AttributeType
+    public enum AttributeType
     {
         String, Double, Integer, Data, Uri
     }
@@ -171,12 +172,12 @@ namespace LibPLATEAU.NET
 
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_attribute(
-            [In] IntPtr object,
+            [In] IntPtr plateauObject,
             [In] string name);
 
         [DllImport(kDllName)]
-        internal static extern void plateau_object_set_attributre(
-            [In] IntPtr object,
+        internal static extern void plateau_object_set_attribute(
+            [In] IntPtr plateauObject,
             [In] string name,
             [In] string value,
             AttributeType type,
