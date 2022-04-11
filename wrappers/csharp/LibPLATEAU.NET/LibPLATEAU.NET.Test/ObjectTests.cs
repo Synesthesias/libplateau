@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test {
@@ -12,14 +12,20 @@ namespace LibPLATEAU.NET.Test {
 
 		[DataTestMethod()]
 		[DataRow("TestAttrName", "TestAttrValue")]
-		[DataRow("a", "b")]
-		// [DataRow("日本語属性名", "日本語属性値")]
-		// [DataRow("特殊文字属性名🎵🙂", "特殊文字属性値🎵🙂")]
+		[DataRow("���{�ꑮ����", "���{�ꑮ���l")]
 		public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal) {
 			plateauObject.SetAttribute(attrName, attrVal, AttributeType.String, true);
-			string getResult = plateauObject.GetAttribute(attrName, 199);
+			string getResult = plateauObject.GetAttribute(attrName, 199, out int result);
 			Assert.AreEqual(attrVal, getResult);
+			Assert.AreEqual(0, result);
 		}
+
+		[TestMethod]
+		public void Test_GetAttribute_Results_Non_Zero_If_Size_Small() {
+			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", AttributeType.String, true);
+			plateauObject.GetAttribute("foobarAttr", 1, out int result);
+			Assert.AreNotEqual(0, result);
+		} 
 		
 		
 	}

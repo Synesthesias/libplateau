@@ -43,11 +43,12 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// 属性データを取得します。
         /// 属性値の最大文字数を引数で指定します。
+        /// result は正常終了の場合 0, 異常終了の場合それ以外になります。
         /// </summary>
-        public string GetAttribute(string name, int returnStrMaxSize) {
+        public string GetAttribute(string name, int returnStrMaxSize, out int result) {
             StringBuilder sb = new (returnStrMaxSize);
             
-            NativeMethods.plateau_object_get_attribute(this.handle, name, sb, sb.Capacity);
+            result = NativeMethods.plateau_object_get_attribute(this.handle, name, sb, sb.Capacity);
             return sb.ToString();
         }
 

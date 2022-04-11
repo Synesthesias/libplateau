@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include <obj_writer.h>
 
 #include "libplateau_c.h"
@@ -16,17 +17,23 @@ extern "C" {
         return nullptr;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_get_attribute(
-        const Object* object,
-        const char* name,
-        char* outStrBuffer,
-        int outStrBufferSize
-    ) {
-        auto attrValueStr = object->getAttribute(std::string(name));
-        auto attrValueChars = attrValueStr.c_str();
 
-        // TODO 繝舌ャ繝輔ぃ繝ｼ繧ｵ繧､繧ｺ縺瑚ｶｳ繧翫↑縺�蝣ｴ蜷医�ｮ繝上Φ繝峨Μ繝ｳ繧ｰ
-        strcpy_s(outStrBuffer, outStrBufferSize, attrValueChars);
+    // 正常終了の場合は0, 異常終了の場合はそれ以外を返します。
+    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_object_get_attribute(const Object* object, const char* name, char* outStrBuffer, int outStrBufferSize){
+        API_TRY{
+            auto attrValueStr = object->getAttribute(std::string(name));
+            auto attrValueChars = attrValueStr.c_str();
+            if(outStrBufferSize < std::strlen(attrValueChars)){
+                // バッファーサイズが足りない場合
+                return -1;
+            }else{
+                // バッファーサイズが足りる場合
+                int copyResult = strcpy_s(outStrBuffer, outStrBufferSize, attrValueChars);
+                return copyResult;
+            }
+        }
+        API_CATCH;
+        return -1;
     }
 
 

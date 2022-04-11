@@ -174,7 +174,7 @@ namespace LibPLATEAU.NET
             [In] IntPtr obj);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_object_get_attribute(
+        internal static extern int plateau_object_get_attribute(
             [In] IntPtr plateauObject,
             string name,
             StringBuilder sb,
