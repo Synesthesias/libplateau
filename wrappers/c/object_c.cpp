@@ -28,8 +28,12 @@ extern "C" {
                 return -1;
             }else{
                 // バッファーサイズが足りる場合
-                int copyResult = strcpy_s(outStrBuffer, outStrBufferSize, attrValueChars);
-                return copyResult;
+#define _CRT_SECURE_NO_WARNINGS
+                // strcpy を使うと、MSVC環境では 「strcpy_s を使うべき」と警告がでます。
+                // しかし、MSVC環境でなければ strcpy_s は利用できずビルドが通らないためこの警告は抑制します。
+                strcpy(outStrBuffer, attrValueChars);
+#undef _CRT_SECURE_NO_WARNINGS
+                return 0;
             }
         }
         API_CATCH;

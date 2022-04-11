@@ -10,7 +10,7 @@ namespace LibPLATEAU.NET.Test {
 			plateauObject = cityModel.RootCityObjects[0];
 		}
 
-		[DataTestMethod()]
+		[DataTestMethod]
 		[DataRow("TestAttrName", "TestAttrValue")]
 		[DataRow("“ú–{Œê‘®«–¼", "“ú–{Œê‘®«’l")]
 		public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal) {
@@ -25,8 +25,13 @@ namespace LibPLATEAU.NET.Test {
 			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", AttributeType.String, true);
 			plateauObject.GetAttribute("foobarAttr", 1, out int result);
 			Assert.AreNotEqual(0, result);
-		} 
-		
-		
+		}
+
+		// [TestMethod]
+		// public void Test_Attributes_Not_Found() {
+		// 	plateauObject.GetAttribute("DummyFakeTestNotFound", 199, out int result);
+		// 	Assert.AreNotEqual(0, result);
+		// }
+
 	}
 }
