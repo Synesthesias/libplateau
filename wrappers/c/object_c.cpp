@@ -33,13 +33,7 @@ extern "C" {
         const AttributeType type,
         bool overwrite
     ) {
-        auto newName = new std::string(name);
-        auto newValue = new std::string(value);
-        object->setAttribute(
-            *newName,
-            *newValue,
-            type, overwrite
-        );
+        object->setAttribute(name, value, type, overwrite);
     }
 
     
