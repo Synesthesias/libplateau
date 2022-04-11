@@ -10,6 +10,9 @@ namespace LibPLATEAU.NET.Test {
 			plateauObject = cityModel.RootCityObjects[0];
 		}
 
+		/// <summary>
+		/// 属性の set と get は同じになります。日本語にも対応します。
+		/// </summary>
 		[DataTestMethod]
 		[DataRow("TestAttrName", "TestAttrValue")]
 		[DataRow("日本語属性名", "日本語属性値")]
@@ -20,18 +23,26 @@ namespace LibPLATEAU.NET.Test {
 			Assert.AreEqual(0, result);
 		}
 
+		/// <summary>
+		/// 受け取る値の最大サイズが足りない場合は result が -2 になります。
+		/// </summary>
 		[TestMethod]
-		public void Test_GetAttribute_Results_Non_Zero_If_Size_Small() {
+		public void Test_GetAttribute_Results_Minus_2_If_Size_Small() {
 			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", AttributeType.String, true);
-			plateauObject.GetAttribute("foobarAttr", 1, out int result);
-			Assert.AreNotEqual(0, result);
+			string val = plateauObject.GetAttribute("foobarAttr", 1, out int result);
+			Assert.AreEqual("", val);
+			Assert.AreEqual(-2, result);
 		}
 
-		// [TestMethod]
-		// public void Test_Attributes_Not_Found() {
-		// 	plateauObject.GetAttribute("DummyFakeTestNotFound", 199, out int result);
-		// 	Assert.AreNotEqual(0, result);
-		// }
+		/// <summary>
+		/// 受け取る値が存在しない場合は result が -1 になります。
+		/// </summary>
+		[TestMethod]
+		public void Test_Attributes_Not_Found_Then_Result_Minus_1() {
+			string val = plateauObject.GetAttribute("DummyFakeTestNotFound", 199, out int result);
+			Assert.AreEqual("", val);
+			Assert.AreEqual(-1, result);
+		}
 
 	}
 }

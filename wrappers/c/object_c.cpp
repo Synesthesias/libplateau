@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string.h>
 #include <obj_writer.h>
 
 #include "libplateau_c.h"
@@ -18,26 +17,31 @@ extern "C" {
     }
 
 
+    // 属性名から属性値を取得し、 outStrBuffer に格納します。
     // 正常終了の場合は0, 異常終了の場合はそれ以外を返します。
+    // 具体的には、属性が存在しないまたは値が空文字列である場合は-1を返し、バッファサイズが足りない場合は-2を返します。
     LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_object_get_attribute(const Object* object, const char* name, char* outStrBuffer, int outStrBufferSize){
         API_TRY{
             auto attrValueStr = object->getAttribute(std::string(name));
             auto attrValueChars = attrValueStr.c_str();
+             if(attrValueStr.empty()){
+                 // 属性が存在しない場合は空文字列が返るので、空文字列のときに異常終了とします。
+                 return -1;
+             }
             if(outStrBufferSize < strlen(attrValueChars)){
                 // バッファーサイズが足りない場合
-                return -1;
+                return -2;
             }else{
                 // バッファーサイズが足りる場合
-#define _CRT_SECURE_NO_WARNINGS
+                
                 // strcpy を使うと、MSVC環境では 「strcpy_s を使うべき」と警告がでます。
-                // しかし、MSVC環境でなければ strcpy_s は利用できずビルドが通らないためこの警告は抑制します。
+                // しかし、MSVC環境でなければ strcpy_s は利用できずビルドが通らないためこの警告は無視します。
                 strcpy(outStrBuffer, attrValueChars);
-#undef _CRT_SECURE_NO_WARNINGS
                 return 0;
             }
         }
         API_CATCH;
-        return -1;
+        return -99;
     }
 
 

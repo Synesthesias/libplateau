@@ -41,9 +41,13 @@ namespace LibPLATEAU.NET
         }
 
         /// <summary>
-        /// 属性データを取得します。
-        /// 属性値の最大文字数を引数で指定します。
+        /// 属性データを取得し、stringで返します。
+        /// <para name="returnStrMaxSize"> 取得する結果の、文字列としての最大サイズ(byte数)を指定します。</para>
+        /// <para name="result">
         /// result は正常終了の場合 0, 異常終了の場合それ以外になります。
+        /// 具体的には、結果を格納するのに最大サイズで足りない場合は -2 に、
+        /// 属性が存在しないまたは値が空文字列である場合は -1 になります。
+        /// </para>
         /// </summary>
         public string GetAttribute(string name, int returnStrMaxSize, out int result) {
             StringBuilder sb = new (returnStrMaxSize);
