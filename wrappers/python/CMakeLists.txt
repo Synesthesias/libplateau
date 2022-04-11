@@ -11,5 +11,3 @@ pybind11_add_module(python_wrapper python_wrapper.cpp)
 target_link_libraries(python_wrapper PRIVATE plateau)
 target_include_directories(plateau PRIVATE "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
 set_target_properties(python_wrapper PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBPLATEAU_BINARY_DIR})
-
-target_include_directories(python_wrapper PRIVATE ${PROJECT_SOURCE_DIR}/python3.9/Include)
