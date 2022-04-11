@@ -23,7 +23,7 @@ extern "C" {
         API_TRY{
             auto attrValueStr = object->getAttribute(std::string(name));
             auto attrValueChars = attrValueStr.c_str();
-            if(outStrBufferSize < std::strlen(attrValueChars)){
+            if(outStrBufferSize < strlen(attrValueChars)){
                 // バッファーサイズが足りない場合
                 return -1;
             }else{
