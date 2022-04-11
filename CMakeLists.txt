@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.8)
+# github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
+cmake_minimum_required(VERSION 3.13)
 
 # MSVC_RUNTIME_LIBRARYプロパティを有効化
 # 参考：https://cmake.org/cmake/help/latest/policy/CMP0091.html
@@ -14,9 +15,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+# Xerces-C ライブラリの問題を修正するための措置です。
+# C言語で Windows かどうかチェックするには通常 #if define (_WIN32) と書きますが、
+# Xerces-C の作者は _WIN32 のアンダースコアを書き忘れてしまいました。
+# WIN32 と _WIN32 が同等の働きをするかは不明瞭であり、環境によってビルドが通ることも通らないこともあります。
+# そこで WIN32 を定義することでビルドを通します。
+if(WIN32) # CMake文法上の WIN32
+  add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
+endif()
+
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
+
+# Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
+# ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
+if(COMPILER_SUPPORTS_PIC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 # dependencies
 ## Xerces-C

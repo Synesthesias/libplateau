@@ -1,3 +1,3 @@
 target_sources(plateau PRIVATE
-    "io/obj_writer.cpp"
-    "io/polar_to_plane_cartesian.cpp")
+    "obj_writer.cpp"
+    "polar_to_plane_cartesian.cpp")

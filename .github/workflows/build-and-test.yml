@@ -1,0 +1,74 @@
+
+# Github Actions で自動テストを行う方法を記述したものです。
+
+name: Build and Test
+
+on: [push, pull_request]
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+
+jobs:
+  build-and-test:
+
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Update Submodules
+      run: git submodule update --remote --recursive
+
+    - name: Install ninja-build tool
+      uses: seanmiddleditch/gha-setup-ninja@v3
+
+      # Ubuntuでビルドを通すには OpenGL API のインストールが必要です。
+    - name: Install OpenGL API on Ubuntu machine
+      if: runner.os == 'Linux'
+      run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
+
+      # Windowsのみ
+    - name: Setup MSVC for Windows
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+
+
+
+    - name: Configure CMake
+      run: >
+        cmake
+        -S ${{github.workspace}} 
+        -B ${{github.workspace}}/out/build/x64-Release 
+        -G "Ninja" 
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
+        -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
+        -D CMAKE_INSTALL_PROGRAM="ninja" 
+        -D CMAKE_CXX_FLAGS="-w"
+    # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
+        
+
+
+    - name: Build by CMake
+      run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
+
+     
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+
+    
+    # TODO Platform="Any CPU" としているのはあくまで仮です。
+    # どの値に設定すべきか要検討です。
+    - name: Build C# Wrapper
+      run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+
+    - name: Run Test of C# Wrapper
+      run: dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+

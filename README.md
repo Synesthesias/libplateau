@@ -1,3 +1,6 @@
+
+[![Build and Test](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml)
+
 # LibPLATEAU
 
 - クロスプラットフォーム(iOS, android, windows, ubuntu)
