@@ -36,5 +36,23 @@ namespace LibPLATEAU.NET
                 return this.id;
             }
         }
+
+        /// <summary>
+        /// 属性データを取得します。
+        /// </summary>
+        public string GetAttribute(string name)
+        {
+            string attr = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_attribute(this.handle, name)) ?? "";
+            return attr;
+        }
+
+
+        /// <summary>
+        /// 属性データを設定します。
+        /// </summary>
+        public string void SetAttribute(string name, string value, AttributeType type, bool doOverride)
+        {
+            NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride)
+        }
     }
 }

@@ -82,6 +82,11 @@ namespace LibPLATEAU.NET
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
 
+    public enum class AttributeType
+    {
+        String, Double, Integer, Data, Uri
+    }
+
     internal static class NativeMethods
     {
         private const string kDllName = "plateau_c";
@@ -151,12 +156,30 @@ namespace LibPLATEAU.NET
         internal static extern int plateau_city_model_get_root_city_object_count(
             [In] IntPtr cityModel);
 
+       
+
+        [DllImport(kDllName)]
+        internal static extern CityObjectType plateau_city_object_get_type(
+            [In] IntPtr cityObject);
+
+        
+        // Object_c.cpp
+
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_id(
             [In] IntPtr obj);
 
         [DllImport(kDllName)]
-        internal static extern CityObjectType plateau_city_object_get_type(
-            [In] IntPtr cityObject);
+        internal static extern IntPtr plateau_object_get_attribute(
+            [In] IntPtr object,
+            [In] string name);
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_object_set_attributre(
+            [In] IntPtr object,
+            [In] string name,
+            [In] string value,
+            AttributeType type,
+            bool overwrite);
     }
 }
