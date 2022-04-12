@@ -74,12 +74,12 @@ namespace LibPLATEAU.NET
             var ret = new Dictionary<string, string>();
             // このメソッドを呼ぶと、StringBuilderに属性のkeyとvalueの一覧が入ります。
             // key1, value1, key2, value2, ... の順番で改行区切りの文字列になります。
-            NativeMethods.plateau_object_get_keys_values(this.handle, sb, maxBufferSize);
+            result = NativeMethods.plateau_object_get_keys_values(this.handle, sb, maxBufferSize);
+            if (result != APIResult.Success) return ret;
             string receivedStr = sb.ToString();
             string[] tokens = receivedStr.Split("\n");
             if (tokens.Length == 1) {
                 // 属性がないとき
-                result = APIResult.Success;
                 return ret;
             }
             if (tokens.Length % 2 != 0) {
@@ -94,7 +94,6 @@ namespace LibPLATEAU.NET
                 string val = tokens[i + 1];
                 ret.Add(key, val);
             }
-            result = APIResult.Success;
             return ret;
         }
     }
