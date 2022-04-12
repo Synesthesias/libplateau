@@ -18,6 +18,9 @@ bin
 # Visual Studio
 .vs
 
+# Resharper User config
+*.DotSettings.user
+
 # Test data
 /data/*
 !53392642*
