@@ -46,7 +46,7 @@ extern "C" {
 
     /// ‘®«‚Æ’l‚Ìˆê——‚ğ chars* Œ^‚Åæ“¾‚µ‚Ü‚·B
     /// key1, value1, key2, value2, ... ‚Ì‡”Ô‚É•À‚ñ‚¾•¶š—ñ‚ğA
-    /// w’è‚Ì‹æØ‚è•¶š(separator)‚ÅŒq‚°‚Ä keys_values ‚ÉŠi”[‚µ‚Ü‚·B
+    /// w’è‚Ì‹æØ‚è•¶š(separator)‚ÅŒq‚°‚Ä out_keys_values ‚ÉŠi”[‚µ‚Ü‚·B
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize, char* separator){
         API_TRY {
             int npos = (int)std::string::npos;

@@ -1,7 +1,5 @@
 using System;
-using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NuGet.Frameworks;
 
 namespace LibPLATEAU.NET.Test {
 	[TestClass]
@@ -13,20 +11,20 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// 属性の set と get は同じになります。日本語にも対応します。
+		/// テスト内容: 属性の set と get は同じになります。日本語にも対応します。
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("TestAttrName", "TestAttrValue")]
 		[DataRow("日本語属性名", "日本語属性値")]
 		public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal) {
-			plateauObject.SetAttribute(attrName, attrVal, AttributeType.String);
-			string getResult = plateauObject.GetAttribute(attrName, 199, out APIResult result);
-			Assert.AreEqual(attrVal, getResult);
+			plateauObject.SetAttribute(attrName, attrVal);
+			string getVal = plateauObject.GetAttribute(attrName, 199, out APIResult result);
+			Assert.AreEqual(attrVal, getVal);
 			Assert.AreEqual(APIResult.Success, result);
 		}
 
 		/// <summary>
-		/// 受け取る値の最大サイズが足りない場合は result が ErrorLackOfBufferSize になります。
+		/// テスト内容: 受け取る文字列の確保サイズが足りない場合は result が ErrorLackOfBufferSize になります。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttribute_Results_Minus_2_If_Size_Small() {
@@ -37,7 +35,7 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// 受け取る値が存在しない場合は result が ErrorValueNotFound になります。
+		/// テスト内容: GetAttribute で受け取る値が存在しない場合は result が ErrorValueNotFound になります。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttribute_Not_Found_Then_Result_Minus_1() {
@@ -47,7 +45,7 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// GetAttributes で Dictionary 形式で属性を取得できることを確認します。
+		/// テスト内容: GetAttributes で Dictionary 形式で属性を取得できます。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributeList() {
@@ -64,7 +62,7 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// GetAttributesで separator が key, value とかぶったときは
+		/// テスト内容: GetAttributesで separator が key, value とかぶったときは
 		/// result は ErrorInvalidArgument になります。
 		/// </summary>
 		[TestMethod]
@@ -75,7 +73,7 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// GetAttributeListでバッファーが足りないときは result が ErrorLackOfBufferSize になります。
+		/// テスト内容: GetAttributes で受取用文字列の確保サイズが足りないときは result が ErrorLackOfBufferSize になります。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributes_LackOfBuffer() {
