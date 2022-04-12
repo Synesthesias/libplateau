@@ -30,7 +30,7 @@ namespace LibPLATEAU.NET.Test {
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttribute_Results_Minus_2_If_Size_Small() {
-			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", AttributeType.String);
+			plateauObject.SetAttribute("foobarAttr", "LongAttrValue");
 			string val = plateauObject.GetAttribute("foobarAttr", 1, out APIResult result);
 			Assert.AreEqual("", val);
 			Assert.AreEqual(APIResult.ErrorLackOfBufferSize, result);
@@ -51,14 +51,16 @@ namespace LibPLATEAU.NET.Test {
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributeList() {
-			plateauObject.SetAttribute("TestAttr", "TestValue", AttributeType.String);
+			plateauObject.SetAttribute("TestAttr", "TestValue");
 			var attrs = plateauObject.GetAttributeList(9999, out APIResult result);
-			Assert.AreEqual("TestValue", attrs["TestAttr"]);
-			Assert.AreEqual(APIResult.Success, result);
+			
 			// 参考用に全属性を出力します。
 			foreach (var attr in attrs) {
 				Console.WriteLine($"{attr.Key}, {attr.Value}");
 			}
+			
+			Assert.AreEqual("TestValue", attrs["TestAttr"]);
+			Assert.AreEqual(APIResult.Success, result);
 		}
 
 		/// <summary>

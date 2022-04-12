@@ -192,6 +192,7 @@ namespace LibPLATEAU.NET {
         internal static extern APIResult plateau_object_get_keys_values(
             [In] IntPtr plateauObject,
             StringBuilder keysValues,
-            int bufferSize);
+            int bufferSize,
+            string separator);
     }
 }

@@ -45,8 +45,9 @@ extern "C" {
     }
 
     /// ‘®«‚Æ’l‚Ìˆê——‚ğ chars* Œ^‚Åæ“¾‚µ‚Ü‚·B
-    /// key1, value1, key2, value2, ... ‚Ì‡”Ô‚Å‰üs‹æØ‚è‚Å keys_values ‚ÉŠi”[‚µ‚Ü‚·B
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize){
+    /// key1, value1, key2, value2, ... ‚Ì‡”Ô‚É•À‚ñ‚¾•¶š—ñ‚ğA
+    /// w’è‚Ì‹æØ‚è•¶š(separator)‚ÅŒq‚°‚Ä keys_values ‚ÉŠi”[‚µ‚Ü‚·B
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize, char* separator){
         API_TRY {
             auto &attrs = object->getAttributes();
             // ‘®«‚Ìˆê——‚ğ•¶š—ñ‚É•ÏŠ·‚µ‚Ü‚·B
@@ -55,12 +56,17 @@ extern "C" {
                 const auto &key = attr.first;
                 const auto &value = attr.second.asString();
                 keys_vals_str += key;
-                keys_vals_str += "\n";
+                keys_vals_str += separator;
                 keys_vals_str += value;
-                keys_vals_str += "\n";
+                keys_vals_str += separator;
             }
-            // ÅŒã‚Ì‰üs‚ğíœ‚µ‚Ü‚·B
-            if (!keys_vals_str.empty()) keys_vals_str.pop_back();
+            // ÅŒã‚Ì separator ‚ğíœ‚µ‚Ü‚·B
+            if (keys_vals_str.length() >= strlen(separator)){
+                int lastSeparatorIndex = keys_vals_str.find_last_of(separator);
+                if(lastSeparatorIndex != std::string::npos){
+                    keys_vals_str = keys_vals_str.substr(0, keys_vals_str.length() - strlen(separator));
+                }
+            }
 
             auto chars = keys_vals_str.c_str();
             if (outBufferSize >= strlen(chars)) {

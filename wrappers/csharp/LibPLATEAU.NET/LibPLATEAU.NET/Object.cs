@@ -73,15 +73,23 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// 属性の一覧を Dictionary 形式で返します。
         /// </summary>
-        public Dictionary<string, string> GetAttributeList(int maxBufferSize, out APIResult result) {
+        /// <para name="maxBufferSize"> ライブラリから取得する文字列が入るのに十分なバイト数を指定します。</para>
+        /// <para name="result"> APIの実行結果が入ります。</para>
+        /// <para name="separator">
+        /// separator は、ライブラリと情報をやりとりするときに使う便宜上の区切り文字です。
+        /// ライブラリに属性一覧を問い合わせ、その結果は
+        /// key1 value1 key2 value2 ... の順番で間に区切り文字が入った文字列で返ります。
+        /// そのため separator は 各key にも valueにも含まれない文字列にする必要があります。
+        /// </para>
+        public Dictionary<string, string> GetAttributeList(int maxBufferSize, out APIResult result, string separator="\n[(|+_separator_+|)]\n") {
             StringBuilder sb = new(maxBufferSize);
             var ret = new Dictionary<string, string>();
             // このメソッドを呼ぶと、StringBuilderに属性のkeyとvalueの一覧が入ります。
-            // key1, value1, key2, value2, ... の順番で改行区切りの文字列になります。
-            result = NativeMethods.plateau_object_get_keys_values(this.handle, sb, maxBufferSize);
+            // key1, value1, key2, value2, ... の順番で間に区切り文字が入った文字列になります。
+            result = NativeMethods.plateau_object_get_keys_values(this.handle, sb, maxBufferSize, separator);
             if (result != APIResult.Success) return ret;
             string receivedStr = sb.ToString();
-            string[] tokens = receivedStr.Split("\n");
+            string[] tokens = receivedStr.Split(separator);
             if (tokens.Length == 1) {
                 // 属性がないとき
                 return ret;
