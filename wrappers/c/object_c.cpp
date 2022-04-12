@@ -44,6 +44,32 @@ extern "C" {
         return -99;
     }
 
+    /// 属性と値の一覧を chars* 型で取得します。
+    /// key1, value1, key2, value2, ... の順番で改行区切りで keys_values に格納します。
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize){
+        API_TRY {
+            auto &attrs = object->getAttributes();
+            for (auto attr: attrs) {
+                const auto &key = attr.first;
+                const auto &value = attr.second.asString();
+                keys_vals_str += key;
+                keys_vals_str += "\n";
+                keys_vals_str += value;
+                keys_vals_str += "\n";
+            }
+            // 最後の改行を削除します。
+            if (!keys_vals_str.empty()) keys_vals_str.pop_back();
+            auto chars = keys_vals_str.c_str();
+            // TODO バッファが足りないときのハンドリング
+            if (outBufferSize >= strlen(chars)) {
+                strcpy(out_keys_values, chars);
+            }
+            // test
+            out_keys_values = "testtest\nfoobarfoobar";
+        }
+        API_CATCH;
+    }
+
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_set_attribute(
         Object* object,

@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -42,6 +43,20 @@ namespace LibPLATEAU.NET.Test {
 			string val = plateauObject.GetAttribute("DummyFakeTestNotFound", 199, out int result);
 			Assert.AreEqual("", val);
 			Assert.AreEqual(-1, result);
+		}
+
+		/// <summary>
+		/// GetAttributeList で Dictionary 形式で属性を取得できることを確認します。
+		/// </summary>
+		[TestMethod]
+		public void Test_GetAttributeList() {
+			plateauObject.SetAttribute("TestAttr", "TestValue", AttributeType.String, true);
+			var attrs = plateauObject.GetAttributeList();
+			Assert.AreEqual("TestValue", attrs["TestAttr"]);
+			// 参考用に全属性を出力します。
+			foreach (var attr in attrs) {
+				Console.WriteLine($"{attr.Key}, {attr.Value}");
+			}
 		}
 
 	}

@@ -187,5 +187,11 @@ namespace LibPLATEAU.NET
             string value,
             AttributeType type,
             bool overwrite);
+
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern void plateau_object_get_keys_values(
+            [In] IntPtr plateauObject,
+            StringBuilder keysValues,
+            int bufferSize);
     }
 }

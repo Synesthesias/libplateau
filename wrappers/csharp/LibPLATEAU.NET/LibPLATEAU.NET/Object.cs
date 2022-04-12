@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -62,6 +64,35 @@ namespace LibPLATEAU.NET
         /// </summary>
         public void SetAttribute(string name, string value, AttributeType type, bool doOverride) {
             NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride);
+        }
+
+        /// <summary>
+        /// 属性の一覧を Dictionary 形式で返します。
+        /// </summary>
+        public Dictionary<string, string> GetAttributeList() {
+            StringBuilder sb = new();
+            var ret = new Dictionary<string, string>();
+            // このメソッドを呼ぶと、StringBuilderに属性のkeyとvalueの一覧が入ります。
+            // key1, value1, key2, value2, ... の順番で改行区切りの文字列になります。
+            NativeMethods.plateau_object_get_keys_values(this.handle, sb, 9999);
+            string receivedStr = sb.ToString();
+            string[] tokens = receivedStr.Split("\n");
+            if (tokens.Length == 1) {
+                // 属性がないとき
+                return ret;
+            }
+            if (tokens.Length % 2 != 0) {
+                // 数が合わないとき
+                Console.Error.WriteLine($"Error in {nameof(GetAttributeList)} tokens must have even number of elements, but actual number is {tokens.Length}.");
+                return ret;
+            }
+            // 属性をDictionaryに追加
+            for (int i = 0; i < tokens.Length; i += 2) {
+                string key = tokens[i];
+                string val = tokens[i + 1];
+                ret.Add(key, val);
+            }
+            return ret;
         }
     }
 }
