@@ -49,6 +49,7 @@ extern "C" {
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize){
         API_TRY {
             auto &attrs = object->getAttributes();
+            auto keys_vals_str = std::string("");
             for (auto attr: attrs) {
                 const auto &key = attr.first;
                 const auto &value = attr.second.asString();
@@ -64,8 +65,6 @@ extern "C" {
             if (outBufferSize >= strlen(chars)) {
                 strcpy(out_keys_values, chars);
             }
-            // test
-            out_keys_values = "testtest\nfoobarfoobar";
         }
         API_CATCH;
     }
