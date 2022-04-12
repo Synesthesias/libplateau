@@ -27,7 +27,8 @@ namespace LibPLATEAU.NET {
     }
 
     public enum APIResult {
-        Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize, ErrorInvalidData
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize,
+        ErrorInvalidData, ErrorInvalidArgument
     }
 
 

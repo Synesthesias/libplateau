@@ -80,12 +80,12 @@ namespace LibPLATEAU.NET
         /// ライブラリに属性一覧を問い合わせ、その結果は
         /// key1 value1 key2 value2 ... の順番で間に区切り文字が入った文字列で返ります。
         /// そのため separator は 各key にも valueにも含まれない文字列にする必要があります。
+        /// separatorのデフォルト値は、少し長いですが他とかぶることはそうそうないだろうと思われる文字列にしました。
         /// </para>
-        public Dictionary<string, string> GetAttributeList(int maxBufferSize, out APIResult result, string separator="\n[(|+_separator_+|)]\n") {
+        public Dictionary<string, string> GetAttributes(int maxBufferSize, out APIResult result, string separator="\n[(|+_separator_+|)]\n") {
             StringBuilder sb = new(maxBufferSize);
             var ret = new Dictionary<string, string>();
             // このメソッドを呼ぶと、StringBuilderに属性のkeyとvalueの一覧が入ります。
-            // key1, value1, key2, value2, ... の順番で間に区切り文字が入った文字列になります。
             result = NativeMethods.plateau_object_get_keys_values(this.handle, sb, maxBufferSize, separator);
             if (result != APIResult.Success) return ret;
             string receivedStr = sb.ToString();
@@ -96,7 +96,7 @@ namespace LibPLATEAU.NET
             }
             if (tokens.Length % 2 != 0) {
                 // 数が合わないとき
-                Console.Error.WriteLine($"Error in {nameof(GetAttributeList)} tokens must have even number of elements, but actual number is {tokens.Length}.");
+                Console.Error.WriteLine($"Error in {nameof(GetAttributes)} tokens must have even number of elements, but actual number is {tokens.Length}.");
                 result = APIResult.ErrorInvalidData;
                 return ret;
             }

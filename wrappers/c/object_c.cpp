@@ -49,12 +49,18 @@ extern "C" {
     /// 指定の区切り文字(separator)で繋げて keys_values に格納します。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize, char* separator){
         API_TRY {
+            int npos = std::string::npos;
             auto &attrs = object->getAttributes();
             // 属性の一覧を文字列に変換します。
             auto keys_vals_str = std::string("");
             for (auto attr: attrs) {
                 const auto &key = attr.first;
                 const auto &value = attr.second.asString();
+                // key, value の値が separator と被っていないかチェックします。
+                // もし被っていたらエラーとし終了します。
+                if( key.find(separator) != npos || value.find(separator) != npos){
+                    return APIResult::ErrorInvalidArgument;
+                }
                 keys_vals_str += key;
                 keys_vals_str += separator;
                 keys_vals_str += value;
@@ -63,14 +69,14 @@ extern "C" {
             // 最後の separator を削除します。
             if (keys_vals_str.length() >= strlen(separator)){
                 int lastSeparatorIndex = keys_vals_str.find_last_of(separator);
-                if(lastSeparatorIndex != std::string::npos){
+                if(lastSeparatorIndex != npos){
                     keys_vals_str = keys_vals_str.substr(0, keys_vals_str.length() - strlen(separator));
                 }
             }
 
             auto chars = keys_vals_str.c_str();
             if (outBufferSize >= strlen(chars)) {
-                // 取得した属性文字列をコピーして終了します。
+                // 取得した属性文字列を出力用変数にコピーして終了します。
                 strcpy(out_keys_values, chars);
                 return APIResult::Success;
             }else{

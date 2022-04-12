@@ -47,12 +47,12 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
-		/// GetAttributeList で Dictionary 形式で属性を取得できることを確認します。
+		/// GetAttributes で Dictionary 形式で属性を取得できることを確認します。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributeList() {
 			plateauObject.SetAttribute("TestAttr", "TestValue");
-			var attrs = plateauObject.GetAttributeList(9999, out APIResult result);
+			var attrs = plateauObject.GetAttributes(9999, out APIResult result);
 			
 			// 参考用に全属性を出力します。
 			foreach (var attr in attrs) {
@@ -64,12 +64,23 @@ namespace LibPLATEAU.NET.Test {
 		}
 
 		/// <summary>
+		/// GetAttributesで separator が key, value とかぶったときは
+		/// result は ErrorInvalidArgument になります。
+		/// </summary>
+		[TestMethod]
+		public void Test_GetAttributes_Result_Error_When_Separator_Invalid() {
+			plateauObject.SetAttribute("Test", "Test\nSeparator");
+			plateauObject.GetAttributes(999, out APIResult result, "\n");
+			Assert.AreEqual(APIResult.ErrorInvalidArgument, result);
+		}
+
+		/// <summary>
 		/// GetAttributeListでバッファーが足りないときは result が ErrorLackOfBufferSize になります。
 		/// </summary>
 		[TestMethod]
-		public void Test_GetAttributeListTest_LackOfBuffer() {
+		public void Test_GetAttributes_LackOfBuffer() {
 			plateauObject.SetAttribute("TestAttr", "TestValue");
-			plateauObject.GetAttributeList(1, out APIResult result);
+			plateauObject.GetAttributes(1, out APIResult result);
 			Assert.AreEqual(APIResult.ErrorLackOfBufferSize, result);
 		}
 
