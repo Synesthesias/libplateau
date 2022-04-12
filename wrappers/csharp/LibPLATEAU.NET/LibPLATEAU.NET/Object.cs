@@ -62,8 +62,12 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// 属性データを設定します。
         /// </summary>
-        public void SetAttribute(string name, string value, bool doOverride, AttributeType type = AttributeType.String) {
-            NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride);
+        public void SetAttribute(string name, string value, AttributeType type = AttributeType.String) {
+            // overwrite が false のときは 上書きしないのが本来意図された挙動ではありますが、
+            // cityGmlのバグで正しく動作しないので overwrite は常に true とします。
+            // バグ原因は citygml/object.cpp 43行目で、 overwrite = false の場合の上書きしない条件 count() >= 1
+            // と書くべきところが誤って count() > 1 になっているためです。
+            NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, true);
         }
 
         /// <summary>

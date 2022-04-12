@@ -19,7 +19,7 @@ namespace LibPLATEAU.NET.Test {
 		[DataRow("TestAttrName", "TestAttrValue")]
 		[DataRow("日本語属性名", "日本語属性値")]
 		public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal) {
-			plateauObject.SetAttribute(attrName, attrVal, true, AttributeType.String);
+			plateauObject.SetAttribute(attrName, attrVal, AttributeType.String);
 			string getResult = plateauObject.GetAttribute(attrName, 199, out APIResult result);
 			Assert.AreEqual(attrVal, getResult);
 			Assert.AreEqual(APIResult.Success, result);
@@ -30,7 +30,7 @@ namespace LibPLATEAU.NET.Test {
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttribute_Results_Minus_2_If_Size_Small() {
-			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", true, AttributeType.String);
+			plateauObject.SetAttribute("foobarAttr", "LongAttrValue", AttributeType.String);
 			string val = plateauObject.GetAttribute("foobarAttr", 1, out APIResult result);
 			Assert.AreEqual("", val);
 			Assert.AreEqual(APIResult.ErrorLackOfBufferSize, result);
@@ -51,7 +51,7 @@ namespace LibPLATEAU.NET.Test {
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributeList() {
-			plateauObject.SetAttribute("TestAttr", "TestValue", true, AttributeType.String);
+			plateauObject.SetAttribute("TestAttr", "TestValue", AttributeType.String);
 			var attrs = plateauObject.GetAttributeList(9999, out APIResult result);
 			Assert.AreEqual("TestValue", attrs["TestAttr"]);
 			Assert.AreEqual(APIResult.Success, result);
@@ -61,21 +61,12 @@ namespace LibPLATEAU.NET.Test {
 			}
 		}
 
-		[TestMethod]
-		public void Test_SetAttribute_Override() {
-			plateauObject.SetAttribute("TestOverride", "1", true);
-			plateauObject.SetAttribute("TestOverride", "2", false);
-			Assert.AreEqual("1", plateauObject.GetAttribute("TestOverride", 99, out APIResult _));
-			plateauObject.SetAttribute("TestOverride", "2", true);
-			Assert.AreEqual( "2", plateauObject.GetAttribute("TestOverride", 99, out APIResult _));
-		}
-
 		/// <summary>
 		/// GetAttributeListでバッファーが足りないときは result が ErrorLackOfBufferSize になります。
 		/// </summary>
 		[TestMethod]
 		public void Test_GetAttributeListTest_LackOfBuffer() {
-			plateauObject.SetAttribute("TestAttr", "TestValue", true);
+			plateauObject.SetAttribute("TestAttr", "TestValue");
 			plateauObject.GetAttributeList(1, out APIResult result);
 			Assert.AreEqual(APIResult.ErrorLackOfBufferSize, result);
 		}
