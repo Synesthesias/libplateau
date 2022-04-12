@@ -2,17 +2,14 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LibPLATEAU.NET
-{
+namespace LibPLATEAU.NET {
     [StructLayout(LayoutKind.Sequential)]
-    public struct PlateauVector3d
-    {
+    public struct PlateauVector3d {
         public double X;
         public double Y;
         public double Z;
 
-        public PlateauVector3d(double x, double y, double z)
-        {
+        public PlateauVector3d(double x, double y, double z) {
             this.X = x;
             this.Y = y;
             this.Z = z;
@@ -20,14 +17,17 @@ namespace LibPLATEAU.NET
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct CitygmlParserParams
-    {
+    public struct CitygmlParserParams {
         public int Optimize;
     }
 
-    public enum AxesConversion
-    {
-        WNU, RUF
+    public enum AxesConversion {
+        WNU,
+        RUF
+    }
+
+    public enum APIResult {
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize, ErrorInvalidData
     }
 
 
@@ -174,7 +174,7 @@ namespace LibPLATEAU.NET
             [In] IntPtr obj);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern int plateau_object_get_attribute(
+        internal static extern APIResult plateau_object_get_attribute(
             [In] IntPtr plateauObject,
             string name,
             StringBuilder sb,
@@ -189,7 +189,7 @@ namespace LibPLATEAU.NET
             bool overwrite);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_object_get_keys_values(
+        internal static extern APIResult plateau_object_get_keys_values(
             [In] IntPtr plateauObject,
             StringBuilder keysValues,
             int bufferSize);

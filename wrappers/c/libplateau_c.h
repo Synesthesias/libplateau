@@ -19,3 +19,11 @@ catch (std::exception& e) {\
 catch (...) {\
     std::cout << "Unknown error occured." << std::endl;\
 }
+
+namespace libplateau {
+// 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
+// このenumを戻り値にすると良いです。
+    enum APIResult {
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize, ErrorInvalidData
+    };
+}
