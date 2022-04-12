@@ -44,11 +44,11 @@ namespace LibPLATEAU.NET
 
         /// <summary>
         /// 属性データを取得し、stringで返します。
-        /// <para name="returnStrMaxSize"> 取得する結果の、文字列としての最大サイズ(byte数)を指定します。</para>
+        /// <para name="returnStrMaxSize"> 取得する結果である文字列を格納するのに十分なbyte数を指定します。</para>
         /// <para name="result">
-        /// result は正常終了の場合 0, 異常終了の場合それ以外になります。
-        /// 具体的には、結果を格納するのに最大サイズで足りない場合は -2 に、
-        /// 属性が存在しないまたは値が空文字列である場合は -1 になります。
+        /// result は正常終了の場合 Success, 異常終了の場合それ以外になります。
+        /// 具体的には、結果を格納するのに returnStrMaxSize で足りない場合は ErrorLackOfBufferSize に、
+        /// 属性が存在しないまたは値が空文字列である場合は ErrorValueNotFound になります。
         /// </para>
         /// </summary>
         public string GetAttribute(string name, int returnStrMaxSize, out APIResult result) {
@@ -74,7 +74,12 @@ namespace LibPLATEAU.NET
         /// 属性の一覧を Dictionary 形式で返します。
         /// </summary>
         /// <para name="maxBufferSize"> ライブラリから取得する文字列が入るのに十分なバイト数を指定します。</para>
-        /// <para name="result"> APIの実行結果が入ります。</para>
+        /// <para name="result">
+        /// APIの実行結果が入ります。
+        /// 通常成功時は Success になります。
+        /// separator が key, value と被った場合は ErrorInvalidArgument になります。
+        /// maxBufferSize で与えられたバイト数では結果を格納するのに足りなかった場合は ErrorLackOfBufferSize になります。
+        /// </para>
         /// <para name="separator">
         /// separator は、ライブラリと情報をやりとりするときに使う便宜上の区切り文字です。
         /// ライブラリに属性一覧を問い合わせ、その結果は

@@ -18,8 +18,8 @@ extern "C" {
     }
 
 
-    // 属性名から属性値を取得し、 outStrBuffer に格納します。
-    // 結果の成否を戻り値にします。
+    /// 属性名から属性値を取得し、 outStrBuffer に格納します。
+    /// 結果の成否を戻り値にします。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_attribute(const Object* object, const char* name, char* outStrBuffer, int outStrBufferSize){
         API_TRY{
             auto attrValueStr = object->getAttribute(std::string(name));
@@ -49,11 +49,11 @@ extern "C" {
     /// 指定の区切り文字(separator)で繋げて keys_values に格納します。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_object_get_keys_values(const Object* object, char* out_keys_values, int outBufferSize, char* separator){
         API_TRY {
-            int npos = std::string::npos;
+            int npos = (int)std::string::npos;
             auto &attrs = object->getAttributes();
             // 属性の一覧を文字列に変換します。
             auto keys_vals_str = std::string("");
-            for (auto attr: attrs) {
+            for (const auto& attr: attrs) {
                 const auto &key = attr.first;
                 const auto &value = attr.second.asString();
                 // key, value の値が separator と被っていないかチェックします。
@@ -68,7 +68,7 @@ extern "C" {
             }
             // 最後の separator を削除します。
             if (keys_vals_str.length() >= strlen(separator)){
-                int lastSeparatorIndex = keys_vals_str.find_last_of(separator);
+                int lastSeparatorIndex = (int)keys_vals_str.find_last_of(separator);
                 if(lastSeparatorIndex != npos){
                     keys_vals_str = keys_vals_str.substr(0, keys_vals_str.length() - strlen(separator));
                 }
