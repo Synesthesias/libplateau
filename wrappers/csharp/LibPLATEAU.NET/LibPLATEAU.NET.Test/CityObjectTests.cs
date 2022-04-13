@@ -29,5 +29,13 @@ namespace LibPLATEAU.NET.Test
                 CityObjectType.COT_Building,
                 this.cityObject.Type);
         }
+
+        [TestMethod]
+        public void Test_GeometriesCount() {
+            int geomCount = this.cityObject.GeometriesCount;
+            Assert.IsTrue(geomCount > 0);
+            
+            Console.WriteLine($"Geometries Count: {geomCount}");
+        }
     }
 }

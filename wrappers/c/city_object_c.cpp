@@ -15,4 +15,17 @@ extern "C" {
         API_CATCH;
         return static_cast<CityObject::CityObjectsType>(0);
     }
+
+
+    /// ジオメトリの数を返します。
+    /// 例外があった場合は -1 を返します。
+    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_object_get_geometries_count(
+            const CityObject* const city_object
+            ){
+        API_TRY{
+            return city_object->getGeometriesCount();
+        }
+        API_CATCH;
+        return -1;
+    }
 }

@@ -159,13 +159,20 @@ namespace LibPLATEAU.NET {
         internal static extern int plateau_city_model_get_root_city_object_count(
             [In] IntPtr cityModel);
 
-       
+        
+        // ***************
+        //  city_object_c.cpp
+        // ***************
 
         [DllImport(kDllName)]
         internal static extern CityObjectType plateau_city_object_get_type(
             [In] IntPtr cityObject);
 
-        
+        [DllImport(kDllName)]
+        internal static extern int plateau_city_object_get_geometries_count(
+            [In] IntPtr cityObject);
+
+
         // ***************
         //  Object_c.cpp
         // ***************

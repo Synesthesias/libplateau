@@ -15,7 +15,7 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// 建築物の範囲を double[6] で返します。
         /// </summary>
-        /// <returns> 戻り値は要素数 6 の double配列で、配列の中身は座標 { lower_x, lower_y, lower_z, upper_x, upper_y, upper_z } の形式です。</returns>
+        /// <returns> 戻り値 double[6] の配列の中身は座標 { lower_x, lower_y, lower_z, upper_x, upper_y, upper_z } です。</returns>
         public double[] GetEnvelope() {
             const int envelopeArrayLength = 6;
             int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
