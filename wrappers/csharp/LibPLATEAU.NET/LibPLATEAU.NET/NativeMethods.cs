@@ -202,9 +202,16 @@ namespace LibPLATEAU.NET {
         // ***************
 
         [DllImport(kDllName)]
-        internal static extern void plateau_feature_object_get_envelop(
+        internal static extern void plateau_feature_object_get_envelope(
             [In] IntPtr featureObject,
             IntPtr outArray
+        );
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_feature_object_set_envelope(
+            [In] IntPtr featureObject,
+            double lowerX, double lowerY, double lowerZ,
+            double upperX, double upperY, double upperZ
         );
 
     }

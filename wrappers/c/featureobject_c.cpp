@@ -4,20 +4,38 @@
 using namespace citygml;
 
 extern "C"{
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_get_envelop(
-            const FeatureObject* featureObject,
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_get_envelope(
+            const FeatureObject* const featureObject,
             double* const outArray
             ){
         API_TRY{
             const auto& envelope = featureObject->getEnvelope();
             const auto& lower = envelope.getLowerBound().xyz;
             const auto& upper = envelope.getUpperBound().xyz;
+//            double lower[3] = {11,22,33};
+//            double upper[3] = {44,55,66};
             for(int i=0; i<3; i++){
                 outArray[i] = lower[i];
             }
             for(int i=0; i<3; i++){
                 outArray[i+3] = upper[i];
             }
+        }
+        API_CATCH;
+    }
+
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_set_envelope(
+            FeatureObject* const featureObject,
+            double lowerX, double lowerY, double lowerZ, double upperX, double upperY, double upperZ
+    ){
+        API_TRY{
+            // ‚±‚Ì“®“IŠm•Û—Ìˆæ‚Í setEnvelope ‚Ì’†‚Å unique_ptr ‚É“n‚è‚Ü‚·B
+            auto e = new Envelope();
+            auto lower = TVec3d(lowerX, lowerY, lowerZ);
+            auto upper = TVec3d(upperX, upperY, upperZ);
+            e->setLowerBound(lower);
+            e->setUpperBound(upper);
+            featureObject->setEnvelope(e);
         }
         API_CATCH;
     }

@@ -14,21 +14,28 @@ namespace LibPLATEAU.NET.Test {
         }
         
         [TestMethod]
-        public void Test_GetEnvelop() {
-            double[] envelope = featureObject.GetEnvelope();
+        public void Test_GetEnvelop_Returns_Same_As_Set() {
+            double[] value = {1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+            this.featureObject.SetEnvelope(
+                value[0], value[1], value[2],
+                value[3], value[4], value[5]
+            );
+            
+            double[] getVal = this.featureObject.GetEnvelope();
             
             // 参考用に envelope の中身を出力します。
             StringBuilder sb = new();
-            foreach (double d in envelope) {
+            foreach (double d in getVal) {
                 sb.Append($"{d} ,  ");
             }
             Console.WriteLine(sb.ToString());
-
-            bool doContainNaN = false;
-            foreach (double d in envelope) {
-                doContainNaN |= Double.IsNaN(d);
+            
+            // GetしてSetと同じ値が得られるかチェックします。
+            bool isSameVal = true;
+            for(int i=0; i<6; i++) {
+                isSameVal &= Math.Abs(getVal[i] - value[i]) < 0.0000001;
             }
-            Assert.AreEqual(false, doContainNaN);
+            Assert.AreEqual(true, isSameVal);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -19,15 +20,30 @@ namespace LibPLATEAU.NET
             const int envelopeArrayLength = 6;
             int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
             IntPtr ptr = Marshal.AllocCoTaskMem(size);
-            
-            // ptr に Envelope情報( double[6] ) を格納します。
-            NativeMethods.plateau_feature_object_get_envelop(Handle, ptr);
-            
-            // ptr の内容を C# の double[6] にコピーし、ptrを解放して値を返します。
-            double[] envelope = new double[envelopeArrayLength];
-            Marshal.Copy(ptr, envelope, 0, envelopeArrayLength);
-            Marshal.FreeCoTaskMem(ptr);
-            return envelope;
+            double[] ret = Enumerable.Repeat(0.0, envelopeArrayLength).ToArray();
+            try {
+                // ptr に Envelope情報( double[6] ) を格納します。
+                NativeMethods.plateau_feature_object_get_envelope(Handle, ptr);
+                // ptr の内容を C# の double[6] にコピーします。
+                Marshal.Copy(ptr, ret, 0, envelopeArrayLength);
+                
+            }finally
+            {
+                Marshal.FreeCoTaskMem(ptr);
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// 建物の範囲を設定します。
+        /// </summary>
+        public void SetEnvelope(
+            double lowerX, double lowerY, double lowerZ,
+            double upperX, double upperY, double upperZ) {
+            NativeMethods.plateau_feature_object_set_envelope(
+                Handle,
+                lowerX, lowerY, lowerZ, upperX, upperY, upperZ
+            );
         }
     }
 }
