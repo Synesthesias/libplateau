@@ -195,5 +195,17 @@ namespace LibPLATEAU.NET {
             StringBuilder keysValues,
             int bufferSize,
             string separator);
+        
+        
+        // ***************
+        //  featureobject_c.cpp
+        // ***************
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_feature_object_get_envelop(
+            [In] IntPtr featureObject,
+            IntPtr outArray
+        );
+
     }
 }
