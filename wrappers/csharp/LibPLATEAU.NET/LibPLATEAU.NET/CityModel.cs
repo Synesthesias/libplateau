@@ -6,7 +6,7 @@ namespace LibPLATEAU.NET
 {
     public sealed class CityModel : IDisposable
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private int disposed;
         private CityObject[] rootCityObjects;
 

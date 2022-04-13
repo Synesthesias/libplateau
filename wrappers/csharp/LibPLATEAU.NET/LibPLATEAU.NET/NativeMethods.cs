@@ -89,7 +89,7 @@ namespace LibPLATEAU.NET
         // there are to many for to few bits to explicitly enumerate them. However Track, Road, Railway or Square should be used most of the time
         COT_TransportationObject = 1ul << 33,
 
-        // ADD Buildding model 
+        // ADD Building model 
         COT_IntBuildingInstallation = 1ul << 34,
 
         COT_All = 0xFFFFFFFFFFFFFFFFul
