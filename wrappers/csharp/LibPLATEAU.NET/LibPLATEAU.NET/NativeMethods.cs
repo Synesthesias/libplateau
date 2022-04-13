@@ -2,14 +2,17 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace LibPLATEAU.NET {
+namespace LibPLATEAU.NET
+{
     [StructLayout(LayoutKind.Sequential)]
-    public struct PlateauVector3d {
+    public struct PlateauVector3d
+    {
         public double X;
         public double Y;
         public double Z;
 
-        public PlateauVector3d(double x, double y, double z) {
+        public PlateauVector3d(double x, double y, double z)
+        {
             this.X = x;
             this.Y = y;
             this.Z = z;
@@ -17,18 +20,25 @@ namespace LibPLATEAU.NET {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct CitygmlParserParams {
+    public struct CitygmlParserParams
+    {
         public int Optimize;
     }
 
-    public enum AxesConversion {
+    public enum AxesConversion
+    {
         WNU,
         RUF
     }
 
-    public enum APIResult {
-        Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize,
-        ErrorInvalidData, ErrorInvalidArgument
+    public enum APIResult
+    {
+        Success,
+        ErrorUnknown,
+        ErrorValueNotFound,
+        ErrorLackOfBufferSize,
+        ErrorInvalidData,
+        ErrorInvalidArgument
     }
 
 
@@ -87,7 +97,11 @@ namespace LibPLATEAU.NET {
 
     public enum AttributeType
     {
-        String, Double, Integer, Data, Uri
+        String,
+        Double,
+        Integer,
+        Data,
+        Uri
     }
 
     internal static class NativeMethods
@@ -159,7 +173,7 @@ namespace LibPLATEAU.NET {
         internal static extern int plateau_city_model_get_root_city_object_count(
             [In] IntPtr cityModel);
 
-        
+
         // ***************
         //  city_object_c.cpp
         // ***************
@@ -202,8 +216,8 @@ namespace LibPLATEAU.NET {
             StringBuilder keysValues,
             int bufferSize,
             string separator);
-        
-        
+
+
         // ***************
         //  featureobject_c.cpp
         // ***************
@@ -220,6 +234,5 @@ namespace LibPLATEAU.NET {
             double lowerX, double lowerY, double lowerZ,
             double upperX, double upperY, double upperZ
         );
-
     }
 }

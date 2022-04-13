@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.Win32.SafeHandles;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace LibPLATEAU.NET
@@ -39,13 +37,14 @@ namespace LibPLATEAU.NET
         /// セーフハンドルを取得します。
         /// </summary>
         public IntPtr Handle => handle;
-        
+
         public void Dispose()
         {
             if (Interlocked.Exchange(ref disposed, 1) == 0)
             {
                 NativeMethods.plateau_delete_obj_writer(this.handle);
             }
+
             GC.SuppressFinalize(this);
         }
 
@@ -91,7 +90,7 @@ namespace LibPLATEAU.NET
         /// </summary>
         public AxesConversion GetDestAxes()
         {
-            return (AxesConversion)NativeMethods.plateau_obj_writer_get_dest_axes(this.handle);
+            return NativeMethods.plateau_obj_writer_get_dest_axes(this.handle);
         }
 
 

@@ -35,6 +35,7 @@ namespace LibPLATEAU.NET
                 {
                     return this.id;
                 }
+
                 this.id = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_id(this.handle)) ?? "";
                 return this.id;
             }
@@ -49,9 +50,10 @@ namespace LibPLATEAU.NET
         /// 属性が存在しないまたは値が空文字列である場合は ErrorValueNotFound になります。
         /// </para>
         /// </summary>
-        public string GetAttribute(string name, int returnStrMaxSize, out APIResult result) {
-            StringBuilder sb = new (returnStrMaxSize);
-            
+        public string GetAttribute(string name, int returnStrMaxSize, out APIResult result)
+        {
+            StringBuilder sb = new(returnStrMaxSize);
+
             result = NativeMethods.plateau_object_get_attribute(this.handle, name, sb, sb.Capacity);
             return sb.ToString();
         }
@@ -63,7 +65,9 @@ namespace LibPLATEAU.NET
         /// <para name="name"> 属性名です。 </para>
         /// <para name="value"> 属性の値です。 </para>
         /// <para name="doOverride"> 同名の属性がすでに設定済みである場合に、上書きするかどうかです。 </para>
-        public void SetAttribute(string name, string value, bool doOverride = true, AttributeType type = AttributeType.String) {
+        public void SetAttribute(string name, string value, bool doOverride = true,
+            AttributeType type = AttributeType.String)
+        {
             NativeMethods.plateau_object_set_attribute(this.handle, name, value, type, doOverride);
         }
 
@@ -84,7 +88,9 @@ namespace LibPLATEAU.NET
         /// そのため separator は 各key にも valueにも含まれない文字列にする必要があります。
         /// separatorのデフォルト値は、少し長いですが他とかぶることはそうそうないだろうと思われる文字列にしました。
         /// </para>
-        public Dictionary<string, string> GetAttributes(int maxBufferSize, out APIResult result, string separator="\n[(|+_separator_+|)]\n") {
+        public Dictionary<string, string> GetAttributes(int maxBufferSize, out APIResult result,
+            string separator = "\n[(|+_separator_+|)]\n")
+        {
             StringBuilder sb = new(maxBufferSize);
             var ret = new Dictionary<string, string>();
             // このメソッドを呼ぶと、StringBuilderに属性のkeyとvalueの一覧が入ります。
@@ -92,22 +98,29 @@ namespace LibPLATEAU.NET
             if (result != APIResult.Success) return ret;
             string receivedStr = sb.ToString();
             string[] tokens = receivedStr.Split(separator);
-            if (tokens.Length == 1) {
+            if (tokens.Length == 1)
+            {
                 // 属性がないとき
                 return ret;
             }
-            if (tokens.Length % 2 != 0) {
+
+            if (tokens.Length % 2 != 0)
+            {
                 // 数が合わないとき
-                Console.Error.WriteLine($"Error in {nameof(GetAttributes)} tokens must have even number of elements, but actual number is {tokens.Length}.");
+                Console.Error.WriteLine(
+                    $"Error in {nameof(GetAttributes)} tokens must have even number of elements, but actual number is {tokens.Length}.");
                 result = APIResult.ErrorInvalidData;
                 return ret;
             }
+
             // 属性をDictionaryに追加
-            for (int i = 0; i < tokens.Length; i += 2) {
+            for (int i = 0; i < tokens.Length; i += 2)
+            {
                 string key = tokens[i];
                 string val = tokens[i + 1];
                 ret.Add(key, val);
             }
+
             return ret;
         }
     }

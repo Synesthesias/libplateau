@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace LibPLATEAU.NET
 {
@@ -10,7 +9,9 @@ namespace LibPLATEAU.NET
     {
         private CityObjectType type = 0;
 
-        internal CityObject(IntPtr handle) : base(handle) {}
+        internal CityObject(IntPtr handle) : base(handle)
+        {
+        }
 
         public CityObjectType Type
         {

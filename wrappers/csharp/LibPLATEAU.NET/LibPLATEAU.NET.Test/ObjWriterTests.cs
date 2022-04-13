@@ -1,4 +1,3 @@
-using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test
@@ -6,7 +5,7 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class ObjWriterTests
     {
-        private const string gmlPath = "data/53392642_bldg_6697_op2.gml";
+        private const string GmlPath = "data/53392642_bldg_6697_op2.gml";
 
         [TestMethod]
         public void Write_Generates_Obj_File()
@@ -17,9 +16,9 @@ namespace LibPLATEAU.NET.Test
                 Optimize = 1
             };
 
-            var cityModel = CityGml.Load(gmlPath, parserParams);
+            var cityModel = CityGml.Load(GmlPath, parserParams);
 
-            new ObjWriter().Write(objPath, cityModel, gmlPath);
+            new ObjWriter().Write(objPath, cityModel, GmlPath);
 
             Assert.IsTrue(System.IO.File.Exists(objPath));
         }
@@ -61,7 +60,7 @@ namespace LibPLATEAU.NET.Test
                 -51025.16812d,
                 2.466d);
             var writer = new ObjWriter();
-            var cityModel = CityGml.Load(gmlPath, new CitygmlParserParams());
+            var cityModel = CityGml.Load(GmlPath, new CitygmlParserParams());
             writer.SetValidReferencePoint(cityModel);
             AreEqual(expectedValue, writer.ReferencePoint);
         }
