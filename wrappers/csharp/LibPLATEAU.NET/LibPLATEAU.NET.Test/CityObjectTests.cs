@@ -9,7 +9,7 @@ namespace LibPLATEAU.NET.Test
         private readonly CityObject cityObject;
 
         public CityObjectTests() {
-            // Loadˆ—‚ªd‚¢‚½‚ßÅ‰‚Ì‚İÀs‚µ‚Äg‚¢‚Ü‚í‚·B
+            // Loadå‡¦ç†ãŒé‡ã„ãŸã‚æœ€åˆã®ã¿å®Ÿè¡Œã—ã¦ä½¿ã„ã¾ã‚ã™ã€‚
             CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
             cityObject = cityModel.RootCityObjects[0];
         }

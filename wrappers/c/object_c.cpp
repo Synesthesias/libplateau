@@ -90,9 +90,7 @@ extern "C" {
 
 
     /// attribute を1つ設定します。
-    /// 注: citygmlのバグで、 引数 overwrite は正しく動作しません。
-    /// この原因は object.cpp 43行目で、 overwrite = false の場合の上書きしない条件 count() >= 1
-    /// と書くべきところが誤って count() > 1 になっているためです。
+    /// 同名の属性がすでに設定済みの場合に上書きするかどうかを overwrite で指定します。
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_object_set_attribute(
         Object* object,
         const char* name,

@@ -43,6 +43,20 @@ namespace LibPLATEAU.NET.Test {
 			Assert.AreEqual("", val);
 			Assert.AreEqual(APIResult.ErrorValueNotFound, result);
 		}
+		
+		
+		/// <summary>
+		/// テスト内容 : SetAttribute で overwrite が falseのとき、同名の属性を上書きしません。
+		/// true のとき上書きします。
+		/// </summary>
+		[TestMethod]
+		public void Test_SetAttribute_Overwrite() {
+			plateauObject.SetAttribute("TestOverride", "1", true);
+			plateauObject.SetAttribute("TestOverride", "2", false);
+			Assert.AreEqual("1", plateauObject.GetAttribute("TestOverride", 99, out APIResult _));
+			plateauObject.SetAttribute("TestOverride", "2", true);
+			Assert.AreEqual( "2", plateauObject.GetAttribute("TestOverride", 99, out APIResult _));
+		}
 
 		/// <summary>
 		/// テスト内容: GetAttributes で Dictionary 形式で属性を取得できます。
