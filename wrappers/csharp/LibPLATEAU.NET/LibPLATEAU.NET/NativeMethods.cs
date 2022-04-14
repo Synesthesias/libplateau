@@ -101,7 +101,9 @@ namespace LibPLATEAU.NET
         Double,
         Integer,
         Data,
-        Uri
+        Uri,
+        Measure,
+        AttributeSet
     }
 
     internal static class NativeMethods
@@ -194,28 +196,33 @@ namespace LibPLATEAU.NET
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_id(
             [In] IntPtr obj);
+        
+        
+        [DllImport(kDllName)]
+        internal static extern IntPtr plateau_object_get_attributes_map(
+            [In] IntPtr obj);
 
-        [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_object_get_attribute(
-            [In] IntPtr plateauObject,
-            string name,
-            StringBuilder sb,
-            int bufferSize);
-
-        [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_object_set_attribute(
-            [In] IntPtr plateauObject,
-            string name,
-            string value,
-            AttributeType type,
-            bool overwrite);
-
-        [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_object_get_keys_values(
-            [In] IntPtr plateauObject,
-            StringBuilder keysValues,
-            int bufferSize,
-            string separator);
+        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        // internal static extern APIResult plateau_object_get_attribute(
+        //     [In] IntPtr plateauObject,
+        //     string name,
+        //     StringBuilder sb,
+        //     int bufferSize);
+        //
+        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        // internal static extern void plateau_object_set_attribute(
+        //     [In] IntPtr plateauObject,
+        //     string name,
+        //     string value,
+        //     AttributeType type,
+        //     bool overwrite);
+        //
+        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        // internal static extern APIResult plateau_object_get_keys_values(
+        //     [In] IntPtr plateauObject,
+        //     StringBuilder keysValues,
+        //     int bufferSize,
+        //     string separator);
 
 
         // ***************
@@ -234,5 +241,24 @@ namespace LibPLATEAU.NET
             double lowerX, double lowerY, double lowerZ,
             double upperX, double upperY, double upperZ
         );
+        
+        
+        // ***************
+        //  attributesmap_c.cpp
+        // ***************
+        [DllImport(kDllName)]
+        internal static extern int plateau_attributes_map_get_key_count(
+            [In] IntPtr attributesMap);
+
+        [DllImport(kDllName)]
+        internal static extern void plateau_attributes_map_get_key_sizes(
+            [In] IntPtr attributesMap,
+            [In, Out] IntPtr outSizeIntArray);
+
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern void plateau_attributes_map_get_keys(
+            [In] IntPtr attributesMap,
+            [In, Out] ref StringBuilder[] outStringBuilders);
+        
     }
 }

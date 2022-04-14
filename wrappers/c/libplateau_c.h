@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 // P/Invoke用なためエクスポートのみ
 #ifdef _WIN32
 #  define LIBPLATEAU_C_API __stdcall

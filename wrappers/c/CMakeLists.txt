@@ -10,7 +10,8 @@ add_library(plateau_c SHARED
   "city_model_c.cpp"
   "city_object_c.cpp"
   "object_c.cpp"
-  "featureobject_c.cpp")
+  "featureobject_c.cpp"
+  "attributesmap_c.cpp")
 
 set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
