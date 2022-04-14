@@ -46,6 +46,7 @@ extern "C"{
             for(const auto &pair : *attributesMap){
                 char* string_i = out_keys[i];
                 strcpy(string_i, pair.first.c_str());
+                i++;
             }
         }
         API_CATCH;

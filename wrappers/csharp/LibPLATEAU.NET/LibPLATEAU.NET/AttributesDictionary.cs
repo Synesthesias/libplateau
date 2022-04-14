@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LibPLATEAU.NET
@@ -18,28 +19,41 @@ namespace LibPLATEAU.NET
             this.handle = handle;
         }
 
-        public string[] GetKeys()
+        public unsafe string[] GetKeys()
         {
             int[] keySizes = GetKeySizes();
             int cnt = Count;
-            // string[] ret = Enumerable.Repeat("", cnt).ToArray();
-            var outSBs = new StringBuilder[cnt];
-            for (int i = 0; i < cnt; i++)
-            {
-                outSBs[i] = new StringBuilder(keySizes[i]);
-            }
+            string[] ret = Enumerable.Repeat("", cnt).ToArray();
+            // var outSBs = new StringBuilder[cnt];
+            // for (int i = 0; i < cnt; i++)
+            // {
+            //     outSBs[i] = new StringBuilder(keySizes[i]);
+            // }
+            
             // IntPtr[] stringPointers = new IntPtr[cnt];
             // for (int i = 0; i < cnt; i++)
             // {
             //     stringPointers[i] = Marshal.AllocCoTaskMem(keySizes[i]);
             // }
+            //
+            // IntPtr ptrOfStringPointers = &stringPointers;
+            // NativeMethods.plateau_attributes_map_get_keys(this.handle, ref outSBs);
             
-            NativeMethods.plateau_attributes_map_get_keys(this.handle, ref outSBs);
+            // Shift-JISを使うために必要
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            string[] ret = new string[cnt];
+            byte** ptrOfStringPtr = stackalloc byte*[cnt];
             for (int i = 0; i < cnt; i++)
             {
-                ret[i] = outSBs[i].ToString();
+                byte* stringPtr = stackalloc byte[keySizes[i]];
+                ptrOfStringPtr[i] = stringPtr;
+            }
+            NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringPtr);
+            for (int i = 0; i < cnt; i++)
+            {
+                byte[] stringBytes = new byte[keySizes[i]];
+                Marshal.Copy((IntPtr)ptrOfStringPtr[i], stringBytes, 0, keySizes[i]);
+                ret[i] = Encoding.GetEncoding("Shift_JIS").GetString(stringBytes);
             }
 
             // foreach (IntPtr ptr in stringPointers)

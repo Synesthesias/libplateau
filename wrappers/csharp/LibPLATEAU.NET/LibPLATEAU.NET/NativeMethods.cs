@@ -255,10 +255,11 @@ namespace LibPLATEAU.NET
             [In] IntPtr attributesMap,
             [In, Out] IntPtr outSizeIntArray);
 
+        
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_attributes_map_get_keys(
+        internal static extern unsafe void plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
-            [In, Out] ref StringBuilder[] outStringBuilders);
+            [In, Out] byte** ptrOfStringPtr);
         
     }
 }

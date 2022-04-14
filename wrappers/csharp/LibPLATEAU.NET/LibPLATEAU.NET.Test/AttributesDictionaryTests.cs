@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NuGet.Frameworks;
 
 namespace LibPLATEAU.NET.Test
 {
@@ -15,15 +17,16 @@ namespace LibPLATEAU.NET.Test
             this.attrDict = cityObject.AttributesDictionary;
         }
 
-        // [TestMethod]
-        // public void Test_GetKeys()
-        // {
-        //     var keys = this.attrDict.GetKeys();
-        //     foreach (var k in keys)
-        //     {
-        //         Console.WriteLine($"{k}\n");
-        //     }
-        // }
+        [TestMethod]
+        public void Test_GetKeys()
+        {
+            var keys = this.attrDict.GetKeys();
+            foreach (var k in keys)
+            {
+                Console.WriteLine($"{k}\n");
+            }
+            Assert.IsTrue(keys.Contains("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"));
+        }
 
         [TestMethod]
         public void Test_GetKeySizes()
