@@ -42,17 +42,24 @@ namespace LibPLATEAU.NET
             // Shift-JISを使うために必要
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            byte** ptrOfStringPtr = stackalloc byte*[cnt];
+            // byte** ptrOfStringPtr = stackalloc byte*[cnt];
+            int sizeOfStringPointers = Marshal.SizeOf(typeof(IntPtr)) * cnt;
+            IntPtr ptrOfStringPtr = Marshal.AllocCoTaskMem(sizeOfStringPointers);
+            IntPtr[] stringPointers = new IntPtr[cnt];
             for (int i = 0; i < cnt; i++)
             {
                 byte* stringPtr = stackalloc byte[keySizes[i]];
-                ptrOfStringPtr[i] = stringPtr;
+                // ptrOfStringPtr[i] = stringPtr;
+                stringPointers[i] = (IntPtr)stringPtr;
             }
+            Marshal.Copy(stringPointers, 0, ptrOfStringPtr, cnt);
+            
             NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringPtr);
             for (int i = 0; i < cnt; i++)
             {
                 byte[] stringBytes = new byte[keySizes[i]];
-                Marshal.Copy((IntPtr)ptrOfStringPtr[i], stringBytes, 0, keySizes[i]);
+                var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
+                Marshal.Copy(stringPtr, stringBytes, 0, keySizes[i]);
                 ret[i] = Encoding.GetEncoding("Shift_JIS").GetString(stringBytes);
             }
 
@@ -60,6 +67,7 @@ namespace LibPLATEAU.NET
             // {
             //     Marshal.FreeCoTaskMem(ptr);
             // }
+            Marshal.FreeCoTaskMem(ptrOfStringPtr);
 
             return ret;
         }
