@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける全ての地物オブジェクトのベースクラスです。

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d

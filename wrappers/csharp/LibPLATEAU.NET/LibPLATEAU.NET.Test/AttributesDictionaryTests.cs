@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NuGet.Frameworks;
 

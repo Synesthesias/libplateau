@@ -1,4 +1,5 @@
 using System;
+using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test

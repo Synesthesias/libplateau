@@ -1,5 +1,5 @@
 ﻿
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     public static class CityGml
     {

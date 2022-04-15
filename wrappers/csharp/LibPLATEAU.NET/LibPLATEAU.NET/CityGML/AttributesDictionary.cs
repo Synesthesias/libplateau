@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using LibPLATEAU.NET.Util;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     // C++ における map は　C# における Dictionary に相当するので、
     // C#側では名前を AttributesMap から AttributesDictionary に変えます。

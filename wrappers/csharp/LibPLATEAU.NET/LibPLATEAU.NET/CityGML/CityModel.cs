@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Threading;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     public sealed class CityModel : IDisposable
     {
@@ -49,7 +49,7 @@ namespace LibPLATEAU.NET
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref disposed, 1) == 0)
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
                 NativeMethods.plateau_delete_city_model(this.handle);
             }

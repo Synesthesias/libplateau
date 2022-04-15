@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.Util
 {
     /// <summary>
     /// DLLとデータをやりとりするためのユーティリティクラスです。

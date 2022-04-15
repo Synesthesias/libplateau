@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// The <see cref="ObjWriter"/> class exports .obj file from .gml.
@@ -25,7 +25,7 @@ namespace LibPLATEAU.NET
         /// </summary>
         public ObjWriter()
         {
-            handle = NativeMethods.plateau_create_obj_writer();
+            this.handle = NativeMethods.plateau_create_obj_writer();
         }
 
         ~ObjWriter()
@@ -36,11 +36,11 @@ namespace LibPLATEAU.NET
         /// <summary>
         /// セーフハンドルを取得します。
         /// </summary>
-        public IntPtr Handle => handle;
+        public IntPtr Handle => this.handle;
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref disposed, 1) == 0)
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
                 NativeMethods.plateau_delete_obj_writer(this.handle);
             }

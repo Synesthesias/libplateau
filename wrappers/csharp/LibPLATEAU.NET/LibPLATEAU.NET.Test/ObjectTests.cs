@@ -1,5 +1,6 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Object = LibPLATEAU.NET.CityGML.Object;
 
 namespace LibPLATEAU.NET.Test
 {
@@ -15,11 +16,11 @@ namespace LibPLATEAU.NET.Test
         }
 
         // /// <summary>
-        // /// テスト内容: 属性の set と get は同じになります。日本語にも対応します。
+        // /// ?e?X?g??e: ?????? set ?? get ????????????B???{????????????B
         // /// </summary>
         // [DataTestMethod]
         // [DataRow("TestAttrName", "TestAttrValue")]
-        // [DataRow("日本語属性名", "日本語属性値")]
+        // [DataRow("???{??????", "???{?????l")]
         // public void Test_GetAttribute_Returns_Same_As_Set(string attrName, string attrVal)
         // {
         //     plateauObject.SetAttribute(attrName, attrVal);
@@ -29,7 +30,7 @@ namespace LibPLATEAU.NET.Test
         // }
         //
         // /// <summary>
-        // /// テスト内容: 受け取る文字列の確保サイズが足りない場合は result が ErrorLackOfBufferSize になります。
+        // /// ?e?X?g??e: ?????????m??T?C?Y???????????? result ?? ErrorLackOfBufferSize ???????B
         // /// </summary>
         // [TestMethod]
         // public void Test_GetAttribute_Results_Minus_2_If_Size_Small()
@@ -41,7 +42,7 @@ namespace LibPLATEAU.NET.Test
         // }
         //
         // /// <summary>
-        // /// テスト内容: GetAttribute で受け取る値が存在しない場合は result が ErrorValueNotFound になります。
+        // /// ?e?X?g??e: GetAttribute ?????l?????????????? result ?? ErrorValueNotFound ???????B
         // /// </summary>
         // [TestMethod]
         // public void Test_GetAttribute_Not_Found_Then_Result_Minus_1()
@@ -53,8 +54,8 @@ namespace LibPLATEAU.NET.Test
         //
         //
         // /// <summary>
-        // /// テスト内容 : SetAttribute で overwrite が falseのとき、同名の属性を上書きしません。
-        // /// true のとき上書きします。
+        // /// ?e?X?g??e : SetAttribute ?? overwrite ?? false?????A?????????????????????B
+        // /// true ??????????????B
         // /// </summary>
         // [TestMethod]
         // public void Test_SetAttribute_Overwrite()
@@ -67,7 +68,7 @@ namespace LibPLATEAU.NET.Test
         // }
         //
         // /// <summary>
-        // /// テスト内容: GetAttributes で Dictionary 形式で属性を取得できます。
+        // /// ?e?X?g??e: GetAttributes ?? Dictionary ?`?????????擾???????B
         // /// </summary>
         // [TestMethod]
         // public void Test_GetAttributeList()
@@ -75,7 +76,7 @@ namespace LibPLATEAU.NET.Test
         //     plateauObject.SetAttribute("TestAttr", "TestValue");
         //     var attrs = plateauObject.GetAttributes(9999, out APIResult result);
         //
-        //     // 参考用に全属性を出力します。
+        //     // ?Q?l?p??S??????o???????B
         //     foreach (var attr in attrs)
         //     {
         //         Console.WriteLine($"{attr.Key}, {attr.Value}");
@@ -86,8 +87,8 @@ namespace LibPLATEAU.NET.Test
         // }
         //
         // /// <summary>
-        // /// テスト内容: GetAttributesで separator が key, value とかぶったときは
-        // /// result は ErrorInvalidArgument になります。
+        // /// ?e?X?g??e: GetAttributes?? separator ?? key, value ?????????????
+        // /// result ?? ErrorInvalidArgument ???????B
         // /// </summary>
         // [TestMethod]
         // public void Test_GetAttributes_Result_Error_When_Separator_Invalid()
@@ -98,7 +99,7 @@ namespace LibPLATEAU.NET.Test
         // }
         //
         // /// <summary>
-        // /// テスト内容: GetAttributes で受取用文字列の確保サイズが足りないときは result が ErrorLackOfBufferSize になります。
+        // /// ?e?X?g??e: GetAttributes ????p???????m??T?C?Y????????????? result ?? ErrorLackOfBufferSize ???????B
         // /// </summary>
         // [TestMethod]
         // public void Test_GetAttributes_LackOfBuffer()

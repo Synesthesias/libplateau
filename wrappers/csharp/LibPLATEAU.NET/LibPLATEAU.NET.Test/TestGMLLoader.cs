@@ -1,4 +1,6 @@
-﻿namespace LibPLATEAU.NET.Test {
+﻿using LibPLATEAU.NET.CityGML;
+
+namespace LibPLATEAU.NET.Test {
     public static class TestGMLLoader {
         private const string GmlPath = "data/53392642_bldg_6697_op2.gml";
 

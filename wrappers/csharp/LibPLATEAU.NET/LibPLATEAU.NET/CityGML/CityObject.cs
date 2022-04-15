@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける都市オブジェクトです。
