@@ -19,7 +19,7 @@ namespace LibPLATEAU.NET
             this.handle = handle;
         }
 
-        public unsafe string[] GetKeys()
+        public string[] GetKeys()
         {
             int[] keySizes = GetKeySizes();
             int cnt = Count;
@@ -48,25 +48,37 @@ namespace LibPLATEAU.NET
             IntPtr[] stringPointers = new IntPtr[cnt];
             for (int i = 0; i < cnt; i++)
             {
-                byte* stringPtr = stackalloc byte[keySizes[i]];
+                // byte* stringPtr = stackalloc byte[keySizes[i]];
+                IntPtr stringPtr = Marshal.AllocCoTaskMem(keySizes[i]);
                 // ptrOfStringPtr[i] = stringPtr;
-                stringPointers[i] = (IntPtr)stringPtr;
+                stringPointers[i] = stringPtr;
             }
             Marshal.Copy(stringPointers, 0, ptrOfStringPtr, cnt);
             
             NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringPtr);
-            for (int i = 0; i < cnt; i++)
+            unsafe
             {
-                byte[] stringBytes = new byte[keySizes[i]];
-                var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
-                Marshal.Copy(stringPtr, stringBytes, 0, keySizes[i]);
-                ret[i] = Encoding.GetEncoding("Shift_JIS").GetString(stringBytes);
+                for (int i = 0; i < cnt; i++)
+                {
+                    // byte[] stringBytes = new byte[keySizes[i]];
+                    var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
+
+                    // Marshal.Copy(stringPtr, stringBytes, 0, keySizes[i]);
+                    // ret[i] = Encoding.GetEncoding("Shift_JIS").GetString(stringBytes);
+                    ret[i] = Marshal.PtrToStringAnsi(stringPtr, keySizes[i]);
+                }
+
+                // foreach (IntPtr ptr in stringPointers)
+                // {
+                //     Marshal.FreeCoTaskMem(ptr);
+                // }
+                for (int i = 0; i < cnt; i++)
+                {
+                    var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
+                    Marshal.FreeCoTaskMem(stringPtr);
+                }
             }
 
-            // foreach (IntPtr ptr in stringPointers)
-            // {
-            //     Marshal.FreeCoTaskMem(ptr);
-            // }
             Marshal.FreeCoTaskMem(ptrOfStringPtr);
 
             return ret;
