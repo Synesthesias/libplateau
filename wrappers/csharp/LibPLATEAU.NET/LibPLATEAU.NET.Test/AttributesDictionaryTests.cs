@@ -50,5 +50,16 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"Count = {this.attrDict.Count}");
             Assert.IsTrue(this.attrDict.Count > 0);
         }
+
+        [TestMethod]
+        public void Test_GetValue()
+        {
+            // string val1 = this.attrDict.GetValue("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）");
+            string val1 = this.attrDict.GetValue("建物ID");
+            Console.WriteLine(val1);
+
+            string val2 = this.attrDict.GetValue("bldg:measuredheight");
+            Console.WriteLine(val2);
+        }
     }
 }

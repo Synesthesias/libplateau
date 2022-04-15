@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -237,6 +238,17 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern void plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
             [In, Out] IntPtr ptrOfStringPtr);
-        
+
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern void plateau_attributes_map_get_value_by_key(
+            [In] IntPtr attributesMap,
+            [In] string key,
+            StringBuilder outValue);
+
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern int plateau_attributes_map_get_value_str_length(
+            [In] IntPtr attributes,
+            [In] string key);
+
     }
 }

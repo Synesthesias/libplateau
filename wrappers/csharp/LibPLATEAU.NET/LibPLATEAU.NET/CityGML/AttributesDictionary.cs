@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -33,6 +34,16 @@ namespace LibPLATEAU.NET.CityGML
             DLLUtil.FreePtrArray(ptrOfStringArray, cnt);
 
             return ret;
+        }
+
+        public string GetValue(string key)
+        {
+            int valueStrSize = NativeMethods.plateau_attributes_map_get_value_str_length(
+                this.handle, key);
+            StringBuilder sb = new StringBuilder(valueStrSize);
+            NativeMethods.plateau_attributes_map_get_value_by_key(
+                this.handle, key, sb);
+            return sb.ToString();
         }
 
         /// <summary>
