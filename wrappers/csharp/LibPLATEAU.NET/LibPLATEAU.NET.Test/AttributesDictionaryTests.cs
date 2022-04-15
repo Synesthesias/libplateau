@@ -52,14 +52,15 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void Test_GetValue()
+        public void Test_GetAttributeValueAsString()
         {
             // string val1 = this.attrDict.GetValue("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）");
-            string val1 = this.attrDict.GetValue("建物ID");
-            Console.WriteLine(val1);
+            var val1 = this.attrDict.GetAttributeValue("建物ID");
+            Console.WriteLine(val1.GetStringValue());
 
-            string val2 = this.attrDict.GetValue("bldg:measuredheight");
-            Console.WriteLine(val2);
+            var val2 = this.attrDict.GetAttributeValue("bldg:measuredheight");
+            Console.WriteLine(val2.GetStringValue());
         }
+        
     }
 }

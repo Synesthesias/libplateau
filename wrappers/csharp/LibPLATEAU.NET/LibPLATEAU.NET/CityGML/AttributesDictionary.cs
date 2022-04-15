@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using LibPLATEAU.NET.Util;
@@ -36,15 +37,14 @@ namespace LibPLATEAU.NET.CityGML
             return ret;
         }
 
-        public string GetValue(string key)
+        public AttributeValue GetAttributeValue(string key)
         {
-            int valueStrSize = NativeMethods.plateau_attributes_map_get_value_str_length(
+            IntPtr valueHandle = NativeMethods.plateau_attributes_map_get_attribute_value(
                 this.handle, key);
-            StringBuilder sb = new StringBuilder(valueStrSize);
-            NativeMethods.plateau_attributes_map_get_value_by_key(
-                this.handle, key, sb);
-            return sb.ToString();
+            return new AttributeValue(valueHandle);
         }
+
+        
 
         /// <summary>
         /// 属性の各キーの文字列としてのバイト数を配列で返します。

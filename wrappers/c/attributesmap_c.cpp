@@ -54,33 +54,45 @@ extern "C"{
         API_CATCH;
     }
 
-    /// 属性のキーを受け取り、属性値（文字列）を out_value に格納します。
-    /// out_value には値を格納するのに十分なメモリが確保されていることが前提であり、
-    /// そうでなければアクセス違反となります。
-    /// 何バイトのメモリが必要であるかをDLLの利用者が知るには、
-    /// plateau_attributes_map_get_value_str_length 関数を利用します。
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_attributes_map_get_value_by_key(
-            const AttributesMap* const attributesMap,
-            const char* const key_char,
-            char* out_value
-            ){
-        API_TRY{
-            const AttributeValue& value = (*attributesMap).at(std::string(key_char));
-            strcpy(out_value, value.asString().c_str());
-        }
-        API_CATCH;
-    }
 
-    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_attributes_map_get_value_str_length(
+    LIBPLATEAU_C_EXPORT const AttributeValue* plateau_attributes_map_get_attribute_value(
             const AttributesMap* const attributesMap,
             const char* const key_char
             ){
         API_TRY{
-            const AttributeValue& value = (*attributesMap).at(std::string(key_char));
-            return value.asString().size();
+            const AttributeValue* value = &(*attributesMap).at(std::string(key_char));
+            return value;
         }
         API_CATCH;
     }
+
+
+/// AttributeValue の属性値（文字列）を out_value に格納します。
+/// out_value には値を格納するのに十分なメモリが確保されていることが前提であり、
+/// そうでなければアクセス違反となります。
+/// 何バイトのメモリが必要であるかをDLLの利用者が知るには、
+/// plateau_attribute_value_get_str_length 関数を利用します。
+LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_attribute_value_get_string(
+        const AttributeValue *const attributeValue,
+        char* out_value
+){
+    API_TRY{
+        const std::string value_str = (*attributeValue).asString();
+        strcpy(out_value, value_str.c_str());
+    }
+    API_CATCH;
+}
+
+/// attributeValue の文字列としてのバイト数を返します。
+LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_attribute_value_get_str_length(
+        const AttributeValue *const attributeValue
+){
+    API_TRY{
+        const std::string value = (*attributeValue).asString();
+        return value.size();
+    }
+    API_CATCH;
+}
 
 
 }
