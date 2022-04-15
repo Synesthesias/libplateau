@@ -16,6 +16,9 @@ namespace LibPLATEAU.NET
             this.handle = handle;
         }
 
+        /// <summary>
+        /// 属性のキーをすべて取得します。
+        /// </summary>
         public string[] GetKeys()
         {
             int[] keySizes = GetKeySizes();
