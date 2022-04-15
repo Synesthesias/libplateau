@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-// P/Invoke�p�Ȃ��߃G�N�X�|�[�g�̂�
+// P/Invoke用なためエクスポートのみ
 #ifdef _WIN32
 #  define LIBPLATEAU_C_API __stdcall
 #  define LIBPLATEAU_C_EXPORT  __declspec(dllexport)
@@ -11,7 +11,7 @@
 #  define LIBPLATEAU_C_EXPORT
 #endif
 
-// ������ API_TRY �� API_CATCH �ň͂ނ��Ƃŗ�O���o�͂ł��܂��B
+// 実装を API_TRY と API_CATCH で囲むことで例外を出力できます。
 #define API_TRY try
 
 #define API_CATCH \
@@ -23,8 +23,8 @@ catch (...) {\
 }
 
 namespace libplateau {
-// �������ɃG���[����������\��������A���̓��e��DLL�̌Ăяo�����ɓ`�������ꍇ�́A
-// ����enum��߂�l�ɂ���Ɨǂ��ł��B
+// 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
+// このenumを戻り値にすると良いです。
     enum APIResult {
         Success, ErrorUnknown, ErrorValueNotFound, ErrorLackOfBufferSize,
         ErrorInvalidData, ErrorInvalidArgument

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NuGet.Frameworks;
@@ -54,12 +55,20 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Test_GetAttributeValueAsString()
         {
-            // string val1 = this.attrDict.GetValue("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）");
             var val1 = this.attrDict.GetAttributeValue("建物ID");
-            Console.WriteLine(val1.GetStringValue());
-
+            Assert.AreEqual("13111-bldg-147301", val1.StringValue);
             var val2 = this.attrDict.GetAttributeValue("bldg:measuredheight");
-            Console.WriteLine(val2.GetStringValue());
+            
+            Assert.AreEqual("2.8", val2.StringValue);
+        }
+
+        [TestMethod]
+        public void Test_GetAttributeType()
+        {
+            var val1 = this.attrDict.GetAttributeValue("建物ID");
+            var val2 = this.attrDict.GetAttributeValue("bldg:measuredheight");
+            Assert.AreEqual(AttributeType.String, val1.Type);
+            Assert.AreEqual(AttributeType.Double, val2.Type);
         }
         
     }

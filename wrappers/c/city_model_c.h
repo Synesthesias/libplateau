@@ -7,10 +7,10 @@
 
 /**
  * \brief
- * CityModel‚ÌƒŠƒ\[ƒXƒNƒ‰ƒX‚Å‚·B
- * shared_ptr‚ğƒ}ƒl[ƒWƒhƒR[ƒh‚©‚ç–¾¦“I‚É¶¬E”jŠü‚·‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·B
- * ¶¬‚Íplateau_load_citygmlŠÖ”‚Å.gml“Ç‚İ‚İ‚Æ“¯‚És‚í‚ê‚Ü‚·B
- * ”jŠü‚Íplateau_delete_city_modelŠÖ”‚Å–¾¦“I‚És‚Á‚Ä‚­‚¾‚³‚¢B
+ * CityModelã®ãƒªã‚½ãƒ¼ã‚¹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
+ * shared_ptrã‚’ãƒãƒãƒ¼ã‚¸ãƒ‰ã‚³ãƒ¼ãƒ‰ã‹ã‚‰æ˜ç¤ºçš„ã«ç”Ÿæˆãƒ»ç ´æ£„ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
+ * ç”Ÿæˆã¯plateau_load_citygmlé–¢æ•°ã§.gmlèª­ã¿è¾¼ã¿ã¨åŒæ™‚ã«è¡Œã‚ã‚Œã¾ã™ã€‚
+ * ç ´æ£„ã¯plateau_delete_city_modelé–¢æ•°ã§æ˜ç¤ºçš„ã«è¡Œã£ã¦ãã ã•ã„ã€‚
  */
 class CityModelHandle {
 public:

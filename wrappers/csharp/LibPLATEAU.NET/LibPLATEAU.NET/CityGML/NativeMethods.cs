@@ -252,6 +252,10 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern int plateau_attribute_value_get_str_length(
             [In] IntPtr attributeValue);
-        
+
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern AttributeType plateau_attribute_value_get_type(
+            [In] IntPtr attributeValue);
+
     }
 }

@@ -1,13 +1,13 @@
-# github actions �� cmake�̃I�v�V���� -S -B ���g�������̂ł�����ŏ��o�[�W�����Ƃ��܂��B
+# github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
 
-# MSVC_RUNTIME_LIBRARY�v���p�e�B��L����
-# �Q�l�Fhttps://cmake.org/cmake/help/latest/policy/CMP0091.html
+# MSVC_RUNTIME_LIBRARYプロパティを有効化
+# 参考：https://cmake.org/cmake/help/latest/policy/CMP0091.html
 if(POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif()
 
-# MDd or MT�ŃR���p�C��
+# MDd or MTでコンパイル
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:DebugDLL>")
 
 enable_language(CXX)
@@ -16,30 +16,35 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-# Xerces-C ���C�u�����̖����C�����邽�߂̑[�u�ł��B
-# C����� Windows ���ǂ����`�F�b�N����ɂ͒ʏ� #if define (_WIN32) �Ə����܂����A
-# Xerces-C �̍�҂� _WIN32 �̃A���_�[�X�R�A�������Y��Ă��܂��܂����B
-# WIN32 �� _WIN32 �������̓��������邩�͕s���Ăł���A���ɂ���ăr���h���ʂ邱�Ƃ��ʂ�Ȃ����Ƃ�����܂��B
-# ������ WIN32 ���`���邱�ƂŃr���h��ʂ��܂��B
-if(WIN32) # CMake���@��� WIN32
-  add_definitions(-D WIN32) # C����� #define �L�[���[�h�Ƃ��Ă� WIN32
+# Xerces-C ライブラリの問題を修正するための措置です。
+# C言語で Windows かどうかチェックするには通常 #if define (_WIN32) と書きますが、
+# Xerces-C の作者は _WIN32 のアンダースコアを書き忘れてしまいました。
+# WIN32 と _WIN32 が同等の働きをするかは不明瞭であり、環境によってビルドが通ることも通らないこともあります。
+# そこで WIN32 を定義することでビルドを通します。
+if(WIN32) # CMake文法上の WIN32
+  add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
 
-# Linux�� shared library �����Ƃ��ɂ̓R���p�C���I�v�V���� -fPIC ���K�v�Ȃ̂ŕt�����܂��B
-# �������AWindows�� MSVC �ŃR���p�C������Ƃ��� -fPIC ���s�v�ŁA�t����ƌx�����o��̂ŕt�����܂���B
+# Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
+# ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
 if(COMPILER_SUPPORTS_PIC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
 
+# ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
+# 今回は文字コードを統一したいので UTF-8 にします。
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 # dependencies
 ## Xerces-C
-### libcitygml��FindXerces��ʂ����߂ɑS�ăL���b�V����
+### libcitygmlのFindXercesを通すために全てキャッシュ化
 set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/xerces-c")
 set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
@@ -48,7 +53,7 @@ set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
 ## libcitygml
 ### TODO: GDAL Support
 set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
-### libcitygml��FindXerces��ʂ����߂Ɏ蓮�Őݒ�
+### libcitygmlのFindXercesを通すために手動で設定
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
 set(LIBCITYGML_DYNAMIC ON CACHE BOOL "" FORCE)

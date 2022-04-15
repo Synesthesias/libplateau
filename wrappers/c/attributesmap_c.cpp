@@ -6,8 +6,8 @@ using namespace citygml;
 
 extern "C"{
 
-    /// AttributesMap‚Ì—v‘f”‚ð•Ô‚µ‚Ü‚·B
-    /// —áŠO‚ª‹N‚«‚½‚Æ‚«‚Í -1 ‚ð•Ô‚µ‚Ü‚·B
+    /// AttributesMapã®è¦ç´ æ•°ã‚’è¿”ã—ã¾ã™ã€‚
+    /// ä¾‹å¤–ãŒèµ·ããŸã¨ãã¯ -1 ã‚’è¿”ã—ã¾ã™ã€‚
     LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_attributes_map_get_key_count(
             const AttributesMap* const attributesMap){
         API_TRY {
@@ -17,9 +17,9 @@ extern "C"{
         return -1;
     }
 
-    /// AttributesMap‚ÌŠeƒL[‚Ì•¶Žš—ñ‚ÌƒoƒCƒg”‚ðint”z—ñ out_sizes ‚ÉŠi”[‚µ‚Ü‚·B
-    /// out_sizes ‚Í AttributesMap ‚Ì—v‘f”ˆÈã‚Ìƒƒ‚ƒŠ‚ªŠm•Û‚³‚ê‚Ä‚¢‚é‚±‚Æ‚ª‘O’ñ‚Å‚ ‚èA‚»‚¤‚Å‚È‚¢‚ÆƒAƒNƒZƒXˆá”½‚Å‚·B
-    /// DLL‚Å•¶Žš—ñ‚ð‚â‚è‚Æ‚è‚·‚é‚Æ‚«‚É’·‚³î•ñ‚ª—~‚µ‚¢‚½‚ß‚ÌŠÖ”‚Å‚·B
+    /// AttributesMapã®å„ã‚­ãƒ¼ã®æ–‡å­—åˆ—ã®ãƒã‚¤ãƒˆæ•°ã‚’inté…åˆ— out_sizes ã«æ ¼ç´ã—ã¾ã™ã€‚
+    /// out_sizes ã¯ AttributesMap ã®è¦ç´ æ•°ä»¥ä¸Šã®ãƒ¡ãƒ¢ãƒªãŒç¢ºä¿ã•ã‚Œã¦ã„ã‚‹ã“ã¨ãŒå‰æã§ã‚ã‚Šã€ãã†ã§ãªã„ã¨ã‚¢ã‚¯ã‚»ã‚¹é•åã§ã™ã€‚
+    /// DLLã§æ–‡å­—åˆ—ã‚’ã‚„ã‚Šã¨ã‚Šã™ã‚‹ã¨ãã«é•·ã•æƒ…å ±ãŒæ¬²ã—ã„ãŸã‚ã®é–¢æ•°ã§ã™ã€‚
     LIBPLATEAU_C_EXPORT void plateau_attributes_map_get_key_sizes(
             const AttributesMap* const attributesMap,
             int* const out_sizes){
@@ -34,10 +34,10 @@ extern "C"{
         API_CATCH;
     }
 
-    /// AttributesMap‚ÌŠeƒL[‚ð•¶Žš—ñ‚Ì”z—ñ out_keys ‚ÉŠi”[‚µ‚Ü‚·B
-    /// DLL‚Ì—˜—pŽÒ‚ª out_keys ‚ÌŠe•¶Žš—ñƒ|ƒCƒ“ƒ^‚©‚ç‰½ƒoƒCƒg“Ç‚Ýo‚¹‚Î—Ç‚¢‚©‚ð’m‚é‚É‚Í
-    /// ã‚ÌŠÖ”‚©‚ç—v‘f”‚ÆŠekey‚ÌƒoƒCƒg”‚ðŽæ“¾‚·‚ê‚Î—Ç‚¢‚Å‚·B
-    /// out_keys ‚ÌŠe—v‘f‚ª•K—v‚Èƒƒ‚ƒŠ‚ðŠm•Û‚µ‚Ä‚¢‚È‚¯‚ê‚ÎƒAƒNƒZƒXˆá”½‚Æ‚È‚è‚Ü‚·B
+    /// AttributesMapã®å„ã‚­ãƒ¼ã‚’æ–‡å­—åˆ—ã®é…åˆ— out_keys ã«æ ¼ç´ã—ã¾ã™ã€‚
+    /// DLLã®åˆ©ç”¨è€…ãŒ out_keys ã®å„æ–‡å­—åˆ—ãƒã‚¤ãƒ³ã‚¿ã‹ã‚‰ä½•ãƒã‚¤ãƒˆèª­ã¿å‡ºã›ã°è‰¯ã„ã‹ã‚’çŸ¥ã‚‹ã«ã¯
+    /// ä¸Šã®é–¢æ•°ã‹ã‚‰è¦ç´ æ•°ã¨å„keyã®ãƒã‚¤ãƒˆæ•°ã‚’å–å¾—ã™ã‚Œã°è‰¯ã„ã§ã™ã€‚
+    /// out_keys ã®å„è¦ç´ ãŒå¿…è¦ãªãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ã„ãªã‘ã‚Œã°ã‚¢ã‚¯ã‚»ã‚¹é•åã¨ãªã‚Šã¾ã™ã€‚
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_attributes_map_get_keys(
             const AttributesMap* const attributesMap,
             char** out_keys
@@ -67,32 +67,41 @@ extern "C"{
     }
 
 
-/// AttributeValue ‚Ì‘®«’li•¶Žš—ñj‚ð out_value ‚ÉŠi”[‚µ‚Ü‚·B
-/// out_value ‚É‚Í’l‚ðŠi”[‚·‚é‚Ì‚É\•ª‚Èƒƒ‚ƒŠ‚ªŠm•Û‚³‚ê‚Ä‚¢‚é‚±‚Æ‚ª‘O’ñ‚Å‚ ‚èA
-/// ‚»‚¤‚Å‚È‚¯‚ê‚ÎƒAƒNƒZƒXˆá”½‚Æ‚È‚è‚Ü‚·B
-/// ‰½ƒoƒCƒg‚Ìƒƒ‚ƒŠ‚ª•K—v‚Å‚ ‚é‚©‚ðDLL‚Ì—˜—pŽÒ‚ª’m‚é‚É‚ÍA
-/// plateau_attribute_value_get_str_length ŠÖ”‚ð—˜—p‚µ‚Ü‚·B
+/// AttributeValue ã®å±žæ€§å€¤ï¼ˆæ–‡å­—åˆ—ï¼‰ã‚’ out_value ã«æ ¼ç´ã—ã¾ã™ã€‚
+/// out_value ã«ã¯å€¤ã‚’æ ¼ç´ã™ã‚‹ã®ã«ååˆ†ãªãƒ¡ãƒ¢ãƒªãŒç¢ºä¿ã•ã‚Œã¦ã„ã‚‹ã“ã¨ãŒå‰æã§ã‚ã‚Šã€
+/// ãã†ã§ãªã‘ã‚Œã°ã‚¢ã‚¯ã‚»ã‚¹é•åã¨ãªã‚Šã¾ã™ã€‚
+/// ä½•ãƒã‚¤ãƒˆã®ãƒ¡ãƒ¢ãƒªãŒå¿…è¦ã§ã‚ã‚‹ã‹ã‚’DLLã®åˆ©ç”¨è€…ãŒçŸ¥ã‚‹ã«ã¯ã€
+/// plateau_attribute_value_get_str_length é–¢æ•°ã‚’åˆ©ç”¨ã—ã¾ã™ã€‚
 LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_attribute_value_get_string(
         const AttributeValue *const attributeValue,
         char* out_value
 ){
     API_TRY{
-        const std::string value_str = (*attributeValue).asString();
+        const std::string value_str = attributeValue->asString();
         strcpy(out_value, value_str.c_str());
     }
     API_CATCH;
 }
 
-/// attributeValue ‚Ì•¶Žš—ñ‚Æ‚µ‚Ä‚ÌƒoƒCƒg”‚ð•Ô‚µ‚Ü‚·B
+/// attributeValue ã®æ–‡å­—åˆ—ã¨ã—ã¦ã®ãƒã‚¤ãƒˆæ•°ã‚’è¿”ã—ã¾ã™ã€‚
 LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_attribute_value_get_str_length(
         const AttributeValue *const attributeValue
 ){
     API_TRY{
-        const std::string value = (*attributeValue).asString();
+        const std::string value = attributeValue->asString();
         return value.size();
     }
     API_CATCH;
 }
+
+LIBPLATEAU_C_EXPORT AttributeType plateau_attribute_value_get_type(
+        const AttributeValue* const attributeValue
+        ){
+        API_TRY{
+            return attributeValue->getType();
+        }
+        API_CATCH;
+    }
 
 
 }

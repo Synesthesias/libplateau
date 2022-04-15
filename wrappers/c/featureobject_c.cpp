@@ -29,7 +29,7 @@ extern "C"{
             double lowerX, double lowerY, double lowerZ, double upperX, double upperY, double upperZ
     ){
         API_TRY{
-            // ‚±‚Ì“®“IŠm•Û—Ìˆæ‚Í setEnvelope ‚Ì’†‚Å unique_ptr ‚É“n‚è‚Ü‚·B
+            // ã“ã®å‹•çš„ç¢ºä¿é ˜åŸŸã¯ setEnvelope ã®ä¸­ã§ unique_ptr ã«æ¸¡ã‚Šã¾ã™ã€‚
             auto e = new Envelope();
             auto lower = TVec3d(lowerX, lowerY, lowerZ);
             auto upper = TVec3d(upperX, upperY, upperZ);

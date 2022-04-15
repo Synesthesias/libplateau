@@ -78,7 +78,7 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT plateau_vector3d LIBPLATEAU_C_API plateau_obj_writer_get_reference_point(const ObjWriter* obj_writer) {
         API_TRY{
-            // TODO: getReferencePoint�̕Ԃ�l��TVec3d�^�ɕύX
+            // TODO: getReferencePointの返り値をTVec3d型に変更
             double ref[3];
             obj_writer->getReferencePoint(ref);
             return plateau_vector3d{ ref[0], ref[1], ref[2] };

@@ -17,8 +17,8 @@ extern "C" {
     }
 
 
-    /// ƒWƒIƒƒgƒŠ‚Ì”‚ð•Ô‚µ‚Ü‚·B
-    /// —áŠO‚ª‚ ‚Á‚½ê‡‚Í -1 ‚ð•Ô‚µ‚Ü‚·B
+    /// ã‚¸ã‚ªãƒ¡ãƒˆãƒªã®æ•°ã‚’è¿”ã—ã¾ã™ã€‚
+    /// ä¾‹å¤–ãŒã‚ã£ãŸå ´åˆã¯ -1 ã‚’è¿”ã—ã¾ã™ã€‚
     LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_object_get_geometries_count(
             const CityObject* const city_object
             ){

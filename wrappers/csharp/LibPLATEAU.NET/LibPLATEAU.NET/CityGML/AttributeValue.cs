@@ -11,15 +11,20 @@ namespace LibPLATEAU.NET.CityGML
         {
             this.handle = handle;
         }
-        
-        public string GetStringValue()
+
+        public string StringValue
         {
-            int valueStrSize = NativeMethods.plateau_attribute_value_get_str_length(
-                this.handle);
-            StringBuilder sb = new (valueStrSize);
-            NativeMethods.plateau_attribute_value_get_string(
-                this.handle, sb);
-            return sb.ToString();
+            get
+            {
+                int valueStrSize = NativeMethods.plateau_attribute_value_get_str_length(
+                    this.handle);
+                StringBuilder sb = new(valueStrSize);
+                NativeMethods.plateau_attribute_value_get_string(
+                    this.handle, sb);
+                return sb.ToString();
+            }
         }
+
+        public AttributeType Type => NativeMethods.plateau_attribute_value_get_type(this.handle);
     }
 }
