@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Cryptography;
 
 namespace LibPLATEAU.NET
 {
+    /// <summary>
+    /// DLLとデータをやりとりするためのユーティリティクラスです。
+    /// </summary>
     public static class DLLUtil
     {
         /// <summary>
@@ -53,6 +54,11 @@ namespace LibPLATEAU.NET
             Marshal.FreeCoTaskMem(ptrOfPtrArray);
         }
 
+        /// <summary>
+        /// ポインタ(stringの配列のポインタ)から string の配列を読み込みます。
+        /// ポインタのメモリのレイアウトは AllocPtrArray() で確保したものであることを前提とし、
+        /// 引数 count, sizes には AllocPtrArray() と同じ値を渡してください。 
+        /// </summary>
         public static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
         {
             string[] ret = new string[count];
