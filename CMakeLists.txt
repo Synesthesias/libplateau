@@ -48,6 +48,7 @@ add_subdirectory("examples/export_obj")
 # Wrappers
 add_subdirectory("wrappers/c")
 add_subdirectory("wrappers/python")
+option(BUILD_PYTHON "Build python wrapper" OFF)
 
 # Copy data for testing
 file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")
