@@ -24,33 +24,13 @@ namespace LibPLATEAU.NET
             int[] keySizes = GetKeySizes();
             int cnt = Count;
             string[] ret = Enumerable.Repeat("", cnt).ToArray();
-            // var outSBs = new StringBuilder[cnt];
-            // for (int i = 0; i < cnt; i++)
-            // {
-            //     outSBs[i] = new StringBuilder(keySizes[i]);
-            // }
             
-            // IntPtr[] stringPointers = new IntPtr[cnt];
-            // for (int i = 0; i < cnt; i++)
-            // {
-            //     stringPointers[i] = Marshal.AllocCoTaskMem(keySizes[i]);
-            // }
-            //
-            // IntPtr ptrOfStringPointers = &stringPointers;
-            // NativeMethods.plateau_attributes_map_get_keys(this.handle, ref outSBs);
-            
-            // Shift-JISを使うために必要
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            // byte** ptrOfStringPtr = stackalloc byte*[cnt];
             int sizeOfStringPointers = Marshal.SizeOf(typeof(IntPtr)) * cnt;
             IntPtr ptrOfStringPtr = Marshal.AllocCoTaskMem(sizeOfStringPointers);
             IntPtr[] stringPointers = new IntPtr[cnt];
             for (int i = 0; i < cnt; i++)
             {
-                // byte* stringPtr = stackalloc byte[keySizes[i]];
                 IntPtr stringPtr = Marshal.AllocCoTaskMem(keySizes[i]);
-                // ptrOfStringPtr[i] = stringPtr;
                 stringPointers[i] = stringPtr;
             }
             Marshal.Copy(stringPointers, 0, ptrOfStringPtr, cnt);
@@ -60,18 +40,10 @@ namespace LibPLATEAU.NET
             {
                 for (int i = 0; i < cnt; i++)
                 {
-                    // byte[] stringBytes = new byte[keySizes[i]];
                     var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
-
-                    // Marshal.Copy(stringPtr, stringBytes, 0, keySizes[i]);
-                    // ret[i] = Encoding.GetEncoding("Shift_JIS").GetString(stringBytes);
                     ret[i] = Marshal.PtrToStringAnsi(stringPtr, keySizes[i]);
                 }
 
-                // foreach (IntPtr ptr in stringPointers)
-                // {
-                //     Marshal.FreeCoTaskMem(ptr);
-                // }
                 for (int i = 0; i < cnt; i++)
                 {
                     var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];

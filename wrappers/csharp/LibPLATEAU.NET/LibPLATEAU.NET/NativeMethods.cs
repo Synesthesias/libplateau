@@ -202,28 +202,6 @@ namespace LibPLATEAU.NET
         internal static extern IntPtr plateau_object_get_attributes_map(
             [In] IntPtr obj);
 
-        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        // internal static extern APIResult plateau_object_get_attribute(
-        //     [In] IntPtr plateauObject,
-        //     string name,
-        //     StringBuilder sb,
-        //     int bufferSize);
-        //
-        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        // internal static extern void plateau_object_set_attribute(
-        //     [In] IntPtr plateauObject,
-        //     string name,
-        //     string value,
-        //     AttributeType type,
-        //     bool overwrite);
-        //
-        // [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        // internal static extern APIResult plateau_object_get_keys_values(
-        //     [In] IntPtr plateauObject,
-        //     StringBuilder keysValues,
-        //     int bufferSize,
-        //     string separator);
-
 
         // ***************
         //  featureobject_c.cpp

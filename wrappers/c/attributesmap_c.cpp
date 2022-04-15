@@ -7,6 +7,7 @@ using namespace citygml;
 extern "C"{
 
     /// AttributesMapの要素数を返します。
+    /// 例外が起きたときは -1 を返します。
     LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_attributes_map_get_key_count(
             const AttributesMap* const attributesMap){
         API_TRY {
