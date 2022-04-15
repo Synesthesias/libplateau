@@ -19,7 +19,7 @@ catch (std::exception& e) {\
     std::cout << e.what() << std::endl;\
 }\
 catch (...) {\
-    std::cout << "Unknown error occured." << std::endl;\
+    std::cout << "Unknown error occurred." << std::endl;\
 }
 
 namespace libplateau {

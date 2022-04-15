@@ -23,35 +23,13 @@ namespace LibPLATEAU.NET
         {
             int[] keySizes = GetKeySizes();
             int cnt = Count;
-            string[] ret = Enumerable.Repeat("", cnt).ToArray();
-            
-            int sizeOfStringPointers = Marshal.SizeOf(typeof(IntPtr)) * cnt;
-            IntPtr ptrOfStringPtr = Marshal.AllocCoTaskMem(sizeOfStringPointers);
-            IntPtr[] stringPointers = new IntPtr[cnt];
-            for (int i = 0; i < cnt; i++)
-            {
-                IntPtr stringPtr = Marshal.AllocCoTaskMem(keySizes[i]);
-                stringPointers[i] = stringPtr;
-            }
-            Marshal.Copy(stringPointers, 0, ptrOfStringPtr, cnt);
-            
-            NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringPtr);
-            unsafe
-            {
-                for (int i = 0; i < cnt; i++)
-                {
-                    var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
-                    ret[i] = Marshal.PtrToStringAnsi(stringPtr, keySizes[i]);
-                }
 
-                for (int i = 0; i < cnt; i++)
-                {
-                    var stringPtr = ((IntPtr*)ptrOfStringPtr)[i];
-                    Marshal.FreeCoTaskMem(stringPtr);
-                }
-            }
-
-            Marshal.FreeCoTaskMem(ptrOfStringPtr);
+            IntPtr ptrOfStringArray = DLLUtil.AllocPtrArray(cnt, keySizes);
+            
+            NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringArray);
+            string[] ret = DLLUtil.PtrToStringArray(ptrOfStringArray, cnt, keySizes);
+            
+            DLLUtil.FreePtrArray(ptrOfStringArray, cnt);
 
             return ret;
         }
