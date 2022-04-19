@@ -82,9 +82,9 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"parent: {this.attrDict}");
             Console.WriteLine($"children: {children}");
 
-            var cval = children.GetValue("浸水深");
+            var cval = children.GetValue("規模");
             Console.WriteLine($"child value => {cval.AsString}");
-            // Assert.Equals(cval.StringValue)
+            Assert.AreEqual(cval.AsString, "L2");
         }
         
     }
