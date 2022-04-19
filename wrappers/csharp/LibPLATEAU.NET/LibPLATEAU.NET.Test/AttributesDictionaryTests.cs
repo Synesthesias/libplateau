@@ -59,7 +59,7 @@ namespace LibPLATEAU.NET.Test
             Assert.AreEqual("13111-bldg-147301", val1.StringValue);
             var val2 = this.attrDict.GetAttributeValue("bldg:measuredheight");
             
-            Assert.AreEqual("2.8", val2.StringValue);
+            Assert.AreEqual("2.8（テスト）", val2.StringValue);
         }
 
         [TestMethod]

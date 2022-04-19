@@ -22,7 +22,7 @@
 					<gen:value uom="m">0.050</gen:value>
 				</gen:measureAttribute>
 			</gen:genericAttributeSet>
-			<bldg:measuredHeight uom="m">2.8</bldg:measuredHeight>
+			<bldg:measuredHeight uom="m">2.8（テスト）</bldg:measuredHeight>
 			<bldg:lod0RoofEdge>
 				<gml:MultiSurface>
 					<gml:surfaceMember>
