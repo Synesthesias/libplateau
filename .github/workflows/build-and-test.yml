@@ -42,7 +42,7 @@ jobs:
       # TODO そうでないと文字化けします。本当は他のロケールでも動作させたい。
     - name: Set Locale for Windows
       if: runner.os == 'Windows'
-      run: chcp 932
+      run: Set-WinSystemLocale ja-JP
 
 
 
