@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace LibPLATEAU.NET.CityGML
@@ -12,7 +13,7 @@ namespace LibPLATEAU.NET.CityGML
             this.handle = handle;
         }
 
-        public string StringValue
+        public string AsString
         {
             get
             {
@@ -26,5 +27,19 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         public AttributeType Type => NativeMethods.plateau_attribute_value_get_type(this.handle);
+
+        
+        /// <summary>
+        /// AttributeValue のタイプが AttributeSet であることを前提に、
+        /// 子の AttributesDictionary を返します。
+        /// </summary>
+        public AttributesDictionary ChildAttrs
+        {
+            get
+            {
+                IntPtr ptr = NativeMethods.plateau_attribute_as_attribute_set(this.handle);
+                return new AttributesDictionary(ptr);
+            }
+        }
     }
 }

@@ -38,8 +38,9 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-      # Windowsのロケール設定が日本語であると仮定します。
-      # TODO そうでないと文字化けします。本当は他のロケールでも動作させたい。
+      # Windowsのロケール設定を日本語にします。
+      # TODO そうでないと文字化けします。本当は他のロケールでも動作させたいです。
+      # 文字化けが解決したらこのコマンドは不要です。
     - name: Set Locale for Windows
       if: runner.os == 'Windows'
       run: Set-WinSystemLocale ja-JP

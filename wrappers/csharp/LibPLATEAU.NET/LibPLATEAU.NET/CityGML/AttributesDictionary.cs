@@ -9,7 +9,7 @@ namespace LibPLATEAU.NET.CityGML
 {
     // C++ における map は　C# における Dictionary に相当するので、
     // C#側では名前を AttributesMap から AttributesDictionary に変えます。
-    
+
     public class AttributesDictionary
     {
         private IntPtr handle;
@@ -28,23 +28,26 @@ namespace LibPLATEAU.NET.CityGML
             int cnt = Count;
 
             IntPtr ptrOfStringArray = DLLUtil.AllocPtrArray(cnt, keySizes);
-            
+
             NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringArray);
             string[] ret = DLLUtil.PtrToStringArray(ptrOfStringArray, cnt, keySizes);
-            
+
             DLLUtil.FreePtrArray(ptrOfStringArray, cnt);
 
             return ret;
         }
 
-        public AttributeValue GetAttributeValue(string key)
+        /// <summary>
+        /// 属性のキーから値を返します。
+        /// </summary>
+        public AttributeValue GetValue(string key)
         {
             IntPtr valueHandle = NativeMethods.plateau_attributes_map_get_attribute_value(
                 this.handle, key);
             return new AttributeValue(valueHandle);
         }
 
-        
+
 
         /// <summary>
         /// 属性の各キーの文字列としてのバイト数を配列で返します。
@@ -72,5 +75,17 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         public int Count => NativeMethods.plateau_attributes_map_get_key_count(this.handle);
+
+        /// <summary>
+        /// キーとバリューのペアと型をすべて文字にします。
+        /// </summary>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("[ ");
+            sb.Append(String.Join(", ", GetKeys().Select(key => $"{{ ({GetValue(key).Type}) {key} , {GetValue(key).AsString} }}")));
+            sb.Append(" ]");
+            return sb.ToString();
+        }
     }
 }
