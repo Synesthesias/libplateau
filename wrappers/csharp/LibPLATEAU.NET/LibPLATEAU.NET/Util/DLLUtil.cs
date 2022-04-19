@@ -66,8 +66,17 @@ namespace LibPLATEAU.NET.Util
             {
                 var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
                 ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i]);
+                // TODO for debug
+                Console.WriteLine(BitConverter.ToString(PtrToBytes(stringPtr, sizes[i])));
             }
             return ret;
+        }
+
+        public static byte[] PtrToBytes(IntPtr ptr, int length)
+        {
+            byte[] bytes = new byte[length];
+            Marshal.Copy(ptr, bytes, 0, length);
+            return bytes;
         }
 
     }
