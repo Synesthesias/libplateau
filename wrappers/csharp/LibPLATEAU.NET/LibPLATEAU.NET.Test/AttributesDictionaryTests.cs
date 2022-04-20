@@ -52,17 +52,17 @@ namespace LibPLATEAU.NET.Test
         //     Assert.AreEqual("2.8（テスト）", val2.AsString);
         // }
         //
-        // [TestMethod]
-        // public void Test_GetAttributeType()
-        // {
-        //     var val1 = this.attrDict["建物ID"];
-        //     var val2 = this.attrDict["bldg:measuredheight"];
-        //     var val3 = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
-        //     Assert.AreEqual(AttributeType.String, val1.Type);
-        //     Assert.AreEqual(AttributeType.Double, val2.Type);
-        //     Assert.AreEqual(AttributeType.AttributeSet, val3.Type);
-        // }
-        //
+        [TestMethod]
+        public void Test_GetAttributeType()
+        {
+            var val1 = this.attrDict["建物ID"];
+            var val2 = this.attrDict["bldg:measuredheight"];
+            var val3 = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
+            Assert.AreEqual(AttributeType.String, val1.Type);
+            Assert.AreEqual(AttributeType.Double, val2.Type);
+            Assert.AreEqual(AttributeType.AttributeSet, val3.Type);
+        }
+        
         // [TestMethod]
         // public void Test_ChildAttributesMap()
         // {
