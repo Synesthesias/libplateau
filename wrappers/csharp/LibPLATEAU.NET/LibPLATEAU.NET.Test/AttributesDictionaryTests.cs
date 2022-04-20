@@ -125,9 +125,9 @@ namespace LibPLATEAU.NET.Test
         //     Assert.AreEqual(this.attrDict.Count, count);
         // }
         
-        /// <summary>
-        /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
-        /// </summary>
+        // /// <summary>
+        // /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
+        // /// </summary>
         // [TestMethod]
         // [ExpectedException(typeof(KeyNotFoundException))]
         // public void Test_MissingKey()
@@ -141,11 +141,11 @@ namespace LibPLATEAU.NET.Test
         //     Assert.AreEqual(123.456, this.attrDict["doubleAttributeテスト"].AsDouble);
         // }
         
-        [TestMethod]
-        public void Test_AsInt()
-        {
-            Assert.AreEqual(123, this.attrDict["intAttributeテスト"].AsInt);
-        }
+        // [TestMethod]
+        // public void Test_AsInt()
+        // {
+        //     Assert.AreEqual(123, this.attrDict["intAttributeテスト"].AsInt);
+        // }
         
     }
 }
