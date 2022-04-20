@@ -89,14 +89,14 @@ namespace LibPLATEAU.NET.Test
         //     Assert.AreEqual("13111-bldg-147301", value2.AsString);
         // }
         
-        [TestMethod]
-        public void Test_ContainsKey()
-        {
-            bool result = this.attrDict.ContainsKey("DummyNotFound");
-            Assert.AreEqual(false, result);
-            bool result2 = this.attrDict.ContainsKey("建物ID");
-            Assert.AreEqual(true, result2);
-        }
+        // [TestMethod]
+        // public void Test_ContainsKey()
+        // {
+        //     bool result = this.attrDict.ContainsKey("DummyNotFound");
+        //     Assert.AreEqual(false, result);
+        //     bool result2 = this.attrDict.ContainsKey("建物ID");
+        //     Assert.AreEqual(true, result2);
+        // }
         
         // [TestMethod]
         // public void Test_Values()
