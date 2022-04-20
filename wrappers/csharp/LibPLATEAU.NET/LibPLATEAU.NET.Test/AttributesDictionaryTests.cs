@@ -78,16 +78,16 @@ namespace LibPLATEAU.NET.Test
         }
 
 
-        [TestMethod]
-        public void Test_TryGetValue()
-        {
-            bool result = this.attrDict.TryGetValue("DummyNotFound", out AttributeValue value);
-            Assert.AreEqual(false, result);
-            Assert.IsNull(value);
-            bool result2 = this.attrDict.TryGetValue("建物ID", out AttributeValue value2);
-            Assert.AreEqual(true, result2);
-            Assert.AreEqual("13111-bldg-147301", value2.AsString);
-        }
+        // [TestMethod]
+        // public void Test_TryGetValue()
+        // {
+        //     bool result = this.attrDict.TryGetValue("DummyNotFound", out AttributeValue value);
+        //     Assert.AreEqual(false, result);
+        //     Assert.IsNull(value);
+        //     bool result2 = this.attrDict.TryGetValue("建物ID", out AttributeValue value2);
+        //     Assert.AreEqual(true, result2);
+        //     Assert.AreEqual("13111-bldg-147301", value2.AsString);
+        // }
         
         [TestMethod]
         public void Test_ContainsKey()
