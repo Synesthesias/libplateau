@@ -128,12 +128,12 @@ namespace LibPLATEAU.NET.Test
         /// <summary>
         /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
         /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException))]
-        public void Test_MissingKey()
-        {
-            var _ = this.attrDict["DummyNotFound"];
-        }
+        // [TestMethod]
+        // [ExpectedException(typeof(KeyNotFoundException))]
+        // public void Test_MissingKey()
+        // {
+        //     var _ = this.attrDict["DummyNotFound"];
+        // }
         
         [TestMethod]
         public void Test_AsDouble()
