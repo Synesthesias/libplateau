@@ -63,19 +63,19 @@ namespace LibPLATEAU.NET.Test
             Assert.AreEqual(AttributeType.AttributeSet, val3.Type);
         }
         
-        [TestMethod]
-        public void Test_ChildAttributesMap()
-        {
-            var parent = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
-            var children = parent.AsAttrSet;
-            // 参考用にキーの一覧を表示します。
-            Console.WriteLine($"parent: {this.attrDict}");
-            Console.WriteLine($"children: {children}");
-        
-            var cval = children["規模"];
-            Console.WriteLine($"child value => {cval.AsString}");
-            Assert.AreEqual(cval.AsString, "L2");
-        }
+        // [TestMethod]
+        // public void Test_ChildAttributesMap()
+        // {
+        //     var parent = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
+        //     var children = parent.AsAttrSet;
+        //     // 参考用にキーの一覧を表示します。
+        //     Console.WriteLine($"parent: {this.attrDict}");
+        //     Console.WriteLine($"children: {children}");
+        //
+        //     var cval = children["規模"];
+        //     Console.WriteLine($"child value => {cval.AsString}");
+        //     Assert.AreEqual(cval.AsString, "L2");
+        // }
 
 
         [TestMethod]
