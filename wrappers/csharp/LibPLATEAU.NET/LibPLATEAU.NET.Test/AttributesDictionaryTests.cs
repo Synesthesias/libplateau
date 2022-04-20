@@ -20,12 +20,18 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Test_GetKeys()
         {
-            var keys = this.attrDict.Keys;
+            var keys = this.attrDict.Keys.ToArray();
+            bool doContainKey = false;
             foreach (var k in keys)
             {
                 Console.WriteLine($"{k}\n");
+                if (k == "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）")
+                {
+                    doContainKey = true;
+                }
             }
-            Assert.IsTrue(keys.Contains("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"));
+            Assert.IsTrue(doContainKey);
+            Assert.AreEqual(this.attrDict.Count, keys.Length);
         }
         
 
@@ -126,7 +132,7 @@ namespace LibPLATEAU.NET.Test
         [ExpectedException(typeof(KeyNotFoundException))]
         public void Test_MissingKey()
         {
-            var val = this.attrDict["DummyNotFound"];
+            var _ = this.attrDict["DummyNotFound"];
         }
         
     }

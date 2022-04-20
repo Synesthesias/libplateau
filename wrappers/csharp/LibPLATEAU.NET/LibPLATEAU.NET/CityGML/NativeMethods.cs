@@ -36,9 +36,6 @@ namespace LibPLATEAU.NET.CityGML
         Success,
         ErrorUnknown,
         ErrorValueNotFound,
-        ErrorLackOfBufferSize,
-        ErrorInvalidData,
-        ErrorInvalidArgument
     }
 
 
@@ -245,7 +242,18 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr attributesMap,
             [In] string key,
             [Out] out IntPtr attrValuePtr);
+        
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_attributes_map_do_contains_key(
+            [In] IntPtr attributesMap,
+            [In] string key,
+            out bool doContainsKey);
 
+        
+        // ***************
+        //  attributevalue_c.cpp
+        // ***************
+        
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_string(
             [In] IntPtr attributeValue,
@@ -265,11 +273,5 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_attribute_as_attribute_set(
             [In] IntPtr attributeValue,
             [Out] out IntPtr attrSetPtr);
-
-        [DllImport(kDllName)]
-        internal static extern APIResult plateau_attributes_map_do_contains_key(
-            [In] IntPtr attributesMap,
-            [In] string key,
-            out bool doContainsKey);
     }
 }
