@@ -9,7 +9,7 @@ namespace LibPLATEAU.NET.CityGML
     /// Plateau のオブジェクトが持つ属性 (key と value のペア)　のうち、 value の部分です。
     /// value は、内部的には string または 子の属性セットへの参照 のどちらかのデータを保持します。
     /// 
-    /// value の値がどのような形式であるかを enum AttributeType で保持します。
+    /// value の値がどのような形式であるかを enum AttributeType 形式で保持し、Type で取得できます。
     /// Type が String, Double, Integer, Data, Uri, Measure の場合、内部的にはデータは単に string であり、 AsString で取得できます。
     /// AsDouble, AsInt プロパティもありますが、それは単に AsString を数値にパースするものです。
     /// 
@@ -25,6 +25,9 @@ namespace LibPLATEAU.NET.CityGML
             this.handle = handle;
         }
 
+        /// <summary>
+        /// 属性値を string 形式で取得します。
+        /// </summary>
         public string AsString
         {
             get
@@ -39,10 +42,16 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary> 属性値を double にパースして返します。 </summary>
         public double AsDouble => Double.Parse(AsString);
+        
+        /// <summary> 属性値を int にパースして返します。 </summary>
         public int AsInt => int.Parse(AsString);
         
 
+        /// <summary>
+        /// 属性の値の想定形式を取得します。
+        /// </summary>
         public AttributeType Type
         {
             get

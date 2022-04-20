@@ -24,7 +24,9 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_strin
     return APIResult::ErrorUnknown;
 }
 
-/// attributeValue の文字列としてのバイト数を返します。
+/// attributeValue の文字列としてのバイト数を取得します。
+/// 結果は out_str_length に入ります。
+/// 用途は値を文字列として取得する前準備です。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_length(
         const AttributeValue *const attributeValue,
         int *out_str_length
@@ -38,6 +40,8 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_l
     return APIResult::ErrorUnknown;
 }
 
+/// attributeValue の Type を enum形式で取得します。
+/// 結果は out_attribute_type に入ります。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_type(
         const AttributeValue *const attributeValue,
         AttributeType *out_attribute_type
@@ -50,6 +54,9 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_type(
     return APIResult::ErrorUnknown;
 }
 
+/// この属性のタイプが AttributeSet であることを前提とし、
+/// 子の　AttributeSet　を取得します。
+/// 結果は out_attribute_set_ptr に入ります。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_as_attribute_set(
         const AttributeValue *const attributeValue,
         AttributesMap **out_attribute_set_ptr

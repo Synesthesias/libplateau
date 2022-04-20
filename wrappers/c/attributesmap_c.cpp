@@ -7,7 +7,7 @@ using namespace libplateau;
 
 extern "C" {
 
-    /// AttributesMapの要素数を返します。
+    /// AttributesMapの要素数を取得します。結果は out_count のメモリ領域に書き込まれます。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_key_count(
             const AttributesMap *const attributesMap,
             int* out_count) {
@@ -61,6 +61,9 @@ extern "C" {
     }
 
 
+    /// AttributeMap の key に対応する AttributeValue のポインタを取得します。
+    /// 結果は out_attribute_value_ptr のメモリ領域に入ります。
+    /// key に対応するものがない場合は APIResult::ErrorValueNotFound を返します。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_attribute_value(
             const AttributesMap *const attributesMap,
             const char *const key_char,
@@ -79,6 +82,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
+    /// attributeMap で key_char に対応するものがあるかをチェックします。
+    /// あるなら out_result に true が入り、ないなら false が入ります。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_do_contains_key(
             const AttributesMap* const attributesMap,
             const char* const key_char,
