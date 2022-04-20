@@ -55,6 +55,7 @@ extern "C" {
     }
 
 
+    // TODO キーが存在しない場合のエラーハンドリング
     LIBPLATEAU_C_EXPORT const AttributeValue* LIBPLATEAU_C_API plateau_attributes_map_get_attribute_value(
             const AttributesMap *const attributesMap,
             const char *const key_char
@@ -62,6 +63,17 @@ extern "C" {
         API_TRY {
             const AttributeValue *value = &(*attributesMap).at(std::string(key_char));
             return value;
+        }
+        API_CATCH;
+    }
+
+    LIBPLATEAU_C_EXPORT bool LIBPLATEAU_C_API plateau_attributes_map_do_contains_key(
+            const AttributesMap* const attributesMap,
+            const char* const key_char
+            ){
+        API_TRY{
+            auto key_str = std::string(key_char);
+            return attributesMap->count(key_str) > 0;
         }
         API_CATCH;
     }
