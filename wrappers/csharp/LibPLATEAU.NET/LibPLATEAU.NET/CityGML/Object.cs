@@ -5,7 +5,7 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける全てのオブジェクトのベースクラスです。
-    /// ユニークIDと0個以上の属性（AttributesDictionary）を持ちます。
+    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて AttributesDictionary に格納されています。
     /// </summary>
     public class Object
     {
@@ -40,6 +40,9 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 属性の辞書を取得します。
+        /// </summary>
         public AttributesDictionary AttributesDictionary
         {
             get
