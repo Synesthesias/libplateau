@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using LibPLATEAU.NET.Util;
+
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -19,7 +20,7 @@ namespace LibPLATEAU.NET.CityGML
             {
                 APIResult result = NativeMethods.plateau_attribute_value_get_str_length(
                     this.handle, out int valueStrSize);
-                if (result != APIResult.Success) throw new Exception(result.ToString());
+                DLLUtil.CheckDllError(result);
                 StringBuilder sb = new(valueStrSize);
                 NativeMethods.plateau_attribute_value_get_string(
                     this.handle, sb);
@@ -32,7 +33,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 APIResult result = NativeMethods.plateau_attribute_value_get_type(this.handle, out AttributeType type);
-                if (result != APIResult.Success) throw new Exception(result.ToString());
+                DLLUtil.CheckDllError(result);
                 return type;
             }
         }
@@ -42,12 +43,12 @@ namespace LibPLATEAU.NET.CityGML
         /// AttributeValue のタイプが AttributeSet であることを前提に、
         /// 子の AttributesDictionary を返します。
         /// </summary>
-        public AttributesDictionary ChildAttrs
+        public AttributesDictionary ChildAttrSet
         {
             get
             {
                 APIResult result = NativeMethods.plateau_attribute_as_attribute_set(this.handle, out IntPtr ptr);
-                if (result != APIResult.Success) throw new Exception(result.ToString());
+                DLLUtil.CheckDllError(result);
                 return new AttributesDictionary(ptr);
             }
         }

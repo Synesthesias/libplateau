@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics.Metrics;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NuGet.Frameworks;
 
 namespace LibPLATEAU.NET.Test
 {
@@ -29,21 +27,7 @@ namespace LibPLATEAU.NET.Test
             }
             Assert.IsTrue(keys.Contains("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"));
         }
-
-        // [TestMethod]
-        // public void Test_GetKeySizes()
-        // {
-        //     var sizes = this.attrDict.GetKeySizes();
-        //     bool isAllSizePositive = true;
-        //     Console.Write("Sizes : ");
-        //     foreach (var s in sizes)
-        //     {
-        //         Console.Write($"{s} , ");
-        //         isAllSizePositive &= s > 0;
-        //     }
-        //     Console.Write("\n");
-        //     Assert.IsTrue(isAllSizePositive);
-        // }
+        
 
         [TestMethod]
         public void Test_Count()
@@ -77,7 +61,7 @@ namespace LibPLATEAU.NET.Test
         public void Test_ChildAttributesMap()
         {
             var parent = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
-            var children = parent.ChildAttrs;
+            var children = parent.ChildAttrSet;
             // 参考用にキーの一覧を表示します。
             Console.WriteLine($"parent: {this.attrDict}");
             Console.WriteLine($"children: {children}");
@@ -121,7 +105,7 @@ namespace LibPLATEAU.NET.Test
         }
 
         /// <summary>
-        /// Enumeratorの実装によって、foreachで Dictionary の全要素を回せることを確認します。
+        /// テスト内容 : foreachを使って Dictionary の全要素を回すことができます。
         /// </summary>
         [TestMethod]
         public void Test_Enumerable()
@@ -133,6 +117,16 @@ namespace LibPLATEAU.NET.Test
                 count++;
             }
             Assert.AreEqual(this.attrDict.Count, count);
+        }
+
+        /// <summary>
+        /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void Test_MissingKey()
+        {
+            var val = this.attrDict["DummyNotFound"];
         }
         
     }

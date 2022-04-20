@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util
 {
@@ -56,7 +57,7 @@ namespace LibPLATEAU.NET.Util
 
         /// <summary>
         /// ポインタ(stringの配列のポインタ)から string の配列を読み込みます。
-        /// ポインタのメモリのレイアウトは AllocPtrArray() で確保したものであることを前提とし、
+        /// ポインタ ptrOfStringArray は AllocPtrArray() で確保したものと同じであることを前提とし、
         /// 引数 count, sizes には AllocPtrArray() と同じ値を渡してください。 
         /// </summary>
         public static unsafe string[] PtrToStringArray(IntPtr ptrOfStringArray, int count, int[] sizes)
@@ -77,6 +78,18 @@ namespace LibPLATEAU.NET.Util
             byte[] bytes = new byte[length];
             Marshal.Copy(ptr, bytes, 0, length);
             return bytes;
+        }
+
+        
+        /// <summary>
+        /// result が Success でなかった場合に例外を投げます。
+        /// </summary>
+        public static void CheckDllError(APIResult result)
+        {
+            if (result != APIResult.Success)
+            {
+                throw new Exception($"Error in Lib Plateau DLL. APIResult = {result}");
+            }
         }
 
     }

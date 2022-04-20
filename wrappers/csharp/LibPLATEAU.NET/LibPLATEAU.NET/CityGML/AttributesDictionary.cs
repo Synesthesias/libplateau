@@ -36,13 +36,13 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 APIResult result = NativeMethods.plateau_attributes_map_get_key_count(this.handle, out int count);
-                if (result != APIResult.Success) throw new Exception(result.ToString());
+                DLLUtil.CheckDllError(result);
                 return count;
             }
         }
 
         /// <summary>
-        /// 属性のキーをすべて取得します。
+        /// 属性のキーをすべて返します。
         /// 結果はキャッシュされるので2回目以降は速いです。
         /// </summary>
         public IEnumerable<string> Keys
@@ -65,6 +65,9 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// (key, value) のペアのうち value をすべて返します。
+        /// </summary>
         public IEnumerable<AttributeValue> Values
         {
             get
@@ -76,6 +79,8 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 属性のキーから値を返します。
+        /// key が存在しない場合は KeyNotFoundException を投げます。
+        /// 例外を投げてほしくない場合は代わりに TryGetValue メソッドを利用してください。
         /// </summary>
         public AttributeValue this[string key]
         {
@@ -83,20 +88,30 @@ namespace LibPLATEAU.NET.CityGML
             {
                 APIResult result = NativeMethods.plateau_attributes_map_get_attribute_value(
                     this.handle, key, out IntPtr valueHandle);
-                if (result != APIResult.Success) throw new Exception(result.ToString());
+                // キーが存在しないエラー
+                if (result == APIResult.ErrorValueNotFound)
+                {
+                    throw new KeyNotFoundException($"key {key} is not found in AttributesDictionary.");
+                }
+                // その他のエラー(Exception)
+                DLLUtil.CheckDllError(result);
                 return new AttributeValue(valueHandle);
             }
         }
 
+        /// <summary>
+        /// 属性に key が含まれていれば true,
+        /// key なければ false を返します。
+        /// </summary>
         public bool ContainsKey(string key)
         {
             APIResult result = NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
-            if (result != APIResult.Success) throw new Exception(result.ToString());
+            DLLUtil.CheckDllError(result);
             return doContainsKey;
         }
 
         /// <summary>
-        /// 属性の中に key が存在すればその値を value に代入して true を返します。
+        /// 属性辞書の中に key が存在すればその値を value に代入して true を返します。
         /// key が存在しなければ value に null を代入して false を返します。
         /// </summary>
         public bool TryGetValue(string key, out AttributeValue value)
