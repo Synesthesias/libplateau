@@ -17,8 +17,9 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                int valueStrSize = NativeMethods.plateau_attribute_value_get_str_length(
-                    this.handle);
+                APIResult result = NativeMethods.plateau_attribute_value_get_str_length(
+                    this.handle, out int valueStrSize);
+                if (result != APIResult.Success) throw new Exception(result.ToString());
                 StringBuilder sb = new(valueStrSize);
                 NativeMethods.plateau_attribute_value_get_string(
                     this.handle, sb);
@@ -26,9 +27,17 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
-        public AttributeType Type => NativeMethods.plateau_attribute_value_get_type(this.handle);
+        public AttributeType Type
+        {
+            get
+            {
+                APIResult result = NativeMethods.plateau_attribute_value_get_type(this.handle, out AttributeType type);
+                if (result != APIResult.Success) throw new Exception(result.ToString());
+                return type;
+            }
+        }
 
-        
+
         /// <summary>
         /// AttributeValue のタイプが AttributeSet であることを前提に、
         /// 子の AttributesDictionary を返します。
@@ -37,7 +46,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                IntPtr ptr = NativeMethods.plateau_attribute_as_attribute_set(this.handle);
+                APIResult result = NativeMethods.plateau_attribute_as_attribute_set(this.handle, out IntPtr ptr);
+                if (result != APIResult.Success) throw new Exception(result.ToString());
                 return new AttributesDictionary(ptr);
             }
         }

@@ -225,45 +225,51 @@ namespace LibPLATEAU.NET.CityGML
         //  attributesmap_c.cpp
         // ***************
         [DllImport(kDllName)]
-        internal static extern int plateau_attributes_map_get_key_count(
-            [In] IntPtr attributesMap);
+        internal static extern APIResult plateau_attributes_map_get_key_count(
+            [In] IntPtr attributesMap,
+            out int count);
 
         [DllImport(kDllName)]
-        internal static extern void plateau_attributes_map_get_key_sizes(
+        internal static extern APIResult plateau_attributes_map_get_key_sizes(
             [In] IntPtr attributesMap,
             [In, Out] IntPtr outSizeIntArray);
 
         
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_attributes_map_get_keys(
+        internal static extern APIResult plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
             [In, Out] IntPtr ptrOfStringPtr);
         
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern IntPtr plateau_attributes_map_get_attribute_value(
+        internal static extern APIResult plateau_attributes_map_get_attribute_value(
             [In] IntPtr attributesMap,
-            [In] string key);
+            [In] string key,
+            [Out] out IntPtr attrValuePtr);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_attribute_value_get_string(
+        internal static extern APIResult plateau_attribute_value_get_string(
             [In] IntPtr attributeValue,
             StringBuilder outValue);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern int plateau_attribute_value_get_str_length(
-            [In] IntPtr attributeValue);
+        internal static extern APIResult plateau_attribute_value_get_str_length(
+            [In] IntPtr attributeValue,
+            out int strLength);
 
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
-        internal static extern AttributeType plateau_attribute_value_get_type(
-            [In] IntPtr attributeValue);
+        internal static extern APIResult plateau_attribute_value_get_type(
+            [In] IntPtr attributeValue,
+            out AttributeType attrType);
 
         [DllImport(kDllName)]
-        internal static extern IntPtr plateau_attribute_as_attribute_set(
-            [In] IntPtr attributeValue);
+        internal static extern APIResult plateau_attribute_as_attribute_set(
+            [In] IntPtr attributeValue,
+            [Out] out IntPtr attrSetPtr);
 
         [DllImport(kDllName)]
-        internal static extern bool plateau_attributes_map_do_contains_key(
+        internal static extern APIResult plateau_attributes_map_do_contains_key(
             [In] IntPtr attributesMap,
-            [In] string key);
+            [In] string key,
+            out bool doContainsKey);
     }
 }

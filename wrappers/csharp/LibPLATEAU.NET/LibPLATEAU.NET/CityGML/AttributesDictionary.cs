@@ -31,7 +31,15 @@ namespace LibPLATEAU.NET.CityGML
         }
         
         /// <summary> 属性の数を返します。 </summary>
-        public int Count => NativeMethods.plateau_attributes_map_get_key_count(this.handle);
+        public int Count
+        {
+            get
+            {
+                APIResult result = NativeMethods.plateau_attributes_map_get_key_count(this.handle, out int count);
+                if (result != APIResult.Success) throw new Exception(result.ToString());
+                return count;
+            }
+        }
 
         /// <summary>
         /// 属性のキーをすべて取得します。
@@ -73,15 +81,18 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                IntPtr valueHandle = NativeMethods.plateau_attributes_map_get_attribute_value(
-                    this.handle, key);
+                APIResult result = NativeMethods.plateau_attributes_map_get_attribute_value(
+                    this.handle, key, out IntPtr valueHandle);
+                if (result != APIResult.Success) throw new Exception(result.ToString());
                 return new AttributeValue(valueHandle);
             }
         }
 
         public bool ContainsKey(string key)
         {
-            return NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key);
+            APIResult result = NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
+            if (result != APIResult.Success) throw new Exception(result.ToString());
+            return doContainsKey;
         }
 
         /// <summary>
