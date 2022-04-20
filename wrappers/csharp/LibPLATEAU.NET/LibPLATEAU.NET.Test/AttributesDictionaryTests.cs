@@ -110,20 +110,20 @@ namespace LibPLATEAU.NET.Test
         //     Assert.AreEqual(this.attrDict.Count, values.Length);
         // }
         
-        /// <summary>
-        /// テスト内容 : foreachを使って Dictionary の全要素を回すことができます。
-        /// </summary>
-        [TestMethod]
-        public void Test_Enumerable()
-        {
-            int count = 0;
-            foreach (var p in this.attrDict)
-            {
-                Console.WriteLine($"{p.Key}, {p.Value.AsString}");
-                count++;
-            }
-            Assert.AreEqual(this.attrDict.Count, count);
-        }
+        // /// <summary>
+        // /// テスト内容 : foreachを使って Dictionary の全要素を回すことができます。
+        // /// </summary>
+        // [TestMethod]
+        // public void Test_Enumerable()
+        // {
+        //     int count = 0;
+        //     foreach (var p in this.attrDict)
+        //     {
+        //         Console.WriteLine($"{p.Key}, {p.Value.AsString}");
+        //         count++;
+        //     }
+        //     Assert.AreEqual(this.attrDict.Count, count);
+        // }
         
         /// <summary>
         /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
