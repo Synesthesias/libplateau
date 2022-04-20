@@ -135,11 +135,11 @@ namespace LibPLATEAU.NET.Test
         //     var _ = this.attrDict["DummyNotFound"];
         // }
         
-        [TestMethod]
-        public void Test_AsDouble()
-        {
-            Assert.AreEqual(123.456, this.attrDict["doubleAttributeテスト"].AsDouble);
-        }
+        // [TestMethod]
+        // public void Test_AsDouble()
+        // {
+        //     Assert.AreEqual(123.456, this.attrDict["doubleAttributeテスト"].AsDouble);
+        // }
         
         [TestMethod]
         public void Test_AsInt()
