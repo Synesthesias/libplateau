@@ -27,6 +27,8 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 属性値を string 形式で取得します。
+        /// Type が String, Double, Integer, Data, Uri, Measure の場合に有効です。
+        /// Type が AttributeSet の場合は意味を成しません。
         /// </summary>
         public string AsString
         {
@@ -41,6 +43,7 @@ namespace LibPLATEAU.NET.CityGML
                 return sb.ToString();
             }
         }
+        
 
         /// <summary> 属性値を double にパースして返します。 </summary>
         public double AsDouble => Double.Parse(AsString);
@@ -64,8 +67,9 @@ namespace LibPLATEAU.NET.CityGML
 
 
         /// <summary>
-        /// AttributeValue のタイプが AttributeSet であることを前提に、
+        /// Type が AttributeSet であることを前提に、
         /// 子の AttributesDictionary を返します。
+        /// Type がその他である場合は意味を成しません。
         /// </summary>
         public AttributesDictionary AsAttrSet
         {
