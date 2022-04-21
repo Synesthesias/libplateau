@@ -6,8 +6,8 @@ name: Build and Test
 on: push
 
 env:
-  #BUILD_TYPE: RelWithDebInfo
-  BUILD_TYPE: Debug
+  BUILD_TYPE: RelWithDebInfo
+#  BUILD_TYPE: Debug
 
 jobs:
   build-and-test:
@@ -52,7 +52,7 @@ jobs:
       run: >
         cmake
         -S ${{github.workspace}} 
-        -B ${{github.workspace}}/out/build/x64-Debug 
+        -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_CXX_FLAGS="-w"
@@ -61,7 +61,7 @@ jobs:
 
 
     - name: Build by CMake
-      run: cmake --build ${{github.workspace}}/out/build/x64-Debug --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
 
      
     - name: Setup .NET Core SDK
@@ -73,8 +73,8 @@ jobs:
     # TODO Platform="Any CPU" としているのはあくまで仮です。
     # どの値に設定すべきか要検討です。
     - name: Build C# Wrapper
-      run: dotnet build -p:Configuration=Debug -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
     - name: Run Test of C# Wrapper
-      run: dotnet test -p:Configuration=Debug -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      run: dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
