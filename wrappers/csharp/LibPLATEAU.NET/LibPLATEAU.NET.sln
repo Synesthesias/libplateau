@@ -9,11 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPLATEAU.NET.Test", "LibP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPLATEAU.NET.Debug", "LibPLATEAU.NET.Debug\LibPLATEAU.NET.Debug.csproj", "{789851C8-FE26-48C7-89FD-772A7D3C54FD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EA1E439-5E14-45E5-A288-93EB9AA7217E}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.build.props = Directory.build.props
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
