@@ -51,8 +51,12 @@ extern "C" {
         API_TRY {
             int i = 0;
             for (const auto &pair: *attributesMap) {
+                // キー文字列を out_keys[i] にコピーします。
                 char *string_i = out_keys[i];
-                strcpy(string_i, pair.first.c_str());
+                auto key_str = pair.first.c_str();
+                int len = strlen(key_str);
+                strncpy(string_i, key_str, len);
+                string_i[len] = '\0'; // 最後はnull終端文字
                 i++;
             }
             return APIResult::Success;
