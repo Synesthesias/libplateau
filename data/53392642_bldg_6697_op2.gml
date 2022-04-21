@@ -8,10 +8,10 @@
 	</gml:boundedBy>
 	<core:cityObjectMember>
 		<bldg:Building gml:id="BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745">
-			<gen:doubleAttribute name="doubleAttributeTest">
+			<gen:doubleAttribute name="doubleAttributeテスト">
 				<gen:value>123.456</gen:value>
 			</gen:doubleAttribute>
-			<gen:intAttribute name="intAttributeTest">
+			<gen:intAttribute name="intAttributeテスト">
 				<gen:value>123</gen:value>
 			</gen:intAttribute>
 			<gen:stringAttribute name="建物ID">

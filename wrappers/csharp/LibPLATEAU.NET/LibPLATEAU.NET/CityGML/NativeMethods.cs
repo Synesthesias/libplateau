@@ -243,7 +243,7 @@ namespace LibPLATEAU.NET.CityGML
             [In] string key,
             [Out] out IntPtr attrValuePtr);
         
-        [DllImport(kDllName)]
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_do_contains_key(
             [In] IntPtr attributesMap,
             [In] string key,

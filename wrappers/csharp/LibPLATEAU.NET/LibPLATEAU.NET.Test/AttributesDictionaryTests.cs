@@ -138,13 +138,13 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Test_AsDouble()
         {
-            Assert.AreEqual(123.456, this.attrDict["doubleAttributeTest"].AsDouble);
+            Assert.AreEqual(123.456, this.attrDict["doubleAttributeテスト"].AsDouble);
         }
         
         [TestMethod]
         public void Test_AsInt()
         {
-            Assert.AreEqual(123, this.attrDict["intAttributeTest"].AsInt);
+            Assert.AreEqual(123, this.attrDict["intAttributeテスト"].AsInt);
         }
 
     }
