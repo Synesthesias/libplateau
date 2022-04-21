@@ -66,7 +66,14 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < count; i++)
             {
                 var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
-                ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i]);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i]);
+                }
+                else
+                {
+                    ret[i] = Marshal.PtrToStringUTF8(stringPtr, sizes[i]);
+                }
                 // Console.WriteLine(BitConverter.ToString(PtrToBytes(stringPtr, sizes[i])));
             }
             return ret;
