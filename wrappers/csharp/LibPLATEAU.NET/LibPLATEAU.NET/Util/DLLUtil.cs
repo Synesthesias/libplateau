@@ -24,16 +24,16 @@ namespace LibPLATEAU.NET.Util
             {
                 throw new ArgumentException("sizes.Length should not be smaller than count.");
             }
-
-            IntPtr[] managedPtrArray = new IntPtr[count];
+            
+            IntPtr[] managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
             for (int i = 0; i < count; i++)
             {
-                IntPtr ptr = Marshal.AllocCoTaskMem(sizes[i]);
+                IntPtr ptr = Marshal.AllocCoTaskMem(sizes[i]); // 配列内の各ポインタについてメモリ確保
                 managedPtrArray[i] = ptr;
             }
             
             int sizeOfPtrArray = Marshal.SizeOf(typeof(IntPtr)) * count;
-            IntPtr unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray);
+            IntPtr unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
             Marshal.Copy(managedPtrArray, 0, unmanagedPtrArray, count);
             return unmanagedPtrArray;
         }
