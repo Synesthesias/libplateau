@@ -29,7 +29,8 @@ extern "C" {
         API_TRY {
             int i = 0;
             for (const auto &pair: *attributesMap) {
-                out_sizes[i] = pair.first.size();
+                auto& key = pair.first;
+                out_sizes[i] = key.size() + 1;
                 i++;
             }
             return APIResult::Success;
