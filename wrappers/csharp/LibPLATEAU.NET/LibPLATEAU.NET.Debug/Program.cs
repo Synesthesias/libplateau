@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Mime;
 using System.Reflection;
 using LibPLATEAU.NET.CityGML;
@@ -13,7 +14,7 @@ namespace LibPLATEAU.NET.Debug
     {
         static void Main()
         {
-            string gmlPath = Assembly.GetExecutingAssembly().Location + "/../data/53392642_bldg_6697_op2.gml";
+            string gmlPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/data/53392642_bldg_6697_op2.gml";
             var parserParams = new CitygmlParserParams()
             {
                 Optimize = 0
