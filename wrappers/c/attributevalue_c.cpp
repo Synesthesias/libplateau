@@ -24,7 +24,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_strin
     return APIResult::ErrorUnknown;
 }
 
-/// attributeValue の文字列としてのバイト数を取得します。
+/// attributeValue の文字列としてのバイト数(null終端文字を含む)を取得します。
 /// 結果は out_str_length に入ります。
 /// 用途は値を文字列として取得する前準備です。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_length(

@@ -19,7 +19,7 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    /// AttributesMapの各キーの文字列のバイト数をint配列 out_sizes に格納します。
+    /// AttributesMapの各キーの文字列のバイト数(null終端文字を含む)をint配列 out_sizes に格納します。
     /// out_sizes は AttributesMap の要素数以上のメモリが確保されていることが前提であり、そうでないとアクセス違反です。
     /// DLLで文字列をやりとりするときに長さ情報が欲しいための関数です。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_key_sizes(
