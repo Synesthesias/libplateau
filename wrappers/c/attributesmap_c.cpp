@@ -30,7 +30,7 @@ extern "C" {
             int i = 0;
             for (const auto &pair: *attributesMap) {
                 auto& key = pair.first;
-                out_sizes[i] = key.size() + 1;
+                out_sizes[i] = key.size() + 1; // +1 は null終端文字の分です。
                 i++;
             }
             return APIResult::Success;

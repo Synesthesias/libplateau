@@ -33,7 +33,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_l
 ) {
     API_TRY {
         const std::string value = attributeValue->asString();
-        *out_str_length = value.size();
+        *out_str_length = value.size() + 1; // +1 は null終端文字の分です。
         return APIResult::Success;
     }
     API_CATCH;
