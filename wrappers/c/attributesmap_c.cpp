@@ -53,9 +53,9 @@ extern "C" {
             for (const auto &pair: *attributesMap) {
                 // キー文字列を out_keys[i] にコピーします。
                 char *string_i = out_keys[i];
-                auto key_str = pair.first.c_str();
-                int len = strlen(key_str);
-                strncpy(string_i, key_str, len);
+                auto key_chars = pair.first.c_str();
+                int len = strlen(key_chars);
+                strncpy(string_i, key_chars, len);
                 string_i[len] = '\0'; // 最後はnull終端文字
                 i++;
             }

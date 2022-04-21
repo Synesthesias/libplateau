@@ -20,7 +20,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_strin
         // 文字列を out_value にコピーします。
         auto value_chars = value_str.c_str();
         int len = strlen(value_chars);
-        strncpy(out_value, value_str.c_str(), len);
+        strncpy(out_value, value_chars, len);
         out_value[len] = '\0'; // 最後はnull終端文字
         return APIResult::Success;
     }
