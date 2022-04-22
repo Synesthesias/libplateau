@@ -4,6 +4,10 @@ using System.Threading;
 
 namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// GMLファイルをパースして得られる街のモデルです。
+    /// 0個以上の <see cref="CityObject"/> を保持します。
+    /// </summary>
     public sealed class CityModel : IDisposable
     {
         private readonly IntPtr handle;

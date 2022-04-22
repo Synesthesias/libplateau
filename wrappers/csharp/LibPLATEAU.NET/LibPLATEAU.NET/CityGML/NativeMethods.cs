@@ -92,6 +92,11 @@ namespace LibPLATEAU.NET.CityGML
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
 
+    /// <summary>
+    /// 属性の値の想定形式です。
+    /// 形式が String, Double, Integer, Data, Uri, Measure である場合、内部的にはデータは string です。
+    /// AttributeSet である場合、内部的にはデータは <see cref="AttributesMap"/> への参照です。
+    /// </summary>
     public enum AttributeType
     {
         String,

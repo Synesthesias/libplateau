@@ -6,6 +6,7 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける全ての地物オブジェクトのベースクラスです。
+    /// <see cref="Envelope"/> (オブジェクトの存在範囲を2点の座標で示したもの)を持ちます。
     /// </summary>
     public class FeatureObject : Object
     {
@@ -17,25 +18,28 @@ namespace LibPLATEAU.NET.CityGML
         /// 建築物の範囲を double[6] で返します。
         /// </summary>
         /// <returns> 戻り値 double[6] の配列の中身は座標 { lower_x, lower_y, lower_z, upper_x, upper_y, upper_z } です。</returns>
-        public double[] GetEnvelope()
+        public double[] Envelope
         {
-            const int envelopeArrayLength = 6;
-            int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
-            IntPtr ptr = Marshal.AllocCoTaskMem(size);
-            double[] ret = Enumerable.Repeat(0.0, envelopeArrayLength).ToArray();
-            try
+            get
             {
-                // ptr に Envelope情報( double[6] ) を格納します。
-                NativeMethods.plateau_feature_object_get_envelope(Handle, ptr);
-                // ptr の内容を C# の double[6] にコピーします。
-                Marshal.Copy(ptr, ret, 0, envelopeArrayLength);
-            }
-            finally
-            {
-                Marshal.FreeCoTaskMem(ptr);
-            }
+                const int envelopeArrayLength = 6;
+                int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
+                IntPtr ptr = Marshal.AllocCoTaskMem(size);
+                double[] ret = Enumerable.Repeat(0.0, envelopeArrayLength).ToArray();
+                try
+                {
+                    // ptr に Envelope情報( double[6] ) を格納します。
+                    NativeMethods.plateau_feature_object_get_envelope(Handle, ptr);
+                    // ptr の内容を C# の double[6] にコピーします。
+                    Marshal.Copy(ptr, ret, 0, envelopeArrayLength);
+                }
+                finally
+                {
+                    Marshal.FreeCoTaskMem(ptr);
+                }
 
-            return ret;
+                return ret;
+            }
         }
 
         /// <summary>

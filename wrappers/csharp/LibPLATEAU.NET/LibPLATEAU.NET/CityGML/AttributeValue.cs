@@ -6,15 +6,20 @@ using LibPLATEAU.NET.Util;
 namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
+    /// <para>
     /// Plateau のオブジェクトが持つ属性 (key と value のペア)　のうち、 value の部分です。
-    /// value は、内部的には string または 子の属性セットへの参照 のどちらかのデータを保持します。
-    /// 
-    /// value の値がどのような形式であるかを enum AttributeType 形式で保持し、Type で取得できます。
-    /// Type が String, Double, Integer, Data, Uri, Measure の場合、内部的にはデータは単に string であり、 AsString で取得できます。
-    /// AsDouble, AsInt プロパティもありますが、それは単に AsString を数値にパースするものです。
-    /// 
-    /// Type が AttributeSet である場合、 この属性の子に属性セットがあることを意味します。
-    /// この場合は AsString は意味を成さず、代わりに AsAttrSet で子の属性セットを取得できます。
+    /// value は、内部的には string または 子の属性セットへの参照 のどちらかのデータを保持します。</para>
+    ///
+    /// <para>
+    /// value の値がどのような形式であるかを <see cref="AttributeType"/> 形式で保持し、<see cref="Type"/> で取得できます。</para>
+    ///
+    /// <para>
+    /// <see cref="Type" /> が String, Double, Integer, Data, Uri, Measure の場合、内部的にはデータは単に string であり、 <see cref="AsString"/> で取得できます。
+    /// <see cref="AsDouble"/>, <see cref="AsInt"/> プロパティもありますが、それは単に <see cref="AsString"/> を数値にパースするものです。</para>
+    ///
+    /// <para>
+    /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> である場合、 この属性の子に属性セットがあることを意味します。
+    /// この場合は <see cref="AsString"/> は意味を成さず、代わりに <see cref="AsAttrSet" /> で子の属性セットを取得できます。</para>
     /// </summary>
     public class AttributeValue
     {
@@ -27,8 +32,8 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 属性値を string 形式で取得します。
-        /// Type が String, Double, Integer, Data, Uri, Measure の場合に有効です。
-        /// Type が AttributeSet の場合は意味を成しません。
+        /// <see cref="Type"/> が String, Double, Integer, Data, Uri, Measure の場合に有効です。
+        /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> の場合は意味を成しません。
         /// </summary>
         public string AsString
         {
@@ -53,7 +58,7 @@ namespace LibPLATEAU.NET.CityGML
         
 
         /// <summary>
-        /// 属性の値の想定形式を取得します。
+        /// 属性の値の想定形式です。<see cref="AttributeType"/> 型で返します。
         /// </summary>
         public AttributeType Type
         {
@@ -67,9 +72,9 @@ namespace LibPLATEAU.NET.CityGML
 
 
         /// <summary>
-        /// Type が AttributeSet であることを前提に、
-        /// 子の AttributesMap を返します。
-        /// Type がその他である場合は意味を成しません。
+        /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> であることを前提に、
+        /// 子の <see cref="AttributesMap"/> を返します。
+        /// <see cref="Type"/> がその他である場合は意味を成しません。
         /// </summary>
         public AttributesMap AsAttrSet
         {

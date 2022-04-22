@@ -2,11 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Transactions;
 using LibPLATEAU.NET.Util;
 
 // key と value のペアに短縮名を付けます。
@@ -16,9 +13,9 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// 属性の辞書です。
-    /// IReadOnlyDictionary を実装します。
-    /// string をキーとし、 AttributeValue が値になります。
-    /// this[key] で AttributeValueが返ります。
+    /// <see cref="IReadOnlyDictionary{TKey,TValue}"/> を実装します。
+    /// string をキーとし、 <see cref="AttributeValue"/> が値になります。
+    /// this[key] で <see cref="AttributeValue"/> が返ります。
     /// </summary>
     public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
     {
@@ -29,7 +26,7 @@ namespace LibPLATEAU.NET.CityGML
         {
             this.handle = handle;
         }
-        
+
         /// <summary> 属性の数を返します。 </summary>
         public int Count
         {
@@ -66,7 +63,7 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary>
-        /// (key, value) のペアのうち value をすべて返します。
+        /// (key, value) のペアのうち value (<see cref="AttributeValue"/>) をすべて返します。
         /// </summary>
         public IEnumerable<AttributeValue> Values
         {
@@ -79,8 +76,8 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 属性のキーから値を返します。
-        /// key が存在しない場合は KeyNotFoundException を投げます。
-        /// 例外を投げてほしくない場合は代わりに TryGetValue メソッドを利用してください。
+        /// <paramref name="key"/> が存在しない場合は <see cref="KeyNotFoundException"/> を投げます。
+        /// 例外を投げてほしくない場合は代わりに <see cref="TryGetValue"/> メソッドを利用してください。
         /// </summary>
         public AttributeValue this[string key]
         {
@@ -93,6 +90,7 @@ namespace LibPLATEAU.NET.CityGML
                 {
                     throw new KeyNotFoundException($"key {key} is not found in AttributesMap.");
                 }
+
                 // その他のエラー(Exception)
                 DLLUtil.CheckDllError(result);
                 return new AttributeValue(valueHandle);
@@ -100,19 +98,20 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary>
-        /// 属性に key が含まれていれば true,
-        /// key なければ false を返します。
+        /// 属性に <paramref name="key"/> が含まれていれば true,
+        /// <paramref name="key"/> がなければ false を返します。
         /// </summary>
         public bool ContainsKey(string key)
         {
-            APIResult result = NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
+            APIResult result =
+                NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
             DLLUtil.CheckDllError(result);
             return doContainsKey;
         }
 
         /// <summary>
-        /// 属性辞書の中に key が存在すればその値を value に代入して true を返します。
-        /// key が存在しなければ value に null を代入して false を返します。
+        /// 属性辞書の中に <paramref name="key"/> が存在すればその値を <paramref name="value"/> に代入して true を返します。
+        /// <paramref name="key"/> が存在しなければ <paramref name="value"/> に null を代入して false を返します。
         /// </summary>
         public bool TryGetValue(string key, out AttributeValue value)
         {
@@ -121,6 +120,7 @@ namespace LibPLATEAU.NET.CityGML
                 value = this[key];
                 return true;
             }
+
             value = null!;
             return false;
         }
@@ -151,8 +151,8 @@ namespace LibPLATEAU.NET.CityGML
             return ret;
         }
 
-        
-        
+
+
         public IEnumerator<AttrPair> GetEnumerator()
         {
             return new AttributesMapEnumerator(this);
@@ -174,14 +174,15 @@ namespace LibPLATEAU.NET.CityGML
         {
             return GetEnumerator();
         }
-        
-        
-        
+
+
+
         /// <summary>
         /// インナークラスです。
-        /// AttributesMap の Enumerator です。
+        /// <see cref="AttributesMap"/> に関する <see cref="IEnumerator"/> であり、
+        /// foreachで回せるようにするための機能です。
         /// </summary>
-        public class AttributesMapEnumerator : IEnumerator<AttrPair>
+        private class AttributesMapEnumerator : IEnumerator<AttrPair>
         {
             private AttributesMap map;
             private int index;
@@ -192,6 +193,7 @@ namespace LibPLATEAU.NET.CityGML
                 this.map = map;
                 Reset();
             }
+
             public bool MoveNext()
             {
                 this.index++;
@@ -221,8 +223,4 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
     }
-
-
-
-    
 }

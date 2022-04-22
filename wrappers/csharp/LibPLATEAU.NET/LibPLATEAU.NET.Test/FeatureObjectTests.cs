@@ -25,7 +25,7 @@ namespace LibPLATEAU.NET.Test
                 value[3], value[4], value[5]
             );
 
-            double[] getVal = this.featureObject.GetEnvelope();
+            double[] getVal = this.featureObject.Envelope;
 
             // 参考用に envelope の中身を出力します。
             StringBuilder sb = new();

@@ -5,9 +5,8 @@ namespace LibPLATEAU.NET.Test {
         private const string GmlPath = "data/53392642_bldg_6697_op2.gml";
 
         /// <summary>
-        /// テスト用のGMLファイルをロードして CityModel を返します。
+        /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>
-        /// <returns></returns>
         public static CityModel LoadTestGMLFile() {
             var parserParams = new CitygmlParserParams
             {
