@@ -17,7 +17,7 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void Test_GetEnvelop_Returns_Same_As_Set()
+        public void GetEnvelop_Returns_Same_As_Set()
         {
             double[] value = { 1.1, 2.2, 3.3, 4.4, 5.5, 6.6 };
             this.featureObject.SetEnvelope(

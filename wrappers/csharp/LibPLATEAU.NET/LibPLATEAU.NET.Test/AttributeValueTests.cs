@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,6 +10,7 @@ namespace LibPLATEAU.NET.Test
     {
         private AttributesDictionary attrDict;
         
+        /// <summary> テストの前準備です。 </summary>
         public AttributeValueTests()
         {
             var cityModel = TestGMLLoader.LoadTestGMLFile();
@@ -16,51 +18,59 @@ namespace LibPLATEAU.NET.Test
             this.attrDict = cityObject.AttributesDictionary;
         }
         
-        [TestMethod]
-        public void Test_GetAttributeValueAsString()
+        
+        [DataTestMethod]
+        [DataRow("建物ID", "13111-bldg-147301")]
+        [DataRow("bldg:measuredheight", "2.8（テスト）")]
+        public void AsString_Returns_GML_Value(string key, string valueInGmlFile)
         {
-            var val1 = this.attrDict["建物ID"];
-            Assert.AreEqual("13111-bldg-147301", val1.AsString);
-            var val2 = this.attrDict["bldg:measuredheight"];
-            
-            Assert.AreEqual("2.8（テスト）", val2.AsString);
+            var actualVal = this.attrDict[key].AsString;
+            Assert.AreEqual(valueInGmlFile, actualVal);
+        }
+        
+        [DataTestMethod]
+        [DataRow("建物ID", AttributeType.String)]
+        [DataRow("bldg:measuredheight", AttributeType.Double)]
+        [DataRow("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）", AttributeType.AttributeSet)]
+        public void Type_Returns_GML_Type(string key, AttributeType typeInGmlFile)
+        {
+            AttributeType actualType = this.attrDict[key].Type;
+            Assert.AreEqual(typeInGmlFile, actualType);
         }
         
         [TestMethod]
-        public void Test_GetAttributeType()
+        public void AsAttrSet_Returns_Child_Attrs_In_GML()
         {
-            var val1 = this.attrDict["建物ID"];
-            var val2 = this.attrDict["bldg:measuredheight"];
-            var val3 = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
-            Assert.AreEqual(AttributeType.String, val1.Type);
-            Assert.AreEqual(AttributeType.Double, val2.Type);
-            Assert.AreEqual(AttributeType.AttributeSet, val3.Type);
-        }
-        
-        [TestMethod]
-        public void Test_ChildAttributesMap()
-        {
-            var parent = this.attrDict["多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）"];
-            var children = parent.AsAttrSet;
+            const string parentKey = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）";
+            const string childKey = "規模";
+            const string childValInGmlFile = "L2";
+            var parentVal = this.attrDict[parentKey];
+            var children = parentVal.AsAttrSet;
             // 参考用にキーの一覧を表示します。
             Console.WriteLine($"parent: {this.attrDict}");
             Console.WriteLine($"children: {children}");
         
-            var cval = children["規模"];
-            Console.WriteLine($"child value => {cval.AsString}");
-            Assert.AreEqual(cval.AsString, "L2");
+            var actualChildStr = children[childKey].AsString;
+            Console.WriteLine($"child value => {actualChildStr}");
+            Assert.AreEqual(childValInGmlFile, actualChildStr);
         }
         
         [TestMethod]
-        public void Test_AsDouble()
+        public void AsDouble_Returns_GML_Value()
         {
-            Assert.AreEqual(123.456, this.attrDict["doubleAttributeテスト"].AsDouble);
+            const string key = "doubleAttributeテスト";
+            const double valueInGmlFile = 123.456;
+            double actualVal = this.attrDict[key].AsDouble;
+            Assert.AreEqual(valueInGmlFile, actualVal);
         }
         
         [TestMethod]
-        public void Test_AsInt()
+        public void AsInt_Returns_GML_Value()
         {
-            Assert.AreEqual(123, this.attrDict["intAttributeテスト"].AsInt);
+            const string key = "intAttributeテスト";
+            const int valueInGmlFile = 123;
+            int actualVal = this.attrDict[key].AsInt;
+            Assert.AreEqual(valueInGmlFile, actualVal);
         }
     }
 }

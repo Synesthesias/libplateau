@@ -32,7 +32,7 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void Test_GeometriesCount() {
+        public void GeometriesCount_Returns_Positive_Value() {
             int geomCount = this.cityObject.GeometriesCount;
             Assert.IsTrue(geomCount > 0);
             

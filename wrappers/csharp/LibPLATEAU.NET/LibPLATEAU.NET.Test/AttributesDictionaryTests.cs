@@ -10,6 +10,8 @@ namespace LibPLATEAU.NET.Test
     public class AttributesDictionaryTests
     {
         private AttributesDictionary attrDict;
+        
+        /// <summary> テストの前準備です。 </summary>
         public AttributesDictionaryTests()
         {
             var cityModel = TestGMLLoader.LoadTestGMLFile();
@@ -17,26 +19,35 @@ namespace LibPLATEAU.NET.Test
             this.attrDict = cityObject.AttributesDictionary;
         }
         
+        
         [TestMethod]
-        public void Test_GetKeys()
+        public void Keys_Length_Equals_Dictionary_Count()
         {
-            var keys = this.attrDict.Keys.ToArray();
+            int keysLength = this.attrDict.Keys.Count();
+            int dictionaryCount = this.attrDict.Count;
+            Assert.AreEqual(dictionaryCount, keysLength);
+        }
+
+        [TestMethod]
+        public void Keys_Contains_GML_AttrName()
+        {
+            const string oneOfAttrNameInGmlFile = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）";
+            var keys = this.attrDict.Keys;
             bool doContainKey = false;
             foreach (var k in keys)
             {
                 Console.WriteLine($"{k}\n");
-                if (k == "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）")
+                if (k == oneOfAttrNameInGmlFile)
                 {
                     doContainKey = true;
                 }
             }
             Assert.IsTrue(doContainKey);
-            Assert.AreEqual(this.attrDict.Count, keys.Length);
         }
         
         
         [TestMethod]
-        public void Test_Count()
+        public void Count_Returns_Positive_Value()
         {
             Console.WriteLine($"Count = {this.attrDict.Count}");
             Assert.IsTrue(this.attrDict.Count > 0);
@@ -45,58 +56,74 @@ namespace LibPLATEAU.NET.Test
 
 
         [TestMethod]
-        public void Test_TryGetValue()
+        public void TryGetValue_When_NotFound_Returns_False_And_Value_Null()
         {
             bool result = this.attrDict.TryGetValue("DummyNotFound", out AttributeValue value);
             Assert.AreEqual(false, result);
             Assert.IsNull(value);
-            bool result2 = this.attrDict.TryGetValue("建物ID", out AttributeValue value2);
-            Assert.AreEqual(true, result2);
-            Assert.AreEqual("13111-bldg-147301", value2.AsString);
+            
+        }
+
+        [TestMethod]
+        public void TryGetValue_When_Found_Returns_True_And_Value_Valid()
+        {
+            const string key = "建物ID";
+            const string valueInGmlFile = "13111-bldg-147301";
+            bool result = this.attrDict.TryGetValue(key, out AttributeValue value);
+            string actualStr = value.AsString;
+            Assert.AreEqual(true, result);
+            Assert.AreEqual(valueInGmlFile, actualStr);
         }
         
         [TestMethod]
-        public void Test_ContainsKey()
+        public void ContainsKey_Returns_False_On_NotFound()
         {
             bool result = this.attrDict.ContainsKey("DummyNotFound");
             Assert.AreEqual(false, result);
-            bool result2 = this.attrDict.ContainsKey("建物ID");
-            Assert.AreEqual(true, result2);
+            
+        }
+
+        [TestMethod]
+        public void ContainsKey_Returns_True_On_Found()
+        {
+            bool result = this.attrDict.ContainsKey("建物ID");
+            Assert.AreEqual(true, result);
         }
         
+        
         [TestMethod]
-        public void Test_Values()
+        public void Values_Count_Equals_Dictionary_Count()
         {
-            var values = this.attrDict.Values.ToArray();
-            foreach (var val in values)
-            {
-                Console.WriteLine(val.AsString);
-            }
-            Assert.AreEqual(true, values.Select(v => v.AsString).Contains("13111-bldg-147301"));
-            Assert.AreEqual(this.attrDict.Count, values.Length);
+            int valuesCount = this.attrDict.Values.Count();
+            int dictionaryCount = this.attrDict.Count;
+            Assert.AreEqual(dictionaryCount, valuesCount);
+        }
+
+        [TestMethod]
+        public void Values_Contains_GML_Value()
+        {
+            const string oneOfAttrValueInGmlFile = "13111-bldg-147301";
+            bool doContainValue = this.attrDict.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
+            Assert.AreEqual(true, doContainValue);
         }
         
-        /// <summary>
-        /// テスト内容 : foreachを使って Dictionary の全要素を回すことができます。
-        /// </summary>
+        
         [TestMethod]
-        public void Test_Enumerable()
+        public void Dictionary_Can_Be_Iterated_By_Foreach()
         {
-            int count = 0;
+            int iterateCount = 0;
             foreach (var p in this.attrDict)
             {
                 Console.WriteLine($"{p.Key}, {p.Value.AsString}");
-                count++;
+                iterateCount++;
             }
-            Assert.AreEqual(this.attrDict.Count, count);
+            Assert.AreEqual(this.attrDict.Count, iterateCount);
         }
         
-        /// <summary>
-        /// テスト内容 : 存在しないキーを参照しようとしたとき、KeyNotFoundException を投げます。
-        /// </summary>
+
         [TestMethod]
         [ExpectedException(typeof(KeyNotFoundException))]
-        public void Test_MissingKey()
+        public void Throws_KeyNotFoundException_When_Key_Not_Found()
         {
             var _ = this.attrDict["DummyNotFound"];
         }

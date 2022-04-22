@@ -16,9 +16,11 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void Test_Get_Id()
+        public void ID_Returns_GML_ID()
         {
-            Assert.AreEqual(this.plateauObject.ID, "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745");
+            const string idInGmlFile = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
+            string actualId = this.plateauObject.ID;
+            Assert.AreEqual(idInGmlFile, actualId);
         }
     }
 }
