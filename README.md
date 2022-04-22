@@ -21,12 +21,55 @@ cd libplateau
 git submodule update --init --recursive
 ```
 
-### Windows
-Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開く。
+## ビルド
+ビルドの方法について、全OSで共通の留意点を記したあと、  
+OSごとのビルド方法を記載する。
 
-一度cmakeこけるので再度cmakeする。(CMakeLists.txt開いてCtrl+S)
+### 共通
+- C++ の libplateau_c をビルドすると DLL ができる。
+- その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になる。
+- C++を Release 設定でビルドしたなら C# も Release 設定でビルドする必要がある。  
+- Debug設定 なら C# も Debug にする。これを間違うと古いDLLがコピーされてしまう。
+- ビルドの成果物（DLL）は後述のデプロイで利用可能。
 
-ビルド実行する。(Ctrl+Shift+B)
+### Windowsでのビルド
+#### C++のビルド
+* Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開く。
+* 一度cmakeこけるので再度cmakeする。(CMakeLists.txt開いてCtrl+S)
+* ビルド実行する。(Ctrl+Shift+B)
+#### C#のビルド
+* ```wrappers/csharp/LibPLATEAU.NET.sln``` を開く。
+* ビルドする。ただしC++側に変更があった場合、  
+  最新のDLLをC#側にコピーするため「ビルド」ではなく「リビルド」を選択する。
+* ユニットテストも合わせて実行可能。
+
+### Linuxでのビルド
+#### C++のビルド
+* Ubuntuに入っているデフォルトの cmake などではバージョンが古い可能性がある。  
+  その場合は新しいcmakeをマシンにインストールする。
+* OpenGL API が必要なので、なければ以下のコマンドでインストールする。
+```
+sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
+```
+
+* 以下のコマンドを実行する。
+```
+cd (プロジェクトのルートディレクトリ)
+cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PREFIX:PATH="./out/install/x64-Release" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
+cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
+```
+#### C#のビルド
+* マシンに dotnet 6.0以上 をインストールする。
+* 以下のコマンドを実行する。
+```
+cd (プロジェクトのルートディレクトリ）
+cd ./wrappers/csharp/LibPLATEAU.NET
+dotnet build -c Release
+```
+* 合わせてユニットテストもする場合は以下を実行する。
+```
+dotnet test -c Release
+```
 
 ## サンプル
 ### log_skipped_elements
@@ -51,7 +94,7 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
 - 3rdparty
   - 外部ライブラリはすべてここにsubmoduleで追加する。
   - libcitygml
-    - citygmlパースライブラリ。恐らく変更するため本家をフォークしている。
+    - citygmlパースライブラリ。変更するため本家をフォークしている。
   - xerces-c
     - libcitygmlの依存ライブラリ。xmlパースライブラリ
 - data
@@ -64,3 +107,5 @@ Visual Studioのローカルフォルダーを開くからcloneしたリポジ�
   - 内部実装のソースコードを置く。
 - wrappers
   - 他言語向けのwrapper実装を置く。
+- .github/workflows
+  - Github Actions で自動テストを行うための手順を記載する。

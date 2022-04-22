@@ -12,8 +12,7 @@ extern "C"{
             const auto& envelope = featureObject->getEnvelope();
             const auto& lower = envelope.getLowerBound().xyz;
             const auto& upper = envelope.getUpperBound().xyz;
-//            double lower[3] = {11,22,33};
-//            double upper[3] = {44,55,66};
+
             for(int i=0; i<3; i++){
                 outArray[i] = lower[i];
             }
