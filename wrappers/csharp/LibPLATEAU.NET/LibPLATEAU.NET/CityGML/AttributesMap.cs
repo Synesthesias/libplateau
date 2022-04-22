@@ -50,15 +50,16 @@ namespace LibPLATEAU.NET.CityGML
                 int[] keySizes = GetKeySizes();
                 int cnt = Count;
 
-                IntPtr ptrOfStringArray = DLLUtil.AllocPtrArray(cnt, keySizes);
+                var keyHandles = new IntPtr[cnt];
+                this.cachedKeys = new string[cnt];
 
-                NativeMethods.plateau_attributes_map_get_keys(this.handle, ptrOfStringArray);
-                string[] ret = DLLUtil.PtrToStringArray(ptrOfStringArray, cnt, keySizes);
+                NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles);
+                for (int i = 0; i < cnt; i++)
+                {
+                    this.cachedKeys[i] = Marshal.PtrToStringAnsi(keyHandles[i], keySizes[i] - 1);
+                }
 
-                DLLUtil.FreePtrArray(ptrOfStringArray, cnt);
-
-                this.cachedKeys = ret;
-                return ret;
+                return this.cachedKeys;
             }
         }
 
@@ -132,23 +133,9 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         private int[] GetKeySizes()
         {
-            int cnt = Count;
-            int intArraySize = Marshal.SizeOf(typeof(int)) * cnt;
-            IntPtr intArrayPtr = Marshal.AllocCoTaskMem(intArraySize);
-            int[] ret = Enumerable.Repeat(-1, cnt).ToArray();
-            try
-            {
-                // intArrayPtr に欲しい情報を格納します。
-                NativeMethods.plateau_attributes_map_get_key_sizes(this.handle, intArrayPtr);
-                // intArrayPtr の内容を C#の配列のコピーします。
-                Marshal.Copy(intArrayPtr, ret, 0, cnt);
-            }
-            finally
-            {
-                Marshal.FreeCoTaskMem(intArrayPtr);
-            }
-
-            return ret;
+            int[] keySizes = new int[Count];
+            NativeMethods.plateau_attributes_map_get_key_sizes(this.handle, keySizes);
+            return keySizes;
         }
 
 

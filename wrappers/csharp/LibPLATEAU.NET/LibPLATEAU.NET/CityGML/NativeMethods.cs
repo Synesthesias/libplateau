@@ -212,7 +212,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(kDllName)]
         internal static extern void plateau_feature_object_get_envelope(
             [In] IntPtr featureObject,
-            IntPtr outArray
+            [Out] double[] outEnvelope 
         );
 
         [DllImport(kDllName)]
@@ -234,13 +234,13 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(kDllName)]
         internal static extern APIResult plateau_attributes_map_get_key_sizes(
             [In] IntPtr attributesMap,
-            [In, Out] IntPtr outSizeIntArray);
+            [Out] int[] outSizeIntArray);
 
         
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
-            [In, Out] IntPtr ptrOfStringPtr);
+            [In, Out] IntPtr[] keyHandles);
         
         [DllImport(kDllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_attribute_value(

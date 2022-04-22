@@ -23,20 +23,22 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 const int envelopeArrayLength = 6;
-                int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
-                IntPtr ptr = Marshal.AllocCoTaskMem(size);
-                double[] ret = Enumerable.Repeat(0.0, envelopeArrayLength).ToArray();
-                try
-                {
-                    // ptr に Envelope情報( double[6] ) を格納します。
-                    NativeMethods.plateau_feature_object_get_envelope(Handle, ptr);
-                    // ptr の内容を C# の double[6] にコピーします。
-                    Marshal.Copy(ptr, ret, 0, envelopeArrayLength);
-                }
-                finally
-                {
-                    Marshal.FreeCoTaskMem(ptr);
-                }
+                // int size = Marshal.SizeOf(typeof(double)) * envelopeArrayLength;
+                // IntPtr ptr = Marshal.AllocCoTaskMem(size);
+                // double[] ret = Enumerable.Repeat(0.0, envelopeArrayLength).ToArray();
+                // try
+                // {
+                //     // ptr に Envelope情報( double[6] ) を格納します。
+                //     NativeMethods.plateau_feature_object_get_envelope(Handle, ptr);
+                //     // ptr の内容を C# の double[6] にコピーします。
+                //     Marshal.Copy(ptr, ret, 0, envelopeArrayLength);
+                // }
+                // finally
+                // {
+                //     Marshal.FreeCoTaskMem(ptr);
+                // }
+                double[] ret = new double[envelopeArrayLength];
+                NativeMethods.plateau_feature_object_get_envelope(Handle, ret);
 
                 return ret;
             }

@@ -39,24 +39,19 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    /// AttributesMapの各キーを文字列の配列 out_keys に格納します。
+    /// AttributesMapの各キーの文字列としてのポインタを、文字列のポインタの配列 out_keys に格納します。
     /// DLLの利用者が out_keys の各文字列ポインタから何バイト読み出せば良いかを知るには
     /// 上の関数から要素数と各keyのバイト数を取得すれば良いです。
-    /// out_keys の各要素が必要なメモリを確保していなければアクセス違反となります。
+    /// out_keys がポインタ配列を格納するのに必要なメモリを確保していなければアクセス違反となります。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_keys(
             const AttributesMap *const attributes_map,
-            char ** const out_keys
+            const char ** const out_keys
     ) {
 
         API_TRY {
             int i = 0;
             for (const auto &pair: *attributes_map) {
-                // キー文字列を out_keys[i] にコピーします。
-                char * const string_i = out_keys[i];
-                auto const key_chars = pair.first.c_str();
-                const int len = strlen(key_chars);
-                strncpy(string_i, key_chars, len);
-                string_i[len] = '\0'; // 最後はnull終端文字
+                out_keys[i] = pair.first.c_str();
                 i++;
             }
             return APIResult::Success;
