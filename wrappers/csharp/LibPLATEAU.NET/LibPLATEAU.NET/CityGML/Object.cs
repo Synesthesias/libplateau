@@ -5,12 +5,12 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける全てのオブジェクトのベースクラスです。
-    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて AttributesDictionary に格納されています。
+    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて AttributesMap に格納されています。
     /// </summary>
     public class Object
     {
         private IntPtr handle;
-        private AttributesDictionary? attributesDictionary;
+        private AttributesMap? attributesMap;
         private string id = "";
 
         internal Object(IntPtr handle)
@@ -43,17 +43,17 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// 属性の辞書を取得します。
         /// </summary>
-        public AttributesDictionary AttributesDictionary
+        public AttributesMap AttributesMap
         {
             get
             {
-                if (this.attributesDictionary == null)
+                if (this.attributesMap == null)
                 {
-                    var dictPtr = NativeMethods.plateau_object_get_attributes_map(Handle);
-                    var dict = new AttributesDictionary(dictPtr);
-                    this.attributesDictionary = dict;
+                    var mapPtr = NativeMethods.plateau_object_get_attributes_map(Handle);
+                    var map = new AttributesMap(mapPtr);
+                    this.attributesMap = map;
                 }
-                return this.attributesDictionary;
+                return this.attributesMap;
             }
         }
         

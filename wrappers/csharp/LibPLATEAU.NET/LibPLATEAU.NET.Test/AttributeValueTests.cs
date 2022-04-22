@@ -8,14 +8,14 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class AttributeValueTests
     {
-        private AttributesDictionary attrDict;
+        private AttributesMap attrMap;
         
         /// <summary> テストの前準備です。 </summary>
         public AttributeValueTests()
         {
             var cityModel = TestGMLLoader.LoadTestGMLFile();
             var cityObject = cityModel.RootCityObjects[0];
-            this.attrDict = cityObject.AttributesDictionary;
+            this.attrMap = cityObject.AttributesMap;
         }
         
         
@@ -24,7 +24,7 @@ namespace LibPLATEAU.NET.Test
         [DataRow("bldg:measuredheight", "2.8（テスト）")]
         public void AsString_Returns_GML_Value(string key, string valueInGmlFile)
         {
-            var actualVal = this.attrDict[key].AsString;
+            var actualVal = this.attrMap[key].AsString;
             Assert.AreEqual(valueInGmlFile, actualVal);
         }
         
@@ -34,7 +34,7 @@ namespace LibPLATEAU.NET.Test
         [DataRow("多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）", AttributeType.AttributeSet)]
         public void Type_Returns_GML_Type(string key, AttributeType typeInGmlFile)
         {
-            AttributeType actualType = this.attrDict[key].Type;
+            AttributeType actualType = this.attrMap[key].Type;
             Assert.AreEqual(typeInGmlFile, actualType);
         }
         
@@ -44,10 +44,10 @@ namespace LibPLATEAU.NET.Test
             const string parentKey = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）";
             const string childKey = "規模";
             const string childValInGmlFile = "L2";
-            var parentVal = this.attrDict[parentKey];
+            var parentVal = this.attrMap[parentKey];
             var children = parentVal.AsAttrSet;
             // 参考用にキーの一覧を表示します。
-            Console.WriteLine($"parent: {this.attrDict}");
+            Console.WriteLine($"parent: {this.attrMap}");
             Console.WriteLine($"children: {children}");
         
             var actualChildStr = children[childKey].AsString;
@@ -60,7 +60,7 @@ namespace LibPLATEAU.NET.Test
         {
             const string key = "doubleAttributeテスト";
             const double valueInGmlFile = 123.456;
-            double actualVal = this.attrDict[key].AsDouble;
+            double actualVal = this.attrMap[key].AsDouble;
             Assert.AreEqual(valueInGmlFile, actualVal);
         }
         
@@ -69,7 +69,7 @@ namespace LibPLATEAU.NET.Test
         {
             const string key = "intAttributeテスト";
             const int valueInGmlFile = 123;
-            int actualVal = this.attrDict[key].AsInt;
+            int actualVal = this.attrMap[key].AsInt;
             Assert.AreEqual(valueInGmlFile, actualVal);
         }
     }

@@ -7,32 +7,32 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace LibPLATEAU.NET.Test
 {
     [TestClass]
-    public class AttributesDictionaryTests
+    public class AttributesMapTests
     {
-        private AttributesDictionary attrDict;
+        private AttributesMap attrMap;
         
         /// <summary> テストの前準備です。 </summary>
-        public AttributesDictionaryTests()
+        public AttributesMapTests()
         {
             var cityModel = TestGMLLoader.LoadTestGMLFile();
             var cityObject = cityModel.RootCityObjects[0];
-            this.attrDict = cityObject.AttributesDictionary;
+            this.attrMap = cityObject.AttributesMap;
         }
         
         
         [TestMethod]
-        public void Keys_Length_Equals_Dictionary_Count()
+        public void Keys_Length_Equals_Map_Count()
         {
-            int keysLength = this.attrDict.Keys.Count();
-            int dictionaryCount = this.attrDict.Count;
-            Assert.AreEqual(dictionaryCount, keysLength);
+            int keysLength = this.attrMap.Keys.Count();
+            int mapCount = this.attrMap.Count;
+            Assert.AreEqual(mapCount, keysLength);
         }
 
         [TestMethod]
         public void Keys_Contains_GML_AttrName()
         {
             const string oneOfAttrNameInGmlFile = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）";
-            var keys = this.attrDict.Keys;
+            var keys = this.attrMap.Keys;
             bool doContainKey = false;
             foreach (var k in keys)
             {
@@ -49,8 +49,8 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Count_Returns_Positive_Value()
         {
-            Console.WriteLine($"Count = {this.attrDict.Count}");
-            Assert.IsTrue(this.attrDict.Count > 0);
+            Console.WriteLine($"Count = {this.attrMap.Count}");
+            Assert.IsTrue(this.attrMap.Count > 0);
         }
         
 
@@ -58,7 +58,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void TryGetValue_When_NotFound_Returns_False_And_Value_Null()
         {
-            bool result = this.attrDict.TryGetValue("DummyNotFound", out AttributeValue value);
+            bool result = this.attrMap.TryGetValue("DummyNotFound", out AttributeValue value);
             Assert.AreEqual(false, result);
             Assert.IsNull(value);
             
@@ -69,7 +69,7 @@ namespace LibPLATEAU.NET.Test
         {
             const string key = "建物ID";
             const string valueInGmlFile = "13111-bldg-147301";
-            bool result = this.attrDict.TryGetValue(key, out AttributeValue value);
+            bool result = this.attrMap.TryGetValue(key, out AttributeValue value);
             string actualStr = value.AsString;
             Assert.AreEqual(true, result);
             Assert.AreEqual(valueInGmlFile, actualStr);
@@ -78,7 +78,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void ContainsKey_Returns_False_On_NotFound()
         {
-            bool result = this.attrDict.ContainsKey("DummyNotFound");
+            bool result = this.attrMap.ContainsKey("DummyNotFound");
             Assert.AreEqual(false, result);
             
         }
@@ -86,38 +86,38 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void ContainsKey_Returns_True_On_Found()
         {
-            bool result = this.attrDict.ContainsKey("建物ID");
+            bool result = this.attrMap.ContainsKey("建物ID");
             Assert.AreEqual(true, result);
         }
         
         
         [TestMethod]
-        public void Values_Count_Equals_Dictionary_Count()
+        public void Values_Count_Equals_Map_Count()
         {
-            int valuesCount = this.attrDict.Values.Count();
-            int dictionaryCount = this.attrDict.Count;
-            Assert.AreEqual(dictionaryCount, valuesCount);
+            int valuesCount = this.attrMap.Values.Count();
+            int mapCount = this.attrMap.Count;
+            Assert.AreEqual(mapCount, valuesCount);
         }
 
         [TestMethod]
         public void Values_Contains_GML_Value()
         {
             const string oneOfAttrValueInGmlFile = "13111-bldg-147301";
-            bool doContainValue = this.attrDict.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
+            bool doContainValue = this.attrMap.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
             Assert.AreEqual(true, doContainValue);
         }
         
         
         [TestMethod]
-        public void Dictionary_Can_Be_Iterated_By_Foreach()
+        public void Map_Can_Be_Iterated_By_Foreach()
         {
             int iterateCount = 0;
-            foreach (var p in this.attrDict)
+            foreach (var p in this.attrMap)
             {
                 Console.WriteLine($"{p.Key}, {p.Value.AsString}");
                 iterateCount++;
             }
-            Assert.AreEqual(this.attrDict.Count, iterateCount);
+            Assert.AreEqual(this.attrMap.Count, iterateCount);
         }
         
 
@@ -125,7 +125,7 @@ namespace LibPLATEAU.NET.Test
         [ExpectedException(typeof(KeyNotFoundException))]
         public void Throws_KeyNotFoundException_When_Key_Not_Found()
         {
-            var _ = this.attrDict["DummyNotFound"];
+            var _ = this.attrMap["DummyNotFound"];
         }
 
     }

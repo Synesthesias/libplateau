@@ -68,16 +68,16 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// Type が AttributeSet であることを前提に、
-        /// 子の AttributesDictionary を返します。
+        /// 子の AttributesMap を返します。
         /// Type がその他である場合は意味を成しません。
         /// </summary>
-        public AttributesDictionary AsAttrSet
+        public AttributesMap AsAttrSet
         {
             get
             {
                 APIResult result = NativeMethods.plateau_attribute_as_attribute_set(this.handle, out IntPtr ptr);
                 DLLUtil.CheckDllError(result);
-                return new AttributesDictionary(ptr);
+                return new AttributesMap(ptr);
             }
         }
     }

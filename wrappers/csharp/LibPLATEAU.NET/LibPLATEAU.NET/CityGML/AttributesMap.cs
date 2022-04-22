@@ -20,12 +20,12 @@ namespace LibPLATEAU.NET.CityGML
     /// string をキーとし、 AttributeValue が値になります。
     /// this[key] で AttributeValueが返ります。
     /// </summary>
-    public class AttributesDictionary : IReadOnlyDictionary<string, AttributeValue>
+    public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
     {
         private IntPtr handle;
         private string[]? cachedKeys;
 
-        internal AttributesDictionary(IntPtr handle)
+        internal AttributesMap(IntPtr handle)
         {
             this.handle = handle;
         }
@@ -91,7 +91,7 @@ namespace LibPLATEAU.NET.CityGML
                 // キーが存在しないエラー
                 if (result == APIResult.ErrorValueNotFound)
                 {
-                    throw new KeyNotFoundException($"key {key} is not found in AttributesDictionary.");
+                    throw new KeyNotFoundException($"key {key} is not found in AttributesMap.");
                 }
                 // その他のエラー(Exception)
                 DLLUtil.CheckDllError(result);
@@ -155,7 +155,7 @@ namespace LibPLATEAU.NET.CityGML
         
         public IEnumerator<AttrPair> GetEnumerator()
         {
-            return new AttributesDictionaryEnumerator(this);
+            return new AttributesMapEnumerator(this);
         }
 
         /// <summary>
@@ -179,23 +179,23 @@ namespace LibPLATEAU.NET.CityGML
         
         /// <summary>
         /// インナークラスです。
-        /// AttributesDictionary の Enumerator です。
+        /// AttributesMap の Enumerator です。
         /// </summary>
-        public class AttributesDictionaryEnumerator : IEnumerator<AttrPair>
+        public class AttributesMapEnumerator : IEnumerator<AttrPair>
         {
-            private AttributesDictionary dict;
+            private AttributesMap map;
             private int index;
 
 
-            public AttributesDictionaryEnumerator(AttributesDictionary dict)
+            public AttributesMapEnumerator(AttributesMap map)
             {
-                this.dict = dict;
+                this.map = map;
                 Reset();
             }
             public bool MoveNext()
             {
                 this.index++;
-                return this.index < this.dict.Count;
+                return this.index < this.map.Count;
             }
 
             public void Reset()
@@ -209,9 +209,9 @@ namespace LibPLATEAU.NET.CityGML
             {
                 get
                 {
-                    this.dict.cachedKeys ??= this.dict.Keys.ToArray();
-                    string key = this.dict.cachedKeys[this.index];
-                    return new KeyValuePair<string, AttributeValue>(key, this.dict[key]);
+                    this.map.cachedKeys ??= this.map.Keys.ToArray();
+                    string key = this.map.cachedKeys[this.index];
+                    return new KeyValuePair<string, AttributeValue>(key, this.map[key]);
                 }
             }
 

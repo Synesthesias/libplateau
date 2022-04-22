@@ -21,8 +21,8 @@ namespace LibPLATEAU.NET.Debug
             };
             var cityModel = CityGml.Load(gmlPath, parserParams);
             var cityObject = cityModel.RootCityObjects[0];
-            var attrDict = cityObject.AttributesDictionary;
-            Console.WriteLine(string.Join(", ", attrDict.Keys));
+            var attrMap = cityObject.AttributesMap;
+            Console.WriteLine(string.Join(", ", attrMap.Keys));
         }
     }
 }
