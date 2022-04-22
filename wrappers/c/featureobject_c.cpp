@@ -25,13 +25,13 @@ extern "C"{
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_set_envelope(
             FeatureObject* const feature_object,
-            double lower_x, double lower_y, double lower_z, double upper_x, double upper_y, double upper_z
+            const double lower_x, const double lower_y, const double lower_z, const double upper_x, const double upper_y, const double upper_z
     ){
         API_TRY{
             // この動的確保領域は setEnvelope の中で unique_ptr に渡ります。
-            auto e = new Envelope();
-            auto lower = TVec3d(lower_x, lower_y, lower_z);
-            auto upper = TVec3d(upper_x, upper_y, upper_z);
+            const auto e = new Envelope();
+            const auto lower = TVec3d(lower_x, lower_y, lower_z);
+            const auto upper = TVec3d(upper_x, upper_y, upper_z);
             e->setLowerBound(lower);
             e->setUpperBound(upper);
             feature_object->setEnvelope(e);

@@ -10,7 +10,7 @@ extern "C" {
     /// AttributesMapの要素数を取得します。結果は out_count のメモリ領域に書き込まれます。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_key_count(
             const AttributesMap *const attributes_map,
-            int* out_count) {
+            int* const out_count) {
         API_TRY {
             *out_count = attributes_map->size();
             return APIResult::Success;
@@ -45,16 +45,16 @@ extern "C" {
     /// out_keys の各要素が必要なメモリを確保していなければアクセス違反となります。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_keys(
             const AttributesMap *const attributes_map,
-            char **out_keys
+            char ** const out_keys
     ) {
 
         API_TRY {
             int i = 0;
             for (const auto &pair: *attributes_map) {
                 // キー文字列を out_keys[i] にコピーします。
-                char *string_i = out_keys[i];
-                auto key_chars = pair.first.c_str();
-                int len = strlen(key_chars);
+                char * const string_i = out_keys[i];
+                auto const key_chars = pair.first.c_str();
+                const int len = strlen(key_chars);
                 strncpy(string_i, key_chars, len);
                 string_i[len] = '\0'; // 最後はnull終端文字
                 i++;
@@ -72,14 +72,14 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_attribute_value(
             const AttributesMap *const attributes_map,
             const char *const key_char,
-            const AttributeValue** out_attribute_value_ptr
+            const AttributeValue** const out_attribute_value_ptr
     ) {
         API_TRY {
-            auto key_str = std::string(key_char);
+            const auto key_str = std::string(key_char);
             if(attributes_map->count(key_str) <= 0){
                 return APIResult::ErrorValueNotFound;
             }
-            const AttributeValue *value = &(*attributes_map).at(key_str);
+            const AttributeValue * const value = &(*attributes_map).at(key_str);
             *out_attribute_value_ptr = value;
             return APIResult::Success;
         }
@@ -92,11 +92,11 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_do_contains_key(
             const AttributesMap* const attributes_map,
             const char* const key_char,
-            bool* out_result
+            bool* const out_result
             ){
         API_TRY{
-            auto key_str = std::string(key_char);
-            bool result = attributes_map->count(key_str) > 0;
+            const auto key_str = std::string(key_char);
+            const bool result = attributes_map->count(key_str) > 0;
             *out_result = result;
             return APIResult::Success;
         }

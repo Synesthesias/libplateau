@@ -33,7 +33,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_strin
 /// 用途は値を文字列として取得する前準備です。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_length(
         const AttributeValue *const attribute_value,
-        int *out_str_length
+        int * const out_str_length
 ) {
     API_TRY {
         const std::string value = attribute_value->asString();
@@ -48,7 +48,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_l
 /// 結果は out_attribute_type に入ります。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_type(
         const AttributeValue *const attribute_value,
-        AttributeType *out_attribute_type
+        AttributeType * const out_attribute_type
 ) {
     API_TRY {
         *out_attribute_type = attribute_value->getType();
@@ -63,7 +63,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_type(
 /// 結果は out_attribute_set_ptr に入ります。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_as_attribute_set(
         const AttributeValue *const attribute_value,
-        AttributesMap **out_attribute_set_ptr
+        AttributesMap ** const out_attribute_set_ptr
 ) {
     API_TRY {
         auto *attr_set = &attribute_value->asAttributeSet();
