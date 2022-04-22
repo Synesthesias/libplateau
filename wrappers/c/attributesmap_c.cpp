@@ -79,8 +79,7 @@ extern "C" {
             if(attributes_map->count(key_str) <= 0){
                 return APIResult::ErrorValueNotFound;
             }
-            const AttributeValue * const value = &(*attributes_map).at(key_str);
-            *out_attribute_value_ptr = value;
+            *out_attribute_value_ptr = &attributes_map->at(key_str);
             return APIResult::Success;
         }
         API_CATCH;

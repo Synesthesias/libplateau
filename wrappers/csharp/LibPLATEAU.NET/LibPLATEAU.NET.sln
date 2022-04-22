@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPLATEAU.NET", "LibPLATEA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPLATEAU.NET.Test", "LibPLATEAU.NET.Test\LibPLATEAU.NET.Test.csproj", "{E21BF247-31C5-453F-A1D0-45815EBB0FA5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibPLATEAU.NET.Debug", "LibPLATEAU.NET.Debug\LibPLATEAU.NET.Debug.csproj", "{789851C8-FE26-48C7-89FD-772A7D3C54FD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{E21BF247-31C5-453F-A1D0-45815EBB0FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E21BF247-31C5-453F-A1D0-45815EBB0FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E21BF247-31C5-453F-A1D0-45815EBB0FA5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{789851C8-FE26-48C7-89FD-772A7D3C54FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{789851C8-FE26-48C7-89FD-772A7D3C54FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{789851C8-FE26-48C7-89FD-772A7D3C54FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{789851C8-FE26-48C7-89FD-772A7D3C54FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
