@@ -5,36 +5,36 @@ using namespace citygml;
 
 extern "C"{
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_get_envelope(
-            const FeatureObject* const featureObject,
-            double* const outArray
+            const FeatureObject* const feature_object,
+            double* const out_array
             ){
         API_TRY{
-            const auto& envelope = featureObject->getEnvelope();
+            const auto& envelope = feature_object->getEnvelope();
             const auto& lower = envelope.getLowerBound().xyz;
             const auto& upper = envelope.getUpperBound().xyz;
 
             for(int i=0; i<3; i++){
-                outArray[i] = lower[i];
+                out_array[i] = lower[i];
             }
             for(int i=0; i<3; i++){
-                outArray[i+3] = upper[i];
+                out_array[i + 3] = upper[i];
             }
         }
         API_CATCH;
     }
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_set_envelope(
-            FeatureObject* const featureObject,
-            double lowerX, double lowerY, double lowerZ, double upperX, double upperY, double upperZ
+            FeatureObject* const feature_object,
+            double lower_x, double lower_y, double lower_z, double upper_x, double upper_y, double upper_z
     ){
         API_TRY{
             // この動的確保領域は setEnvelope の中で unique_ptr に渡ります。
             auto e = new Envelope();
-            auto lower = TVec3d(lowerX, lowerY, lowerZ);
-            auto upper = TVec3d(upperX, upperY, upperZ);
+            auto lower = TVec3d(lower_x, lower_y, lower_z);
+            auto upper = TVec3d(upper_x, upper_y, upper_z);
             e->setLowerBound(lower);
             e->setUpperBound(upper);
-            featureObject->setEnvelope(e);
+            feature_object->setEnvelope(e);
         }
         API_CATCH;
     }
