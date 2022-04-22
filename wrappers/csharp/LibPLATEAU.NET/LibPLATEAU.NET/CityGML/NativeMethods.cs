@@ -184,11 +184,11 @@ namespace LibPLATEAU.NET.CityGML
 
         [DllImport(kDllName)]
         internal static extern CityObjectType plateau_city_object_get_type(
-            [In] IntPtr cityObject);
+            [In] IntPtr cityObjectHandle);
 
         [DllImport(kDllName)]
         internal static extern int plateau_city_object_get_geometries_count(
-            [In] IntPtr cityObject);
+            [In] IntPtr cityObjectHandle);
 
 
         // ***************
@@ -197,12 +197,12 @@ namespace LibPLATEAU.NET.CityGML
 
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_id(
-            [In] IntPtr obj);
+            [In] IntPtr objHandle);
         
         
         [DllImport(kDllName)]
         internal static extern IntPtr plateau_object_get_attributes_map(
-            [In] IntPtr obj);
+            [In] IntPtr objHandle);
 
 
         // ***************
