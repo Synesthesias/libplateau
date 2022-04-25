@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -34,8 +35,10 @@ namespace LibPLATEAU.NET.CityGML
                 {
                     return this.id;
                 }
-
-                this.id = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_id(this.handle)) ?? "";
+                
+                IntPtr strPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle,
+                    NativeMethods.plateau_object_get_id);
+                this.id = Marshal.PtrToStringAnsi(strPtr) ?? "";
                 return this.id;
             }
         }
@@ -48,7 +51,8 @@ namespace LibPLATEAU.NET.CityGML
             {
                 if (this.attributesMap == null)
                 {
-                    var mapPtr = NativeMethods.plateau_object_get_attributes_map(Handle);
+                    IntPtr mapPtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
+                        NativeMethods.plateau_object_get_attributes_map);
                     var map = new AttributesMap(mapPtr);
                     this.attributesMap = map;
                 }

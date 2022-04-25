@@ -32,8 +32,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attributes_map_get_key_count(this.handle, out int count);
-                DLLUtil.CheckDllError(result);
+                int count = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_attributes_map_get_key_count);
                 return count;
             }
         }

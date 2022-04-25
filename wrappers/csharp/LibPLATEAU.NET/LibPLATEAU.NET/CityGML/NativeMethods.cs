@@ -91,6 +91,21 @@ namespace LibPLATEAU.NET.CityGML
 
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
+    
+    public enum GeometryType : ulong
+    {
+        GT_Unknown          = 1ul << 0,
+        GT_Roof             = 1ul << 1,
+        GT_Wall             = 1ul << 2,
+        GT_Ground           = 1ul << 3,
+        GT_Closure          = 1ul << 4,
+        GT_Floor            = 1ul << 5,
+        GT_InteriorWall     = 1ul << 6,
+        GT_Ceiling          = 1ul << 7,
+        GT_OuterCeiling     = 1ul << 8,
+        GT_OuterFloor       = 1ul << 9,
+        GT_Tin              = 1ul << 10,
+    }
 
     /// <summary>
     /// 属性の値の想定形式です。
@@ -136,9 +151,9 @@ namespace LibPLATEAU.NET.CityGML
             bool value);
 
         [DllImport(kDllName)]
-        [return: MarshalAs(UnmanagedType.U1)]
-        internal static extern bool plateau_obj_writer_get_merge_mesh_flg(
-            [In] IntPtr objWriter);
+        internal static extern APIResult plateau_obj_writer_get_merge_mesh_flg(
+            [In] IntPtr objWriter,
+            out bool outMeshFlg);
 
         [DllImport(kDllName)]
         internal static extern void plateau_obj_writer_set_dest_axes(
@@ -146,8 +161,9 @@ namespace LibPLATEAU.NET.CityGML
             AxesConversion value);
 
         [DllImport(kDllName)]
-        internal static extern AxesConversion plateau_obj_writer_get_dest_axes(
-            [In] IntPtr objWriter);
+        internal static extern APIResult plateau_obj_writer_get_dest_axes(
+            [In] IntPtr objWriter,
+            out AxesConversion axesConversion);
 
         [DllImport(kDllName)]
         internal static extern PlateauVector3d plateau_obj_writer_get_reference_point(
@@ -183,26 +199,56 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
 
         [DllImport(kDllName)]
-        internal static extern CityObjectType plateau_city_object_get_type(
-            [In] IntPtr cityObjectHandle);
+        internal static extern APIResult plateau_city_object_get_type(
+            [In] IntPtr cityObjectHandle,
+            out CityObjectType outCityObjType);
 
         [DllImport(kDllName)]
-        internal static extern int plateau_city_object_get_geometries_count(
-            [In] IntPtr cityObjectHandle);
+        internal static extern APIResult plateau_city_object_get_geometries_count(
+            [In] IntPtr cityObjectHandle,
+            out int outCount);
 
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_city_object_get_address(
+            [In] IntPtr cityObjectHandle,
+            out IntPtr addressHandle);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_city_object_get_implicit_geometry_count(
+            [In] IntPtr cityObjectHandle,
+            out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_city_object_get_child_city_object_count(
+            [In] IntPtr cityObjectHandle,
+            out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_city_object_get_child_city_object(
+            [In] IntPtr cityObjectHandle,
+            out IntPtr outChildHandle,
+            int index);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_city_object_get_geometry(
+            [In] IntPtr cityObjectHandle,
+            out IntPtr outGeometryHandle,
+            int index);
 
         // ***************
         //  Object_c.cpp
         // ***************
 
         [DllImport(kDllName)]
-        internal static extern IntPtr plateau_object_get_id(
-            [In] IntPtr objHandle);
+        internal static extern APIResult plateau_object_get_id(
+            [In] IntPtr objHandle,
+            out IntPtr outStrPtr);
         
         
         [DllImport(kDllName)]
-        internal static extern IntPtr plateau_object_get_attributes_map(
-            [In] IntPtr objHandle);
+        internal static extern APIResult plateau_object_get_attributes_map(
+            [In] IntPtr objHandle,
+            out IntPtr attributesMapPtr);
 
 
         // ***************
@@ -210,13 +256,13 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
 
         [DllImport(kDllName)]
-        internal static extern void plateau_feature_object_get_envelope(
+        internal static extern APIResult plateau_feature_object_get_envelope(
             [In] IntPtr featureObject,
             [Out] double[] outEnvelope 
         );
 
         [DllImport(kDllName)]
-        internal static extern void plateau_feature_object_set_envelope(
+        internal static extern APIResult plateau_feature_object_set_envelope(
             [In] IntPtr featureObject,
             double lowerX, double lowerY, double lowerZ,
             double upperX, double upperY, double upperZ
@@ -278,5 +324,98 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_attribute_as_attribute_set(
             [In] IntPtr attributeValue,
             [Out] out IntPtr attrSetPtr);
+        
+        
+        // ***************
+        //  address_c.cpp
+        // ***************
+        [DllImport(kDllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_address_get_country(
+            [In] IntPtr addressHandle,
+            out IntPtr outCountryNamePtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_country_str_length(
+            [In] IntPtr addressHandle,
+            out int strLength);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_locality(
+            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_locality_str_length(
+            [In] IntPtr addressHandle,
+            out int strLength);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_postal_code(
+            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_postal_code_str_length(
+            [In] IntPtr addressHandle,
+            out int strLength);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_thoroughfare_name(
+            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_thoroughfare_name_str_length(
+            [In] IntPtr addressHandle,
+            out int strLength);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_thoroughfare_number(
+            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_address_get_thoroughfare_number_str_length(
+            [In] IntPtr addressHandle,
+            out int strLength);
+        
+        // ***************
+        //  geometry_c.cpp
+        // ***************
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_type(
+            [In] IntPtr geometryHandle,
+            out GeometryType type);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_geometries_count(
+            [In] IntPtr geometryHandle,
+            out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_polygons_count(
+            [In] IntPtr geometryHandle,
+            out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_child_geometry(
+            [In] IntPtr geometryHandle,
+            out IntPtr childGeomHandle,
+            int index);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_polygon(
+            [In] IntPtr geometryHandle,
+            out IntPtr polygonHandle,
+            int index
+        );
+        
+        // ***************
+        //  polygon_c.cpp
+        // ***************
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_vertices_count(
+            [In] IntPtr polygonHandle,
+            out int outVertCount);
     }
 }

@@ -6,6 +6,8 @@
 #include "libplateau_c.h"
 #include "city_model_c.h"
 
+using namespace libplateau;
+
 extern "C" {
     struct plateau_vector3d {
         double x;
@@ -43,13 +45,12 @@ extern "C" {
         API_CATCH;
     }
 
-    LIBPLATEAU_C_EXPORT bool LIBPLATEAU_C_API plateau_obj_writer_get_merge_mesh_flg(ObjWriter* obj_writer) {
-        API_TRY{
-            return obj_writer->getMergeMeshFlg();
-        }
-        API_CATCH;
-        return false;
-    }
+
+    DLL_VALUE_FUNC(plateau_obj_writer_get_merge_mesh_flg,
+                   ObjWriter,
+                   bool,
+                   handle->getMergeMeshFlg())
+
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_dest_axes(ObjWriter* obj_writer, AxesConversion value) {
         API_TRY{
@@ -59,13 +60,10 @@ extern "C" {
     }
 
 
-    LIBPLATEAU_C_EXPORT AxesConversion LIBPLATEAU_C_API plateau_obj_writer_get_dest_axes(ObjWriter* obj_writer) {
-        API_TRY{
-            return (obj_writer->getDestAxes());
-        }
-        API_CATCH;
-        return AxesConversion::RUF;
-    }
+    DLL_VALUE_FUNC(plateau_obj_writer_get_dest_axes,
+                   ObjWriter,
+                   AxesConversion,
+                   handle->getDestAxes())
 
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_valid_reference_point(ObjWriter* obj_writer, const CityModelHandle* city_model) {
@@ -86,6 +84,7 @@ extern "C" {
         API_CATCH;
         return plateau_vector3d{ 0, 0, 0 };
     }
+
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_reference_point(ObjWriter* obj_writer, const plateau_vector3d reference_point) {
         API_TRY{

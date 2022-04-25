@@ -39,9 +39,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_value_get_str_length(
-                    this.handle, out int valueStrSize);
-                DLLUtil.CheckDllError(result);
+                int valueStrSize = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_attribute_value_get_str_length);
                 StringBuilder sb = new(valueStrSize);
                 NativeMethods.plateau_attribute_value_get_string(
                     this.handle, sb);
@@ -64,8 +63,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_value_get_type(this.handle, out AttributeType type);
-                DLLUtil.CheckDllError(result);
+                AttributeType type = DLLUtil.GetNativeValue<AttributeType>(this.handle,
+                    NativeMethods.plateau_attribute_value_get_type);
                 return type;
             }
         }
@@ -80,9 +79,9 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_as_attribute_set(this.handle, out IntPtr ptr);
-                DLLUtil.CheckDllError(result);
-                return new AttributesMap(ptr);
+                IntPtr attributesHandle = DLLUtil.GetNativeValue<IntPtr>(this.handle,
+                    NativeMethods.plateau_attribute_as_attribute_set);
+                return new AttributesMap(attributesHandle);
             }
         }
     }

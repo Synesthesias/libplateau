@@ -1,4 +1,4 @@
-using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Object = LibPLATEAU.NET.CityGML.Object;
 

@@ -509,6 +509,13 @@
 									<xAL:LocalityName Type="Town">東京都大田区羽田空港二丁目</xAL:LocalityName>
 								</xAL:Locality>
 							</xAL:Country>
+							<xAL:PostalCode>
+								<xAL:PostalCodeNumber>123-4567</xAL:PostalCodeNumber>
+							</xAL:PostalCode>
+							<xAL:ThoroughFare>
+								<xAL:ThoroughFareName>Test Street テスト丁目</xAL:ThoroughFareName>
+								<xAL:ThoroughFareNumber>Test番地</xAL:ThoroughFareNumber>
+							</xAL:ThoroughFare>
 						</xAL:AddressDetails>
 					</core:xalAddress>
 				</core:Address>

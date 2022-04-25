@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

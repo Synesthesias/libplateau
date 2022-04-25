@@ -7,17 +7,12 @@ using namespace libplateau;
 
 extern "C" {
 
-    /// AttributesMapの要素数を取得します。結果は out_count のメモリ領域に書き込まれます。
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_key_count(
-            const AttributesMap *const attributes_map,
-            int* const out_count) {
-        API_TRY {
-            *out_count = attributes_map->size();
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+
+    /// AttributesMapの要素数を取得します。
+    DLL_VALUE_FUNC(plateau_attributes_map_get_key_count,
+                   AttributesMap,
+                   int,
+                   handle->size())
 
     /// AttributesMapの各キーの文字列のバイト数(null終端文字を含む)をint配列 out_sizes に格納します。
     /// out_sizes は AttributesMap の要素数以上のメモリが確保されていることが前提であり、そうでないとアクセス違反です。

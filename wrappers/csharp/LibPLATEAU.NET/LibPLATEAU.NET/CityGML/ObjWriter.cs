@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -73,7 +74,9 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public bool GetMergeMeshFlg()
         {
-            return NativeMethods.plateau_obj_writer_get_merge_mesh_flg(this.handle);
+            bool meshFlg = DLLUtil.GetNativeValue<bool>(this.handle,
+                NativeMethods.plateau_obj_writer_get_merge_mesh_flg);
+            return meshFlg;
         }
 
 
@@ -90,12 +93,14 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public AxesConversion GetDestAxes()
         {
-            return NativeMethods.plateau_obj_writer_get_dest_axes(this.handle);
+            AxesConversion axesConversion = DLLUtil.GetNativeValue<AxesConversion>(this.handle,
+                NativeMethods.plateau_obj_writer_get_dest_axes);
+            return axesConversion;
         }
 
 
         /// <summary>
-        /// <see cref="ReferencePoint"/>を<paramref name="cityModel"/>の<see cref="Envelope"/>の中心に設定します。
+        /// <see cref="ReferencePoint"/>を<paramref name="cityModel"/>の Envelope の中心に設定します。
         /// </summary>
         /// <param name="cityModel"></param>
         public void SetValidReferencePoint(CityModel cityModel)

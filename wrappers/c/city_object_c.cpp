@@ -4,28 +4,45 @@
 #include "libplateau_c.h"
 
 using namespace citygml;
+using namespace libplateau;
 
 extern "C" {
-    LIBPLATEAU_C_EXPORT CityObject::CityObjectsType LIBPLATEAU_C_API plateau_city_object_get_type(
-        const CityObject* city_object
-    ) {
-        API_TRY{
-            return city_object->getType();
-        }
-        API_CATCH;
-        return static_cast<CityObject::CityObjectsType>(0);
-    }
+
+    DLL_VALUE_FUNC(plateau_city_object_get_type,
+                   CityObject,
+                   CityObject::CityObjectsType,
+                   handle->getType())
 
 
-    /// ジオメトリの数を返します。
-    /// 例外があった場合は -1 を返します。
-    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_object_get_geometries_count(
-            const CityObject* const city_object
-            ){
-        API_TRY{
-            return city_object->getGeometriesCount();
-        }
-        API_CATCH;
-        return -1;
-    }
+    DLL_VALUE_FUNC(plateau_city_object_get_geometries_count,
+                   CityObject,
+                   int,
+                   handle->getGeometriesCount())
+
+
+    DLL_PTR_FUNC(plateau_city_object_get_address,
+                 CityObject, Address,
+                 handle->address())
+
+    DLL_VALUE_FUNC(plateau_city_object_get_implicit_geometry_count,
+                   CityObject,
+                   int,
+                   handle->getImplicitGeometryCount())
+
+    DLL_VALUE_FUNC(plateau_city_object_get_child_city_object_count,
+                   CityObject,
+                   int,
+                   handle->getChildCityObjectsCount())
+
+    DLL_PTR_FUNC(plateau_city_object_get_child_city_object,
+                 CityObject,
+                 CityObject,
+                 &handle->getChildCityObject(index),
+                 ,int index)
+
+DLL_PTR_FUNC(plateau_city_object_get_geometry,
+             CityObject,
+             Geometry,
+             &handle->getGeometry(index),
+             ,int index)
 }
