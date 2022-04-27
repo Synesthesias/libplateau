@@ -1,4 +1,6 @@
-﻿namespace LibPLATEAU.NET
+﻿using System;
+
+namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける都市オブジェクトです。
@@ -7,7 +9,9 @@
     {
         private CityObjectType type = 0;
 
-        internal CityObject(IntPtr handle) : base(handle) {}
+        internal CityObject(IntPtr handle) : base(handle)
+        {
+        }
 
         public CityObjectType Type
         {
@@ -22,5 +26,11 @@
                 return this.type;
             }
         }
+
+        /// <summary>
+        /// ジオメトリの数を返します。
+        /// ライブラリ内で例外が起きた場合は -1 が返ります。
+        /// </summary>
+        public int GeometriesCount => NativeMethods.plateau_city_object_get_geometries_count(this.Handle);
     }
 }

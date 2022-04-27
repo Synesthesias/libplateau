@@ -4,7 +4,7 @@
 #include "city_model_c.h"
 
 extern "C" {
-    // CityModelHandle‚Ì¶¬‚Íplateau_load_citygml‚©‚çs‚í‚ê‚Ü‚·B
+    // CityModelHandleã®ç”Ÿæˆã¯plateau_load_citygmlã‹ã‚‰è¡Œã‚ã‚Œã¾ã™ã€‚
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_city_model(
         const CityModelHandle* city_model_handle
@@ -27,7 +27,7 @@ extern "C" {
         API_CATCH;
     }
 
-    LIBPLATEAU_C_EXPORT unsigned int LIBPLATEAU_C_API plateau_city_model_get_root_city_object_count(
+    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_model_get_root_city_object_count(
         const CityModelHandle* city_model_handle
     ) {
         API_TRY{

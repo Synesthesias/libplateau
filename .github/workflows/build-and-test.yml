@@ -1,12 +1,13 @@
 
-# Github Actions �Ŏ����e�X�g���s�����@���L�q�������̂ł��B
+# Github Actions で自動テストを行う方法を記述したものです。
 
 name: Build and Test
 
-on: [push, pull_request]
+on: push
 
 env:
   BUILD_TYPE: RelWithDebInfo
+#  BUILD_TYPE: Debug
 
 jobs:
   build-and-test:
@@ -28,15 +29,22 @@ jobs:
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
 
-      # Ubuntu�Ńr���h��ʂ��ɂ� OpenGL API �̃C���X�g�[�����K�v�ł��B
+      # Ubuntuでビルドを通すには OpenGL API のインストールが必要です。
     - name: Install OpenGL API on Ubuntu machine
       if: runner.os == 'Linux'
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 
-      # Windows�̂�
+      # Windowsのみ
     - name: Setup MSVC for Windows
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
+
+      # Windowsのロケール設定を日本語にします。
+      # TODO そうでないと文字化けします。本当は他のロケールでも動作させたいです。
+      # 文字化けが解決したらこのコマンドは不要です。
+    - name: Set Locale for Windows
+      if: runner.os == 'Windows'
+      run: Set-WinSystemLocale ja-JP
 
 
 
@@ -47,10 +55,8 @@ jobs:
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
-        -D CMAKE_INSTALL_PREFIX:PATH="${{github.workspace}}/out/install/x64-Release" 
-        -D CMAKE_INSTALL_PROGRAM="ninja" 
         -D CMAKE_CXX_FLAGS="-w"
-    # 10���s�����̌x�����o��̂ňꎞ�I�ȏ��u�Ƃ��Čx����}�����Ă��܂��B
+    # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
         
 
 
@@ -64,8 +70,8 @@ jobs:
         dotnet-version: 6.0.x
 
     
-    # TODO Platform="Any CPU" �Ƃ��Ă���̂͂����܂ŉ��ł��B
-    # �ǂ̒l�ɐݒ肷�ׂ����v�����ł��B
+    # TODO Platform="Any CPU" としているのはあくまで仮です。
+    # どの値に設定すべきか要検討です。
     - name: Build C# Wrapper
       run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 

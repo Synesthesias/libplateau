@@ -1,4 +1,5 @@
 using System;
+using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test
@@ -6,19 +7,11 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class CityObjectTests
     {
-        private const string gmlPath = "data/53392642_bldg_6697_op2.gml";
-
-        private readonly CityModel cityModel;
         private readonly CityObject cityObject;
 
-        public CityObjectTests()
-        {
-            // Loadˆ—‚ªd‚¢‚½‚ßÅ‰‚Ì‚ÝŽÀs‚µ‚ÄŽg‚¢‚Ü‚í‚·B
-            var parserParams = new CitygmlParserParams
-            {
-                Optimize = 0
-            };
-            cityModel = CityGml.Load(gmlPath, parserParams);
+        public CityObjectTests() {
+            // Loadå‡¦ç†ãŒé‡ã„ãŸã‚æœ€åˆã®ã¿å®Ÿè¡Œã—ã¦ä½¿ã„ã¾ã‚ã™ã€‚
+            CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
             cityObject = cityModel.RootCityObjects[0];
         }
 
@@ -36,6 +29,14 @@ namespace LibPLATEAU.NET.Test
             Assert.AreEqual(
                 CityObjectType.COT_Building,
                 this.cityObject.Type);
+        }
+
+        [TestMethod]
+        public void GeometriesCount_Returns_Positive_Value() {
+            int geomCount = this.cityObject.GeometriesCount;
+            Assert.IsTrue(geomCount > 0);
+            
+            Console.WriteLine($"Geometries Count: {geomCount}");
         }
     }
 }

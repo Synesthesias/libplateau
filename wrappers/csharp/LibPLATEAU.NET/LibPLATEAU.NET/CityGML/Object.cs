@@ -1,14 +1,16 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// CityGMLにおける全てのオブジェクトのベースクラスです。
-    /// ユニークIDと属性データを持ちます。
+    /// ユニークIDと0個以上の属性ペアを持ち、属性ペアはすべて <see cref="CityGML.AttributesMap"/> に格納されています。
     /// </summary>
     public class Object
     {
         private IntPtr handle;
+        private AttributesMap? attributesMap;
         private string id = "";
 
         internal Object(IntPtr handle)
@@ -32,9 +34,27 @@ namespace LibPLATEAU.NET
                 {
                     return this.id;
                 }
+
                 this.id = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_id(this.handle)) ?? "";
                 return this.id;
             }
         }
+
+        /// <summary> 属性の辞書を取得します。 </summary>
+        /// <returns> <see cref="CityGML.AttributesMap"/> 型で返します。</returns>
+        public AttributesMap AttributesMap
+        {
+            get
+            {
+                if (this.attributesMap == null)
+                {
+                    var mapPtr = NativeMethods.plateau_object_get_attributes_map(Handle);
+                    var map = new AttributesMap(mapPtr);
+                    this.attributesMap = map;
+                }
+                return this.attributesMap;
+            }
+        }
+        
     }
 }

@@ -1,15 +1,17 @@
 #pragma once
 
-// P/Invoke�p�Ȃ��߃G�N�X�|�[�g�̂�
+#include <iostream>
+
+// P/Invoke用なためエクスポートのみ
 #ifdef _WIN32
 #  define LIBPLATEAU_C_API __stdcall
-#  define LIBPLATEAU_C_EXPORT  __declspec(dllexport)
+#  define LIBPLATEAU_C_EXPORT  [[maybe_unused]] __declspec(dllexport)
 #else
 #  define LIBPLATEAU_C_API
 #  define LIBPLATEAU_C_EXPORT
 #endif
 
-// ������ API_TRY �� API_CATCH �ň͂ނ��Ƃŗ�O���o�͂ł��܂��B
+// 実装を API_TRY と API_CATCH で囲むことで例外を出力できます。
 #define API_TRY try
 
 #define API_CATCH \
@@ -17,5 +19,13 @@ catch (std::exception& e) {\
     std::cout << e.what() << std::endl;\
 }\
 catch (...) {\
-    std::cout << "Unknown error occured." << std::endl;\
+    std::cout << "Unknown error occurred." << std::endl;\
+}
+
+namespace libplateau {
+// 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
+// このenumを戻り値にすると良いです。
+    enum APIResult {
+        Success, ErrorUnknown, ErrorValueNotFound
+    };
 }

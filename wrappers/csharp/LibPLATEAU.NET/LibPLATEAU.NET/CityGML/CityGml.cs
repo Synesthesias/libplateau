@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibPLATEAU.NET
+﻿
+namespace LibPLATEAU.NET.CityGML
 {
     public static class CityGml
     {

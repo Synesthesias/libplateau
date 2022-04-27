@@ -9,7 +9,7 @@ set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 
 add_subdirectory(io)
 
-# TODO: citygml‚ªXV‚³‚ê‚Ä‚àplateau‘¤‚ªXV‚³‚ê‚Ä‚¢‚È‚¢‚Ædll‚ª”½‰f‚³‚ê‚È‚¢–â‘è
+# TODO: citygmlãŒæ›´æ–°ã•ã‚Œã¦ã‚‚plateauå´ãŒæ›´æ–°ã•ã‚Œã¦ã„ãªã„ã¨dllãŒåæ˜ ã•ã‚Œãªã„å•é¡Œ
 if(WIN32)
   if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(LIBCITYGML_DLL_PATH "${libcitygml_BINARY_DIR}/lib/citygmld.dll")

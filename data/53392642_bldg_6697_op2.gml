@@ -8,6 +8,12 @@
 	</gml:boundedBy>
 	<core:cityObjectMember>
 		<bldg:Building gml:id="BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745">
+			<gen:doubleAttribute name="doubleAttributeテスト">
+				<gen:value>123.456</gen:value>
+			</gen:doubleAttribute>
+			<gen:intAttribute name="intAttributeテスト">
+				<gen:value>123</gen:value>
+			</gen:intAttribute>
 			<gen:stringAttribute name="建物ID">
 				<gen:value>13111-bldg-147301</gen:value>
 			</gen:stringAttribute>
@@ -22,7 +28,7 @@
 					<gen:value uom="m">0.050</gen:value>
 				</gen:measureAttribute>
 			</gen:genericAttributeSet>
-			<bldg:measuredHeight uom="m">2.8</bldg:measuredHeight>
+			<bldg:measuredHeight uom="m">2.8（テスト）</bldg:measuredHeight>
 			<bldg:lod0RoofEdge>
 				<gml:MultiSurface>
 					<gml:surfaceMember>

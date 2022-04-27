@@ -2,13 +2,13 @@
 #include <citygml/citygml.h>
 
 void polar_to_plane_cartesian::convert(double xyz[]) {
-    //•½–Ê’¼ŠpÀ•W•ÏŠ·‚ÌŒvZ•û–@‚Í https://www.gsi.go.jp/common/000061216.pdf
+    //å¹³é¢ç›´è§’åº§æ¨™å¤‰æ›ã®è¨ˆç®—æ–¹æ³•ã¯ https://www.gsi.go.jp/common/000061216.pdf
     int a = 6378137;
     double rf = 298.257222101, m0 = 0.9999, PI = 3.14159265358979323846;
     double s2r = 0, nsq = 0, e2n = 0, ra = 0;
     double alp[5 + 1] = { 0,0,0,0,0,0 };
 
-    // •½–Ê’¼ŠpÀ•W‚ÌÀ•WŒnŒ´“_‚ÌˆÜ“x‚ğ“x’PˆÊ‚ÅAŒo“x‚ğ•ª’PˆÊ‚ÅŠi”[
+    // å¹³é¢ç›´è§’åº§æ¨™ã®åº§æ¨™ç³»åŸç‚¹ã®ç·¯åº¦ã‚’åº¦å˜ä½ã§ã€çµŒåº¦ã‚’åˆ†å˜ä½ã§æ ¼ç´
     int phi0[20] = { 0, 33, 33, 36, 33, 36, 36, 36, 36, 36, 40, 44, 44, 44, 26, 26, 26, 26, 20, 26 };
     int lmbd0[20] = { 0, 7770, 7860, 7930, 8010, 8060, 8160, 8230, 8310, 8390, 8450, 8415, 8535, 8655, 8520, 7650, 7440, 7860, 8160, 9240 };
 
@@ -20,16 +20,16 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
     e2n = 2 * sqrt(n_) / (1 + n_);
     ra = 2 * anh_ * m0 * (1 + nsq / 4 + nsq * nsq / 64);
 
-    // “WŠJƒpƒ‰ƒ[ƒ^‚Ì–‘O“ü—Í
+    // å±•é–‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®äº‹å‰å…¥åŠ›
     alp[1] = (1.0 / 2 + (-2.0 / 3 + (5.0 / 16 + (41.0 / 180 - 127.0 / 288 * n_) * n_) * n_) * n_) * n_;
     alp[2] = (13.0 / 48 + (-3.0 / 5 + (557.0 / 1440 + 281.0 / 630 * n_) * n_) * n_) * nsq;
     alp[3] = (61.0 / 240 + (-103.0 / 140 + 15061.0 / 26880 * n_) * n_) * n_ * nsq;
     alp[4] = (49561.0 / 161280 - 179.0 / 168 * n_) * nsq * nsq;
     alp[5] = 34729.0 / 80640 * n_ * nsq * nsq;
 
-    int num = 9;//À•WŒn”Ô†‚ğ9‚Éİ’è@https://www.gsi.go.jp/sokuchikijun/jpc.html
-    double phirad = xyz[0] * PI / 180; //ˆÜ“x‚ğ\i–@“x’PˆÊiƒ‰ƒWƒAƒ“j‚É’¼‚·
-    double lmbdsec = xyz[1] * 3600; //Œo“x‚ğ•b’PˆÊidegj‚É’¼‚·
+    int num = 9;//åº§æ¨™ç³»ç•ªå·ã‚’9ã«è¨­å®šã€€https://www.gsi.go.jp/sokuchikijun/jpc.html
+    double phirad = xyz[0] * PI / 180; //ç·¯åº¦ã‚’åé€²æ³•åº¦å˜ä½ï¼ˆãƒ©ã‚¸ã‚¢ãƒ³ï¼‰ã«ç›´ã™
+    double lmbdsec = xyz[1] * 3600; //çµŒåº¦ã‚’ç§’å˜ä½ï¼ˆdegï¼‰ã«ç›´ã™
 
     double sphi = sin(phirad);
     double nphi = (1 - n_) / (1 + n_) * tan(phirad);
@@ -59,7 +59,7 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
     xyz[1] = x;
 }
 
-// ŠY“–ˆÜ“x‚Ì 2 ”{Šp‚Ì“ü—Í‚É‚æ‚èÔ“¹‚©‚ç‚ÌqŒßüŒÊ’·‚ğ‹‚ß‚éŠÖ”
+// è©²å½“ç·¯åº¦ã® 2 å€è§’ã®å…¥åŠ›ã«ã‚ˆã‚Šèµ¤é“ã‹ã‚‰ã®å­åˆç·šå¼§é•·ã‚’æ±‚ã‚ã‚‹é–¢æ•°
 double polar_to_plane_cartesian::Merid(double phi2) {
     int jt2 = 2 * jt_;
     double ep = 1.0;

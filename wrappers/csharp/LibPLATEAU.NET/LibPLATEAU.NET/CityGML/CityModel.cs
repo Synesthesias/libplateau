@@ -1,10 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading;
 
-namespace LibPLATEAU.NET
+namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// GMLファイルをパースして得られる街のモデルです。
+    /// 0個以上の <see cref="CityObject"/> を保持します。
+    /// </summary>
     public sealed class CityModel : IDisposable
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private int disposed;
         private CityObject[] rootCityObjects;
 
@@ -47,7 +53,7 @@ namespace LibPLATEAU.NET
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref disposed, 1) == 0)
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
                 NativeMethods.plateau_delete_city_model(this.handle);
             }
