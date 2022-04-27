@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -47,6 +48,14 @@ namespace LibPLATEAU.NET.Test
             var actualChild = this.geom.GetChildGeometry(0);
             Console.WriteLine(actualChild);
             Assert.IsNotNull(actualChild);
+        }
+
+        [TestMethod]
+        public void LOD_Returns_Zero_Or_Positive()
+        {
+            int actualLOD = this.geom.LOD;
+            Console.WriteLine($"LOD = {actualLOD}");
+            Assert.IsTrue(actualLOD >= 0);
         }
 
     }

@@ -68,5 +68,15 @@ namespace LibPLATEAU.NET.CityGML
         {
             return $"[ Geometry : (id: {ID}) , (childGeometryCount: {ChildGeometryCount}), (polygonCount: {PolygonCount}) (attributesMap: {AttributesMap}) ]";
         }
+
+        public int LOD
+        {
+            get
+            {
+                int lod = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_geometry_get_lod);
+                return lod;
+            }
+        }
     }
 }

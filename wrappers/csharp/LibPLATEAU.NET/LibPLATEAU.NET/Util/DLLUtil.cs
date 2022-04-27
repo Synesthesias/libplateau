@@ -147,6 +147,10 @@ namespace LibPLATEAU.NET.Util
             return ret;
         }
 
+        /// <summary>
+        /// <see cref="GetNativeValue{T}(System.IntPtr,LibPLATEAU.NET.Util.DLLUtil.GetterDelegate{T})"/>
+        /// の亜種で、<paramref name="getterMethod"/> のint引数が1つ増えた版です。
+        /// </summary>
         internal static T GetNativeValue<T>(IntPtr handle, int i, GetterDelegateInt<T> getterMethod)
         {
             APIResult result = getterMethod(handle, out T ret, i);

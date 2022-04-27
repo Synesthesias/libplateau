@@ -35,4 +35,9 @@ DLL_PTR_FUNC(plateau_geometry_get_polygon,
              handle->getPolygon(index).get(),
              ,int index)
 
+DLL_VALUE_FUNC(plateau_geometry_get_lod,
+             Geometry,
+             int,
+             handle->lod())
+
 }
