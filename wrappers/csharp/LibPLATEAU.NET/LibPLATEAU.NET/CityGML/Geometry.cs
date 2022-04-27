@@ -45,8 +45,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             var geom = DLLUtil.ArrayCache(ref this.cachedChildGeometries, index, ChildGeometryCount, () =>
             {
-                APIResult result = NativeMethods.plateau_geometry_get_child_geometry(Handle, out IntPtr childHandle, index);
-                DLLUtil.CheckDllError(result);
+                IntPtr childHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                    NativeMethods.plateau_geometry_get_child_geometry);
                 return new Geometry(childHandle);
             });
             return geom;
@@ -56,8 +56,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             var poly = DLLUtil.ArrayCache(ref this.cachedPolygons, index, PolygonCount, () =>
             {
-                APIResult result = NativeMethods.plateau_geometry_get_polygon(Handle, out IntPtr polyHandle, index);
-                DLLUtil.CheckDllError(result);
+                IntPtr polyHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                    NativeMethods.plateau_geometry_get_polygon);
                 return new Polygon(polyHandle);
             });
             return poly;
