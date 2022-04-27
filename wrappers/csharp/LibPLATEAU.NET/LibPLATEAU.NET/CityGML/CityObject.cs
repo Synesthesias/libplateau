@@ -27,9 +27,8 @@ namespace LibPLATEAU.NET.CityGML
                     return this.type;
                 }
 
-                APIResult result = NativeMethods.plateau_city_object_get_type(this.Handle, out CityObjectType objType);
-                DLLUtil.CheckDllError(result);
-                this.type = objType;
+                this.type = DLLUtil.GetNativeValue<CityObjectType>(Handle,
+                    NativeMethods.plateau_city_object_get_type);
                 return this.type;
             }
         }
@@ -41,8 +40,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_city_object_get_geometries_count(this.Handle, out int count);
-                DLLUtil.CheckDllError(result);
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_city_object_get_geometries_count);
                 return count;
             }
         }
@@ -51,9 +50,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result =
-                    NativeMethods.plateau_city_object_get_implicit_geometry_count(this.Handle, out int count);
-                DLLUtil.CheckDllError(result);
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_city_object_get_implicit_geometry_count);
                 return count;
             }
         }
@@ -87,8 +85,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             var ret = DLLUtil.ArrayCache(ref this.cachedChildCityObjects, index, ChildCityObjectCount, () =>
             {
-                APIResult result = NativeMethods.plateau_city_object_get_child_city_object(this.Handle, out IntPtr childHandle, index);
-                DLLUtil.CheckDllError(result);
+                IntPtr childHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                    NativeMethods.plateau_city_object_get_child_city_object);
                 return new CityObject(childHandle);
             });
 
@@ -101,8 +99,8 @@ namespace LibPLATEAU.NET.CityGML
         {
             var geom = DLLUtil.ArrayCache(ref this.cachedGeometries, index, GeometryCount, () =>
             {
-                APIResult result = NativeMethods.plateau_city_object_get_geometry(Handle, out IntPtr geomHandle, index);
-                DLLUtil.CheckDllError(result);
+                IntPtr geomHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                    NativeMethods.plateau_city_object_get_geometry);
                 return new Geometry(geomHandle);
             });
             return geom;
