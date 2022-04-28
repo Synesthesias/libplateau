@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.Util;
 
@@ -104,6 +105,24 @@ namespace LibPLATEAU.NET.CityGML
                 return new Geometry(geomHandle);
             });
             return geom;
+        }
+
+        /// <summary>
+        /// 各 <see cref="Geometry"/> を foreach で回したい時に利用できます。
+        /// </summary>
+        public IReadOnlyList<Geometry> Geometries
+        {
+            get
+            {
+                int cnt = GeometryCount;
+                var geometries = new Geometry[cnt];
+                for (int i = 0; i < cnt; i++)
+                {
+                    geometries[i] = GetGeometry(i);
+                }
+
+                return geometries;
+            }
         }
     }
 }

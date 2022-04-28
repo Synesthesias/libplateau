@@ -27,4 +27,9 @@ DLL_VALUE_FUNC(plateau_polygon_get_index_of_indices,
                int,
                handle->getIndices().at(index_of_indices_list),
                ,int index_of_indices_list)
+
+DLL_PTR_FUNC(plateau_polygon_get_exterior_ring,
+             Polygon,
+             LinearRing,
+             handle->exteriorRing().get())
 }

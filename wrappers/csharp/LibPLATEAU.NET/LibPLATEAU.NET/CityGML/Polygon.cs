@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
     public class Polygon : AppearanceTarget
     {
+        private LinearRing? cachedLinearRing;
         internal Polygon(IntPtr handle) : base(handle)
         {
         }
@@ -55,6 +57,18 @@ namespace LibPLATEAU.NET.CityGML
                 }
 
                 return indices;
+            }
+        }
+
+        public LinearRing ExteriorRing
+        {
+            get
+            {
+                if (this.cachedLinearRing != null) return this.cachedLinearRing;
+                IntPtr ringHandle = DLLUtil.GetNativeValue<IntPtr>(Handle,
+                    NativeMethods.plateau_polygon_get_exterior_ring);
+                this.cachedLinearRing = new LinearRing(ringHandle);
+                return this.cachedLinearRing;
             }
         }
     }

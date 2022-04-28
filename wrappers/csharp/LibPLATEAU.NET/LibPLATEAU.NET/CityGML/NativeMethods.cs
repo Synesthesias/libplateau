@@ -464,5 +464,18 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out int outIndex,
             int indexOfIndicesList);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_exterior_ring(
+            [In] IntPtr handle,
+            out IntPtr ringHandle);
+        
+        // ***************
+        //  linearring_c.cpp
+        // ***************
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_linear_ring_get_vertices_count(
+            [In] IntPtr handle,
+            out int outCount);
     }
 }
