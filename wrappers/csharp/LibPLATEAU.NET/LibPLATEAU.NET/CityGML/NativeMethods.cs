@@ -28,6 +28,14 @@ namespace LibPLATEAU.NET.CityGML
     public struct CitygmlParserParams
     {
         public int Optimize;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool Tesselate;
+
+        public CitygmlParserParams(int optimize = 1, bool tesselate = true)
+        {
+            this.Optimize = optimize;
+            this.Tesselate = tesselate;
+        }
     }
 
     public enum AxesConversion

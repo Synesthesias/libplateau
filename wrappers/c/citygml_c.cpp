@@ -9,9 +9,11 @@
 extern "C" {
     struct plateau_citygml_parser_params {
         int optimize;
+        bool tesselate;
 
         plateau_citygml_parser_params()
-            : optimize(0) {
+            : optimize(0),
+            tesselate(true){
         }
     };
 
@@ -19,6 +21,7 @@ extern "C" {
         API_TRY{
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
+            parser_params.tesselate = params.tesselate;
             return new CityModelHandle(citygml::load(gml_path, parser_params, nullptr));
         }
         API_CATCH;

@@ -62,6 +62,6 @@ int main()
         std::cout << "Unknown error occurred. GML file might not exist." << std::endl;
         return 1;
     }
-
+    city_model.reset();
     return 0;
 }
