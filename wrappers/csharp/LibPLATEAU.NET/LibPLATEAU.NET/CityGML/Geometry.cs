@@ -78,5 +78,17 @@ namespace LibPLATEAU.NET.CityGML
                 return lod;
             }
         }
+
+        public string SRSName
+        {
+            // テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
+            get
+            {
+                string srsName = DLLUtil.GetNativeString(Handle,
+                    NativeMethods.plateau_geometry_get_srs_name_str_length,
+                    NativeMethods.plateau_geometry_get_srs_name);
+                return srsName;
+            }
+        }
     }
 }

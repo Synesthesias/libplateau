@@ -57,6 +57,7 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"LOD = {actualLOD}");
             Assert.IsTrue(actualLOD >= 0);
         }
+        
 
     }
 }

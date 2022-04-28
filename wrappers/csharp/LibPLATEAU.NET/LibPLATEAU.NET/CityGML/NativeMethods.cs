@@ -419,6 +419,16 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_geometry_get_lod(
             [In] IntPtr geometryHandle,
             out int outLod);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_srs_name(
+            [In] IntPtr geometryHandle,
+            out IntPtr outNameStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_geometry_get_srs_name_str_length(
+            [In] IntPtr geometryHandle,
+            out int outLength);
         
         // ***************
         //  polygon_c.cpp
