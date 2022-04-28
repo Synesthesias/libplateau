@@ -21,4 +21,10 @@ DLL_VALUE_FUNC(plateau_polygon_get_indices_count,
               Polygon,
               int,
               handle->getIndices().size())
+
+DLL_VALUE_FUNC(plateau_polygon_get_index_of_indices,
+               Polygon,
+               int,
+               handle->getIndices().at(index_of_indices_list),
+               ,int index_of_indices_list)
 }

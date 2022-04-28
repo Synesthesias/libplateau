@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -44,6 +45,17 @@ namespace LibPLATEAU.NET.Test
             int indicesCount = this.polygon.IndicesCount;
             Console.WriteLine($"indices count: {indicesCount}");
             Assert.IsTrue(indicesCount > 0);
+        }
+
+        [TestMethod]
+        public void Indices()
+        {
+            int[] indices = this.polygon.Indices.ToArray();
+            Console.Write("indices: ");
+            foreach (int idx in indices)
+            {
+                Console.Write($"{idx}, ");
+            }
         }
     }
 }
