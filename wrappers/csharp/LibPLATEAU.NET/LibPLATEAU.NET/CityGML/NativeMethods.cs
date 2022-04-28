@@ -243,6 +243,11 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_object_get_id(
             [In] IntPtr objHandle,
             out IntPtr outStrPtr);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_object_get_id_str_length(
+            [In] IntPtr objHandle,
+            out int outLength);
         
         
         [DllImport(kDllName)]

@@ -8,9 +8,9 @@ using namespace libplateau;
 
 extern "C" {
 
-    DLL_CHAR_PTR_FUNC(plateau_object_get_id,
+    DLL_STRING_PTR_FUNC2(plateau_object_get_id,
                       Object,
-                      handle->getId().c_str())
+                      handle->getId())
 
 
 

@@ -13,39 +13,23 @@ extern "C"{
 
 
 
-    DLL_CHAR_PTR_FUNC(plateau_address_get_locality,
+    DLL_STRING_PTR_FUNC2(plateau_address_get_locality,
                       Address,
-                      handle->locality().c_str())
+                      handle->locality())
 
-    DLL_VALUE_FUNC(plateau_address_get_locality_str_length,
-                   Address,
-                   int,
-                   handle->locality().length() + 1)
 
-    DLL_CHAR_PTR_FUNC(plateau_address_get_postal_code,
+    DLL_STRING_PTR_FUNC2(plateau_address_get_postal_code,
                       Address,
-                      handle->postalCode().c_str())
+                      handle->postalCode())
 
-    DLL_VALUE_FUNC(plateau_address_get_postal_code_str_length,
-                   Address,
-                   int,
-                   handle->postalCode().length() + 1)
 
-    DLL_CHAR_PTR_FUNC(plateau_address_get_thoroughfare_name,
+    DLL_STRING_PTR_FUNC2(plateau_address_get_thoroughfare_name,
                       Address,
-                      handle->thoroughfareName().c_str())
+                      handle->thoroughfareName())
 
-    DLL_VALUE_FUNC(plateau_address_get_thoroughfare_name_str_length,
-                   Address,
-                   int,
-                   handle->thoroughfareName().length() + 1)
 
-    DLL_CHAR_PTR_FUNC(plateau_address_get_thoroughfare_number,
+    DLL_STRING_PTR_FUNC2(plateau_address_get_thoroughfare_number,
                       Address,
-                      handle->thoroughfareNumber().c_str())
+                      handle->thoroughfareNumber())
 
-    DLL_VALUE_FUNC(plateau_address_get_thoroughfare_number_str_length,
-                   Address,
-                   int,
-                   handle->thoroughfareNumber().length() + 1)
 }

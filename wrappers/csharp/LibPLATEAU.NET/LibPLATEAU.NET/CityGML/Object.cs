@@ -36,9 +36,10 @@ namespace LibPLATEAU.NET.CityGML
                     return this.id;
                 }
                 
-                IntPtr strPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle,
+                this.id = DLLUtil.GetNativeString(
+                    Handle,
+                    NativeMethods.plateau_object_get_id_str_length,
                     NativeMethods.plateau_object_get_id);
-                this.id = Marshal.PtrToStringAnsi(strPtr) ?? "";
                 return this.id;
             }
         }
