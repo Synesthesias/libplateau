@@ -17,5 +17,12 @@ namespace LibPLATEAU.NET.CityGML
                 return vertCount;
             }
         }
+
+        public PlateauVector3d GetVertex(int index)
+        {
+            var vert = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
+                NativeMethods.plateau_polygon_get_vertex);
+            return vert;
+        }
     }
 }

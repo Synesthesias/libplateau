@@ -52,10 +52,11 @@ catch (...) {\
 /// 値を DLL利用者に渡す関数を生成するマクロです。
 /// HANDLE_TYPE* handle から値を取得して 引数 RETURN_VALUE_TYPE* out に書き込みます。
 /// DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
-#define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER) \
+#define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle, \
-            RETURN_VALUE_TYPE* const out \
+            RETURN_VALUE_TYPE* const out                                       \
+            __VA_ARGS__ \
             ){ \
         API_TRY{ \
             *out = GETTER; /* 渡したい値を out に書き込みます。*/ \

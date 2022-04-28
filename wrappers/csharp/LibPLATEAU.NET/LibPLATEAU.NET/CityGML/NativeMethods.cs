@@ -17,6 +17,11 @@ namespace LibPLATEAU.NET.CityGML
             this.Y = y;
             this.Z = z;
         }
+
+        public override string ToString()
+        {
+            return $"({this.X}, {this.Y}, {this.Z})";
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -442,5 +447,11 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_polygon_get_vertices_count(
             [In] IntPtr polygonHandle,
             out int outVertCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_vertex(
+            [In] IntPtr handle,
+            out PlateauVector3d outVertex,
+            int index);
     }
 }

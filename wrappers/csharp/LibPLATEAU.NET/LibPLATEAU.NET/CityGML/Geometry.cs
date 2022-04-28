@@ -6,6 +6,9 @@ using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// 建築物の形状と見た目の情報を保持します。
+    /// </summary>
     public class Geometry : AppearanceTarget
     {
         private Geometry?[]? cachedChildGeometries;
@@ -24,6 +27,9 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 子の <see cref="Geometry"/> の数を返します。
+        /// </summary>
         public int ChildGeometryCount
         {
             get
@@ -34,6 +40,9 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 子の <see cref="Geometry"/> をすべて取得します。
+        /// </summary>
         public IReadOnlyList<Geometry> ChildGeometries
         {
             get
@@ -49,6 +58,7 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary> <see cref="Polygon"/> の数を返します。 </summary>
         public int PolygonCount
         {
             get
@@ -59,6 +69,7 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary> インデックス指定で子の <see cref="Geometry"/> を1つ返します。 </summary>
         public Geometry GetChildGeometry(int index)
         {
             var geom = DLLUtil.ArrayCache(ref this.cachedChildGeometries, index, ChildGeometryCount, () =>
@@ -70,6 +81,7 @@ namespace LibPLATEAU.NET.CityGML
             return geom;
         }
 
+        /// <summary> インデックス指定で <see cref="Polygon"/> を1つ返します。 </summary>
         public Polygon GetPolygon(int index)
         {
             var poly = DLLUtil.ArrayCache(ref this.cachedPolygons, index, PolygonCount, () =>
@@ -81,12 +93,16 @@ namespace LibPLATEAU.NET.CityGML
             return poly;
         }
         
-
+        /// <summary> デバッグ用に自身に関する情報を文字列で返します。 </summary>
         public override string ToString()
         {
             return $"[ Geometry : (id: {ID}) , {ChildGeometryCount} child geometries , {PolygonCount} polygons , {LineStringCount} line strings , (attributesMap: {AttributesMap}) ]";
         }
 
+        /// <summary>
+        /// LOD (Level Of Detail) を取得します。
+        /// LOD は 0 がもっとも簡略化された形状であり、数字が上がるほど形状が詳細であることを意味します。
+        /// </summary>
         public int LOD
         {
             get
@@ -98,7 +114,7 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary>
-        /// 自身と子の <see cref="Geometry"/> の情報を再帰的に表示します。
+        /// デバッグ用に、自身と子の <see cref="Geometry"/> の情報を再帰的に表示します。
         /// </summary>
         public string DebugGeometryHierarchy()
         {
@@ -123,6 +139,10 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// LineString の数を返します。
+        /// TODO LineString の取得は未実装です。 GMLファイルが LineString を含むケースが今のところ見当たらないため
+        /// </summary>
         public int LineStringCount
         {
             get
@@ -132,12 +152,13 @@ namespace LibPLATEAU.NET.CityGML
                 return count;
             }
         }
-        
-        // LineString の取得は未実装です。 GMLファイルが LineString を含むケースが今のところ見当たらないため
 
+        /// <summary>
+        /// SRSName を取得します。
+        /// TODO テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
+        /// </summary>
         public string SRSName
         {
-            // TODO テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
             get
             {
                 string srsName = DLLUtil.GetNativeString(Handle,
