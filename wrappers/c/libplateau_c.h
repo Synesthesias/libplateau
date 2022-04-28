@@ -69,9 +69,19 @@ catch (...) {\
 /// 文字列のアドレスをDLL利用者に渡す関数を生成するマクロです。
 /// マクロの引数は 1番目に関数名, 2番目に対象クラス名,
 /// 3番目に 対象クラス* handle から 文字列char* を取得する処理 です。
-#define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
-    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, STRING_GETTER)
+#define DLL_CHAR_PTR_FUNC(FUNC_NAME, TARGET_TYPE, CHAR_PTR_GETTER) \
+    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, CHAR_PTR_GETTER)
 
+/// 文字列のアドレスを渡す関数と文字列の長さを渡す関数の2つを生成するマクロです。
+/// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
+/// 2つ生成する意図は、文字列をDLLの利用者に渡すとき、char*アドレスと文字列長の両方が欲しいためです。
+#define DLL_STRING_PTR_FUNC2(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
+    /* 文字列ポインタを渡す関数*/ \
+    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, STRING_GETTER.c_str()) \
+    /* 文字列長を渡す関数 */ \
+    DLL_VALUE_FUNC(FUNC_NAME ## _str_length, \
+                    TARGET_TYPE, int, \
+                    STRING_GETTER.length() +1 ) /* +1 は null終端文字列の分 */
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
