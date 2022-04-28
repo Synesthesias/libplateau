@@ -44,5 +44,10 @@ DLL_STRING_PTR_FUNC2(plateau_geometry_get_srs_name,
                      Geometry,
                      handle->getSRSName())
 
+DLL_VALUE_FUNC(plateau_geometry_get_line_string_count,
+               Geometry,
+               int,
+               handle->getLineStringCount())
+
 
 }

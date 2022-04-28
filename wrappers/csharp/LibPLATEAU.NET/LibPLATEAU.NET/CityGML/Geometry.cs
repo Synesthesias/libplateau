@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Text;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -28,6 +31,21 @@ namespace LibPLATEAU.NET.CityGML
                 int count = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_geometry_get_geometries_count);
                 return count;
+            }
+        }
+
+        public IReadOnlyList<Geometry> ChildGeometries
+        {
+            get
+            {
+                int cnt = ChildGeometryCount;
+                var children = new Geometry[cnt];
+                for (int i = 0; i < cnt; i++)
+                {
+                    children[i] = GetChildGeometry(i);
+                }
+
+                return children;
             }
         }
 
@@ -66,7 +84,7 @@ namespace LibPLATEAU.NET.CityGML
 
         public override string ToString()
         {
-            return $"[ Geometry : (id: {ID}) , (childGeometryCount: {ChildGeometryCount}), (polygonCount: {PolygonCount}) (attributesMap: {AttributesMap}) ]";
+            return $"[ Geometry : (id: {ID}) , {ChildGeometryCount} child geometries , {PolygonCount} polygons , {LineStringCount} line strings , (attributesMap: {AttributesMap}) ]";
         }
 
         public int LOD
@@ -79,9 +97,47 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 自身と子の <see cref="Geometry"/> の情報を再帰的に表示します。
+        /// </summary>
+        public string DebugGeometryHierarchy()
+        {
+            var sb = new StringBuilder();
+            DebugGeometryHierarchyRecursive(this, sb,  0);
+            return sb.ToString();
+        }
+
+        private void DebugGeometryHierarchyRecursive(Geometry geom, StringBuilder sb, int recursiveDepth)
+        {
+            sb.Append("\n");
+            // インデント
+            for (int i = 0; i < recursiveDepth; i++)
+            {
+                sb.Append("--");
+            }
+            // 文字列化
+            sb.Append(this);
+            foreach (var c in ChildGeometries)
+            {
+                DebugGeometryHierarchyRecursive(c, sb, recursiveDepth + 1);
+            }
+        }
+
+        public int LineStringCount
+        {
+            get
+            {
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_geometry_get_line_string_count);
+                return count;
+            }
+        }
+        
+        // LineString の取得は未実装です。 GMLファイルが LineString を含むケースが今のところ見当たらないため
+
         public string SRSName
         {
-            // テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
+            // TODO テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
             get
             {
                 string srsName = DLLUtil.GetNativeString(Handle,

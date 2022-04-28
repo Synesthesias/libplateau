@@ -57,6 +57,13 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"LOD = {actualLOD}");
             Assert.IsTrue(actualLOD >= 0);
         }
+
+        [TestMethod]
+        public void LineStringCount_Returns_Zero_Or_Positive_Value()
+        {
+            int actualLineStringsCount = this.geom.LineStringCount;
+            Assert.IsTrue(actualLineStringsCount >= 0);
+        }
         
 
     }
