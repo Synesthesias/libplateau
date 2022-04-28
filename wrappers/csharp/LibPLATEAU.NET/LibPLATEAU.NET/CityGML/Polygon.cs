@@ -24,5 +24,15 @@ namespace LibPLATEAU.NET.CityGML
                 NativeMethods.plateau_polygon_get_vertex);
             return vert;
         }
+
+        public int IndicesCount
+        {
+            get
+            {
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_polygon_get_indices_count);
+                return count;
+            }
+        }
     }
 }

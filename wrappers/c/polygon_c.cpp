@@ -16,4 +16,9 @@ DLL_VALUE_FUNC(plateau_polygon_get_vertex,
                TVec3d,
                handle->getVertices().at(index),
                ,int index)
+
+DLL_VALUE_FUNC(plateau_polygon_get_indices_count,
+              Polygon,
+              int,
+              handle->getIndices().size())
 }

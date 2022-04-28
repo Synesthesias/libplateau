@@ -26,6 +26,7 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"VertexCount: {actualVertCount}");
             Assert.IsTrue(actualVertCount > 0);
         }
+        
 
         [TestMethod]
         public void GetVertex_Returns_Non_Zero_Position()
@@ -35,6 +36,14 @@ namespace LibPLATEAU.NET.Test
             Assert.IsTrue(Math.Abs(vert.X) > 0.001);
             Assert.IsTrue(Math.Abs(vert.Y) > 0.001);
             Assert.IsTrue(Math.Abs(vert.Z) > 0.001);
+        }
+
+        [TestMethod]
+        public void IndicesCount_Returns_Positive_Value()
+        {
+            int indicesCount = this.polygon.IndicesCount;
+            Console.WriteLine($"indices count: {indicesCount}");
+            Assert.IsTrue(indicesCount > 0);
         }
     }
 }

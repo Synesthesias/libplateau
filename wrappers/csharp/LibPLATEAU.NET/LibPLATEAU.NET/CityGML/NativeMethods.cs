@@ -453,5 +453,10 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out PlateauVector3d outVertex,
             int index);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_indices_count(
+            [In] IntPtr handle,
+            out int outCount);
     }
 }
