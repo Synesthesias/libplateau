@@ -247,6 +247,10 @@ void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsign
     const auto gc = target_object.getGeometriesCount();
     std::cout << "GeometriesCount = " << gc << std::endl;
     for (unsigned int j = 0; j < gc; j++) {
+        if (target_object.getGeometry(j).getLOD() == 0) {
+            std::cout << "Found LOD0 Geometry. Skipped it." << std::endl;
+            continue;
+        }
         writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
     }
 }
