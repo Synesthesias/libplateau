@@ -28,7 +28,7 @@ namespace LibPLATEAU.NET.Test
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
             this.polyWithVerts = cityModelWithTesselate.RootCityObjects
-                .SelectMany(co => co.ChildrenDfsIterator)
+                .SelectMany(co => co.ChildCityObjectsDfsIterate)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geo => geo.ChildGeometriesDfsIterate)
                 .SelectMany(geo => geo.Polygons)
@@ -36,7 +36,7 @@ namespace LibPLATEAU.NET.Test
             
 
             this.polyWithInteriorRings = this.cityModelWithoutTesselate.RootCityObjects
-                .SelectMany(co => co.ChildrenDfsIterator)
+                .SelectMany(co => co.ChildCityObjectsDfsIterate)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
                 .First(poly => poly.InteriorRingCount > 0);
@@ -91,7 +91,7 @@ namespace LibPLATEAU.NET.Test
         public void Do_Exist_InteriorRings_That_Have_Vertices_More_Than_Zero()
         {
             var ring = this.cityModelWithoutTesselate.RootCityObjects
-                .SelectMany(co => co.ChildrenDfsIterator)
+                .SelectMany(co => co.ChildCityObjectsDfsIterate)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.ChildGeometriesDfsIterate)
                 .SelectMany(geom => geom.Polygons)

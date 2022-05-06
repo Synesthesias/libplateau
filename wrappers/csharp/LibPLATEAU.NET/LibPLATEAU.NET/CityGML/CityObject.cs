@@ -150,7 +150,7 @@ namespace LibPLATEAU.NET.CityGML
         /// 子孫の <see cref="CityObject"/> をすべて再帰的にイテレートします。自分自身を含みます。
         /// DFS（深さ優先探索）を行います。
         /// </summary>
-        public IEnumerable<CityObject> ChildrenDfsIterator
+        public IEnumerable<CityObject> ChildCityObjectsDfsIterate
         {
             get
             {
