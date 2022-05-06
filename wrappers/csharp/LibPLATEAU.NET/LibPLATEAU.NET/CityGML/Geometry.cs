@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using LibPLATEAU.NET.Util;
@@ -38,19 +39,16 @@ namespace LibPLATEAU.NET.CityGML
         }
 
 
-        /// <summary> 子の <see cref="Geometry"/> をすべて取得します。 </summary>
-        public IReadOnlyList<Geometry> ChildGeometries
+        /// <summary> 子の <see cref="Geometry"/> をforeachやLinqで回したい時に利用できます。 </summary>
+        public IEnumerable<Geometry> ChildGeometries
         {
             get
             {
                 int cnt = ChildGeometryCount;
-                var children = new Geometry[cnt];
                 for (int i = 0; i < cnt; i++)
                 {
-                    children[i] = GetChildGeometry(i);
+                    yield return GetChildGeometry(i);
                 }
-
-                return children;
             }
         }
 
@@ -72,20 +70,17 @@ namespace LibPLATEAU.NET.CityGML
         
 
         /// <summary>
-        /// <see cref="Polygon"/> をすべて取得します。 
+        /// <see cref="Polygon"/> をforeachやLinqで回したい時に利用できます。
         /// </summary>
-        public IReadOnlyList<Polygon> Polygons
+        public IEnumerable<Polygon> Polygons
         {
             get
             {
                 int cnt = PolygonCount;
-                Polygon[] polygons = new Polygon[cnt];
                 for (int i = 0; i < cnt; i++)
                 {
-                    polygons[i] = GetPolygon(i);
+                    yield return GetPolygon(i);
                 }
-
-                return polygons;
             }
         }
         

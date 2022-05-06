@@ -12,7 +12,7 @@ namespace LibPLATEAU.NET.CityGML
     {
         private readonly IntPtr handle;
         private int disposed;
-        private CityObject[] rootCityObjects;
+        private CityObject[]? rootCityObjects;
 
         /// <summary>
         /// セーフハンドルを取得します。

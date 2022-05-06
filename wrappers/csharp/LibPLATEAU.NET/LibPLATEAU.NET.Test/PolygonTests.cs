@@ -19,31 +19,13 @@ namespace LibPLATEAU.NET.Test
         public PolygonTests()
         {
             CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
-            this.polygon = null;
-            // Polygon を検索し、最初に見つかったものをテスト対象にします。
-            // foreach (var co in cityModel.RootCityObjects)
-            // {
-            //     foreach (var geo in co.Geometries)
-            //     {
-            //         if (geo.PolygonCount > 0)
-            //         {
-            //             this.polygon = geo.GetPolygon(0);
-            //             break;
-            //         }
-            //     }
-            // }
-            // this.polygon = cityModel.CityObjectsWhere(cityObject =>
-            // {
-            //     return cityObject.GeometriesWhere(geo =>
-            //         geo.Polygons.FirstOrDefault(p => p.VertexCount > 0) != default ) != default;
-            // }).First().GetGeometry(0).Polygons.First(p => p.VertexCount > 0);
-            this.polygon = cityModel.RootCityObjects.SelectMany(co=>co.IterateChildrenDfs()).SelectMany(co =>
-                co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount >= 0))).First();
 
-            if (this.polygon == null)
-            {
-                throw new Exception($"{nameof(Polygon)} is not found.");
-            }
+            // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
+            // 具体的には VertexCount が 1以上である Polygon を探します。
+            var poly = cityModel.RootCityObjects.SelectMany(co=>co.IterateChildrenDfs()).SelectMany(co =>
+                co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount > 0))).FirstOrDefault();
+
+            this.polygon = poly ?? throw new Exception($"{nameof(Polygon)} is not found.");
         }
 
         [TestMethod]

@@ -101,21 +101,18 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary>
-        /// 子<see cref="CityObject"/> をforeachで回したい時に利用できます。
+        /// 子<see cref="CityObject"/> をforeachやLinqで回したい時に利用できます。
         /// </summary>
-        public IReadOnlyCollection<CityObject> ChildCityObjects
+        public IEnumerable<CityObject> ChildCityObjects
         {
             // TODO テスト未実装
             get
             {
                 int cnt = ChildCityObjectCount;
-                var ret = new CityObject[cnt];
                 for (int i = 0; i < cnt; i++)
                 {
-                    ret[i] = GetChildCityObject(i);
+                    yield return GetChildCityObject(i);
                 }
-
-                return ret;
             }
         }
 
