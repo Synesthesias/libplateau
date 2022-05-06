@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime;
 using LibPLATEAU.NET.CityGML;
 using LibPLATEAU.NET.Util;
@@ -14,21 +15,28 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class PolygonTests
     {
+        private CityModel cityModelWithoutTesselate;
         private Polygon polyWithVerts;
 
         private Polygon polyWithInteriorRings;
         // 前処理
         public PolygonTests()
         {
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
+            CityModel cityModelWithTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, true);
+            this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
-            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildrenDfsIterator).ToArray();
-            this.polyWithVerts = allCityObjects.SelectMany(co =>
-                co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount > 0))).First();
+            this.polyWithVerts = cityModelWithTesselate.RootCityObjects
+                .SelectMany(co => co.ChildrenDfsIterator)
+                .SelectMany(co => co.Geometries)
+                .SelectMany(geo => geo.ChildGeometriesDfsIterate)
+                .SelectMany(geo => geo.Polygons)
+                .First(poly => poly.VertexCount > 0);
+            
 
-            this.polyWithInteriorRings = allCityObjects
+            this.polyWithInteriorRings = this.cityModelWithoutTesselate.RootCityObjects
+                .SelectMany(co => co.ChildrenDfsIterator)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
                 .First(poly => poly.InteriorRingCount > 0);
@@ -48,9 +56,7 @@ namespace LibPLATEAU.NET.Test
         {
             var vert = this.polyWithVerts.GetVertex(0);
             Console.WriteLine($"vertex: {vert}");
-            Assert.IsTrue(Math.Abs(vert.X) > 0.001);
-            Assert.IsTrue(Math.Abs(vert.Y) > 0.001);
-            Assert.IsTrue(Math.Abs(vert.Z) > 0.001);
+            Assert.IsTrue(vert.IsNotZero());
         }
 
         [TestMethod]
@@ -80,5 +86,19 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"Interior Rings Count: {interiorRingsCount}");
             Assert.AreEqual(interiorRingsCount, lengthOfInteriorRings);
         }
+
+        [TestMethod]
+        public void Do_Exist_InteriorRings_That_Have_Vertices_More_Than_Zero()
+        {
+            var ring = this.cityModelWithoutTesselate.RootCityObjects
+                .SelectMany(co => co.ChildrenDfsIterator)
+                .SelectMany(co => co.Geometries)
+                .SelectMany(geom => geom.ChildGeometriesDfsIterate)
+                .SelectMany(geom => geom.Polygons)
+                .SelectMany(poly => poly.InteriorRings)
+                .FirstOrDefault(ring => ring.VerticesCount > 0);
+            Assert.IsNotNull(ring);
+        }
+        
     }
 }

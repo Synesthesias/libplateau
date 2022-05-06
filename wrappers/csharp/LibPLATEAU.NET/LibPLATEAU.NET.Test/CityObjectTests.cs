@@ -11,7 +11,7 @@ namespace LibPLATEAU.NET.Test
 
         public CityObjectTests() {
             // Load処理が重いため最初のみ実行して使いまわす。
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
+            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.cityObject = cityModel.RootCityObjects[0];
         }
 

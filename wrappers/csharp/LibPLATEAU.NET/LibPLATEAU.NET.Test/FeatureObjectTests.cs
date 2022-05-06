@@ -12,7 +12,7 @@ namespace LibPLATEAU.NET.Test
 
         public FeatureObjectTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.featureObject = cityModel.RootCityObjects[0];
         }
 

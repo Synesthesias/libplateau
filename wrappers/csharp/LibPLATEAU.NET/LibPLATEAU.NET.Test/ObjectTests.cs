@@ -11,7 +11,7 @@ namespace LibPLATEAU.NET.Test
 
         public ObjectTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             plateauObject = cityModel.RootCityObjects[0];
         }
 

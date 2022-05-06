@@ -31,6 +31,12 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public PlateauVector3d GetVertex(int index)
         {
+            if (index >= VerticesCount)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index),
+                    $"Ring has {VerticesCount} vertices, but you tried to read index #{index} that is out of range."
+                );
+            }
             var vert3d = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
                 NativeMethods.plateau_linear_ring_get_vertex);
             return vert3d;

@@ -52,6 +52,35 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 子孫の <see cref="Geometry"/> を再帰ですべてイテレートします。自分自身を含みます。
+        /// DFS(深さ優先探索)を行います。
+        /// </summary>
+        public IEnumerable<Geometry> ChildGeometriesDfsIterate
+        {
+            get
+            {
+                var results = this.ChildGeometriesDfsRecursive(this);
+                foreach (var r in results)
+                {
+                    yield return r;
+                }
+            }
+        }
+
+        private IEnumerable<Geometry> ChildGeometriesDfsRecursive(Geometry geom)
+        {
+            yield return geom;
+            foreach (var child in geom.ChildGeometries)
+            {
+                var results = ChildGeometriesDfsRecursive(child);
+                foreach (var r in results)
+                {
+                    yield return r;
+                }
+            }
+        }
+
         /// <summary> <see cref="Polygon"/> の数を返します。 </summary>
         public int PolygonCount => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_geometry_get_polygons_count);
         

@@ -14,19 +14,9 @@ namespace LibPLATEAU.NET.Test
         // 前処理
         public LinearRingTests()
         {
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple, 1, false);
+            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
             
-            // ExteriorRings を検索します。最初に見つかったリングをテストに利用します。 
-            // var exteriorRings = new List<LinearRing>();
-            // foreach (var co in cityModel.RootCityObjects)
-            // {
-            //     foreach (var g in co.Geometries)
-            //     {
-            //         FindExteriorRing(g, exteriorRings);
-            //     }
-            // }
-            // Console.WriteLine($"Found ExteriorRings Count: {exteriorRings.Count}");
-            // this.exteriorRing = exteriorRings[0];
+            // 頂点数が 1 以上である ExteriorRing を検索し、最初に見つかったものをテスト対象とします。
             var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildrenDfsIterator).ToArray();
             this.exteriorRing = allCityObjects
                 .SelectMany(co => co.Geometries)
@@ -58,29 +48,8 @@ namespace LibPLATEAU.NET.Test
         {
             var vert = this.exteriorRing.GetVertex(this.exteriorRing.VerticesCount - 1);
             Console.WriteLine($"Vertex: {vert}");
-            bool isNonZero = true;
-            isNonZero &= Math.Abs(vert.X) > 0.01;
-            isNonZero &= Math.Abs(vert.Y) > 0.01;
-            isNonZero &= Math.Abs(vert.Z) > 0.01;
-            Assert.IsTrue(isNonZero);
+            Assert.IsTrue(vert.IsNotZero());
         }
 
-
-        // private void FindExteriorRing(Geometry geom, List<LinearRing> found)
-        // {
-        //     foreach (var p in geom.Polygons)
-        //     {
-        //         var ring = p.ExteriorRing;
-        //         if (ring.VerticesCount > 0)
-        //         {
-        //             found.Add(ring);
-        //         }
-        //     }
-        //
-        //     foreach (var g in geom.ChildGeometries)
-        //     {
-        //         FindExteriorRing(g,　found);
-        //     }
-        // }
     }
 }
