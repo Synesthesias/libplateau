@@ -13,7 +13,6 @@ namespace LibPLATEAU.NET.Test
         public LinearRingTests()
         {
             CityModel cityModel = TestGMLLoader.LoadTestGMLFile(1, false);
-            CityObject cityObject = cityModel.RootCityObjects[0];
             
             // ExteriorRings を検索します。最初に見つかったリングをテストに利用します。 
             var exteriorRings = new List<LinearRing>();
@@ -43,6 +42,19 @@ namespace LibPLATEAU.NET.Test
             Console.WriteLine($"Vertices Count: {verticesCount}");
             Assert.IsTrue(verticesCount > 0);
         }
+
+        [TestMethod]
+        public void GetVertex_Returns_Non_Zero()
+        {
+            var vert = this.exteriorRing.GetVertex(this.exteriorRing.VerticesCount - 1);
+            Console.WriteLine($"Vertex: {vert}");
+            bool isNonZero = true;
+            isNonZero &= Math.Abs(vert.X) > 0.01;
+            isNonZero &= Math.Abs(vert.Y) > 0.01;
+            isNonZero &= Math.Abs(vert.Z) > 0.01;
+            Assert.IsTrue(isNonZero);
+        }
+        
 
         private void FindExteriorRing(Geometry geom, List<LinearRing> found)
         {

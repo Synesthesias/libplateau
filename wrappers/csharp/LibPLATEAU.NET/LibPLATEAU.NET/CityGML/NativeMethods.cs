@@ -491,5 +491,11 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_linear_ring_get_vertices_count(
             [In] IntPtr handle,
             out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_linear_ring_get_vertex(
+            [In] IntPtr handle,
+            out PlateauVector3d outVert3d,
+            int index);
     }
 }
