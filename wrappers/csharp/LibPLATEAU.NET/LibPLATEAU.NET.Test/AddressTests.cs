@@ -11,7 +11,7 @@ namespace LibPLATEAU.NET.Test
         // 前準備
         public AddressTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile();
+            var cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.address = cityObject.Address;
         }

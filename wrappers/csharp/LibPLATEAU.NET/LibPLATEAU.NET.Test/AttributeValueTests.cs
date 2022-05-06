@@ -12,7 +12,7 @@ namespace LibPLATEAU.NET.Test
         /// <summary> テストの前準備です。 </summary>
         public AttributeValueTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile();
+            var cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.attrMap = cityObject.AttributesMap;
         }

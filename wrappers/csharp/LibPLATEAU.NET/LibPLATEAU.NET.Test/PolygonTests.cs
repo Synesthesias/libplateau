@@ -14,24 +14,30 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class PolygonTests
     {
-        private Polygon polygon;
+        private Polygon polyWithVerts;
+
+        private Polygon polyWithInteriorRings;
         // 前処理
         public PolygonTests()
         {
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
+            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
-            var poly = cityModel.RootCityObjects.SelectMany(co=>co.ChildrenDfsIterator).SelectMany(co =>
-                co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount > 0))).FirstOrDefault();
+            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildrenDfsIterator).ToArray();
+            this.polyWithVerts = allCityObjects.SelectMany(co =>
+                co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount > 0))).First();
 
-            this.polygon = poly ?? throw new Exception($"{nameof(Polygon)} is not found.");
+            this.polyWithInteriorRings = allCityObjects
+                .SelectMany(co => co.Geometries)
+                .SelectMany(geom => geom.Polygons)
+                .First(poly => poly.InteriorRingCount > 0);
         }
 
         [TestMethod]
         public void VertexCount_Returns_Positive_Value()
         {
-            int actualVertCount = this.polygon.VertexCount;
+            int actualVertCount = this.polyWithVerts.VertexCount;
             Console.WriteLine($"VertexCount: {actualVertCount}");
             Assert.IsTrue(actualVertCount > 0);
         }
@@ -40,7 +46,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void GetVertex_Returns_Non_Zero_Position()
         {
-            var vert = this.polygon.GetVertex(0);
+            var vert = this.polyWithVerts.GetVertex(0);
             Console.WriteLine($"vertex: {vert}");
             Assert.IsTrue(Math.Abs(vert.X) > 0.001);
             Assert.IsTrue(Math.Abs(vert.Y) > 0.001);
@@ -50,7 +56,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void IndicesCount_Returns_Positive_Value()
         {
-            int indicesCount = this.polygon.IndicesCount;
+            int indicesCount = this.polyWithVerts.IndicesCount;
             Console.WriteLine($"indices count: {indicesCount}");
             Assert.IsTrue(indicesCount > 0);
         }
@@ -58,12 +64,21 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Indices()
         {
-            int[] indices = this.polygon.Indices.ToArray();
+            int[] indices = this.polyWithVerts.Indices.ToArray();
             Console.Write("indices: ");
             foreach (int idx in indices)
             {
                 Console.Write($"{idx}, ");
             }
+        }
+
+        [TestMethod]
+        public void InteriorRingsCount_Is_Same_As_Length_Of_InteriorRings()
+        {
+            int interiorRingsCount = this.polyWithInteriorRings.InteriorRingCount;
+            int lengthOfInteriorRings = this.polyWithInteriorRings.InteriorRings.Count();
+            Console.WriteLine($"Interior Rings Count: {interiorRingsCount}");
+            Assert.AreEqual(interiorRingsCount, lengthOfInteriorRings);
         }
     }
 }

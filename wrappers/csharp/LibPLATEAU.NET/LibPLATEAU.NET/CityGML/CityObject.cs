@@ -105,7 +105,6 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public IEnumerable<CityObject> ChildCityObjects
         {
-            // TODO テスト未実装
             get
             {
                 int cnt = ChildCityObjectCount;

@@ -497,5 +497,16 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out PlateauVector3d outVert3d,
             int index);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_interior_ring_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(kDllName)]
+        internal static extern APIResult plateau_polygon_get_interior_ring(
+            [In] IntPtr handle,
+            out IntPtr outRingHandle,
+            int index);
     }
 }

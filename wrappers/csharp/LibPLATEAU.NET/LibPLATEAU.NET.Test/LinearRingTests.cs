@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -8,23 +9,32 @@ namespace LibPLATEAU.NET.Test
     [TestClass]
     public class LinearRingTests
     {
-        private LinearRing exteriorRing;
+        private readonly LinearRing exteriorRing;
+        
         // 前処理
         public LinearRingTests()
         {
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(1, false);
+            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple, 1, false);
             
             // ExteriorRings を検索します。最初に見つかったリングをテストに利用します。 
-            var exteriorRings = new List<LinearRing>();
-            foreach (var co in cityModel.RootCityObjects)
-            {
-                foreach (var g in co.Geometries)
-                {
-                    FindExteriorRing(g, exteriorRings);
-                }
-            }
-            Console.WriteLine($"Found ExteriorRings Count: {exteriorRings.Count}");
-            this.exteriorRing = exteriorRings[0];
+            // var exteriorRings = new List<LinearRing>();
+            // foreach (var co in cityModel.RootCityObjects)
+            // {
+            //     foreach (var g in co.Geometries)
+            //     {
+            //         FindExteriorRing(g, exteriorRings);
+            //     }
+            // }
+            // Console.WriteLine($"Found ExteriorRings Count: {exteriorRings.Count}");
+            // this.exteriorRing = exteriorRings[0];
+            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildrenDfsIterator).ToArray();
+            this.exteriorRing = allCityObjects
+                .SelectMany(co => co.Geometries)
+                .SelectMany(geom => geom.Polygons)
+                .First(poly => poly.ExteriorRing.VerticesCount > 0)
+                .ExteriorRing;
+
+            
         }
         
 
@@ -54,23 +64,23 @@ namespace LibPLATEAU.NET.Test
             isNonZero &= Math.Abs(vert.Z) > 0.01;
             Assert.IsTrue(isNonZero);
         }
-        
 
-        private void FindExteriorRing(Geometry geom, List<LinearRing> found)
-        {
-            foreach (var p in geom.Polygons)
-            {
-                var ring = p.ExteriorRing;
-                if (ring.VerticesCount > 0)
-                {
-                    found.Add(ring);
-                }
-            }
 
-            foreach (var g in geom.ChildGeometries)
-            {
-                FindExteriorRing(g,　found);
-            }
-        }
+        // private void FindExteriorRing(Geometry geom, List<LinearRing> found)
+        // {
+        //     foreach (var p in geom.Polygons)
+        //     {
+        //         var ring = p.ExteriorRing;
+        //         if (ring.VerticesCount > 0)
+        //         {
+        //             found.Add(ring);
+        //         }
+        //     }
+        //
+        //     foreach (var g in geom.ChildGeometries)
+        //     {
+        //         FindExteriorRing(g,　found);
+        //     }
+        // }
     }
 }

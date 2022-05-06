@@ -18,7 +18,7 @@ namespace LibPLATEAU.NET.Test
         {
             // テスト対象として適切なものを検索し、最初にヒットした物をテストに利用します。
             // 具体的には Polygon を1つ以上含む Geometry と、 Children を1つ以上含む Geometry を検索します。
-            CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
+            CityModel cityModel = TestGMLLoader.LoadTestGMLFile(TestGMLLoader.GmlFileCase.Simple);
             var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildrenDfsIterator).ToArray();
             this.geomWithPolygon = allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.PolygonCount > 0);
             this.geomWithChildren =

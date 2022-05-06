@@ -9,11 +9,12 @@ namespace LibPLATEAU.NET.CityGML
     /// <see cref="Geometry"/> が <see cref="Polygon"/> を保持します。
     /// <see cref="Polygon"/> は Vertices , Indices を保持します。
     /// ただし、GMLファイルのパース時に <see cref="CitygmlParserParams.Tesselate"/> を false に設定した時に限り、
-    /// Vertices, Indices の代わりに <see cref="LinearRing"/> を保持することがあります。
+    /// Vertices, Indices の代わりに <see cref="ExteriorRing"/> , <see cref="InteriorRing"/> を保持することがあります。
     /// </summary>
     public class Polygon : AppearanceTarget
     {
-        private LinearRing? cachedLinearRing;
+        private LinearRing? cachedExteriorRing;
+        private LinearRing?[]? cachedInteriorRings;
         internal Polygon(IntPtr handle) : base(handle)
         {
         }
@@ -75,11 +76,38 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                if (this.cachedLinearRing != null) return this.cachedLinearRing;
+                if (this.cachedExteriorRing != null) return this.cachedExteriorRing;
                 IntPtr ringHandle = DLLUtil.GetNativeValue<IntPtr>(Handle,
                     NativeMethods.plateau_polygon_get_exterior_ring);
-                this.cachedLinearRing = new LinearRing(ringHandle);
-                return this.cachedLinearRing;
+                this.cachedExteriorRing = new LinearRing(ringHandle);
+                return this.cachedExteriorRing;
+            }
+        }
+
+        public int InteriorRingCount =>
+            DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_polygon_get_interior_ring_count);
+
+        public LinearRing GetInteriorRing(int index)
+        {
+            var ring = DLLUtil.ArrayCache(ref this.cachedInteriorRings, index, InteriorRingCount, () =>
+            {
+                IntPtr ringHandle = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                    NativeMethods.plateau_polygon_get_interior_ring);
+                return new LinearRing(ringHandle);
+            });
+            return ring;
+        }
+
+        public IEnumerable<LinearRing> InteriorRings
+        {
+            get
+            {
+                int cnt = InteriorRingCount;
+                for (int i = 0; i < cnt; i++)
+                {
+                    yield return GetInteriorRing(i);
+                }
             }
         }
     }

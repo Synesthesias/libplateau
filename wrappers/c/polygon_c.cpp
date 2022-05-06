@@ -32,4 +32,15 @@ DLL_PTR_FUNC(plateau_polygon_get_exterior_ring,
              Polygon,
              LinearRing,
              handle->exteriorRing().get())
+
+DLL_VALUE_FUNC(plateau_polygon_get_interior_ring_count,
+            Polygon,
+            int,
+            handle->interiorRings().size())
+
+DLL_PTR_FUNC(plateau_polygon_get_interior_ring,
+             Polygon,
+             LinearRing,
+             handle->interiorRings().at(index).get(),
+             ,int index)
 }
