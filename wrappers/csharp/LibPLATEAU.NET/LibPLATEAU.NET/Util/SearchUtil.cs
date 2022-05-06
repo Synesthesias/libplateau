@@ -94,6 +94,7 @@ namespace LibPLATEAU.NET.Util
         //     }
         // }
 
+        // TODO 一覧を取得する系のメソッドを IEnumerable に直す
         public static IEnumerable<CityObject> IterateChildrenDfs(this CityObject co)
         {
             yield return co;
