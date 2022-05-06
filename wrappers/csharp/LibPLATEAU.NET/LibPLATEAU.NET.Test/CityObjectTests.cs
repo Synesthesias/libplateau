@@ -12,7 +12,7 @@ namespace LibPLATEAU.NET.Test
         public CityObjectTests() {
             // Load処理が重いため最初のみ実行して使いまわす。
             CityModel cityModel = TestGMLLoader.LoadTestGMLFile();
-            cityObject = cityModel.RootCityObjects[0];
+            this.cityObject = cityModel.RootCityObjects[0];
         }
 
         [TestMethod]

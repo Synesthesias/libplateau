@@ -103,7 +103,7 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary> デバッグ用に自身に関する情報を文字列で返します。 </summary>
         public override string ToString()
         {
-            return $"[ Geometry : (id: {ID}) , {ChildGeometryCount} child geometries , {PolygonCount} polygons , {LineStringCount} line strings , (attributesMap: {AttributesMap}) ]";
+            return $"[ Geometry : (id: {ID}) , (type: {Type}) , {ChildGeometryCount} child geometries , {PolygonCount} polygons , {LineStringCount} line strings , (attributesMap: {AttributesMap}) ]";
         }
         
         
