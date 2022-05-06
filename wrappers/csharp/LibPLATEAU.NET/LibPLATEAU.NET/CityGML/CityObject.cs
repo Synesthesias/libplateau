@@ -132,18 +132,46 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// 各 <see cref="Geometry"/> を foreach で回したい時に利用できます。
         /// </summary>
-        public IReadOnlyList<Geometry> Geometries
+        public IEnumerable<Geometry> Geometries
         {
             get
             {
                 int cnt = GeometryCount;
-                var geometries = new Geometry[cnt];
                 for (int i = 0; i < cnt; i++)
                 {
-                    geometries[i] = GetGeometry(i);
+                    yield return GetGeometry(i);
                 }
+            }
+        }
 
-                return geometries;
+
+
+
+        /// <summary>
+        /// 子孫の <see cref="CityObject"/> をすべて再帰的にイテレートします。自分自身を含みます。
+        /// DFS（深さ優先探索）を行います。
+        /// </summary>
+        public IEnumerable<CityObject> ChildrenDfsIterator
+        {
+            get
+            {
+                var results = IterateChildrenDfsRecursive(this);
+                foreach (var r in results)
+                {
+                    yield return r;
+                }
+            }
+        }
+        private static IEnumerable<CityObject> IterateChildrenDfsRecursive(CityObject co)
+        {
+            yield return co;
+            foreach (var child in co.ChildCityObjects)
+            {
+                var results = IterateChildrenDfsRecursive(child);
+                foreach (var r in results)
+                {
+                    yield return r;
+                }
             }
         }
     }

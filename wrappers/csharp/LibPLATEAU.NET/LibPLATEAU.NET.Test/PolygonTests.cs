@@ -22,7 +22,7 @@ namespace LibPLATEAU.NET.Test
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
-            var poly = cityModel.RootCityObjects.SelectMany(co=>co.IterateChildrenDfs()).SelectMany(co =>
+            var poly = cityModel.RootCityObjects.SelectMany(co=>co.ChildrenDfsIterator).SelectMany(co =>
                 co.Geometries.SelectMany(geo => geo.Polygons.Where(poly => poly.VertexCount > 0))).FirstOrDefault();
 
             this.polygon = poly ?? throw new Exception($"{nameof(Polygon)} is not found.");
