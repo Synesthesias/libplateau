@@ -7,6 +7,8 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// 建築物の形状と見た目の情報を保持します。
+    /// <see cref="CityObject"/> が<see cref="Geometry"/>を保持します。
+    /// <see cref="Geometry"/> は <see cref="Polygon"/> , 子<see cref="Geometry"/> を保持します。
     /// </summary>
     public class Geometry : AppearanceTarget
     {

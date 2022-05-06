@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// 建築物の形状におけるポリゴンです。
+    /// <see cref="Geometry"/> が <see cref="Polygon"/> を保持します。
+    /// <see cref="Polygon"/> は Vertices , Indices を保持します。
+    /// ただし、GMLファイルのパース時に <see cref="CitygmlParserParams.Tesselate"/> を false に設定した時に限り、
+    /// Vertices, Indices の代わりに <see cref="LinearRing"/> を保持することがあります。
+    /// </summary>
     public class Polygon : AppearanceTarget
     {
         private LinearRing? cachedLinearRing;
@@ -60,6 +66,11 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 建物の外周の形状です。
+        /// GMLファイルのパース時の設定で <see cref="CitygmlParserParams.Tesselate"/> が true の場合、この情報は保持されません。
+        /// false の場合、 Vertices, Indices の代わりに <see cref="ExteriorRing"/>, <see cref="InteriorRing"/>が保持される場合があります。
+        /// </summary>
         public LinearRing ExteriorRing
         {
             get

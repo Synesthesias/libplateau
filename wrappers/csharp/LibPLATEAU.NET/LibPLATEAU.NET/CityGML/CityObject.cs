@@ -6,7 +6,13 @@ using LibPLATEAU.NET.Util;
 namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
-    /// CityGMLにおける都市オブジェクトです。
+    /// <para>
+    /// CityGMLにおける都市オブジェクトです。</para>
+    /// <para>
+    /// <see cref="CityModel"/> または 親<see cref="CityObject"/> が <see cref="CityObject"/> を保持します。</para>
+    /// <para>
+    /// この<see cref="CityObject"/> は <see cref="CityObjectType"/> , <see cref="LibPLATEAU.NET.CityGML.Address"/> , 子<see cref="CityObject"/> , <see cref="Geometry"/> を保持します。
+    /// </para>
     /// </summary>
     public class CityObject : FeatureObject
     {

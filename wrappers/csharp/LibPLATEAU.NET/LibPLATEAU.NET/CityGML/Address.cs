@@ -3,6 +3,10 @@ using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// 住所情報を保持します。
+    /// <see cref="CityObject"/> が <see cref="Address"/> を保持します。
+    /// </summary>
     public class Address
     {
         private IntPtr handle;

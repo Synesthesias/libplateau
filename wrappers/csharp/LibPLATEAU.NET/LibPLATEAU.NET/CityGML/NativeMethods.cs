@@ -24,10 +24,16 @@ namespace LibPLATEAU.NET.CityGML
         }
     }
 
+    /// <summary>
+    /// GMLファイルのパース時の設定です。
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CitygmlParserParams
     {
         public int Optimize;
+        /// <summary>
+        /// <see cref="Tesselate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
+        /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool Tesselate;
 

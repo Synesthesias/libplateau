@@ -3,6 +3,11 @@ using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
+    /// <summary>
+    /// 多角形による形状表現です。
+    /// 頂点座標のリストを保持します。
+    /// <see cref="Polygon"/> が <see cref="LinearRing"/> を保持します。（ただし条件付きで一部のみです。）
+    /// </summary>
     public class LinearRing : Object
     {
         internal LinearRing(IntPtr handle) : base(handle)

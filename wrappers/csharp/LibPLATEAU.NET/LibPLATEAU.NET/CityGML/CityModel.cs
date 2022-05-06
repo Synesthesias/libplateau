@@ -19,6 +19,9 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public IntPtr Handle => this.handle;
 
+        /// <summary>
+        /// <see cref="CityModel"/> のトップレベルにある <see cref="CityObject"/> の一覧を返します。
+        /// </summary>
         public ReadOnlyCollection<CityObject> RootCityObjects
         {
             get
