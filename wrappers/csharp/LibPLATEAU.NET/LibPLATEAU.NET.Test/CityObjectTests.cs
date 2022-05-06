@@ -96,7 +96,7 @@ namespace LibPLATEAU.NET.Test
                 Console.WriteLine($"{i}: {geom}");
             }
 
-            GeometryType gmlType = GeometryType.GT_Unknown;
+            GeometryType gmlType = GeometryType.GT_Roof;
             GeometryType actualType = this.cityObject.GetGeometry(0).Type;
             Assert.AreEqual(gmlType, actualType);
         }

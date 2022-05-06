@@ -28,7 +28,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Type_Returns_GML_Type()
         {
-            GeometryType gmlType = GeometryType.GT_Ground;
+            GeometryType gmlType = GeometryType.GT_Roof;
             GeometryType actualType = this.geomWithPolygon.Type;
             Console.WriteLine(actualType);
             Assert.AreEqual(gmlType, actualType);
