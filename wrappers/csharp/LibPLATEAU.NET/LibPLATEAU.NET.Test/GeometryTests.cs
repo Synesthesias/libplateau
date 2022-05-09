@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
-using LibPLATEAU.NET.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test

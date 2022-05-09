@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime;
 using LibPLATEAU.NET.CityGML;
-using LibPLATEAU.NET.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test
@@ -22,12 +19,12 @@ namespace LibPLATEAU.NET.Test
         // 前処理
         public PolygonTests()
         {
-            CityModel cityModelWithTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, true);
+            CityModel cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
-            this.polyWithVerts = cityModelWithTesselate.RootCityObjects
+            this.polyWithVerts = cityModelWithTessellate.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geo => geo.GeometryDescendantsDFS)
