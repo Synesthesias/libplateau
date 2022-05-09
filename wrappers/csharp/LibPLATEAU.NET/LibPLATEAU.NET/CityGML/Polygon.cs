@@ -6,19 +6,29 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// 建築物の形状におけるポリゴンです。
-    /// <see cref="Geometry"/> が <see cref="Polygon"/> を保持します。
-    /// <see cref="Polygon"/> は Vertices , Indices を保持します。
+    /// Vertices , Indices を保持します。
     /// ただし、GMLファイルのパース時に <see cref="CitygmlParserParams.Tessellate"/> を false に設定した時に限り、
     /// Vertices, Indices の代わりに <see cref="ExteriorRing"/> , <see cref="InteriorRings"/> を保持することがあります。
+    /// Vertex と Ring を両方保持する場合もあれば、片方だけの場合もあります。
+    /// <see cref="Polygon"/> は <see cref="Geometry"/> によって保持されます。
     /// </summary>
     public class Polygon : AppearanceTarget
     {
         private LinearRing? cachedExteriorRing;
         private LinearRing?[]? cachedInteriorRings;
+        
         internal Polygon(IntPtr handle) : base(handle)
         {
         }
 
+        /// <summary> ポリゴンとしての頂点を持っているか </summary>
+        public bool DoHaveVertices => VertexCount > 0;
+        /// <summary> 多角形の形状情報としての <see cref="LinearRing"/>(Exterior または Interior)を持っているか </summary>
+        public bool DoHaveRings => ExteriorRing.VerticesCount > 0 || InteriorRingCount > 0;
+
+        /// <summary>
+        /// 頂点数を返します。
+        /// </summary>
         public int VertexCount
         {
             get
@@ -28,8 +38,16 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 頂点番号を受け取り、その頂点の座標を返します。
+        /// </summary>
         public PlateauVector3d GetVertex(int index)
         {
+            if (index >= VertexCount)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(index)}",
+                    $"index is out of range.  index={index}, VertexCount={VertexCount}");
+            }
             var vert = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,
                 NativeMethods.plateau_polygon_get_vertex);
             return vert;
@@ -67,7 +85,7 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// 建物の外周の形状です。
         /// GMLファイルのパース時の設定で <see cref="CitygmlParserParams.Tessellate"/> が true の場合、この情報は保持されません。
-        /// false の場合、 Vertices, Indices の代わりに <see cref="ExteriorRing"/>, <see cref="InteriorRings"/>が保持される場合があります。
+        /// false の場合、 <see cref="ExteriorRing"/>, <see cref="InteriorRings"/>が保持される場合があります。
         /// </summary>
         public LinearRing ExteriorRing
         {

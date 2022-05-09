@@ -100,6 +100,29 @@ namespace LibPLATEAU.NET.Test
                 .FirstOrDefault(ring => ring.VerticesCount > 0);
             Assert.IsNotNull(ring);
         }
+
+        [TestMethod]
+        public void DoHaveVertices_Returns_Correct()
+        {
+            Assert.IsTrue(this.polyWithVerts.DoHaveVertices);
+            Assert.IsFalse(this.polyWithInteriorRings.DoHaveVertices);
+        }
+
+        [TestMethod]
+        public void DoHaveRings_Returns_Correct()
+        {
+            Assert.IsTrue(this.polyWithInteriorRings.DoHaveRings);
+        }
+
+        [TestMethod]
+        public void GetVertex_Throws_Error_When_Out_Of_Range()
+        {
+            var poly = this.polyWithVerts;
+            // 正常
+            poly.GetVertex(poly.VertexCount - 1);
+            // 異常
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => poly.GetVertex(poly.VertexCount));
+        }
         
     }
 }
