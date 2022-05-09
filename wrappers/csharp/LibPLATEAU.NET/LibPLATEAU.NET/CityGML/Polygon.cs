@@ -99,10 +99,16 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
 
+        /// <summary>
+        /// 建物の形状の多角形表現のうち、内側にある多角形の数です。
+        /// </summary>
         public int InteriorRingCount =>
             DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_polygon_get_interior_ring_count);
 
+        /// <summary>
+        /// 建物の形状の多角形表現のうち、内側にある多角形の1つをインデックス指定で返します。
+        /// </summary>
         public LinearRing GetInteriorRing(int index)
         {
             var ring = DLLUtil.ArrayCache(ref this.cachedInteriorRings, index, InteriorRingCount, () =>
@@ -114,6 +120,9 @@ namespace LibPLATEAU.NET.CityGML
             return ring;
         }
 
+        /// <summary>
+        /// InteriorRing を foreach や Linq で回したい時に利用できます。
+        /// </summary>
         public IEnumerable<LinearRing> InteriorRings
         {
             get
