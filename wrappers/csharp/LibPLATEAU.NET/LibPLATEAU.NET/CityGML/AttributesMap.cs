@@ -19,7 +19,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private string[]? cachedKeys;
 
         internal AttributesMap(IntPtr handle)
@@ -171,7 +171,7 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         private class AttributesMapEnumerator : IEnumerator<AttrPair>
         {
-            private AttributesMap map;
+            private readonly AttributesMap map;
             private int index;
 
 

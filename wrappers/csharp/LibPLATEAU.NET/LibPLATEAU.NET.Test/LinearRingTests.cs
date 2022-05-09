@@ -17,7 +17,7 @@ namespace LibPLATEAU.NET.Test
             CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
             
             // 頂点数が 1 以上である ExteriorRing を検索し、最初に見つかったものをテスト対象とします。
-            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.ChildCityObjectsDfsIterate).ToArray();
+            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS).ToArray();
             this.exteriorRing = allCityObjects
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)

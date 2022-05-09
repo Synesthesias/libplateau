@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -54,9 +52,9 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 子孫の <see cref="Geometry"/> を再帰ですべてイテレートします。自分自身を含みます。
-        /// DFS(深さ優先探索)を行います。
+        /// イテレートの順番は DFS(深さ優先探索)です。
         /// </summary>
-        public IEnumerable<Geometry> ChildGeometriesDfsIterate
+        public IEnumerable<Geometry> GeometryDescendantsDFS
         {
             get
             {
@@ -164,36 +162,5 @@ namespace LibPLATEAU.NET.CityGML
                 return srsName;
             }
         }
-        
-
-        /// <summary>
-        /// デバッグ用に、自身と子の <see cref="Geometry"/> の情報を再帰的に表示します。
-        /// </summary>
-        public string DebugGeometryHierarchy()
-        {
-            var sb = new StringBuilder();
-            DebugGeometryHierarchyRecursive(this, sb,  0);
-            return sb.ToString();
-        }
-
-        
-        private void DebugGeometryHierarchyRecursive(Geometry geom, StringBuilder sb, int recursiveDepth)
-        {
-            sb.Append("\n");
-            // インデント
-            for (int i = 0; i < recursiveDepth; i++)
-            {
-                sb.Append("--");
-            }
-            // 文字列化
-            sb.Append(this);
-            foreach (var c in ChildGeometries)
-            {
-                DebugGeometryHierarchyRecursive(c, sb, recursiveDepth + 1);
-            }
-        }
-
-        
-        
     }
 }

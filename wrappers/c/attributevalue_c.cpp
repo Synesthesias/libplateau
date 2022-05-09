@@ -1,5 +1,5 @@
 #include <citygml/attributesmap.h>
-#include <string.h>
+#include <cstring>
 #include "libplateau_c.h"
 
 using namespace citygml;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -10,7 +9,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Object
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
         private AttributesMap? attributesMap;
         private string id = "";
 

@@ -23,7 +23,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class AttributeValue
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
 
         public AttributeValue(IntPtr handle)
         {

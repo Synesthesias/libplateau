@@ -9,7 +9,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Address
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
 
         public Address(IntPtr handle)
         {

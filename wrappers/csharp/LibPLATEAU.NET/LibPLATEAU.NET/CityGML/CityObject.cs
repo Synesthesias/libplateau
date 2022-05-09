@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -148,9 +147,9 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 子孫の <see cref="CityObject"/> をすべて再帰的にイテレートします。自分自身を含みます。
-        /// DFS（深さ優先探索）を行います。
+        /// イテレートの順番は DFS（深さ優先探索）です。
         /// </summary>
-        public IEnumerable<CityObject> ChildCityObjectsDfsIterate
+        public IEnumerable<CityObject> CityObjectDescendantsDFS
         {
             get
             {

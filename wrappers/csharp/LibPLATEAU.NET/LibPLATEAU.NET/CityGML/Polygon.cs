@@ -8,8 +8,8 @@ namespace LibPLATEAU.NET.CityGML
     /// 建築物の形状におけるポリゴンです。
     /// <see cref="Geometry"/> が <see cref="Polygon"/> を保持します。
     /// <see cref="Polygon"/> は Vertices , Indices を保持します。
-    /// ただし、GMLファイルのパース時に <see cref="CitygmlParserParams.Tesselate"/> を false に設定した時に限り、
-    /// Vertices, Indices の代わりに <see cref="ExteriorRing"/> , <see cref="InteriorRing"/> を保持することがあります。
+    /// ただし、GMLファイルのパース時に <see cref="CitygmlParserParams.Tessellate"/> を false に設定した時に限り、
+    /// Vertices, Indices の代わりに <see cref="ExteriorRing"/> , <see cref="InteriorRings"/> を保持することがあります。
     /// </summary>
     public class Polygon : AppearanceTarget
     {
@@ -52,25 +52,22 @@ namespace LibPLATEAU.NET.CityGML
             return ret;
         }
 
-        public IReadOnlyList<int> Indices
+        public IEnumerable<int> Indices
         {
             get
             {
                 int cnt = IndicesCount;
-                int[] indices = new int[cnt];
                 for (int i = 0; i < cnt; i++)
                 {
-                    indices[i] = GetIndexOfIndices(i);
+                    yield return GetIndexOfIndices(i);
                 }
-
-                return indices;
             }
         }
 
         /// <summary>
         /// 建物の外周の形状です。
-        /// GMLファイルのパース時の設定で <see cref="CitygmlParserParams.Tesselate"/> が true の場合、この情報は保持されません。
-        /// false の場合、 Vertices, Indices の代わりに <see cref="ExteriorRing"/>, <see cref="InteriorRing"/>が保持される場合があります。
+        /// GMLファイルのパース時の設定で <see cref="CitygmlParserParams.Tessellate"/> が true の場合、この情報は保持されません。
+        /// false の場合、 Vertices, Indices の代わりに <see cref="ExteriorRing"/>, <see cref="InteriorRings"/>が保持される場合があります。
         /// </summary>
         public LinearRing ExteriorRing
         {
