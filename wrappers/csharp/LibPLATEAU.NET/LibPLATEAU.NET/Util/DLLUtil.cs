@@ -167,7 +167,7 @@ namespace LibPLATEAU.NET.Util
         /// <param name="cache">
         /// キャッシュです。
         /// <paramref name="cache"/> そのものが null であれば、キャッシュを T[arrayLength] で初期化します。
-        /// キャッシュ本体がnullではないが、キャッシュの要素 <paramref name="cache"/>[index] がnullであるときは、
+        /// キャッシュ本体がnullではないが、キャッシュの要素 <paramref name="cache"/>[<paramref name="index"/>] がnullであるときは、
         /// <paramref name="generator"/> で値を生成しキャッシュに記憶して返します。
         /// </param>
         ///

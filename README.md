@@ -111,4 +111,4 @@ dotnet test -c Release
   - Github Actions で自動テストを行うための手順を記載する。
 
 ## テストデータ
-テストデータの詳細については ```data/README.md``` を参照してください。
+テストデータの詳細については ```data/README.md``` に記載している。
