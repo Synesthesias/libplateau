@@ -11,6 +11,7 @@ public class TextureTargetDefinitionTests
     private TextureTargetDefinition texTarget;
     public TextureTargetDefinitionTests()
     {
+        // 探索して最初に見つかった TextureTargetDefinition をテスト対象にします。
         var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
         this.texTarget = cityModel.RootCityObjects
             .SelectMany(co => co.CityObjectDescendantsDFS)
