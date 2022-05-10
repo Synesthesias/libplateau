@@ -110,24 +110,32 @@ using dll_str_size_t = int;
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。
 /// 3つの関数を生成します。
 ///
-/// 関数について:
-/// 関数1つ目は FUNC_NAME_count という名前で、
-/// 文字列のポインタの配列の要素数を渡します。
+/// 生成される関数について:
+/// 関数1つ目は FUNC_NAME_count という名前で、配列の要素数を渡します。
 /// 関数2つ目は FUNC_NAME_str_sizes という名前で、
 /// 数値配列 out_size_array に各文字列のサイズを配列で格納します。
 /// サイズには null終端文字 を含みます。
-/// 上記2つの関数は、DLLの利用者が文字列のポインタの配列から文字列を読み取るための準備として利用します。
+/// 上記2つの関数は、DLLの利用者が文字列を読み取るための準備として利用します。
 /// 関数3つ目は FUNC_NAME という名前で、
 /// char** out_strs に文字のポインタの配列を格納します。
-
+///
 /// 前提:
 /// 情報を格納するのに十分なメモリ領域をDLLの利用者が確保していなければアクセス違反となります。
 ///
 /// マクロとしての引数について:
 /// ARRAY_LENGTH_GETTER は TARGET_TYPE* handle から要素数を取得するための処理を記述します。
-/// FOR_RANGE は TARGET_TYPE* handle から文字列をイテレートするための範囲for文の範囲を記載します。
-/// STRING_GETTER は範囲for文の中で string を取得する処理を記載します。
+/// FOR_RANGE は TARGET_TYPE* handle から文字列をイテレートするための範囲for文の(小括弧)の中身を記載します。
+/// STRING_GETTER は範囲for文の{中}で string を取得する処理を記載します。
 /// 関数に追加の引数を持たせたい場合は __VA_ARGS__ にカンマから記載します。
+///
+/// 類似マクロとの使い分けについて:
+/// 似たマクロに DLL_STRING_VALUE_ARRAY_FUNC3 があります。
+/// 同マクロとの違いは、文字列のポインタの配列を渡すのか、文字列のコピーの配列を渡すのかです。
+/// これらは文字列の寿命によって使い分けます。
+/// 文字列がC++側で保持されている場合は、
+/// このマクロによって文字列のポインタをDLLの利用者に渡せば文字列を読んでもらうことができます。
+/// 一方で、文字列の寿命が短く、C++側で一時的にしか保持されない文字列を渡したい場合は、
+/// 文字列をコピーする必要があります。
 #define DLL_STRING_PTR_ARRAY_FUNC3(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
     /* 文字列のポインタの配列の要素数を渡す関数です。*/                                                                                      \
     DLL_VALUE_FUNC(FUNC_NAME ## _count,\
@@ -161,6 +169,47 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown;\
     }
 
+/// 文字列の配列をコピーして渡したい時に利用するマクロです。
+/// 3つの関数を生成します。
+///
+/// 詳しい説明は類似マクロ DLL_STRING_PTR_ARRAY_FUNC3 とほぼ同じなのでそちらをご覧ください。
+/// 使い分けについてもそちらで説明しています。
+#define DLL_STRING_VALUE_ARRAY_FUNC3(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
+    /* 文字列のポインタの配列の要素数を渡す関数です。*/ \
+    DLL_VALUE_FUNC(FUNC_NAME ## _count,\
+                    TARGET_TYPE,\
+                    int,\
+                    (ARRAY_LENGTH_GETTER)\
+                    , __VA_ARGS__)\
+    \
+    /* 各文字列のサイズを配列で渡す関数です。 */\
+    DLL_STRINGS_SIZE_ARRAY(FUNC_NAME ## _str_sizes,\
+                            TARGET_TYPE,\
+                            FOR_RANGE,\
+                            STRING_GETTER\
+                            , __VA_ARGS__)                                                                       \
+    \
+   /* 各文字列のコピーを与えられたメモリ領域に書き込む関数です。*/ \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME(\
+            const TARGET_TYPE *const handle,\
+            char** out_strs\
+            __VA_ARGS__\
+    ){\
+        API_TRY {\
+            int i = 0;\
+            for (FOR_RANGE) {\
+                /*文字列を out_strs[i] にコピーします。*/ \
+                auto chars = (STRING_GETTER).c_str();\
+                auto len = (dll_str_size_t) (strlen(chars));\
+                strncpy(out_strs[i], chars, len);\
+                out_strs[i][len] = '\0'; /* 最後はnull終端文字*/\
+                i++;\
+            }\
+            return APIResult::Success;\
+        }\
+        API_CATCH\
+        return APIResult::ErrorUnknown;\
+    }
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
