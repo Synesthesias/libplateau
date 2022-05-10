@@ -13,7 +13,7 @@ namespace LibPLATEAU.NET.Test
         // 前処理
         public LinearRingTests()
         {
-            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
+            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             
             // 頂点数が 1 以上である ExteriorRing を検索し、最初に見つかったものをテスト対象とします。
             this.exteriorRing = cityModel.RootCityObjects

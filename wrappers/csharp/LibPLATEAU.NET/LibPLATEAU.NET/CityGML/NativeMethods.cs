@@ -32,14 +32,15 @@ namespace LibPLATEAU.NET.CityGML
     [StructLayout(LayoutKind.Sequential)]
     public struct CitygmlParserParams
     {
-        public int Optimize;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool Optimize;
         /// <summary>
         /// <see cref="Tessellate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
 
-        public CitygmlParserParams(int optimize = 1, bool tessellate = true)
+        public CitygmlParserParams(bool optimize = true, bool tessellate = true)
         {
             this.Optimize = optimize;
             this.Tessellate = tessellate;

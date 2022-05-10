@@ -16,7 +16,7 @@ namespace LibPLATEAU.NET.Test {
         /// <summary>
         /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>
-        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, int optimize = 1, bool tessellate = true)
+        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true)
         {
             var parserParams = new CitygmlParserParams(optimize, tessellate);
             var cityModel = CityGml.Load(GMLPathes[gmlFileCase], parserParams);

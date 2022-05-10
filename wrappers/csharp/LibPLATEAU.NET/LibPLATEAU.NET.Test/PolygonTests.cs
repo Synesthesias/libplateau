@@ -20,7 +20,7 @@ namespace LibPLATEAU.NET.Test
         public PolygonTests()
         {
             CityModel cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, 1, false);
+            this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。

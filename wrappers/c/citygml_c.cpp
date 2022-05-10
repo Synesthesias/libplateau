@@ -8,11 +8,11 @@
 
 extern "C" {
     struct plateau_citygml_parser_params {
-        int optimize;
+        bool optimize;
         bool tessellate;
 
         plateau_citygml_parser_params()
-            : optimize(0),
+            : optimize(true),
               tessellate(true){
         }
     };
