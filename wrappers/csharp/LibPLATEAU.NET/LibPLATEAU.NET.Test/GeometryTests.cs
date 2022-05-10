@@ -2,12 +2,14 @@
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NuGet.Frameworks;
 
 namespace LibPLATEAU.NET.Test
 {
     [TestClass]
     public class GeometryTests
     {
+        private readonly CityModel cityModel;
         private readonly Geometry geomWithPolygon;
 
         private readonly Geometry geomWithChildren;
@@ -16,8 +18,8 @@ namespace LibPLATEAU.NET.Test
         {
             // テスト対象として適切なものを検索し、最初にヒットした物をテストに利用します。
             // 具体的には Polygon を1つ以上含む Geometry と、 Children を1つ以上含む Geometry を検索します。
-            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS).ToArray();
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            var allCityObjects = this.cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS).ToArray();
             this.geomWithPolygon = allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.PolygonCount > 0);
             this.geomWithChildren =
                 allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.ChildGeometryCount > 0);
@@ -68,6 +70,18 @@ namespace LibPLATEAU.NET.Test
         {
             int actualLineStringsCount = this.geomWithPolygon.LineStringCount;
             Assert.IsTrue(actualLineStringsCount >= 0);
+        }
+
+        [TestMethod]
+        public void Do_Exists_Geometry_With_SRSName()
+        {
+            var geomWithSRSName = this.cityModel.RootCityObjects
+                .SelectMany(co => co.CityObjectDescendantsDFS)
+                .SelectMany(co => co.Geometries)
+                .SelectMany(geom => geom.GeometryDescendantsDFS)
+                .FirstOrDefault(geom => geom.SRSName == "http://www.opengis.net/def/crs/EPSG/0/6697");
+            
+            Assert.IsNotNull(geomWithSRSName);
         }
         
 

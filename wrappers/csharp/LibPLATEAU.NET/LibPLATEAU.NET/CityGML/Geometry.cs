@@ -141,7 +141,8 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// SRSName を取得します。
-        /// TODO テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
+        /// SRSNameは典型的には次のようなURL形式の文字列になるはずです。
+        /// 例: "http://www.opengis.net/def/crs/EPSG/0/6697"
         /// </summary>
         public string SRSName
         {

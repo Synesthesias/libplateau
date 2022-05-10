@@ -196,7 +196,7 @@
 				</gml:Solid>
 			</bldg:lod1Solid>
 			<bldg:lod2Solid>
-				<gml:Solid>
+				<gml:Solid srsName="http://www.opengis.net/def/crs/EPSG/0/6697">
 					<gml:exterior>
 						<gml:CompositeSurface>
 							<gml:surfaceMember xlink:href="#poly_HNAP0034_b_0"/>
