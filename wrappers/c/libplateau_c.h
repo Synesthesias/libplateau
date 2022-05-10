@@ -71,6 +71,7 @@ using dll_str_size_t = int;
     }
 
 /// 文字列のアドレスを渡す関数と文字列の長さを渡す関数の2つを生成するマクロです。
+/// 生成される関数の名前は FUNC_NAME, FUNC_NAME_str_length です。
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
 /// 2つ生成する意図は、文字列をDLLの利用者に渡すとき、char*アドレスと文字列長の両方が欲しいためです。
 #define DLL_STRING_PTR_FUNC2(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
@@ -80,6 +81,61 @@ using dll_str_size_t = int;
     DLL_VALUE_FUNC(FUNC_NAME ## _str_length, \
                     TARGET_TYPE, int, \
                     (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
+
+
+
+/// 文字列のポインタの配列を渡したいときに利用するマクロです。
+/// 2つの関数を生成します。
+///
+/// 関数について:
+/// 関数1つ目は FUNC_NAME_str_size_array という名前で、
+/// 数値配列 out_size_array に各文字列のサイズを配列で格納します。
+/// サイズには null終端文字 を含みます。
+/// これはDLLの利用者が文字列のポインタから文字列を読み取るための準備として利用します。
+/// 関数2つ目は FUNC_NAME という名前で、
+/// char** out_strs に文字のポインタの配列を格納します。
+
+/// 前提:
+/// 情報を格納するのに十分なメモリ領域をDLLの利用者が確保していなければアクセス違反となります。
+///
+/// マクロとしての引数について:
+/// FOR_RANGE は TARGET_TYPE* handle から文字列をイテレートするための範囲for文の範囲を記載します。
+/// STRING_GETTER は範囲for文の中で string を取得する処理を記載します。
+#define DLL_STRING_PTR_ARRAY_FUNC2(FUNC_NAME, TARGET_TYPE, FOR_RANGE, STRING_GETTER) \
+    /* 各文字列のサイズを配列で渡す関数です。 */\
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ## _str_size_array(\
+        const TARGET_TYPE *const handle,\
+        dll_str_size_t *const out_size_array\
+        ) {\
+        API_TRY {\
+            int i = 0;\
+            for (FOR_RANGE) {\
+                out_size_array[i] = (dll_str_size_t)((STRING_GETTER).size()) + 1; /* +1 は null終端文字の分です。*/\
+                i++;\
+            }\
+            return APIResult::Success;\
+        }\
+        API_CATCH\
+        return APIResult::ErrorUnknown;\
+    }\
+    \
+    /* 文字列のポインタの配列を渡す関数です。 */\
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+        const TARGET_TYPE *const handle,\
+        const char ** const out_strs\
+    ) {\
+        API_TRY {\
+            int i = 0;\
+            for (FOR_RANGE) {\
+                out_strs[i] = (STRING_GETTER).c_str();\
+                i++;\
+            }\
+            return APIResult::Success;\
+        }\
+        API_CATCH\
+        return APIResult::ErrorUnknown;\
+    }
+
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、

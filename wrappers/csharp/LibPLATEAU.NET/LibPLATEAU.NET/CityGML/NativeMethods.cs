@@ -307,7 +307,7 @@ namespace LibPLATEAU.NET.CityGML
             out int count);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_attributes_map_get_key_sizes(
+        internal static extern APIResult plateau_attributes_map_get_keys_str_size_array(
             [In] IntPtr attributesMap,
             [Out] int[] outSizeIntArray);
 

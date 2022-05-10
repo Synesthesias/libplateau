@@ -130,7 +130,8 @@ namespace LibPLATEAU.NET.CityGML
         private int[] GetKeySizes()
         {
             int[] keySizes = new int[Count];
-            NativeMethods.plateau_attributes_map_get_key_sizes(this.handle, keySizes);
+            APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_size_array(this.handle, keySizes);
+            DLLUtil.CheckDllError(result);
             return keySizes;
         }
         
