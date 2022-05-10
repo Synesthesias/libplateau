@@ -1,4 +1,4 @@
-#include <citygml/appearancetarget_c.h>
+#include <citygml/appearancetarget.h>
 #include "libplateau_c.h"
 
 using namespace citygml;

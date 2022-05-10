@@ -23,18 +23,6 @@ namespace LibPLATEAU.NET.CityGML
 
         public string[] TextureThemes(bool front)
         {
-            // int cnt = TextureThemesCount(front);
-            // var strSizes = new int[cnt];
-            // var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_str_sizes(
-            //     Handle, strSizes, front);
-            // DLLUtil.CheckDllError(result);
-            // var strPointers = new IntPtr[cnt];
-            // result = NativeMethods.plateau_appearance_target_get_all_texture_themes(
-            //     Handle, strPointers, front);
-            // DLLUtil.CheckDllError(result);
-            // Console.WriteLine($"strSizes[0] = {strSizes[0]}");
-            // return DLLUtil.ReadNativeStrPtrArray(strPointers, strSizes);
-
             int cnt = TextureThemesCount(front);
             var strSizes = new int[cnt];
             var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_str_sizes(
