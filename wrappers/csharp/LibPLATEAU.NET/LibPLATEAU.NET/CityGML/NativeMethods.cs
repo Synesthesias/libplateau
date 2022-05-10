@@ -1,6 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
+// 文字列のサイズをDLLでやりとりする時の型を決めます。
+using DllStrSizeT = System.Int32;
+
 namespace LibPLATEAU.NET.CityGML
 {
     [StructLayout(LayoutKind.Sequential)]
@@ -266,7 +269,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_id_str_length(
             [In] IntPtr objHandle,
-            out int outLength);
+            out DllStrSizeT outLength);
         
         
         [DllImport(DllName)]
@@ -337,7 +340,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_str_length(
             [In] IntPtr attributeValue,
-            out int strLength);
+            out DllStrSizeT strLength);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_type(
@@ -361,7 +364,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_country_str_length(
             [In] IntPtr addressHandle,
-            out int strLength);
+            out DllStrSizeT strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_locality(
@@ -371,7 +374,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_locality_str_length(
             [In] IntPtr addressHandle,
-            out int strLength);
+            out DllStrSizeT strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_postal_code(
@@ -381,7 +384,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_postal_code_str_length(
             [In] IntPtr addressHandle,
-            out int strLength);
+            out DllStrSizeT strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_name(
@@ -391,7 +394,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_name_str_length(
             [In] IntPtr addressHandle,
-            out int strLength);
+            out DllStrSizeT strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_number(
@@ -401,7 +404,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_number_str_length(
             [In] IntPtr addressHandle,
-            out int strLength);
+            out DllStrSizeT strLength);
         
         // ***************
         //  geometry_c.cpp
@@ -447,7 +450,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_srs_name_str_length(
             [In] IntPtr geometryHandle,
-            out int outLength);
+            out DllStrSizeT outLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_line_string_count(
