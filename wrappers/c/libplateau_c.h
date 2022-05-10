@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <iostream>
+#include <cstring>
 
 // P/Invoke用なためエクスポートのみ
 #ifdef _WIN32
