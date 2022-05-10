@@ -1,4 +1,4 @@
-#include <citygml/attributesmap.h>
+﻿#include <citygml/attributesmap.h>
 #include "libplateau_c.h"
 
 using namespace citygml;
@@ -6,15 +6,9 @@ using namespace libplateau;
 
 extern "C" {
 
-    /// AttributesMapの要素数を取得します。
-    DLL_VALUE_FUNC(plateau_attributes_map_get_key_count,
-                   AttributesMap,
-                   int,
-                   handle->size())
-
-
-    DLL_STRING_PTR_ARRAY_FUNC2(plateau_attributes_map_get_keys,
+    DLL_STRING_PTR_ARRAY_FUNC3(plateau_attributes_map_get_keys,
                       AttributesMap,
+                      handle->size(),
                       const auto& pair : *handle,
                       pair.first)
 

@@ -30,7 +30,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 int count = DLLUtil.GetNativeValue<int>(this.handle,
-                    NativeMethods.plateau_attributes_map_get_key_count);
+                    NativeMethods.plateau_attributes_map_get_keys_count);
                 return count;
             }
         }
@@ -130,7 +130,7 @@ namespace LibPLATEAU.NET.CityGML
         private int[] GetKeySizes()
         {
             int[] keySizes = new int[Count];
-            APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_size_array(this.handle, keySizes);
+            APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_sizes(this.handle, keySizes);
             DLLUtil.CheckDllError(result);
             return keySizes;
         }

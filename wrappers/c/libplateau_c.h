@@ -59,7 +59,7 @@ using dll_str_size_t = int;
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle, \
-            RETURN_VALUE_TYPE* const out                                       \
+            RETURN_VALUE_TYPE* const out\
             __VA_ARGS__ \
             ){ \
         API_TRY{ \
@@ -85,27 +85,39 @@ using dll_str_size_t = int;
 
 
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。
-/// 2つの関数を生成します。
+/// 3つの関数を生成します。
 ///
 /// 関数について:
-/// 関数1つ目は FUNC_NAME_str_size_array という名前で、
+/// 関数1つ目は FUNC_NAME_count という名前で、
+/// 文字列のポインタの配列の要素数を渡します。
+/// 関数2つ目は FUNC_NAME_str_sizes という名前で、
 /// 数値配列 out_size_array に各文字列のサイズを配列で格納します。
 /// サイズには null終端文字 を含みます。
-/// これはDLLの利用者が文字列のポインタから文字列を読み取るための準備として利用します。
-/// 関数2つ目は FUNC_NAME という名前で、
+/// 上記2つの関数は、DLLの利用者が文字列のポインタの配列から文字列を読み取るための準備として利用します。
+/// 関数3つ目は FUNC_NAME という名前で、
 /// char** out_strs に文字のポインタの配列を格納します。
 
 /// 前提:
 /// 情報を格納するのに十分なメモリ領域をDLLの利用者が確保していなければアクセス違反となります。
 ///
 /// マクロとしての引数について:
+/// ARRAY_LENGTH_GETTER は TARGET_TYPE* handle から要素数を取得するための処理を記述します。
 /// FOR_RANGE は TARGET_TYPE* handle から文字列をイテレートするための範囲for文の範囲を記載します。
 /// STRING_GETTER は範囲for文の中で string を取得する処理を記載します。
-#define DLL_STRING_PTR_ARRAY_FUNC2(FUNC_NAME, TARGET_TYPE, FOR_RANGE, STRING_GETTER) \
+/// 関数に追加の引数を持たせたい場合は __VA_ARGS__ にカンマから記載します。
+#define DLL_STRING_PTR_ARRAY_FUNC3(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
+    /* 文字列のポインタの配列の要素数を渡す関数です。*/                                                                                      \
+    DLL_VALUE_FUNC(FUNC_NAME ## _count,\
+                    TARGET_TYPE,\
+                    int,\
+                    (ARRAY_LENGTH_GETTER)\
+                    , __VA_ARGS__)\
+    \
     /* 各文字列のサイズを配列で渡す関数です。 */\
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ## _str_size_array(\
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ## _str_sizes(\
         const TARGET_TYPE *const handle,\
         dll_str_size_t *const out_size_array\
+        __VA_ARGS__\
         ) {\
         API_TRY {\
             int i = 0;\
@@ -123,6 +135,7 @@ using dll_str_size_t = int;
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
         const TARGET_TYPE *const handle,\
         const char ** const out_strs\
+        __VA_ARGS__\
     ) {\
         API_TRY {\
             int i = 0;\

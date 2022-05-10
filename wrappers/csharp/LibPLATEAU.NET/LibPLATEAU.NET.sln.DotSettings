@@ -31,6 +31,7 @@
 internal static extern APIResult plateau_$FuncName$(
     [In] IntPtr handle,
     $ARGS$);</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=appearancetarget/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=attributesmap/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=attributevalue/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Breakline/@EntryIndexedValue">True</s:Boolean>
