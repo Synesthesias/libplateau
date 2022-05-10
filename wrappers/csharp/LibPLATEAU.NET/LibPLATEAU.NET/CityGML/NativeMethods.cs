@@ -542,6 +542,16 @@ namespace LibPLATEAU.NET.CityGML
             [In] string theme,
             [Out] out IntPtr outTextureTargetHandle,
             [MarshalAs(UnmanagedType.U1)] bool front);
+
+
+        // ***************
+        //  texturetargetdefinition_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates_count(
+            [In] IntPtr handle,
+            out int count);
         
     }
 }
