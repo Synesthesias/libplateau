@@ -150,9 +150,10 @@ namespace LibPLATEAU.NET.CityGML
         private const string DllName = "plateau_c";
 
         [DllImport(DllName)]
-        internal static extern IntPtr plateau_load_citygml(
+        internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
-            [In] CitygmlParserParams parserParams);
+            [In] CitygmlParserParams parserParams,
+            out IntPtr cityModelHandle);
 
         [DllImport(DllName)]
         internal static extern IntPtr plateau_create_obj_writer();
