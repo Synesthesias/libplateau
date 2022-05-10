@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.InteropServices;
 using System.Text;
 using LibPLATEAU.NET.Util;
 
@@ -50,11 +49,9 @@ namespace LibPLATEAU.NET.CityGML
                 var keyHandles = new IntPtr[cnt];
                 this.cachedKeys = new string[cnt];
 
-                NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles);
-                for (int i = 0; i < cnt; i++)
-                {
-                    this.cachedKeys[i] = Marshal.PtrToStringAnsi(keyHandles[i], keySizes[i] - 1);
-                }
+                var result = NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles);
+                DLLUtil.CheckDllError(result);
+                this.cachedKeys = DLLUtil.ReadNativeStrPtrArray(keyHandles, keySizes);
 
                 return this.cachedKeys;
             }
@@ -125,7 +122,6 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// 属性の各キーの文字列としてのバイト数を配列で返します。
-        /// 例外が起きたときは各要素が -1 の配列を返します。
         /// </summary>
         private int[] GetKeySizes()
         {

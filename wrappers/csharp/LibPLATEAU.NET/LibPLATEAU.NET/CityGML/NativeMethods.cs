@@ -519,14 +519,22 @@ namespace LibPLATEAU.NET.CityGML
         //  appearancetarget_c.cpp
         // ***************
         [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_texture_themes_count(
+            [In] IntPtr handle,
+            out int outCount,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_themes(
             [In] IntPtr handle,
-            [In, Out] IntPtr[] outThemeStrHandles);
+            [In, Out] IntPtr outThemeStrArrayHandle,
+            [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_themes_str_sizes(
             [In] IntPtr handle,
-            [Out] int[] outSizeArray);
+            [Out] int[] outSizeArray,
+            [MarshalAs(UnmanagedType.U1)] bool front);
         
     }
 }

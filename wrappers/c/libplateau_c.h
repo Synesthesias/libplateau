@@ -82,6 +82,23 @@ using dll_str_size_t = int;
                     TARGET_TYPE, int, \
                     (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
 
+#define DLL_STRINGS_SIZE_ARRAY(FUNC_NAME, TARGET_TYPE,FOR_RANGE, STRING_GETTER, ...) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME(\
+            const TARGET_TYPE *const handle,\
+            dll_str_size_t *const out_size_array\
+            __VA_ARGS__\
+            ) {\
+            API_TRY {\
+                int i = 0;\
+                for (FOR_RANGE) {\
+                    out_size_array[i] = (dll_str_size_t)((STRING_GETTER).size()) + 1; /* +1 は null終端文字の分です。*/\
+                    i++;\
+                }\
+                return APIResult::Success;\
+            }\
+            API_CATCH\
+            return APIResult::ErrorUnknown;\
+        }
 
 
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。
@@ -114,22 +131,11 @@ using dll_str_size_t = int;
                     , __VA_ARGS__)\
     \
     /* 各文字列のサイズを配列で渡す関数です。 */\
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ## _str_sizes(\
-        const TARGET_TYPE *const handle,\
-        dll_str_size_t *const out_size_array\
-        __VA_ARGS__\
-        ) {\
-        API_TRY {\
-            int i = 0;\
-            for (FOR_RANGE) {\
-                out_size_array[i] = (dll_str_size_t)((STRING_GETTER).size()) + 1; /* +1 は null終端文字の分です。*/\
-                i++;\
-            }\
-            return APIResult::Success;\
-        }\
-        API_CATCH\
-        return APIResult::ErrorUnknown;\
-    }\
+    DLL_STRINGS_SIZE_ARRAY(FUNC_NAME ## _str_sizes,\
+                            TARGET_TYPE,\
+                            FOR_RANGE,\
+                            STRING_GETTER\
+                            , __VA_ARGS__)\
     \
     /* 文字列のポインタの配列を渡す関数です。 */\
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
@@ -140,7 +146,7 @@ using dll_str_size_t = int;
         API_TRY {\
             int i = 0;\
             for (FOR_RANGE) {\
-                out_strs[i] = (STRING_GETTER).c_str();\
+                out_strs[i] = (STRING_GETTER).c_str();                                                         \
                 i++;\
             }\
             return APIResult::Success;\

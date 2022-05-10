@@ -18,8 +18,6 @@ namespace LibPLATEAU.NET.Util
         internal delegate APIResult StrPtrGetDelegate(IntPtr handle, out IntPtr ret);
         
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
-        // 今のところ、代わりに DLL側で保持している文字列への「ポインタの配列」で済んでいるので利用していませんが、
-        // 今後は完全なコピーが欲しい状況もあるかもしれないので残しておきます。
 
         /// <summary>
         /// ポインタの配列を作ります。
@@ -192,5 +190,28 @@ namespace LibPLATEAU.NET.Util
             cache[index] = item;
             return item;
         }
+        /// <summary>
+        /// 文字列のポインタの配列から各ポインタの文字を読み、
+        /// string[]で返します。
+        /// </summary>
+        public static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
+        {
+            if (strPointers.Length != strSizes.Length)
+            {
+                throw new ArgumentException(
+                    $"Array length of arguments should be same. {nameof(strPointers)}.Length = {strPointers.Length}, {nameof(strSizes)}.Length = {strSizes.Length}");
+            }
+
+            int cnt = strPointers.Length;
+            var ret = new string[cnt];
+            for (int i = 0; i < cnt; i++)
+            {
+                // -1 は null終端文字の分です。
+                ret[i] = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+            }
+
+            return ret;
+        }
+
     }
 }

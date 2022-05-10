@@ -79,9 +79,11 @@ namespace LibPLATEAU.NET.Test
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
-                .FirstOrDefault(geom => geom.SRSName == "http://www.opengis.net/def/crs/EPSG/0/6697");
-            
-            Assert.IsNotNull(geomWithSRSName);
+                .FirstOrDefault(geom => geom.SRSName.Length > 0);
+            string actualValue = geomWithSRSName?.SRSName ?? "";
+            Console.WriteLine($"SRSName = {actualValue}");
+            const string expectedValue = "http://www.opengis.net/def/crs/EPSG/0/6697";
+            Assert.IsNotNull(expectedValue, actualValue);
         }
         
 
