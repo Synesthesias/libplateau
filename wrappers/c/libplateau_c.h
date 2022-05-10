@@ -82,6 +82,12 @@ using dll_str_size_t = int;
                     TARGET_TYPE, int, \
                     (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
 
+
+/// 文字列の配列について、各文字列の長さを数値型の配列にして渡す関数を生成するマクロです。
+/// マクロ引数について、
+/// FOR_RANGE は TARGET_TYPE* handle から範囲for文で各文字列にアクセスするための範囲部分を記載します。
+/// STRING_GETTER は範囲forの中で文字列にアクセスするための処理を記載します。
+/// 追加で渡したい引数があるときは、 __VA_ARGS__ にカンマから始めて記載します。
 #define DLL_STRINGS_SIZE_ARRAY(FUNC_NAME, TARGET_TYPE,FOR_RANGE, STRING_GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME(\
             const TARGET_TYPE *const handle,\

@@ -8,7 +8,7 @@ namespace LibPLATEAU.NET.Test;
 [TestClass]
 public class AppearanceTargetTests
 {
-    private AppearanceTarget appTargetWithTheme;
+    private readonly AppearanceTarget appTargetWithTheme;
     
     // 初期化
     public AppearanceTargetTests()

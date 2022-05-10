@@ -18,13 +18,6 @@ DLL_STRINGS_SIZE_ARRAY(plateau_appearance_target_get_all_texture_themes_str_size
                        str,
                        ,bool front)
 
-//DLL_STRING_PTR_ARRAY_FUNC3(plateau_appearance_target_get_all_texture_themes,
-//                           AppearanceTarget,
-//                           handle->getAllTextureThemes(front).size(),
-//                           const auto& str : handle->getAllTextureThemes(front),
-//                           str,
-//                           ,bool front)
-
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_appearance_target_get_all_texture_themes(
         const AppearanceTarget* const handle,
         char** out_strs,
