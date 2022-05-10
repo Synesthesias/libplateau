@@ -17,7 +17,9 @@ add_library(plateau_c SHARED
   "geometry_c.cpp"
   "polygon_c.cpp"
   "linearring_c.cpp"
-  "appearancetarget_c.cpp")
+  "appearancetarget_c.cpp"
+  "texturetargetdefinition_c.cpp")
+
 
 set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})

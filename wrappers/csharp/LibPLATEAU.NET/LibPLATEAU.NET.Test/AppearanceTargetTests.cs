@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,12 +31,27 @@ public class AppearanceTargetTests
     }
 
     [TestMethod]
-    public void TextureThemes()
+    public void TextureThemes_Returns_GML_ThemeName()
     {
         foreach(string theme in this.appTargetWithTheme.TextureThemes(true))
         {
             Console.WriteLine($"TextureTheme: {theme}");
             Assert.AreEqual("rgbTexture", theme);
         }
+    }
+
+    [TestMethod]
+    public void GetTextureTargetDefinition_Returns_Not_Null()
+    {
+        var ttd = this.appTargetWithTheme.GetTextureTargetDefinition("rgbTexture", true);
+        Assert.IsNotNull(ttd);
+    }
+
+    [TestMethod]
+    public void GetTextureTargetDefinition_Throws_Error_When_Not_Found()
+    {
+        Assert.ThrowsException<KeyNotFoundException>(() =>
+            this.appTargetWithTheme.GetTextureTargetDefinition("DummyNotFound", true)
+            );
     }
 }

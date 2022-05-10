@@ -36,5 +36,18 @@ namespace LibPLATEAU.NET.CityGML
             DLLUtil.FreePtrArray(strPtrArrayPtr, cnt);
             return ret;
         }
+
+        public TextureTargetDefinition GetTextureTargetDefinition(string themeName, bool front)
+        {
+            var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_for_theme(
+                Handle, themeName, out IntPtr texTargetHandle, front);
+            if (result == APIResult.ErrorValueNotFound)
+            {
+                throw new KeyNotFoundException($"themeName: {themeName} is not found.");
+            }
+            DLLUtil.CheckDllError(result);
+            // TODO 結果をキャッシュする
+            return new TextureTargetDefinition(texTargetHandle);
+        }
     }
 }
