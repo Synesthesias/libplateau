@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>

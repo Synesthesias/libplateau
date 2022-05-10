@@ -25,8 +25,8 @@ DLL_VALUE_FUNC(plateau_polygon_get_indices_count,
 DLL_VALUE_FUNC(plateau_polygon_get_index_of_indices,
                Polygon,
                int,
-               handle->getIndices().at(index_of_indices_list),
-               ,int index_of_indices_list)
+               handle->getIndices().at(index),
+               ,int index)
 
 DLL_PTR_FUNC(plateau_polygon_get_exterior_ring,
              Polygon,

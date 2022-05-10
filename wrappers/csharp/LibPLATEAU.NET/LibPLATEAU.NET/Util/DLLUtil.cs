@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util

@@ -12,18 +12,18 @@ extern "C" {
                    int,
                    handle->size())
 
-    /// AttributesMapの各キーの文字列のバイト数(null終端文字を含む)をint配列 out_sizes に格納します。
+    /// AttributesMapの各キーの文字列のバイト数(null終端文字を含む)を数値配列 out_sizes に格納します。
     /// out_sizes は AttributesMap の要素数以上のメモリが確保されていることが前提であり、そうでないとアクセス違反です。
     /// DLLで文字列をやりとりするときに長さ情報が欲しいための関数です。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_key_sizes(
             const AttributesMap *const attributes_map,
-            int *const out_sizes) {
+            dll_str_size_t *const out_sizes) {
 
         API_TRY {
             int i = 0;
             for (const auto &pair: *attributes_map) {
                 auto& key = pair.first;
-                out_sizes[i] = key.size() + 1; // +1 は null終端文字の分です。
+                out_sizes[i] = (dll_str_size_t)(key.size()) + 1; // +1 は null終端文字の分です。
                 i++;
             }
             return APIResult::Success;

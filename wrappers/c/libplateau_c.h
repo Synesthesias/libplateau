@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
@@ -21,6 +21,12 @@ catch (std::exception& e) {\
 catch (...) {\
     std::cout << "Unknown error occurred." << std::endl;\
 }
+
+
+// DLLでのやりとりに使う型を定義します。
+/// 文字列のサイズをDLLでやりとりする時の型です。
+using dll_str_size_t = int;
+
 
 /// アドレスをDLL利用者に渡す関数を生成するマクロです。
 /// HANDLE_TYPE* handle から RETURN_VALUE_TYPEのアドレスを取得して引数 out に書き込みます。
@@ -68,11 +74,11 @@ catch (...) {\
 /// 2つ生成する意図は、文字列をDLLの利用者に渡すとき、char*アドレスと文字列長の両方が欲しいためです。
 #define DLL_STRING_PTR_FUNC2(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
     /* 文字列ポインタを渡す関数*/ \
-    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, STRING_GETTER.c_str()) \
+    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, (STRING_GETTER).c_str()) \
     /* 文字列長を渡す関数 */ \
     DLL_VALUE_FUNC(FUNC_NAME ## _str_length, \
                     TARGET_TYPE, int, \
-                    STRING_GETTER.length() +1 ) /* +1 は null終端文字列の分 */
+                    (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、

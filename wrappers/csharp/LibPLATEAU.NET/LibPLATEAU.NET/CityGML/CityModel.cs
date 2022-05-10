@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading;
+﻿using System.Collections.ObjectModel;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
