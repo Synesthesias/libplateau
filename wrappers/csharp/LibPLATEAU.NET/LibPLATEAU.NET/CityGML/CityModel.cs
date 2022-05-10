@@ -31,7 +31,8 @@ namespace LibPLATEAU.NET.CityGML
                     return Array.AsReadOnly(this.rootCityObjects);
                 }
 
-                var count = NativeMethods.plateau_city_model_get_root_city_object_count(this.Handle);
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_city_model_get_root_city_object_count);
                 var cityObjectHandles = new IntPtr[count];
                 APIResult result = NativeMethods.plateau_city_model_get_root_city_objects(this.Handle, cityObjectHandles, count);
                 DLLUtil.CheckDllError(result);

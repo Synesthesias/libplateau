@@ -30,14 +30,9 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT int LIBPLATEAU_C_API plateau_city_model_get_root_city_object_count(
-        const CityModelHandle* city_model_handle
-    ) {
-        API_TRY{
-            const auto & city_model = city_model_handle->getCityModel();
-            return city_model.getNumRootCityObjects();
-        }
-        API_CATCH;
-        return 0;
-    }
+
+    DLL_VALUE_FUNC(plateau_city_model_get_root_city_object_count,
+                   CityModelHandle,
+                   int,
+                   handle->getCityModel().getNumRootCityObjects())
 }

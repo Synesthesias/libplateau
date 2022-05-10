@@ -209,8 +209,9 @@ namespace LibPLATEAU.NET.CityGML
             int count);
 
         [DllImport(DllName)]
-        internal static extern int plateau_city_model_get_root_city_object_count(
-            [In] IntPtr cityModel);
+        internal static extern APIResult plateau_city_model_get_root_city_object_count(
+            [In] IntPtr cityModel,
+            out int outCount);
 
 
         // ***************
