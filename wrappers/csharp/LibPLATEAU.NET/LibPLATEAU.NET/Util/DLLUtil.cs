@@ -16,6 +16,7 @@ namespace LibPLATEAU.NET.Util
         internal delegate APIResult GetterDelegateInt<T>(IntPtr handle, out T ret, int i);
         internal delegate APIResult IntGetDelegate(IntPtr handle, out int ret);
         internal delegate APIResult StrPtrGetDelegate(IntPtr handle, out IntPtr ret);
+        internal delegate APIResult StrPtrLengthDelegate(IntPtr handle, out IntPtr strPtr, out int strLength);
         
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
 
@@ -113,7 +114,7 @@ namespace LibPLATEAU.NET.Util
         /// <param name="strLengthGetter"> 文字列のバイト数を取得するための関数を指定します。 </param>
         /// <param name="strPtrGetter"> 文字列のポインタを取得するための関数を指定します。 </param>
         /// <returns></returns>
-        internal static string GetNativeString(
+        internal static string GetNativeString2Funcs(
             IntPtr handle,
             IntGetDelegate strLengthGetter,
             StrPtrGetDelegate strPtrGetter
@@ -122,6 +123,22 @@ namespace LibPLATEAU.NET.Util
             APIResult result = strLengthGetter(handle, out int strLength);
             CheckDllError(result);
             result = strPtrGetter(handle, out IntPtr strPtr);
+            CheckDllError(result);
+            return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
+        }
+
+        /// <summary>
+        /// DLLから文字列のポインタと文字列のバイト数を受け取り、
+        /// それをもとに文字列を読んで返します。
+        /// </summary>
+        /// <param name="handle"> 関数に渡すハンドルです。 </param>
+        /// <param name="strPtrAndLengthGetter"> 文字列のポインタとバイト数を受け取るための関数を指定します。 </param>
+        internal static string GetNativeString(
+            IntPtr handle,
+            StrPtrLengthDelegate strPtrAndLengthGetter
+        )
+        {
+            APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
             return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
         }

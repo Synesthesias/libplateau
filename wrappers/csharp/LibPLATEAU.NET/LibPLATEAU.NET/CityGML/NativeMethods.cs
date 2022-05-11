@@ -379,7 +379,8 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_address_get_country(
             [In] IntPtr addressHandle,
-            out IntPtr outCountryNamePtr);
+            out IntPtr outCountryNamePtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_country_str_length(

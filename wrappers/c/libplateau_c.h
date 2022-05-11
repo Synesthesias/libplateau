@@ -73,6 +73,23 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
+/// 文字列のアドレスと文字列長を渡します。
+#define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+        const TARGET_TYPE* const handle,                           \
+        const char** const out_chars_ptr, /* アドレスを参照渡しで渡すので'*'が2つ付きます。 */                                           \
+        dll_str_size_t* out_str_length                              \
+    ){                                                         \
+        API_TRY{                                                   \
+            auto& str = (STRING_GETTER);                                                       \
+            *out_chars_ptr = str.c_str();              \
+            *out_str_length = str.length() + 1; /* +1 は null終端文字列の分です。 */\
+            return APIResult::Success;                             \
+        }                                                          \
+        API_CATCH                                                  \
+        return APIResult::ErrorUnknown;\
+    }
+
 /// 文字列のアドレスを渡す関数と文字列の長さを渡す関数の2つを生成するマクロです。
 /// 生成される関数の名前は FUNC_NAME, FUNC_NAME_str_length です。
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。

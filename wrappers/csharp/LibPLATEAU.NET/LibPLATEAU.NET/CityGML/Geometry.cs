@@ -148,7 +148,7 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                string srsName = DLLUtil.GetNativeString(Handle,
+                string srsName = DLLUtil.GetNativeString2Funcs(Handle,
                     NativeMethods.plateau_geometry_get_srs_name_str_length,
                     NativeMethods.plateau_geometry_get_srs_name);
                 return srsName;
