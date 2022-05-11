@@ -383,50 +383,29 @@ namespace LibPLATEAU.NET.CityGML
             out int strLength);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_country_str_length(
-            [In] IntPtr addressHandle,
-            out DllStrSizeT strLength);
-
-        [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_locality(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_locality_str_length(
-            [In] IntPtr addressHandle,
-            out DllStrSizeT strLength);
+            out IntPtr outStrPtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_postal_code(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_postal_code_str_length(
-            [In] IntPtr addressHandle,
-            out DllStrSizeT strLength);
+            out IntPtr outStrPtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_name(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_thoroughfare_name_str_length(
-            [In] IntPtr addressHandle,
-            out DllStrSizeT strLength);
+            out IntPtr outStrPtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_number(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
+            out IntPtr outStrPtr,
+            out int strLength);
 
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_thoroughfare_number_str_length(
-            [In] IntPtr addressHandle,
-            out DllStrSizeT strLength);
-        
         // ***************
         //  geometry_c.cpp
         // ***************

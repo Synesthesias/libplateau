@@ -22,30 +22,26 @@ namespace LibPLATEAU.NET.CityGML
             );
         
         public string Locality =>
-            DLLUtil.GetNativeString2Funcs(
+            DLLUtil.GetNativeString(
                 this.handle,
-                NativeMethods.plateau_address_get_locality_str_length,
                 NativeMethods.plateau_address_get_locality
             );
         
         public string PostalCode =>
-            DLLUtil.GetNativeString2Funcs(
+            DLLUtil.GetNativeString(
                 this.handle,
-                NativeMethods.plateau_address_get_postal_code_str_length,
                 NativeMethods.plateau_address_get_postal_code
             );
         
         public string ThoroughFareName =>
-            DLLUtil.GetNativeString2Funcs(
+            DLLUtil.GetNativeString(
                 this.handle,
-                NativeMethods.plateau_address_get_thoroughfare_name_str_length,
                 NativeMethods.plateau_address_get_thoroughfare_name
             );
         
         public string ThoroughFareNumber =>
-            DLLUtil.GetNativeString2Funcs(
+            DLLUtil.GetNativeString(
                 this.handle,
-                NativeMethods.plateau_address_get_thoroughfare_number_str_length,
                 NativeMethods.plateau_address_get_thoroughfare_number
             );
     }
