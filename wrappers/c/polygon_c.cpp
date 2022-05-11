@@ -6,7 +6,7 @@ using namespace citygml;
 using namespace libplateau;
 
 extern "C" {
-DLL_VALUE_FUNC(plateau_polygon_get_vertices_count,
+DLL_VALUE_FUNC(plateau_polygon_get_vertex_count,
                Polygon,
                int,
                handle->getVertices().size())

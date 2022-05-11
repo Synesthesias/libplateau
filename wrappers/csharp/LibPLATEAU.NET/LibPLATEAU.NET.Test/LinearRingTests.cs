@@ -21,11 +21,10 @@ namespace LibPLATEAU.NET.Test
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
-                .First(poly => poly.ExteriorRing.VerticesCount > 0)
+                .First(poly => poly.ExteriorRing.VertexCount > 0)
                 .ExteriorRing;
         }
         
-
         [TestMethod]
         public void ExteriorRing_Is_Not_Null()
         {
@@ -36,7 +35,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void VerticesCount_Returns_Positive_Number()
         {
-            int verticesCount = this.exteriorRing.VerticesCount;
+            int verticesCount = this.exteriorRing.VertexCount;
             Console.WriteLine($"Vertices Count: {verticesCount}");
             Assert.IsTrue(verticesCount > 0);
         }
@@ -44,10 +43,9 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void GetVertex_Returns_Non_Zero()
         {
-            var vert = this.exteriorRing.GetVertex(this.exteriorRing.VerticesCount - 1);
+            var vert = this.exteriorRing.GetVertex(this.exteriorRing.VertexCount - 1);
             Console.WriteLine($"Vertex: {vert}");
             Assert.IsTrue(vert.IsNotZero());
         }
-
     }
 }

@@ -16,8 +16,7 @@ namespace LibPLATEAU.NET.Test
             var cityObject = cityModel.RootCityObjects[0];
             this.attrMap = cityObject.AttributesMap;
         }
-        
-        
+
         [DataTestMethod]
         [DataRow("建物ID", "13111-bldg-147301")]
         [DataRow("bldg:measuredheight", "2.8（テスト）")]

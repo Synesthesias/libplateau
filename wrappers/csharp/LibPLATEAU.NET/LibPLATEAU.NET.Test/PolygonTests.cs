@@ -50,7 +50,6 @@ namespace LibPLATEAU.NET.Test
             Assert.IsTrue(actualVertCount > 0);
         }
         
-
         [TestMethod]
         public void GetVertex_Returns_Non_Zero_Position()
         {
@@ -97,7 +96,7 @@ namespace LibPLATEAU.NET.Test
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
                 .SelectMany(geom => geom.Polygons)
                 .SelectMany(poly => poly.InteriorRings)
-                .FirstOrDefault(ring => ring.VerticesCount > 0);
+                .FirstOrDefault(ring => ring.VertexCount > 0);
             Assert.IsNotNull(ring);
         }
 

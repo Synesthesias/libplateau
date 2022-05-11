@@ -22,9 +22,6 @@ catch (...) {\
     std::cout << "Unknown error occurred." << std::endl;\
 }
 
-
-
-
 /// アドレスをDLL利用者に渡す関数を生成するマクロです。
 /// HANDLE_TYPE* handle から RETURN_VALUE_TYPEのアドレスを取得して引数 out に書き込みます。
 /// マクロの引数は 1番目に関数名,
@@ -65,8 +62,6 @@ catch (...) {\
         API_CATCH \
         return APIResult::ErrorUnknown; \
     }
-
-
 
 /// 文字列のアドレスを渡す関数と文字列の長さを渡す関数の2つを生成するマクロです。
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。

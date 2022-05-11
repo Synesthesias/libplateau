@@ -45,12 +45,10 @@ extern "C" {
         API_CATCH;
     }
 
-
     DLL_VALUE_FUNC(plateau_obj_writer_get_merge_mesh_flg,
                    ObjWriter,
                    bool,
                    handle->getMergeMeshFlg())
-
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_dest_axes(ObjWriter* obj_writer, AxesConversion value) {
         API_TRY{
@@ -59,12 +57,10 @@ extern "C" {
         API_CATCH;
     }
 
-
     DLL_VALUE_FUNC(plateau_obj_writer_get_dest_axes,
                    ObjWriter,
                    AxesConversion,
                    handle->getDestAxes())
-
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_valid_reference_point(ObjWriter* obj_writer, const CityModelHandle* city_model) {
         API_TRY{
@@ -84,7 +80,6 @@ extern "C" {
         API_CATCH;
         return plateau_vector3d{ 0, 0, 0 };
     }
-
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_reference_point(ObjWriter* obj_writer, const plateau_vector3d reference_point) {
         API_TRY{

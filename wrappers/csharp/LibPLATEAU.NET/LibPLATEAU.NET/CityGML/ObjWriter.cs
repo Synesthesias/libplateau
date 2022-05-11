@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -59,8 +57,7 @@ namespace LibPLATEAU.NET.CityGML
         {
             NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
         }
-
-
+        
         /// <summary>
         /// MergeMeshフラグを設定します。
         /// </summary>
@@ -79,7 +76,6 @@ namespace LibPLATEAU.NET.CityGML
             return meshFlg;
         }
 
-
         /// <summary>
         /// 座標軸を設定します。
         /// </summary>
@@ -97,8 +93,7 @@ namespace LibPLATEAU.NET.CityGML
                 NativeMethods.plateau_obj_writer_get_dest_axes);
             return axesConversion;
         }
-
-
+        
         /// <summary>
         /// <see cref="ReferencePoint"/>を<paramref name="cityModel"/>の Envelope の中心に設定します。
         /// </summary>

@@ -47,14 +47,12 @@ namespace LibPLATEAU.NET.CityGML
                 return sb.ToString();
             }
         }
-        
 
         /// <summary> 属性値を double にパースして返します。 </summary>
         public double AsDouble => Double.Parse(AsString);
         
         /// <summary> 属性値を int にパースして返します。 </summary>
         public int AsInt => int.Parse(AsString);
-        
 
         /// <summary>
         /// 属性の値の想定形式です。<see cref="AttributeType"/> 型で返します。
@@ -68,7 +66,6 @@ namespace LibPLATEAU.NET.CityGML
                 return type;
             }
         }
-
 
         /// <summary>
         /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> であることを前提に、

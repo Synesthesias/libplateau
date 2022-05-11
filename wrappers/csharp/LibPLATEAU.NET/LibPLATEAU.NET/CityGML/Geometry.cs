@@ -11,7 +11,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Geometry : AppearanceTarget
     {
-        private Geometry?[]? cachedChildGeometries;
+        private Geometry?[]? cachedChildGeometries; // キャッシュの初期状態は null とするので null許容型にします。
         private Polygon?[]? cachedPolygons;
         public Geometry(IntPtr handle) : base(handle)
         {
@@ -19,10 +19,8 @@ namespace LibPLATEAU.NET.CityGML
 
         public GeometryType Type => DLLUtil.GetNativeValue<GeometryType>(Handle, NativeMethods.plateau_geometry_get_type);
 
-        
         /// <summary> 子の <see cref="Geometry"/> の数を返します。 </summary>
         public int ChildGeometryCount => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_geometry_get_geometries_count);
-        
         
         /// <summary> インデックス指定で子の <see cref="Geometry"/> を1つ返します。 </summary>
         public Geometry GetChildGeometry(int index)
@@ -35,7 +33,6 @@ namespace LibPLATEAU.NET.CityGML
             });
             return geom;
         }
-
 
         /// <summary> 子の <see cref="Geometry"/> をforeachやLinqで回したい時に利用できます。 </summary>
         public IEnumerable<Geometry> ChildGeometries
@@ -82,7 +79,6 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary> <see cref="Polygon"/> の数を返します。 </summary>
         public int PolygonCount => DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_geometry_get_polygons_count);
         
-        
         /// <summary> インデックス指定で <see cref="Polygon"/> を1つ返します。 </summary>
         public Polygon GetPolygon(int index)
         {
@@ -95,7 +91,6 @@ namespace LibPLATEAU.NET.CityGML
             return poly;
         }
         
-
         /// <summary>
         /// <see cref="Polygon"/> をforeachやLinqで回したい時に利用できます。
         /// </summary>
@@ -110,8 +105,7 @@ namespace LibPLATEAU.NET.CityGML
                 }
             }
         }
-        
-        
+
         /// <summary>
         /// LOD (Level Of Detail) を取得します。
         /// LOD は 0 がもっとも簡略化された形状であり、数字が上がるほど形状が詳細であることを意味します。
@@ -125,8 +119,7 @@ namespace LibPLATEAU.NET.CityGML
                 return lod;
             }
         }
-        
-        
+
         /// <summary> デバッグ用に自身に関する情報を文字列で返します。 </summary>
         public override string ToString()
         {

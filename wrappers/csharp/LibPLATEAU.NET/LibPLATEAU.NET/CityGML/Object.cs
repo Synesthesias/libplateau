@@ -10,7 +10,7 @@ namespace LibPLATEAU.NET.CityGML
     public class Object
     {
         private readonly IntPtr handle;
-        private AttributesMap? attributesMap;
+        private AttributesMap? attributesMap; // get されるまでは null なので null許容型とします。
         private string id = "";
 
         internal Object(IntPtr handle)
@@ -59,6 +59,5 @@ namespace LibPLATEAU.NET.CityGML
                 return this.attributesMap;
             }
         }
-        
     }
 }

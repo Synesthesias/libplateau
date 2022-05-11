@@ -48,6 +48,4 @@ DLL_VALUE_FUNC(plateau_geometry_get_line_string_count,
                Geometry,
                int,
                handle->getLineStringCount())
-
-
 }

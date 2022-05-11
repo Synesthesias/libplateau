@@ -20,7 +20,7 @@ namespace LibPLATEAU.NET.CityGML
     public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
     {
         private readonly IntPtr handle;
-        private string[]? cachedKeys;
+        private string[]? cachedKeys; // キャッシュの初期状態は null とするので null許容型にします。
 
         internal AttributesMap(IntPtr handle)
         {
@@ -126,7 +126,6 @@ namespace LibPLATEAU.NET.CityGML
             return false;
         }
 
-
         /// <summary>
         /// 属性の各キーの文字列としてのバイト数を配列で返します。
         /// 例外が起きたときは各要素が -1 の配列を返します。
@@ -137,9 +136,7 @@ namespace LibPLATEAU.NET.CityGML
             NativeMethods.plateau_attributes_map_get_key_sizes(this.handle, keySizes);
             return keySizes;
         }
-
-
-
+        
         public IEnumerator<AttrPair> GetEnumerator()
         {
             return new AttributesMapEnumerator(this);
@@ -162,8 +159,6 @@ namespace LibPLATEAU.NET.CityGML
             return GetEnumerator();
         }
 
-
-
         /// <summary>
         /// インナークラスです。
         /// <see cref="AttributesMap"/> に関する <see cref="IEnumerator"/> であり、
@@ -173,7 +168,6 @@ namespace LibPLATEAU.NET.CityGML
         {
             private readonly AttributesMap map;
             private int index;
-
 
             public AttributesMapEnumerator(AttributesMap map)
             {
@@ -203,8 +197,7 @@ namespace LibPLATEAU.NET.CityGML
                     return new KeyValuePair<string, AttributeValue>(key, this.map[key]);
                 }
             }
-
-
+            
             public void Dispose()
             {
             }

@@ -13,7 +13,6 @@ namespace LibPLATEAU.NET.Test {
         
         public enum GmlFileCase{ Simple, Minatomirai }
         
-
         /// <summary>
         /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>

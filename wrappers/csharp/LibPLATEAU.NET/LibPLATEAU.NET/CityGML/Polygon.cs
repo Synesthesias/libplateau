@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -15,7 +13,7 @@ namespace LibPLATEAU.NET.CityGML
     public class Polygon : AppearanceTarget
     {
         private LinearRing? cachedExteriorRing;
-        private LinearRing?[]? cachedInteriorRings;
+        private LinearRing?[]? cachedInteriorRings; // キャッシュの初期状態は null とするので null許容型にします。
         
         internal Polygon(IntPtr handle) : base(handle)
         {
@@ -24,7 +22,7 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary> ポリゴンとしての頂点を持っているか </summary>
         public bool DoHaveVertices => VertexCount > 0;
         /// <summary> 多角形の形状情報としての <see cref="LinearRing"/>(Exterior または Interior)を持っているか </summary>
-        public bool DoHaveRings => ExteriorRing.VerticesCount > 0 || InteriorRingCount > 0;
+        public bool DoHaveRings => ExteriorRing.VertexCount > 0 || InteriorRingCount > 0;
 
         /// <summary>
         /// 頂点数を返します。
@@ -33,7 +31,7 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                int vertCount = DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_polygon_get_vertices_count);
+                int vertCount = DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_polygon_get_vertex_count);
                 return vertCount;
             }
         }

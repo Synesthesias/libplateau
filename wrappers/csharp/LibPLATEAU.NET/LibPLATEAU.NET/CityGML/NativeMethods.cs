@@ -458,7 +458,7 @@ namespace LibPLATEAU.NET.CityGML
         //  polygon_c.cpp
         // ***************
         [DllImport(DllName)]
-        internal static extern APIResult plateau_polygon_get_vertices_count(
+        internal static extern APIResult plateau_polygon_get_vertex_count(
             [In] IntPtr polygonHandle,
             out int outVertCount);
 
@@ -488,7 +488,7 @@ namespace LibPLATEAU.NET.CityGML
         //  linearring_c.cpp
         // ***************
         [DllImport(DllName)]
-        internal static extern APIResult plateau_linear_ring_get_vertices_count(
+        internal static extern APIResult plateau_linear_ring_get_vertex_count(
             [In] IntPtr handle,
             out int outCount);
 

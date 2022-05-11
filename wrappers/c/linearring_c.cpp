@@ -7,7 +7,7 @@ using namespace libplateau;
 
 extern "C" {
 
-DLL_VALUE_FUNC(plateau_linear_ring_get_vertices_count,
+DLL_VALUE_FUNC(plateau_linear_ring_get_vertex_count,
                LinearRing,
                int,
                handle->size())
@@ -17,5 +17,4 @@ DLL_VALUE_FUNC(plateau_linear_ring_get_vertex,
                TVec3d,
                handle->getVertices().at(index),
                ,int index)
-
 }

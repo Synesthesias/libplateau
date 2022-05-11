@@ -21,8 +21,7 @@ namespace LibPLATEAU.NET.Util
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
         // 今のところ、代わりに DLL側で保持している文字列への「ポインタの配列」で済んでいるので利用していませんが、
         // 今後は完全なコピーが欲しい状況もあるかもしれないので残しておきます。
-        
-        
+
         /// <summary>
         /// ポインタの配列を作ります。
         /// 配列内の各ポインタのメモリ領域を <paramref name="sizes"/>[i] の大きさで確保します。
@@ -51,8 +50,7 @@ namespace LibPLATEAU.NET.Util
             Marshal.Copy(managedPtrArray, 0, unmanagedPtrArray, count);
             return unmanagedPtrArray;
         }
-
-
+        
         /// <summary>
         /// <see cref="AllocPtrArray"/> で確保したメモリを解放します。
         /// ポインタ配列内の各ポインタを解放し、続けてポインタ配列自体を解放します。
@@ -156,9 +154,7 @@ namespace LibPLATEAU.NET.Util
             CheckDllError(result);
             return ret;
         }
-        
-        
-        
+
         /// <summary>
         /// T型の配列であるキャッシュから値を読んで返します。
         /// キャッシュに値がなければ、値を生成してキャッシュに記憶してから返します。
@@ -197,6 +193,5 @@ namespace LibPLATEAU.NET.Util
             cache[index] = item;
             return item;
         }
-
     }
 }

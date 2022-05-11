@@ -6,7 +6,6 @@ using namespace libplateau;
 
 extern "C" {
 
-
     /// AttributesMapの要素数を取得します。
     DLL_VALUE_FUNC(plateau_attributes_map_get_key_count,
                    AttributesMap,
@@ -54,7 +53,6 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-
     /// AttributeMap の key に対応する AttributeValue のポインタを取得します。
     /// 結果は out_attribute_value_ptr のメモリ領域に入ります。
     /// key に対応するものがない場合は APIResult::ErrorValueNotFound を返します。
@@ -91,6 +89,4 @@ extern "C" {
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
-
-
 }

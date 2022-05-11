@@ -13,12 +13,10 @@ extern "C" {
                    CityObject::CityObjectsType,
                    handle->getType())
 
-
     DLL_VALUE_FUNC(plateau_city_object_get_geometries_count,
                    CityObject,
                    int,
                    handle->getGeometriesCount())
-
 
     DLL_PTR_FUNC(plateau_city_object_get_address,
                  CityObject, Address,
@@ -40,9 +38,9 @@ extern "C" {
                  &handle->getChildCityObject(index),
                  ,int index)
 
-DLL_PTR_FUNC(plateau_city_object_get_geometry,
-             CityObject,
-             Geometry,
-             &handle->getGeometry(index),
-             ,int index)
+    DLL_PTR_FUNC(plateau_city_object_get_geometry,
+                 CityObject,
+                 Geometry,
+                 &handle->getGeometry(index),
+                 ,int index)
 }

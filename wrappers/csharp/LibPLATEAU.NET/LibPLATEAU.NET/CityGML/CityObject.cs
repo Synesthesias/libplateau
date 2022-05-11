@@ -17,7 +17,7 @@ namespace LibPLATEAU.NET.CityGML
     {
         private CityObjectType type = 0;
         private Address? cachedAddress;
-        private CityObject?[]? cachedChildCityObjects;
+        private CityObject?[]? cachedChildCityObjects; // キャッシュの初期状態は null とするので null許容型にします。
         private Geometry?[]? cachedGeometries;
 
         internal CityObject(IntPtr handle) : base(handle)
@@ -86,7 +86,6 @@ namespace LibPLATEAU.NET.CityGML
             }
         }
         
-
         public CityObject GetChildCityObject(int index)
         {
             var ret = DLLUtil.ArrayCache(ref this.cachedChildCityObjects, index, ChildCityObjectCount, () =>
@@ -113,9 +112,7 @@ namespace LibPLATEAU.NET.CityGML
                 }
             }
         }
-
-
-
+        
         public Geometry GetGeometry(int index)
         {
             var geom = DLLUtil.ArrayCache(ref this.cachedGeometries, index, GeometryCount, () =>
@@ -141,10 +138,7 @@ namespace LibPLATEAU.NET.CityGML
                 }
             }
         }
-
-
-
-
+        
         /// <summary>
         /// 子孫の <see cref="CityObject"/> をすべて再帰的にイテレートします。自分自身を含みます。
         /// イテレートの順番は DFS（深さ優先探索）です。
@@ -160,6 +154,7 @@ namespace LibPLATEAU.NET.CityGML
                 }
             }
         }
+        
         private static IEnumerable<CityObject> IterateChildrenDfsRecursive(CityObject co)
         {
             yield return co;

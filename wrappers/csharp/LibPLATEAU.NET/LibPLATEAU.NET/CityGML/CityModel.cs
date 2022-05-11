@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading;
+﻿using System.Collections.ObjectModel;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -11,7 +9,7 @@ namespace LibPLATEAU.NET.CityGML
     public sealed class CityModel : IDisposable
     {
         private int disposed;
-        private CityObject[]? rootCityObjects;
+        private CityObject[]? rootCityObjects;　// get されるまでは null なので null許容型とします。
 
         /// <summary>
         /// セーフハンドルを取得します。

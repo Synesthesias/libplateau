@@ -15,12 +15,12 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary> 頂点数を取得します。 </summary>
-        public int VerticesCount
+        public int VertexCount
         {
             get
             {
                 int count = DLLUtil.GetNativeValue<int>(Handle,
-                    NativeMethods.plateau_linear_ring_get_vertices_count);
+                    NativeMethods.plateau_linear_ring_get_vertex_count);
                 return count;
             }
         }
@@ -30,10 +30,10 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public PlateauVector3d GetVertex(int index)
         {
-            if (index >= VerticesCount)
+            if (index >= VertexCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(index),
-                    $"Ring has {VerticesCount} vertices, but you tried to read index #{index} that is out of range."
+                    $"Ring has {VertexCount} vertices, but you tried to read index #{index} that is out of range."
                 );
             }
             var vert3d = DLLUtil.GetNativeValue<PlateauVector3d>(Handle, index,

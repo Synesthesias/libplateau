@@ -44,13 +44,11 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_l
     return APIResult::ErrorUnknown;
 }
 
-
 /// AttributeValue の Type を enum形式で取得します。
 DLL_VALUE_FUNC(plateau_attribute_value_get_type,
                AttributeValue,
                AttributeType,
                handle->getType())
-
 
 /// この属性のタイプが AttributeSet であることを前提とし、
 /// 子の　AttributeSet　を取得します。
