@@ -91,30 +91,6 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown;\
     }
 
-/// 文字列の配列について、各文字列の長さを数値型の配列にして渡す関数を生成するマクロです。
-/// マクロ引数について、
-/// FOR_RANGE は TARGET_TYPE* handle から範囲for文で各文字列にアクセスするための範囲部分を記載します。
-/// STRING_GETTER は範囲forの中で文字列にアクセスするための処理を記載します。
-/// 追加で渡したい引数があるときは、 __VA_ARGS__ にカンマから始めて記載します。
-#define DLL_STRINGS_SIZE_ARRAY(FUNC_NAME, TARGET_TYPE,FOR_RANGE, STRING_GETTER, ...) \
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME(\
-            const TARGET_TYPE *const handle,\
-            dll_str_size_t *const out_size_array\
-            __VA_ARGS__\
-            ) {\
-            API_TRY {\
-                int i = 0;\
-                for (FOR_RANGE) {\
-                    out_size_array[i] = (dll_str_size_t)((STRING_GETTER).size()) + 1; /* +1 は null終端文字の分です。*/\
-                    i++;\
-                }\
-                return APIResult::Success;\
-            }\
-            API_CATCH\
-            return APIResult::ErrorUnknown;\
-        }
-
-
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。
 /// 2つの関数を生成します。
 ///
