@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,12 +12,11 @@ namespace LibPLATEAU.NET.Test
         /// <summary> テストの前準備です。 </summary>
         public AttributeValueTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile();
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.attrMap = cityObject.AttributesMap;
         }
-        
-        
+
         [DataTestMethod]
         [DataRow("建物ID", "13111-bldg-147301")]
         [DataRow("bldg:measuredheight", "2.8（テスト）")]

@@ -23,7 +23,7 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class AttributeValue
     {
-        private IntPtr handle;
+        private readonly IntPtr handle;
 
         public AttributeValue(IntPtr handle)
         {
@@ -39,23 +39,20 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_value_get_str_length(
-                    this.handle, out int valueStrSize);
-                DLLUtil.CheckDllError(result);
+                int valueStrSize = DLLUtil.GetNativeValue<int>(this.handle,
+                    NativeMethods.plateau_attribute_value_get_str_length);
                 StringBuilder sb = new(valueStrSize);
                 NativeMethods.plateau_attribute_value_get_string(
                     this.handle, sb);
                 return sb.ToString();
             }
         }
-        
 
         /// <summary> 属性値を double にパースして返します。 </summary>
         public double AsDouble => Double.Parse(AsString);
         
         /// <summary> 属性値を int にパースして返します。 </summary>
         public int AsInt => int.Parse(AsString);
-        
 
         /// <summary>
         /// 属性の値の想定形式です。<see cref="AttributeType"/> 型で返します。
@@ -64,12 +61,11 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_value_get_type(this.handle, out AttributeType type);
-                DLLUtil.CheckDllError(result);
+                AttributeType type = DLLUtil.GetNativeValue<AttributeType>(this.handle,
+                    NativeMethods.plateau_attribute_value_get_type);
                 return type;
             }
         }
-
 
         /// <summary>
         /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> であることを前提に、
@@ -80,9 +76,9 @@ namespace LibPLATEAU.NET.CityGML
         {
             get
             {
-                APIResult result = NativeMethods.plateau_attribute_as_attribute_set(this.handle, out IntPtr ptr);
-                DLLUtil.CheckDllError(result);
-                return new AttributesMap(ptr);
+                IntPtr attributesHandle = DLLUtil.GetNativeValue<IntPtr>(this.handle,
+                    NativeMethods.plateau_attribute_as_attribute_set);
+                return new AttributesMap(attributesHandle);
             }
         }
     }

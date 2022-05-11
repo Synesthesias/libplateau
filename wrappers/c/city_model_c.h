@@ -18,7 +18,7 @@ public:
         : city_model_(std::move(city_model)) {
     }
 
-    const citygml::CityModel& getCityModel() const {
+    [[nodiscard]] const citygml::CityModel& getCityModel() const {
         return *city_model_;
     }
 

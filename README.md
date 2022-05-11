@@ -109,3 +109,6 @@ dotnet test -c Release
   - 他言語向けのwrapper実装を置く。
 - .github/workflows
   - Github Actions で自動テストを行うための手順を記載する。
+
+## テストデータ
+テストデータの詳細については ```data/README.md``` に記載している。

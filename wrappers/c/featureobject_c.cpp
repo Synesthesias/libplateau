@@ -2,9 +2,10 @@
 #include "libplateau_c.h"
 
 using namespace citygml;
+using namespace libplateau;
 
 extern "C"{
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_get_envelope(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_feature_object_get_envelope(
             const FeatureObject* const feature_object,
             double* const out_array
             ){
@@ -19,11 +20,13 @@ extern "C"{
             for(int i=0; i<3; i++){
                 out_array[i + 3] = upper[i];
             }
+            return APIResult::Success;
         }
         API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_feature_object_set_envelope(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_feature_object_set_envelope(
             FeatureObject* const feature_object,
             const double lower_x, const double lower_y, const double lower_z, const double upper_x, const double upper_y, const double upper_z
     ){
@@ -35,7 +38,9 @@ extern "C"{
             e->setLowerBound(lower);
             e->setUpperBound(upper);
             feature_object->setEnvelope(e);
+            return APIResult::Success;
         }
         API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 }

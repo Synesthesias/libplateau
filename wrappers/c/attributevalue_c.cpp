@@ -1,5 +1,5 @@
 #include <citygml/attributesmap.h>
-#include <string.h>
+#include <cstring>
 #include "libplateau_c.h"
 
 using namespace citygml;
@@ -44,33 +44,16 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_str_l
     return APIResult::ErrorUnknown;
 }
 
-/// attribute_value の Type を enum形式で取得します。
-/// 結果は out_attribute_type に入ります。
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_value_get_type(
-        const AttributeValue *const attribute_value,
-        AttributeType * const out_attribute_type
-) {
-    API_TRY {
-        *out_attribute_type = attribute_value->getType();
-        return APIResult::Success;
-    }
-    API_CATCH;
-    return APIResult::ErrorUnknown;
-}
+/// AttributeValue の Type を enum形式で取得します。
+DLL_VALUE_FUNC(plateau_attribute_value_get_type,
+               AttributeValue,
+               AttributeType,
+               handle->getType())
 
 /// この属性のタイプが AttributeSet であることを前提とし、
 /// 子の　AttributeSet　を取得します。
-/// 結果は out_attribute_set_ptr に入ります。
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attribute_as_attribute_set(
-        const AttributeValue *const attribute_value,
-        AttributesMap ** const out_attribute_set_ptr
-) {
-    API_TRY {
-        auto *attr_set = &attribute_value->asAttributeSet();
-        *out_attribute_set_ptr = const_cast<AttributesMap *>(attr_set);
-        return APIResult::Success;
-    }
-    API_CATCH;
-    return APIResult::ErrorUnknown;
-}
+DLL_PTR_FUNC(plateau_attribute_as_attribute_set,
+             AttributeValue,
+             AttributesMap,
+             &handle->asAttributeSet())
 }

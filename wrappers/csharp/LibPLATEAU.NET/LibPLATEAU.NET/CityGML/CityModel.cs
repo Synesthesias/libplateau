@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Threading;
+﻿using System.Collections.ObjectModel;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -10,15 +8,17 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public sealed class CityModel : IDisposable
     {
-        private readonly IntPtr handle;
         private int disposed;
-        private CityObject[] rootCityObjects;
+        private CityObject[]? rootCityObjects;　// get されるまでは null なので null許容型とします。
 
         /// <summary>
         /// セーフハンドルを取得します。
         /// </summary>
-        public IntPtr Handle => this.handle;
+        public IntPtr Handle { get; }
 
+        /// <summary>
+        /// <see cref="CityModel"/> のトップレベルにある <see cref="CityObject"/> の一覧を返します。
+        /// </summary>
         public ReadOnlyCollection<CityObject> RootCityObjects
         {
             get
@@ -28,9 +28,9 @@ namespace LibPLATEAU.NET.CityGML
                     return Array.AsReadOnly(this.rootCityObjects);
                 }
 
-                var count = NativeMethods.plateau_city_model_get_root_city_object_count(this.handle);
+                var count = NativeMethods.plateau_city_model_get_root_city_object_count(this.Handle);
                 var cityObjectHandles = new IntPtr[count];
-                NativeMethods.plateau_city_model_get_root_city_objects(this.handle, cityObjectHandles, count);
+                NativeMethods.plateau_city_model_get_root_city_objects(this.Handle, cityObjectHandles, count);
                 this.rootCityObjects = new CityObject[count];
                 for (var i = 0; i < count; ++i)
                 {
@@ -43,7 +43,7 @@ namespace LibPLATEAU.NET.CityGML
 
         internal CityModel(IntPtr handle)
         {
-            this.handle = handle;
+            Handle = handle;
         }
 
         ~CityModel()
@@ -55,7 +55,7 @@ namespace LibPLATEAU.NET.CityGML
         {
             if (Interlocked.Exchange(ref this.disposed, 1) == 0)
             {
-                NativeMethods.plateau_delete_city_model(this.handle);
+                NativeMethods.plateau_delete_city_model(this.Handle);
             }
             GC.SuppressFinalize(this);
         }

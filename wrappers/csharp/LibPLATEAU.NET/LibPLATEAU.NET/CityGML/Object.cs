@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -9,8 +9,8 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Object
     {
-        private IntPtr handle;
-        private AttributesMap? attributesMap;
+        private readonly IntPtr handle;
+        private AttributesMap? attributesMap; // get されるまでは null なので null許容型とします。
         private string id = "";
 
         internal Object(IntPtr handle)
@@ -34,8 +34,11 @@ namespace LibPLATEAU.NET.CityGML
                 {
                     return this.id;
                 }
-
-                this.id = Marshal.PtrToStringAnsi(NativeMethods.plateau_object_get_id(this.handle)) ?? "";
+                
+                this.id = DLLUtil.GetNativeString(
+                    Handle,
+                    NativeMethods.plateau_object_get_id_str_length,
+                    NativeMethods.plateau_object_get_id);
                 return this.id;
             }
         }
@@ -48,13 +51,13 @@ namespace LibPLATEAU.NET.CityGML
             {
                 if (this.attributesMap == null)
                 {
-                    var mapPtr = NativeMethods.plateau_object_get_attributes_map(Handle);
+                    IntPtr mapPtr = DLLUtil.GetNativeValue<IntPtr>(Handle,
+                        NativeMethods.plateau_object_get_attributes_map);
                     var map = new AttributesMap(mapPtr);
                     this.attributesMap = map;
                 }
                 return this.attributesMap;
             }
         }
-        
     }
 }

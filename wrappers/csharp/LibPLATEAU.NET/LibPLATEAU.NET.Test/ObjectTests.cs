@@ -1,4 +1,4 @@
-using System;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Object = LibPLATEAU.NET.CityGML.Object;
 
@@ -11,7 +11,7 @@ namespace LibPLATEAU.NET.Test
 
         public ObjectTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile();
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             plateauObject = cityModel.RootCityObjects[0];
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -25,7 +24,8 @@ namespace LibPLATEAU.NET.CityGML
                 const int envelopeArrayLength = 6;
 
                 double[] ret = new double[envelopeArrayLength];
-                NativeMethods.plateau_feature_object_get_envelope(Handle, ret);
+                APIResult result = NativeMethods.plateau_feature_object_get_envelope(Handle, ret);
+                DLLUtil.CheckDllError(result);
 
                 return ret;
             }
@@ -38,10 +38,11 @@ namespace LibPLATEAU.NET.CityGML
             double lowerX, double lowerY, double lowerZ,
             double upperX, double upperY, double upperZ)
         {
-            NativeMethods.plateau_feature_object_set_envelope(
+            APIResult result = NativeMethods.plateau_feature_object_set_envelope(
                 Handle,
                 lowerX, lowerY, lowerZ, upperX, upperY, upperZ
             );
+            DLLUtil.CheckDllError(result);
         }
     }
 }

@@ -14,11 +14,10 @@ namespace LibPLATEAU.NET.Test
         /// <summary> テストの前準備です。 </summary>
         public AttributesMapTests()
         {
-            var cityModel = TestGMLLoader.LoadTestGMLFile();
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.attrMap = cityObject.AttributesMap;
         }
-        
         
         [TestMethod]
         public void Keys_Length_Equals_Map_Count()
@@ -45,15 +44,12 @@ namespace LibPLATEAU.NET.Test
             Assert.IsTrue(doContainKey);
         }
         
-        
         [TestMethod]
         public void Count_Returns_Positive_Value()
         {
             Console.WriteLine($"Count = {this.attrMap.Count}");
             Assert.IsTrue(this.attrMap.Count > 0);
         }
-        
-
 
         [TestMethod]
         public void TryGetValue_When_NotFound_Returns_False_And_Value_Null()
@@ -89,8 +85,7 @@ namespace LibPLATEAU.NET.Test
             bool result = this.attrMap.ContainsKey("建物ID");
             Assert.AreEqual(true, result);
         }
-        
-        
+
         [TestMethod]
         public void Values_Count_Equals_Map_Count()
         {
@@ -106,8 +101,7 @@ namespace LibPLATEAU.NET.Test
             bool doContainValue = this.attrMap.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
             Assert.AreEqual(true, doContainValue);
         }
-        
-        
+
         [TestMethod]
         public void Map_Can_Be_Iterated_By_Foreach()
         {
@@ -119,7 +113,6 @@ namespace LibPLATEAU.NET.Test
             }
             Assert.AreEqual(this.attrMap.Count, iterateCount);
         }
-        
 
         [TestMethod]
         [ExpectedException(typeof(KeyNotFoundException))]
