@@ -6,14 +6,12 @@ using namespace libplateau;
 
 extern "C" {
 
-
-DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_texture_themes,
+DLL_STRING_VALUE_ARRAY_FUNC2(plateau_appearance_target_get_all_texture_themes,
                              AppearanceTarget,
                              handle->getAllTextureThemes(front).size(),
                              const auto &str: handle->getAllTextureThemes(front),
                              str,
                              ,bool front)
-                             
 
 // TODO ここの処理は attributesmap_c.cpp の get_attribute_value と類似しているのでマクロ化できないか検討します。
 /// 引数 theme_chars に対応する TextureTarget がない場合は ErrorValueNotFound を返します。
