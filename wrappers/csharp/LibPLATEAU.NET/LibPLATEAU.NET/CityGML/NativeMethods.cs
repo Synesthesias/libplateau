@@ -284,7 +284,8 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_id(
             [In] IntPtr objHandle,
-            out IntPtr outStrPtr);
+            out IntPtr outStrPtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_id_str_length(
@@ -445,7 +446,8 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_srs_name(
             [In] IntPtr geometryHandle,
-            out IntPtr outNameStrPtr);
+            out IntPtr outNameStrPtr,
+            out int outStrLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_srs_name_str_length(

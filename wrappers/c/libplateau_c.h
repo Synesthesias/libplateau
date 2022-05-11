@@ -73,7 +73,8 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
-/// 文字列のアドレスと文字列長を渡します。
+/// 文字列のアドレスと文字列長を渡す関数を生成するマクロです。
+/// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
 #define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
         const TARGET_TYPE* const handle,                           \
@@ -90,17 +91,6 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown;\
     }
 
-/// 文字列のアドレスを渡す関数と文字列の長さを渡す関数の2つを生成するマクロです。
-/// 生成される関数の名前は FUNC_NAME, FUNC_NAME_str_length です。
-/// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
-/// 2つ生成する意図は、文字列をDLLの利用者に渡すとき、char*アドレスと文字列長の両方が欲しいためです。
-#define DLL_STRING_PTR_FUNC2(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
-    /* 文字列ポインタを渡す関数*/ \
-    DLL_PTR_FUNC(FUNC_NAME, TARGET_TYPE, char, (STRING_GETTER).c_str()) \
-    /* 文字列長を渡す関数 */ \
-    DLL_VALUE_FUNC(FUNC_NAME ## _str_length, \
-                    TARGET_TYPE, int, \
-                    (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
 
 /// 文字列のコピーを渡す関数とその文字列のバイト数を渡す関数を生成します。
 /// 引数 char* out_chars には値を格納するのに十分なメモリが確保されていることが前提であり、

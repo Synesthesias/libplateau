@@ -34,9 +34,8 @@ namespace LibPLATEAU.NET.CityGML
                     return this.id;
                 }
                 
-                this.id = DLLUtil.GetNativeString2Funcs(
+                this.id = DLLUtil.GetNativeString(
                     Handle,
-                    NativeMethods.plateau_object_get_id_str_length,
                     NativeMethods.plateau_object_get_id);
                 return this.id;
             }

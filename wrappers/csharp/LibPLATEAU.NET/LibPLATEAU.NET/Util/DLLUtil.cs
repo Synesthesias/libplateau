@@ -100,32 +100,7 @@ namespace LibPLATEAU.NET.Util
                 throw new Exception($"Error in Lib Plateau DLL. APIResult = {result}");
             }
         }
-
-        /// <summary>
-        /// DLLから文字列のポインタを受け取り、文字列を読んで返します。
-        /// DLLの文字列を読み取る手順として
-        /// 1. 文字列の長さを調べるネイティブ関数を実行
-        /// 2. 文字列のポインタを取得するネイティブ関数を実行
-        /// 3. ポインタから長さ分を読む
-        /// の3つをまとめたメソッドになります。
-        /// したがって、上記 1 と 2 で利用するネイティブ関数を引数で指定する必要があります。
-        /// </summary>
-        /// <param name="handle"> <see cref="NativeMethods"/> のメソッドに渡すハンドルです。 </param>
-        /// <param name="strLengthGetter"> 文字列のバイト数を取得するための関数を指定します。 </param>
-        /// <param name="strPtrGetter"> 文字列のポインタを取得するための関数を指定します。 </param>
-        /// <returns></returns>
-        internal static string GetNativeString2Funcs(
-            IntPtr handle,
-            IntGetDelegate strLengthGetter,
-            StrPtrGetDelegate strPtrGetter
-        )
-        {
-            APIResult result = strLengthGetter(handle, out int strLength);
-            CheckDllError(result);
-            result = strPtrGetter(handle, out IntPtr strPtr);
-            CheckDllError(result);
-            return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
-        }
+        
 
         /// <summary>
         /// DLLから文字列のポインタと文字列のバイト数を受け取り、
