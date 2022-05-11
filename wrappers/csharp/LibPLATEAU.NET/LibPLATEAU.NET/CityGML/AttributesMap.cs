@@ -43,13 +43,13 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 if (this.cachedKeys != null) return this.cachedKeys;
-                int[] keySizes = GetKeySizes();
+                
                 int cnt = Count;
-
+                int[] keySizes = new int[cnt];
                 var keyHandles = new IntPtr[cnt];
                 this.cachedKeys = new string[cnt];
 
-                var result = NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles);
+                var result = NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles, keySizes);
                 DLLUtil.CheckDllError(result);
                 this.cachedKeys = DLLUtil.ReadNativeStrPtrArray(keyHandles, keySizes);
 
@@ -123,13 +123,13 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// 属性の各キーの文字列としてのバイト数を配列で返します。
         /// </summary>
-        private int[] GetKeySizes()
-        {
-            int[] keySizes = new int[Count];
-            APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_sizes(this.handle, keySizes);
-            DLLUtil.CheckDllError(result);
-            return keySizes;
-        }
+        // private int[] GetKeySizes()
+        // {
+        //     int[] keySizes = new int[Count];
+        //     APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_sizes(this.handle, keySizes);
+        //     DLLUtil.CheckDllError(result);
+        //     return keySizes;
+        // }
         
         public IEnumerator<AttrPair> GetEnumerator()
         {

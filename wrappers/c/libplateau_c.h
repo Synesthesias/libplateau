@@ -206,6 +206,36 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown;\
     }
 
+
+#define DLL_STRING_PTR_ARRAY_FUNC2(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
+    /* 配列の要素数を渡す関数です。*/                \
+    DLL_VALUE_FUNC(FUNC_NAME ## _count,\
+                    TARGET_TYPE,\
+                    int,\
+                    (ARRAY_LENGTH_GETTER)\
+                    , __VA_ARGS__)\
+    /* 文字列のアドレスの配列について、各アドレスを 引数 out_str_ptrs に書き込み、*/\
+    /* 各文字列の長さの配列を out_array_length に書き込む関数です。*/\
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+            const TARGET_TYPE *const handle,\
+            const char ** const out_str_ptrs,\
+            int* const out_str_lengths,\
+            __VA_ARGS__\
+        ) {\
+            API_TRY {\
+                int i = 0;\
+                for (FOR_RANGE) { \
+                    auto& str = (STRING_GETTER); \
+                    out_str_ptrs[i] = str.c_str();\
+                    out_str_lengths[i] = str.length() + 1; /* +1 はnull終端文字の分 */\
+                    i++; \
+                }\
+                return APIResult::Success;\
+            }\
+            API_CATCH\
+            return APIResult::ErrorUnknown;\
+        }
+
 /// 文字列の配列をコピーして渡したい時に利用するマクロです。
 /// 3つの関数を生成します。
 ///

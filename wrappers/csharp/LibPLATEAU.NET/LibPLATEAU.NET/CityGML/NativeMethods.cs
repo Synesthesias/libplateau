@@ -320,21 +320,23 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
         //  attributesmap_c.cpp
         // ***************
+        
         [DllImport(DllName)]
         internal static extern APIResult plateau_attributes_map_get_keys_count(
             [In] IntPtr attributesMap,
             out int count);
 
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_attributes_map_get_keys_str_sizes(
-            [In] IntPtr attributesMap,
-            [Out] int[] outSizeIntArray);
+        // [DllImport(DllName)]
+        // internal static extern APIResult plateau_attributes_map_get_keys_str_sizes(
+        //     [In] IntPtr attributesMap,
+        //     [Out] int[] outSizeIntArray);
 
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
-            [In, Out] IntPtr[] keyHandles);
+            [In, Out] IntPtr[] keyHandles,
+            [Out] int[] outKeySizes);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_attribute_value(
@@ -356,12 +358,8 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_string(
             [In] IntPtr attributeValue,
-            StringBuilder outValue);
-
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_attribute_value_get_string_str_length(
-            [In] IntPtr attributeValue,
-            out DllStrSizeT strLength);
+            out IntPtr strPtr,
+            out int strLength);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_type(

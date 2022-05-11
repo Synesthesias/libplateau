@@ -6,7 +6,7 @@ using namespace libplateau;
 
 extern "C" {
 
-    DLL_STRING_PTR_ARRAY_FUNC3(plateau_attributes_map_get_keys,
+    DLL_STRING_PTR_ARRAY_FUNC2(plateau_attributes_map_get_keys,
                       AttributesMap,
                       handle->size(),
                       const auto& pair : *handle,

@@ -7,7 +7,7 @@ using namespace libplateau;
 
 extern "C" {
 
-DLL_STRING_VALUE_FUNC2(plateau_attribute_value_get_string,
+DLL_STRING_PTR_FUNC(plateau_attribute_value_get_string,
                        AttributeValue,
                        handle->asString())
 
