@@ -1,4 +1,5 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System.Reflection.Metadata;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML;
 
@@ -8,13 +9,14 @@ namespace LibPLATEAU.NET.CityGML;
 public class TextureTargetDefinition
 {
     private readonly IntPtr handle;
+    private TextureCoordinates?[]? cachedCoords;
 
     public TextureTargetDefinition(IntPtr handle)
     {
         this.handle = handle;
     }
 
-    public int TextureCoordinatesCount
+    public int TexCoordinatesCount
     {
         get
         {
@@ -22,5 +24,16 @@ public class TextureTargetDefinition
                 NativeMethods.plateau_texture_target_definition_get_texture_coordinates_count);
             return count;
         }
+    }
+
+    public TextureCoordinates GetCoordinate(int index)
+    {
+        var ret = DLLUtil.ArrayCache(ref this.cachedCoords, index, TexCoordinatesCount, () =>
+        {
+            IntPtr coordPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle, index,
+                NativeMethods.plateau_texture_target_definition_get_texture_coordinates);
+            return new TextureCoordinates(coordPtr);
+        });
+        return ret;
     }
 }

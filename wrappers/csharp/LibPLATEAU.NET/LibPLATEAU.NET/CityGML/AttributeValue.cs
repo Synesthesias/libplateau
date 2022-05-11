@@ -39,7 +39,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 int valueStrSize = DLLUtil.GetNativeValue<int>(this.handle,
-                    NativeMethods.plateau_attribute_value_get_str_length);
+                    NativeMethods.plateau_attribute_value_get_string_str_length);
                 StringBuilder sb = new(valueStrSize);
                 NativeMethods.plateau_attribute_value_get_string(
                     this.handle, sb);

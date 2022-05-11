@@ -30,6 +30,8 @@ catch (...) {\
 using dll_str_size_t = int;
 
 
+// TODO 以下のマクロ群で「文字列を渡す関数」と「文字列の長さを渡す関数」を生成しているが、1つの関数で両方渡すようにすればDLL利用者側の実装が簡単になるのでは？
+
 /// アドレスをDLL利用者に渡す関数を生成するマクロです。
 /// HANDLE_TYPE* handle から RETURN_VALUE_TYPEのアドレスを取得して引数 out に書き込みます。
 /// マクロの引数は 1番目に関数名,
@@ -82,6 +84,33 @@ using dll_str_size_t = int;
     DLL_VALUE_FUNC(FUNC_NAME ## _str_length, \
                     TARGET_TYPE, int, \
                     (dll_str_size_t)((STRING_GETTER).length()) +1 ) /* +1 は null終端文字列の分 */
+
+/// 文字列のコピーを渡す関数とその文字列のバイト数を渡す関数を生成します。
+/// 引数 char* out_chars には値を格納するのに十分なメモリが確保されていることが前提であり、
+/// そうでなければアクセス違反となります。
+#define DLL_STRING_VALUE_FUNC2(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME(\
+        const TARGET_TYPE* const handle,                              \
+        char* out_chars\
+    ){                                                                \
+        API_TRY{                                                      \
+            const std::string str = (STRING_GETTER);\
+            const char* const chars = str.c_str();                    \
+            auto len = (dll_str_size_t)(strlen(chars));               \
+            /* 警告で「strncpy よりも strncpy_s を推奨」と出ますが、*/                 \
+            /* そうするとWindowsでしかビルドできなくなるのでそのままでいきます。*/  \
+            strncpy(out_chars, chars, len);                           \
+            out_chars[len] = '\0'; /* 最後はnull終端文字 */                  \
+            return APIResult::Success;                                \
+        }                                                             \
+        API_CATCH                                                     \
+        return APIResult::ErrorUnknown;\
+    }                                                                 \
+                                                                      \
+    DLL_VALUE_FUNC(FUNC_NAME ## _str_length,                          \
+                    TARGET_TYPE,                                      \
+                    int,                                              \
+                    (STRING_GETTER).length() + 1) /* +1 は null終端文字の分*/
 
 
 /// 文字列の配列について、各文字列の長さを数値型の配列にして渡す関数を生成するマクロです。

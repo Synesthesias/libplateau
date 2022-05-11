@@ -26,6 +26,24 @@ namespace LibPLATEAU.NET.CityGML
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PlateauVector2f
+    {
+        public float X;
+        public float Y;
+
+        public PlateauVector2f(float x, float y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
+
+        public override string ToString()
+        {
+            return $"({this.X}, {this.Y})";
+        }
+    }
+
     /// <summary>
     /// GMLファイルのパース時の設定です。
     /// </summary>
@@ -340,7 +358,7 @@ namespace LibPLATEAU.NET.CityGML
             StringBuilder outValue);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_attribute_value_get_str_length(
+        internal static extern APIResult plateau_attribute_value_get_string_str_length(
             [In] IntPtr attributeValue,
             out DllStrSizeT strLength);
 
@@ -552,6 +570,27 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates_count(
             [In] IntPtr handle,
             out int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates(
+            [In] IntPtr handle,
+            out IntPtr outTexCoords,
+            int index);
+        
+        // ***************
+        //  texturecoordinates_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_get_coordinate(
+            [In] IntPtr handle,
+            [Out] out PlateauVector2f outCoord,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_count(
+            [In] IntPtr handle,
+            out int outCount);
         
     }
 }

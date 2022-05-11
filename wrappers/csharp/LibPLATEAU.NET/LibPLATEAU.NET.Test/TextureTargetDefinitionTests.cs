@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LibPLATEAU.NET.CityGML;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test;
@@ -9,6 +10,8 @@ namespace LibPLATEAU.NET.Test;
 public class TextureTargetDefinitionTests
 {
     private TextureTargetDefinition texTarget;
+    
+    // 前準備
     public TextureTargetDefinitionTests()
     {
         // 探索して最初に見つかった TextureTargetDefinition をテスト対象にします。
@@ -26,8 +29,15 @@ public class TextureTargetDefinitionTests
     [TestMethod]
     public void TextureCoordinatesCount_Returns_Positive_Number()
     {
-        int actualCount = this.texTarget.TextureCoordinatesCount;
+        int actualCount = this.texTarget.TexCoordinatesCount;
         Console.WriteLine($"TextureCoordinatesCount : {actualCount}");
         Assert.IsTrue(actualCount > 0);
+    }
+
+    [TestMethod]
+    public void GetTextureCoordinates_Returns_NotNull()
+    {
+        var coords = this.texTarget.GetCoordinate(0);
+        Assert.IsNotNull(coords);
     }
 }

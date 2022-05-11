@@ -36,5 +36,18 @@ namespace LibPLATEAU.NET.Test {
             isNotZero &= Math.Abs(pos.Z) > 0.01;
             return isNotZero;
         }
+
+        /// <summary>
+        /// <see cref="PlateauVector2f"/> の拡張メソッドです。
+        /// X, Y のうちいずれかが 0 に近い値であれば false を返します。
+        /// そうでなければ true を返します。
+        /// </summary>
+        public static bool IsNotZero(this PlateauVector2f pos)
+        {
+            bool isNotZero = true;
+            isNotZero &= Math.Abs(pos.X) > 0.01;
+            isNotZero &= Math.Abs(pos.Y) > 0.01;
+            return isNotZero;
+        }
     }
 }
