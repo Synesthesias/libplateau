@@ -561,6 +561,17 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_texture_coordinates_count(
             [In] IntPtr handle,
             out int outCount);
-        
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_get_target_linear_ring_id(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_is_ring_target(
+            [In] IntPtr handle,
+            [MarshalAs(UnmanagedType.U1)] out bool outIsTarget,
+            [In] IntPtr ringHandle);
     }
 }

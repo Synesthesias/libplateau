@@ -17,4 +17,14 @@ DLL_VALUE_FUNC(plateau_texture_coordinates_count,
                int,
                handle->getCoords().size())
 
+DLL_STRING_PTR_FUNC(plateau_texture_coordinates_get_target_linear_ring_id,
+                    TextureCoordinates,
+                    handle->getTargetLinearRingID())
+
+/// 与えられた LinearRing がターゲットかどうか判定してboolを返します。
+DLL_VALUE_FUNC(plateau_texture_coordinates_is_ring_target,
+               TextureCoordinates,
+               bool,
+               handle->targets(*ring),
+               ,const LinearRing* ring)
 }

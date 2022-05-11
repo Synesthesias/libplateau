@@ -16,5 +16,4 @@ DLL_PTR_FUNC(plateau_texture_target_definition_get_texture_coordinates,
              TextureCoordinates,
              handle->getTextureCoordinates(index).get(),
              ,int index)
-
 }
