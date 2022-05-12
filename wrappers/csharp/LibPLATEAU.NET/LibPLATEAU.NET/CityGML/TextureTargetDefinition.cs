@@ -3,7 +3,7 @@
 namespace LibPLATEAU.NET.CityGML;
 
 // TODO C++のlibcitygmlのコメントを翻訳して載せておきたい
-public class TextureTargetDefinition : AppearanceTargetDefinition
+public class TextureTargetDefinition : AppearanceTargetDefinition<Texture>
 {
     private TextureCoordinates?[]? cachedCoords;
 

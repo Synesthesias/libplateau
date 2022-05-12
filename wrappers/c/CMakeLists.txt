@@ -21,7 +21,8 @@ add_library(plateau_c SHARED
   "texturetargetdefinition_c.cpp"
   "texturecoordinates_c.cpp"
   "appearancetargetdefinition_c.cpp"
-  "materialtargetdefinition_c.cpp")
+  "materialtargetdefinition_c.cpp"
+  "texture_c.cpp")
 
 
 set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY

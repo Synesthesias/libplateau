@@ -1,5 +1,5 @@
 #include <citygml/appearancetargetdefinition.h>
-#include <citygml/texture.h>
+#include <citygml/texture_c.h>
 #include "libplateau_c.h"
 
 using namespace citygml;
@@ -16,4 +16,8 @@ DLL_STRING_PTR_FUNC(plateau_appearance_target_definition_tex_get_target_id,
                     AppearanceTargetDefinition<Texture>,
                     handle->getTargetID())
 
+DLL_PTR_FUNC(plateau_appearance_target_definition_tex_get_appearance,
+             AppearanceTargetDefinition<Texture>,
+             Texture,
+             handle->getAppearance().get())
 }

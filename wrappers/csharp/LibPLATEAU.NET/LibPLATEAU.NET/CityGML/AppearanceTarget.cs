@@ -94,7 +94,6 @@ namespace LibPLATEAU.NET.CityGML
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
             }
             DLLUtil.CheckDllError(result);
-            // TODO 結果をキャッシュする
             return new TextureTargetDefinition(texTargetHandle);
         }
 
@@ -107,7 +106,6 @@ namespace LibPLATEAU.NET.CityGML
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
             }
             DLLUtil.CheckDllError(result);
-            // TODO 結果をキャッシュする
             return new MaterialTargetDefinition(matTargetHandle);
         }
     }

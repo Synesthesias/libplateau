@@ -31,4 +31,12 @@ public class AppearanceTargetDefinitionTests
         Console.WriteLine($"targetID = {targetID}");
         Assert.IsTrue(targetID.Length > 0);
     }
+
+    [TestMethod]
+    public void Appearance_Returns_NotNull()
+    {
+        var appearance = this.texTargetDef.Appearance;
+        Console.WriteLine($"Appearance: Texture URL: {appearance.Url}");
+        Assert.IsNotNull(appearance);
+    }
 }

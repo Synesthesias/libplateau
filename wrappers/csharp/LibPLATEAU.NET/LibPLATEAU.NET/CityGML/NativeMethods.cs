@@ -606,11 +606,26 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr ringHandle);
         
         // ***************
-        //  appearancetarget_c.cpp
+        //  appearancetargetdefinition_c.cpp
         // ***************
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_definition_tex_get_target_id(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_definition_tex_get_appearance(
+            [In] IntPtr handle,
+            out IntPtr outTextureHandle);
+        
+        // ***************
+        //  texture_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_get_url(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
