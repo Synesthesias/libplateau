@@ -10,7 +10,7 @@ namespace LibPLATEAU.NET.Test;
 public class AppearanceTargetTests
 {
     private readonly AppearanceTarget appTargetWithTexTheme;
-    private readonly AppearanceTarget appTargetWithMatTheme;
+    // private readonly AppearanceTarget appTargetWithMatTheme;
     
     // 初期化
     public AppearanceTargetTests()

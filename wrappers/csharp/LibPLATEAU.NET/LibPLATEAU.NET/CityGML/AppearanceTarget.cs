@@ -88,7 +88,7 @@ namespace LibPLATEAU.NET.CityGML
         public TextureTargetDefinition GetTextureTargetDefinition(string themeName, bool front)
         {
             var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_for_theme(
-                Handle, themeName, out IntPtr texTargetHandle, front);
+                Handle, out IntPtr texTargetHandle, themeName, front);
             if (result == APIResult.ErrorValueNotFound)
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");

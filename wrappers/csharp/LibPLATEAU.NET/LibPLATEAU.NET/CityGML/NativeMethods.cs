@@ -551,8 +551,8 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_appearance_target_get_texture_target_definition_for_theme(
             [In] IntPtr handle,
-            [In] string theme,
             [Out] out IntPtr outTextureTargetHandle,
+            [In] string theme,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
