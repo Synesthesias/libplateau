@@ -3,8 +3,7 @@
 namespace LibPLATEAU.NET.CityGML;
 
 // TODO 実装中
-// TODO Appearanceを継承する
-public class Texture : Object
+public class Texture : Appearance
 {
     internal Texture(IntPtr handle) : base(handle)
     {

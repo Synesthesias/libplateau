@@ -4,8 +4,7 @@ using LibPLATEAU.NET.Util;
 namespace LibPLATEAU.NET.CityGML;
 
 // TODO 実装中
-// TODO where T : Texture を where T : Appearance に変える
-public class AppearanceTargetDefinition<T> : Object where T : Texture
+public class AppearanceTargetDefinition<T> : Object where T : Appearance
 {
     internal AppearanceTargetDefinition(IntPtr handle) : base(handle)
     {
@@ -25,7 +24,7 @@ public class AppearanceTargetDefinition<T> : Object where T : Texture
                         Handle,
                         NativeMethods.plateau_appearance_target_definition_tex_get_appearance
                     );
-                    return (T)new Texture(ptr);
+                    return (T)(Appearance)new Texture(ptr);
                 case MaterialTargetDefinition:
                     // 未実装
                     throw new NotImplementedException();

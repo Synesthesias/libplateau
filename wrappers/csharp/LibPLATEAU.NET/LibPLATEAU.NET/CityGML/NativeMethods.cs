@@ -629,5 +629,15 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+        
+        // ***************
+        //  appearance_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_type(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
     }
 }
