@@ -44,15 +44,11 @@ namespace LibPLATEAU.NET.CityGML
             {
                 if (this.cachedKeys != null) return this.cachedKeys;
                 
-                int cnt = Count;
-                int[] keySizes = new int[cnt];
-                var keyHandles = new IntPtr[cnt];
-                this.cachedKeys = new string[cnt];
-
-                var result = NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles, keySizes);
-                DLLUtil.CheckDllError(result);
-                this.cachedKeys = DLLUtil.ReadNativeStrPtrArray(keyHandles, keySizes);
-
+                this.cachedKeys = DLLUtil.GetNativeStringArrayByPtr(
+                    this.handle,
+                    NativeMethods.plateau_attributes_map_get_keys_count,
+                    NativeMethods.plateau_attributes_map_get_keys);
+                
                 return this.cachedKeys;
             }
         }
