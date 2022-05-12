@@ -74,13 +74,13 @@ using dll_str_size_t = int;
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
 #define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-        const TARGET_TYPE* const handle,                           \
-        const char** const out_chars_ptr, /* アドレスを参照渡しで渡すので'*'が2つ付きます。 */                                           \
-        dll_str_size_t* out_str_length                              \
-    ){                                                         \
-        API_TRY{                                                   \
-            auto& str = (STRING_GETTER);                                                       \
-            *out_chars_ptr = str.c_str();              \
+        const TARGET_TYPE* const handle,/* C#では "[In] IntPtr handle" に対応します。 */ \
+        const char** const out_chars_ptr, /* C#では "out IntPtr strPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
+        dll_str_size_t* out_str_length /* C#では "out int strLength" に対応します。*/\
+    ){ \
+        API_TRY{\
+            auto& str = (STRING_GETTER); \
+            *out_chars_ptr = str.c_str();\
             *out_str_length = str.length() + 1; /* +1 は null終端文字列の分です。 */\
             return APIResult::Success;                             \
         }                                                          \

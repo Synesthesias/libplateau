@@ -604,5 +604,15 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             [MarshalAs(UnmanagedType.U1)] out bool outIsTarget,
             [In] IntPtr ringHandle);
+        
+        // ***************
+        //  appearancetarget_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_definition_tex_get_target_id(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
     }
 }
