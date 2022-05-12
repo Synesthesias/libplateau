@@ -40,14 +40,14 @@ public class AppearanceTargetTests
         }
     }
 
-    [TestMethod, Ignore]
+    [TestMethod]
     public void GetTextureTargetDefinition_Returns_Not_Null()
     {
         var ttd = this.appTargetWithTheme.GetTextureTargetDefinition("rgbTexture", true);
         Assert.IsNotNull(ttd);
     }
 
-    [TestMethod, Ignore]
+    [TestMethod]
     public void GetTextureTargetDefinition_Throws_Error_When_Not_Found()
     {
         Assert.ThrowsException<KeyNotFoundException>(() =>

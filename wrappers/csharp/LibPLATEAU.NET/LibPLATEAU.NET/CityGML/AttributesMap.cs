@@ -116,17 +116,6 @@ namespace LibPLATEAU.NET.CityGML
             return false;
         }
 
-        /// <summary>
-        /// 属性の各キーの文字列としてのバイト数を配列で返します。
-        /// </summary>
-        // private int[] GetKeySizes()
-        // {
-        //     int[] keySizes = new int[Count];
-        //     APIResult result = NativeMethods.plateau_attributes_map_get_keys_str_sizes(this.handle, keySizes);
-        //     DLLUtil.CheckDllError(result);
-        //     return keySizes;
-        // }
-        
         public IEnumerator<AttrPair> GetEnumerator()
         {
             return new AttributesMapEnumerator(this);

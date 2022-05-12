@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test;
 
-[TestClass, Ignore]
+[TestClass]
 public class TextureCoordinatesTests
 {
     private TextureCoordinates texCoords;
@@ -26,6 +26,7 @@ public class TextureCoordinatesTests
             .First(texTarget => texTarget.TexCoordinatesCount > 0);
         this.texCoords = texTarget.GetCoordinate(0);
 
+        // texTarget のターゲットと同じIDを持つ LinearRing を探します。
         string targetRingId = this.texCoords.TargetLinearRingId;
         targetRing = cityModel.RootCityObjects
             .SelectMany(co => co.CityObjectDescendantsDFS)
