@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test;
 
-[TestClass]
+[TestClass, Ignore]
 public class TextureTargetDefinitionTests
 {
     private TextureTargetDefinition texTarget;

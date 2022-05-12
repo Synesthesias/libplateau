@@ -167,7 +167,7 @@ namespace LibPLATEAU.NET.CityGML
     {
         private const string DllName = "plateau_c";
 
-        [DllImport(DllName)]
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
             [In] CitygmlParserParams parserParams,
@@ -179,7 +179,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern void plateau_obj_writer_write(
             [In] IntPtr objWriter,
             [In] string objPath,
@@ -511,6 +511,7 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
         //  appearancetarget_c.cpp
         // ***************
+        
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_themes_count(
             [In] IntPtr handle,
@@ -521,7 +522,12 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_appearance_target_get_all_texture_themes(
             [In] IntPtr handle,
             [In, Out] IntPtr outThemeStrArrayHandle,
-            [In] int[] outStrLengths,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_texture_themes_str_sizes(
+            [In] IntPtr handle,
+            [Out] int[] outSizeArray,
             [MarshalAs(UnmanagedType.U1)] bool front);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]

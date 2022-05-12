@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibPLATEAU.NET.Test;
 
-[TestClass]
+[TestClass, Ignore]
 public class TextureCoordinatesTests
 {
     private TextureCoordinates texCoords;

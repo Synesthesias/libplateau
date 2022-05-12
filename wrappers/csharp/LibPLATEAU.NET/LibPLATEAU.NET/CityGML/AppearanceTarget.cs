@@ -23,14 +23,28 @@ namespace LibPLATEAU.NET.CityGML
 
         public string[] TextureThemes(bool front)
         {
-            int cnt = TextureThemesCount(front);
-            var strSizes = new int[cnt];
-            var strPtrArrayPtr = DLLUtil.AllocPtrArray(cnt, strSizes);
-            APIResult result = NativeMethods.plateau_appearance_target_get_all_texture_themes(
-                Handle, strPtrArrayPtr, strSizes, front);
-            DLLUtil.CheckDllError(result);
-            var ret = DLLUtil.PtrToStringArray(strPtrArrayPtr, cnt, strSizes);
-            DLLUtil.FreePtrArray(strPtrArrayPtr, cnt);
+            string[] ret = DLLUtil.GetNativeStringArrayByValue(
+                Handle,
+                (IntPtr handle, out int arrayLength) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_count(
+                        handle, out arrayLength, front
+                    );
+                    return result;
+                },
+                ( handle, strSizes) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_str_sizes(
+                        handle, strSizes, front);
+                    return result;
+                },
+                ( handle, strPtrArrayPtr) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes(
+                        handle, strPtrArrayPtr, front);
+                    return result;
+                }
+            );
             return ret;
         }
 

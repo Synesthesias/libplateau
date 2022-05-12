@@ -15,8 +15,35 @@ namespace LibPLATEAU.NET.Util
         internal delegate APIResult GetterDelegate<T>(IntPtr handle, out T ret);
         internal delegate APIResult GetterDelegateInt<T>(IntPtr handle, out T ret, int i);
         internal delegate APIResult IntGetDelegate(IntPtr handle, out int ret);
+        internal delegate APIResult IntArrayGetDelegate(IntPtr handle, int[] ret);
         internal delegate APIResult StrPtrGetDelegate(IntPtr handle, out IntPtr ret);
         internal delegate APIResult StrPtrLengthDelegate(IntPtr handle, out IntPtr strPtr, out int strLength);
+        internal delegate APIResult StrValueArrayGetDelegate(IntPtr handle, IntPtr strPtrArrayPtr);
+
+        /// <summary>
+        /// DLL内の文字列の配列のコピーを受け取ります。
+        /// 次の3つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// ・配列の要素数を取得するメソッド
+        /// ・各文字列のバイト数を配列で取得するメソッド
+        /// ・文字列の配列のコピーを受け取るメソッド
+        /// </summary>
+        internal static string[] GetNativeStringArrayByValue(
+            IntPtr handle,
+            GetterDelegate<int> arrayLengthGetter,
+            IntArrayGetDelegate strLengthsGetter,
+            StrValueArrayGetDelegate strArrayGetter)
+        {
+            int cnt = GetNativeValue(handle, arrayLengthGetter);
+            int[] strSizes = new int[cnt];
+            var result = strLengthsGetter(handle, strSizes);
+            CheckDllError(result);
+            var strPtrArrayPtr = AllocPtrArray(cnt, strSizes);
+            result = strArrayGetter(handle, strPtrArrayPtr);
+            CheckDllError(result);
+            var ret = PtrToStringArray(strPtrArrayPtr, cnt, strSizes);
+            FreePtrArray(strPtrArrayPtr, cnt);
+            return ret;
+        }
         
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
 
