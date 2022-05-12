@@ -16,7 +16,7 @@ extern "C" {
     /// 結果は out_attribute_value_ptr のメモリ領域に入ります。
     /// key に対応するものがない場合は APIResult::ErrorValueNotFound を返します。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_attribute_value(
-            const AttributesMap *const attributes_map,1
+            const AttributesMap *const attributes_map,
             const char *const key_char,
             const AttributeValue** const out_attribute_value_ptr
     ) {

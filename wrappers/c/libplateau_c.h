@@ -126,7 +126,7 @@ using dll_str_size_t = int;
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE *const handle,\
             const char ** const out_str_ptrs,\
-            int* const out_str_lengths,\
+            int* const out_str_lengths\
             __VA_ARGS__\
         ) {\
             API_TRY {\
