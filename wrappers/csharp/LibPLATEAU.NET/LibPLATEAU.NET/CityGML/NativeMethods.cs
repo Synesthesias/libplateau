@@ -529,12 +529,37 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             [Out] int[] outSizeArray,
             [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_themes_count(
+            [In] IntPtr handle,
+            out int outCount,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_themes(
+            [In] IntPtr handle,
+            [In, Out] IntPtr outThemeStrArrayHandle,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_themes_str_sizes(
+            [In] IntPtr handle,
+            [Out] int[] outSizeArray,
+            [MarshalAs(UnmanagedType.U1)] bool front);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_appearance_target_get_texture_target_definition_for_theme(
             [In] IntPtr handle,
             [In] string theme,
             [Out] out IntPtr outTextureTargetHandle,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_appearance_target_get_material_target_definition(
+            [In] IntPtr handle,
+            [Out] out IntPtr outMaterialTargetHandle,
+            [In] string themeName,
             [MarshalAs(UnmanagedType.U1)] bool front);
 
 

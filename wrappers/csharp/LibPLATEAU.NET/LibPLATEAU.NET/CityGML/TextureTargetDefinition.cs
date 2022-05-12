@@ -1,26 +1,21 @@
-﻿using System.Reflection.Metadata;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML;
 
-// TODO AppearanceTargetDefinition を継承する
-// TODO 実装途中
 // TODO C++のlibcitygmlのコメントを翻訳して載せておきたい
-public class TextureTargetDefinition
+public class TextureTargetDefinition : AppearanceTargetDefinition
 {
-    private readonly IntPtr handle;
     private TextureCoordinates?[]? cachedCoords;
 
-    public TextureTargetDefinition(IntPtr handle)
+    public TextureTargetDefinition(IntPtr handle) : base(handle)
     {
-        this.handle = handle;
     }
 
     public int TexCoordinatesCount
     {
         get
         {
-            int count = DLLUtil.GetNativeValue<int>(this.handle,
+            int count = DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_texture_target_definition_get_texture_coordinates_count);
             return count;
         }
@@ -30,7 +25,7 @@ public class TextureTargetDefinition
     {
         var ret = DLLUtil.ArrayCache(ref this.cachedCoords, index, TexCoordinatesCount, () =>
         {
-            IntPtr coordPtr = DLLUtil.GetNativeValue<IntPtr>(this.handle, index,
+            IntPtr coordPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_texture_target_definition_get_texture_coordinates);
             return new TextureCoordinates(coordPtr);
         });

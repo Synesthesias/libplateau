@@ -13,9 +13,23 @@ DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_texture_themes,
                              str,
                              ,bool front)
 
+DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_material_themes,
+                             AppearanceTarget,
+                             handle->getAllMaterialThemes(front).size(),
+                             const auto &str : handle->getAllMaterialThemes(front),
+                             str,
+                             ,bool front)
+
+DLL_PTR_FUNC(plateau_appearance_target_get_material_target_definition,
+             AppearanceTarget,
+             MaterialTargetDefinition,
+             handle->getMaterialTargetDefinitionForTheme(std::string(theme_name), front).get();
+             if(*out == nullptr) return APIResult::ErrorValueNotFound,
+             ,char* theme_name, bool front)
 
 
 // TODO ここの処理は attributesmap_c.cpp の get_attribute_value と類似しているのでマクロ化できないか検討します。
+// 上の書き方が良いかも
 /// 引数 theme_chars に対応する TextureTarget がない場合は ErrorValueNotFound を返します。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_appearance_target_get_texture_target_definition_for_theme(
         const AppearanceTarget* const handle,

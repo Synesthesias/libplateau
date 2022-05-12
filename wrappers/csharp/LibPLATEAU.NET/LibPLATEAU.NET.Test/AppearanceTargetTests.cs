@@ -9,31 +9,40 @@ namespace LibPLATEAU.NET.Test;
 [TestClass]
 public class AppearanceTargetTests
 {
-    private readonly AppearanceTarget appTargetWithTheme;
+    private readonly AppearanceTarget appTargetWithTexTheme;
+    private readonly AppearanceTarget appTargetWithMatTheme;
     
     // 初期化
     public AppearanceTargetTests()
     {
+        // テスト対象として適切なものを検索します。
         var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-        this.appTargetWithTheme = cityModel.RootCityObjects
+        this.appTargetWithTexTheme = cityModel.RootCityObjects
             .SelectMany(co => co.CityObjectDescendantsDFS)
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
             .First(poly => poly.TextureThemesCount(true) > 0);
+        
+        this.appTargetWithMatTheme = cityModel.RootCityObjects
+            .SelectMany(co => co.CityObjectDescendantsDFS)
+            .SelectMany(co => co.Geometries)
+            .SelectMany(geom => geom.GeometryDescendantsDFS)
+            .SelectMany(geom => geom.Polygons)
+            .First(poly => poly.MaterialThemesCount(true) > 0);
     }
 
     [TestMethod]
     public void Do_Exist_AppearanceTarget_That_TextureThemesCount_Is_Positive_Number()
     {
-        Console.Write($"TextureThemesCount: {this.appTargetWithTheme.TextureThemesCount(true)}");
-        Assert.IsNotNull(this.appTargetWithTheme);
+        Console.Write($"TextureThemesCount: {this.appTargetWithTexTheme.TextureThemesCount(true)}");
+        Assert.IsNotNull(this.appTargetWithTexTheme);
     }
 
     [TestMethod]
     public void TextureThemes_Returns_GML_ThemeName()
     {
-        foreach(string theme in this.appTargetWithTheme.TextureThemes(true))
+        foreach(string theme in this.appTargetWithTexTheme.TextureThemes(true))
         {
             Console.WriteLine($"TextureTheme: {theme}");
             Assert.AreEqual("rgbTexture", theme);
@@ -43,7 +52,7 @@ public class AppearanceTargetTests
     [TestMethod]
     public void GetTextureTargetDefinition_Returns_Not_Null()
     {
-        var ttd = this.appTargetWithTheme.GetTextureTargetDefinition("rgbTexture", true);
+        var ttd = this.appTargetWithTexTheme.GetTextureTargetDefinition("rgbTexture", true);
         Assert.IsNotNull(ttd);
     }
 
@@ -51,7 +60,23 @@ public class AppearanceTargetTests
     public void GetTextureTargetDefinition_Throws_Error_When_Not_Found()
     {
         Assert.ThrowsException<KeyNotFoundException>(() =>
-            this.appTargetWithTheme.GetTextureTargetDefinition("DummyNotFound", true)
+            this.appTargetWithTexTheme.GetTextureTargetDefinition("DummyNotFound", true)
             );
+    }
+
+    [TestMethod]
+    public void GetMaterialTargetDefinition_Returns_Not_Null()
+    {
+        Console.WriteLine(this.appTargetWithMatTheme.MaterialThemes(true)[0]);
+        var mtd = this.appTargetWithMatTheme.GetMaterialTargetDefinition("rgbTexture", true);
+        Assert.IsNotNull(mtd);
+    }
+
+    [TestMethod]
+    public void GetMaterialTargetDefinition_Throws_Error_When_Not_Found()
+    {
+        Assert.ThrowsException<KeyNotFoundException>(() =>
+            this.appTargetWithMatTheme.GetMaterialTargetDefinition("DummyNotFound", true)
+        );
     }
 }

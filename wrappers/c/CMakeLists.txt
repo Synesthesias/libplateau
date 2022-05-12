@@ -19,7 +19,9 @@ add_library(plateau_c SHARED
   "linearring_c.cpp"
   "appearancetarget_c.cpp"
   "texturetargetdefinition_c.cpp"
-  "texturecoordinates_c.cpp")
+  "texturecoordinates_c.cpp"
+  "appearancetargetdefinition_c.cpp"
+  "materialtargetdefinition_c.cpp")
 
 
 set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY
