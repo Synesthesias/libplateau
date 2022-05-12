@@ -166,73 +166,14 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown;\
     }
 
-/// 文字列のポインタの配列を渡したいときに利用するマクロです。
-/// 3つの関数を生成します。
-///
-/// 生成される関数について:
-/// 関数1つ目は FUNC_NAME_count という名前で、配列の要素数を渡します。
-/// 関数2つ目は FUNC_NAME_str_sizes という名前で、
-/// 数値配列 out_size_array に各文字列のサイズを配列で格納します。
-/// サイズには null終端文字 を含みます。
-/// 上記2つの関数は、DLLの利用者が文字列を読み取るための準備として利用します。
-/// 関数3つ目は FUNC_NAME という名前で、
-/// char** out_strs に文字のポインタの配列を格納します。
-///
-/// 前提:
-/// 情報を格納するのに十分なメモリ領域をDLLの利用者が確保していなければアクセス違反となります。
-///
-/// マクロとしての引数について:
-/// ARRAY_LENGTH_GETTER は TARGET_TYPE* handle から要素数を取得するための処理を記述します。
-/// FOR_RANGE は TARGET_TYPE* handle から文字列をイテレートするための範囲for文の(小括弧)の中身を記載します。
-/// STRING_GETTER は範囲for文の{中}で string を取得する処理を記載します。
-/// 関数に追加の引数を持たせたい場合は __VA_ARGS__ にカンマから記載します。
-///
-/// 類似マクロとの使い分けについて:
-/// 似たマクロに DLL_STRING_VALUE_ARRAY_FUNC3 があります。
-/// 同マクロとの違いは、文字列のポインタの配列を渡すのか、文字列のコピーの配列を渡すのかです。
-/// これらは文字列の寿命によって使い分けます。
-/// 文字列がC++側で保持されている場合は、
-/// このマクロによって文字列のポインタをDLLの利用者に渡せば文字列を読んでもらうことができます。
-/// 一方で、文字列の寿命が短く、C++側で一時的にしか保持されない文字列を渡したい場合は、
-/// 文字列をコピーする必要があります。
-#define DLL_STRING_PTR_ARRAY_FUNC3(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
-    /* 文字列のポインタの配列の要素数を渡す関数です。*/                                                                                      \
-    DLL_VALUE_FUNC(FUNC_NAME ## _count,\
-                    TARGET_TYPE,\
-                    int,\
-                    (ARRAY_LENGTH_GETTER)\
-                    , __VA_ARGS__)\
-    \
-    /* 各文字列のサイズを配列で渡す関数です。 */\
-    DLL_STRINGS_SIZE_ARRAY(FUNC_NAME ## _str_sizes,\
-                            TARGET_TYPE,\
-                            FOR_RANGE,\
-                            STRING_GETTER\
-                            , __VA_ARGS__)\
-    \
-    /* 文字列のポインタの配列を渡す関数です。 */\
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-        const TARGET_TYPE *const handle,\
-        const char ** const out_strs\
-        __VA_ARGS__\
-    ) {\
-        API_TRY {\
-            int i = 0;\
-            for (FOR_RANGE) {\
-                out_strs[i] = (STRING_GETTER).c_str();                                                         \
-                i++;\
-            }\
-            return APIResult::Success;\
-        }\
-        API_CATCH\
-        return APIResult::ErrorUnknown;\
-    }
-
 /// 文字列の配列をコピーして渡したい時に利用するマクロです。
 /// 3つの関数を生成します。
+/// 1つ目は配列の要素数を渡す関数で、FUNC_NAME_count という名称です。
+/// 2つ目は各文字列のサイズを数値配列で渡す関数で、 FUNC_NAME_str_sizes という名称です。
+/// 3つ目は各文字列のコピーを与えられたメモリ領域に書き込む関数で、 名前は FUNC_NAME です。
 ///
-/// 詳しい説明は類似マクロ DLL_STRING_PTR_ARRAY_FUNC3 とほぼ同じなのでそちらをご覧ください。
-/// 使い分けについてもそちらで説明しています。
+/// 類似マクロ DLL_STRING_PTR_ARRAY_FUNC2 との使い分けについては
+/// そちらのコメントを参照してください。
 #define DLL_STRING_VALUE_ARRAY_FUNC3(FUNC_NAME, TARGET_TYPE, ARRAY_LENGTH_GETTER, FOR_RANGE, STRING_GETTER, ...) \
     /* 文字列のポインタの配列の要素数を渡す関数です。*/ \
     DLL_VALUE_FUNC(FUNC_NAME ## _count,\
