@@ -1,4 +1,4 @@
-#include <citygml/texture_c.h>
+#include <citygml/texture.h>
 #include "libplateau_c.h"
 
 using namespace citygml;

@@ -12,7 +12,7 @@
 #include <citygml/citymodel.h>
 #include <citygml/geometry.h>
 #include <citygml/polygon.h>
-#include <citygml/texture_c.h>
+#include <citygml/texture.h>
 
 #include "obj_writer.h"
 #include "polar_to_plane_cartesian.h"
