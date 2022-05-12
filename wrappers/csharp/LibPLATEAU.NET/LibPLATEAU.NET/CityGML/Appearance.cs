@@ -12,4 +12,8 @@ public class Appearance : Object
         DLLUtil.GetNativeString(Handle,
             NativeMethods.plateau_appearance_get_type);
 
+    public bool IsFront =>
+        DLLUtil.GetNativeValue<bool>(Handle,
+            NativeMethods.plateau_appearance_get_is_front);
+
 }

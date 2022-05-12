@@ -32,4 +32,11 @@ public class AppearanceTests
         Console.WriteLine($"type = {type}");
         Assert.IsTrue(type.Length > 0);
     }
+
+    [TestMethod]
+    public void IsFront_Returns_Good_Bool()
+    {
+        bool isFront = this.appearance.IsFront;
+        Assert.AreEqual(true, isFront);
+    }
 }

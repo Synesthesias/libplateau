@@ -639,5 +639,10 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_is_front(
+            [In] IntPtr handle,
+            [MarshalAs(UnmanagedType.U1)] out bool outIsFront);
     }
 }
