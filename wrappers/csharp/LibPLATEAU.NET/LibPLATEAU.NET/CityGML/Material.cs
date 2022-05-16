@@ -4,9 +4,9 @@
 /// 未実装です。
 /// マテリアルを含むGMLの例が見当たらないため
 /// </summary>
-public class MaterialTargetDefinition : AppearanceTargetDefinition<Material>
+public class Material : Appearance
 {
-    internal MaterialTargetDefinition(IntPtr handle) : base(handle)
+    internal Material(IntPtr handle) : base(handle)
     {
     }
 }

@@ -26,13 +26,14 @@ public class AppearanceTargetTests
         
         //　MaterialTargetDefinition を含むGMLがあれば、下のコメントアウトを外してテストします。
         // 今はGML例が見当たらないのでテスト中止しています。
-        
+
         // this.appTargetWithMatTheme = cityModel.RootCityObjects
         //     .SelectMany(co => co.CityObjectDescendantsDFS)
         //     .SelectMany(co => co.Geometries)
         //     .SelectMany(geom => geom.GeometryDescendantsDFS)
-        //     .SelectMany(geom => geom.Polygons)
-        //     .First(poly => poly.MaterialThemesCount(true) > 0);
+        //     .First(geom => geom.MaterialThemesCount(true) > 0);
+        // .SelectMany(geom => geom.Polygons)
+        // .First(poly => poly.MaterialThemesCount(true) > 0);
     }
 
     [TestMethod]

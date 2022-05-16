@@ -125,8 +125,8 @@ using dll_str_size_t = int;
     /* 各文字列の長さの配列を out_array_length に書き込む関数です。*/\
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE *const handle,\
-            const char ** const out_str_ptrs,\
-            int* const out_str_lengths\
+            const char ** const out_str_ptrs, /* C#では '[In, Out] IntPtr[] strPointers' に対応します。 */\
+            int* const out_str_lengths/* C#では '[Out] int[] outStrSizes' に対応します。 */\
             __VA_ARGS__\
         ) {\
             API_TRY {\

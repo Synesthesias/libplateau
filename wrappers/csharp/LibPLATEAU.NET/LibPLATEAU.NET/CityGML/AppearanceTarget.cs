@@ -5,7 +5,7 @@ namespace LibPLATEAU.NET.CityGML
 {
     /// <summary>
     /// 見た目に関する情報のターゲットとなる CityGMLオブジェクトの基底クラスです。
-    /// テーマ名と <see cref="TextureTargetDefinition"/>, <see cref="MaterialTargetDefinition"/> が紐付きます。
+    /// テーマ名, <see cref="TextureTargetDefinition"/>, <see cref="MaterialTargetDefinition"/> を保持し、それらを紐付けます。
     /// </summary>
     public class AppearanceTarget : Object
     {
@@ -97,6 +97,7 @@ namespace LibPLATEAU.NET.CityGML
             return new TextureTargetDefinition(texTargetHandle);
         }
 
+        // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
         public MaterialTargetDefinition GetMaterialTargetDefinition(string themeName, bool front)
         {
             var result = NativeMethods.plateau_appearance_target_get_material_target_definition(

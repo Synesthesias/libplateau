@@ -39,4 +39,13 @@ public class AppearanceTests
         bool isFront = this.appearance.IsFront;
         Assert.AreEqual(true, isFront);
     }
+
+    [TestMethod]
+    public void Theme_Returns()
+    {
+        foreach (string theme in this.appearance.Themes)
+        {
+            Console.WriteLine($"theme: {theme}");
+        }
+    }
 }
