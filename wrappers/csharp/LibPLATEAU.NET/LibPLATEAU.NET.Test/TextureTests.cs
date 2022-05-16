@@ -31,4 +31,12 @@ public class TextureTests
         Console.WriteLine($"Texture URL: {url}");
         Assert.IsTrue(url.Length > 0);
     }
+
+    [TestMethod]
+    public void WrapMode()
+    {
+        TextureWrapMode wrapMode = this.texture.WrapMode;
+        Console.WriteLine(wrapMode);
+        Assert.AreEqual(TextureWrapMode.WM_NONE, wrapMode);
+    }
 }

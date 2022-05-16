@@ -131,7 +131,16 @@ namespace LibPLATEAU.NET.CityGML
 
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
-    
+
+    public enum TextureWrapMode
+    {
+        WM_NONE,
+        WM_WRAP,        // 繰り返し
+        WM_MIRROR,      // ミラーの繰り返し
+        WM_CLAMP,       // the texture is clamped to its edges
+        WM_BORDER       // the resulting color is specified by the borderColor element (RGBA)
+    }
+
     public enum GeometryType : ulong
     {
         GT_Unknown          = 1ul << 0,
@@ -629,6 +638,11 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_get_wrap_mode(
+            [In] IntPtr handle,
+            out TextureWrapMode outWrapMode);
         
         // ***************
         //  appearance_c.cpp
