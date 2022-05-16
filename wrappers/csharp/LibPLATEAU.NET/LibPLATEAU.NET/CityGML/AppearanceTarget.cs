@@ -9,8 +9,10 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class AppearanceTarget : Object
     {
+        private readonly Dictionary<IntPtr, TextureTargetDefinition> cachedTexTargetDefs;
         internal AppearanceTarget(IntPtr handle) : base(handle)
         {
+            this.cachedTexTargetDefs = new();
         }
 
         /// <summary>
@@ -25,10 +27,13 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public TextureTargetDefinition GetTextureTargetDefinition(int index)
         {
-            // TODO キャッシュを利用する
             IntPtr ptr = DLLUtil.GetNativeValue<IntPtr>(Handle,index,
                 NativeMethods.plateau_appearance_target_get_texture_target_definition_by_index);
-            return new TextureTargetDefinition(ptr);
+            if (this.cachedTexTargetDefs.ContainsKey(ptr))
+            {
+                return this.cachedTexTargetDefs[ptr];
+            }
+            return this.cachedTexTargetDefs[ptr] = new TextureTargetDefinition(ptr);
         }
         
         /// <summary>
@@ -38,13 +43,17 @@ namespace LibPLATEAU.NET.CityGML
         public TextureTargetDefinition GetTextureTargetDefinition(string themeName, bool front)
         {
             var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_by_theme_name(
-                Handle, out IntPtr texTargetHandle, themeName, front);
+                Handle, out IntPtr ptr, themeName, front);
             if (result == APIResult.ErrorValueNotFound)
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
             }
             DLLUtil.CheckDllError(result);
-            return new TextureTargetDefinition(texTargetHandle);
+            if (this.cachedTexTargetDefs.ContainsKey(ptr))
+            {
+                return this.cachedTexTargetDefs[ptr];
+            }
+            return this.cachedTexTargetDefs[ptr] = new TextureTargetDefinition(ptr);
         }
 
         /// <summary>
