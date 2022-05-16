@@ -16,9 +16,9 @@ namespace LibPLATEAU.NET.CityGML
         }
 
         /// <summary>
-        /// 保持するテクスチャのテーマの数を返します。
+        /// 保持する <see cref="TextureTargetDefinitions"/> の数を返します。
         /// </summary>
-        public int TextureThemesCount =>
+        public int TextureTargetDefinitionsCount =>
             DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_appearance_target_get_texture_target_definitions_count);
 
@@ -35,7 +35,22 @@ namespace LibPLATEAU.NET.CityGML
             }
             return this.cachedTexTargetDefs[ptr] = new TextureTargetDefinition(ptr);
         }
-        
+
+        /// <summary>
+        /// 保持する <see cref="TextureTargetDefinition"/> を foreach や LINQ でイテレートするための機能です。
+        /// </summary>
+        public IEnumerable<TextureTargetDefinition> TextureTargetDefinitions
+        {
+            get
+            {
+                int cnt = TextureTargetDefinitionsCount;
+                for (int i = 0; i < cnt; i++)
+                {
+                    yield return GetTextureTargetDefinition(i);
+                }
+            }
+        }
+
         /// <summary>
         /// テーマ名から <see cref="TextureTargetDefinition"/> を取得します。
         /// 与えられたテーマ名に該当するものがない場合は <see cref="KeyNotFoundException"/> を投げます。

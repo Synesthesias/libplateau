@@ -21,7 +21,7 @@ public class TextureTargetDefinitionTests
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
-            .Where(poly => poly.TextureThemesCount > 0)
+            .Where(poly => poly.TextureTargetDefinitionsCount > 0)
             .Select(poly => poly.GetTextureTargetDefinition(0))
             .First();
     }

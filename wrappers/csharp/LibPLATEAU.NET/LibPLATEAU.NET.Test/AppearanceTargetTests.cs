@@ -71,7 +71,7 @@ public class AppearanceTargetTests
     [TestMethod]
     public void TextureThemesCount_Returns_Positive_Number()
     {
-        int count = this.appTargetWithTexTheme.TextureThemesCount;
+        int count = this.appTargetWithTexTheme.TextureTargetDefinitionsCount;
         Console.WriteLine($"TextureThemesCount : {count}");
         Assert.IsTrue(count > 0);
     }
@@ -81,6 +81,14 @@ public class AppearanceTargetTests
     {
         var texTargetDef = this.appTargetWithTexTheme.GetTextureTargetDefinition(0);
         Assert.IsNotNull(texTargetDef);
+    }
+
+    [TestMethod]
+    public void TextureTargetDefinitions_Enumerates_Same_Count()
+    {
+        int enumerateCount = this.appTargetWithTexTheme.TextureTargetDefinitions.Count();
+        int expectedCount = this.appTargetWithTexTheme.TextureTargetDefinitionsCount;
+        Assert.AreEqual(expectedCount, enumerateCount);
     }
 
     //　MaterialTargetDefinition を含むGMLがあれば、下のコメントアウトを外してテストします。

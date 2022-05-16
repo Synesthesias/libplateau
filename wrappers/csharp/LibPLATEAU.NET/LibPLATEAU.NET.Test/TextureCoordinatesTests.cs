@@ -21,7 +21,7 @@ public class TextureCoordinatesTests
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
-            .Where(poly => poly.TextureThemesCount > 0)
+            .Where(poly => poly.TextureTargetDefinitionsCount > 0)
             .Select(poly => poly.GetTextureTargetDefinition(0))
             .First(texTarget => texTarget.TexCoordinatesCount > 0);
         this.texCoords = texTarget.GetCoordinate(0);
