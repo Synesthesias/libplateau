@@ -18,8 +18,8 @@ public class TextureTests
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
-            .Where(poly => poly.TextureThemesCountOfFront(true) > 0)
-            .Select(poly => poly.GetTextureTargetDefinition(poly.TextureThemeNames(true)[0], true))
+            .Where(poly => poly.TextureThemesCount > 0)
+            .Select(poly => poly.GetTextureTargetDefinition(0))
             .Select(ttd => ttd.Appearance)
             .First();
     }
