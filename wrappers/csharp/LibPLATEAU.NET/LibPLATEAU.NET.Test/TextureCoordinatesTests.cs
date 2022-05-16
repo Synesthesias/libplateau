@@ -15,7 +15,7 @@ public class TextureCoordinatesTests
     public TextureCoordinatesTests()
     {
         // 探索して最初に見つかった TextureCoordinates をテスト対象にします。
-        var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+        var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
         var texTarget = cityModel.RootCityObjects
             .SelectMany(co => co.CityObjectDescendantsDFS)
             .SelectMany(co => co.Geometries)
@@ -38,11 +38,13 @@ public class TextureCoordinatesTests
     }
 
     [TestMethod]
-    public void Vec2CoordsCount_Returns_Positive_Number()
+    public void Vec2CoordsCount_Is_Same_As_Linear_Ring_Vertices_Count()
     {
-        int count = this.texCoords.Vec2CoordsCount;
-        Console.WriteLine($"Vec2CoordsCount = {count}");
-        Assert.IsTrue(count > 0);
+        int vec2CoordsCount = this.texCoords.Vec2CoordsCount;
+        int ringVerticesCount = this.targetRing.VertexCount;
+        Console.WriteLine($"Vec2CoordsCount = {vec2CoordsCount}");
+        Console.WriteLine($"RingVerticesCount = {ringVerticesCount}");
+        Assert.AreEqual(ringVerticesCount, vec2CoordsCount);
     }
 
     [TestMethod]
@@ -54,7 +56,7 @@ public class TextureCoordinatesTests
     }
 
     [TestMethod]
-    public void TargetLinearRingId_Returns_Some_String()
+    public void TargetLinearRingId_Returns_Not_Empty()
     {
         string id = this.texCoords.TargetLinearRingId;
         Console.WriteLine($"Target Ring ID : {id}");

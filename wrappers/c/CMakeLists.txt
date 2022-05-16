@@ -22,7 +22,7 @@ add_library(plateau_c SHARED
   "texturecoordinates_c.cpp"
   "appearancetargetdefinition_c.cpp"
   "materialtargetdefinition_c.cpp"
-  "texture.cpp"
+  "texture_c.cpp"
   "appearance_c.cpp")
 
 

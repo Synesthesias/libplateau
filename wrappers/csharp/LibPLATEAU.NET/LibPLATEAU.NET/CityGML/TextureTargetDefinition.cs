@@ -2,7 +2,12 @@
 
 namespace LibPLATEAU.NET.CityGML;
 
-// TODO C++のlibcitygmlのコメントを翻訳して載せておきたい
+/// <summary>
+/// テクスチャとテクスチャマッピングを紐付けます。
+/// <see cref="AppearanceTargetDefinition{T}.Appearance"/> でテクスチャ情報を取得できます。
+/// <see cref="GetCoordinate"/>(i) で i番目のテクスチャマッピング (<see cref="TextureCoordinates"/>) を取得できます。
+/// <see cref="AppearanceTarget"/> によって保持されます。
+/// </summary>
 public class TextureTargetDefinition : AppearanceTargetDefinition<Texture>
 {
     private TextureCoordinates?[]? cachedCoords;
@@ -11,6 +16,9 @@ public class TextureTargetDefinition : AppearanceTargetDefinition<Texture>
     {
     }
 
+    /// <summary>
+    /// 保持するテクスチャマッピングの数です。
+    /// </summary>
     public int TexCoordinatesCount
     {
         get
@@ -21,6 +29,9 @@ public class TextureTargetDefinition : AppearanceTargetDefinition<Texture>
         }
     }
 
+    /// <summary>
+    /// <paramref name="index"/> 番目のテクスチャマッピングを取得します。
+    /// </summary>
     public TextureCoordinates GetCoordinate(int index)
     {
         var ret = DLLUtil.ArrayCache(ref this.cachedCoords, index, TexCoordinatesCount, () =>

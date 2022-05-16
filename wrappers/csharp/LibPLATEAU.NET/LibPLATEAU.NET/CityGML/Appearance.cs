@@ -1,7 +1,10 @@
 ﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML;
-// TODO 実装中
+
+/// <summary>
+/// <see cref="Texture"/> , <see cref="Material"/> の基底クラスです。
+/// </summary>
 public class Appearance : Object
 {
     internal Appearance(IntPtr handle) : base(handle)

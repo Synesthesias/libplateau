@@ -3,7 +3,6 @@ using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML;
 
-// TODO 実装中
 public class AppearanceTargetDefinition<T> : Object where T : Appearance
 {
     internal AppearanceTargetDefinition(IntPtr handle) : base(handle)
@@ -26,10 +25,9 @@ public class AppearanceTargetDefinition<T> : Object where T : Appearance
                     );
                     return (T)(Appearance)new Texture(ptr);
                 case MaterialTargetDefinition:
-                    // 未実装
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Material を含むGMLの例が見当たらないため未実装です。");
                 default:
-                    throw new NotImplementedException();
+                    throw new Exception("Unknown type.");
             }
         }
     }
@@ -44,10 +42,9 @@ public class AppearanceTargetDefinition<T> : Object where T : Appearance
                     return DLLUtil.GetNativeString(Handle,
                         NativeMethods.plateau_appearance_target_definition_tex_get_target_id);
                 case MaterialTargetDefinition:
-                    // MaterialTargetDefinitionは未実装です。
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("Material を含むGMLの例が見当たらないため未実装です。");
                 default:
-                    throw new NotImplementedException();
+                    throw new Exception("Unknown type.");
             }
         }
     }
