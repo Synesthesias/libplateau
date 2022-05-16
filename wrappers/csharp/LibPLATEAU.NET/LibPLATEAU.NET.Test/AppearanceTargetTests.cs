@@ -22,7 +22,7 @@ public class AppearanceTargetTests
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
-            .First(poly => poly.TextureThemesCount(true) > 0);
+            .First(poly => poly.TextureThemesCountOfFront(true) > 0);
         
         //　MaterialTargetDefinition を含むGMLがあれば、下のコメントアウトを外してテストします。
         // 今はGML例が見当たらないのでテスト中止しています。
@@ -39,14 +39,14 @@ public class AppearanceTargetTests
     [TestMethod]
     public void Do_Exist_AppearanceTarget_That_TextureThemesCount_Is_Positive_Number()
     {
-        Console.Write($"TextureThemesCount: {this.appTargetWithTexTheme.TextureThemesCount(true)}");
+        Console.Write($"TextureThemesCountOfFront: {this.appTargetWithTexTheme.TextureThemesCountOfFront(true)}");
         Assert.IsNotNull(this.appTargetWithTexTheme);
     }
 
     [TestMethod]
     public void TextureThemes_Returns_GML_ThemeName()
     {
-        foreach(string theme in this.appTargetWithTexTheme.TextureThemes(true))
+        foreach(string theme in this.appTargetWithTexTheme.TextureThemeNames(true))
         {
             Console.WriteLine($"TextureTheme: {theme}");
             Assert.AreEqual("rgbTexture", theme);
@@ -66,6 +66,21 @@ public class AppearanceTargetTests
         Assert.ThrowsException<KeyNotFoundException>(() =>
             this.appTargetWithTexTheme.GetTextureTargetDefinition("DummyNotFound", true)
             );
+    }
+
+    [TestMethod]
+    public void TextureThemesCount_Returns_Positive_Number()
+    {
+        int count = this.appTargetWithTexTheme.TextureThemesCount;
+        Console.WriteLine($"TextureThemesCount : {count}");
+        Assert.IsTrue(count > 0);
+    }
+
+    [TestMethod]
+    public void GetTextureTargetDefinition_By_Index_Returns_NotNull()
+    {
+        var texTargetDef = this.appTargetWithTexTheme.GetTextureTargetDefinition(0);
+        Assert.IsNotNull(texTargetDef);
     }
 
     //　MaterialTargetDefinition を含むGMLがあれば、下のコメントアウトを外してテストします。

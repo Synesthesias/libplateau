@@ -11,6 +11,9 @@ public class Appearance : Object
     {
     }
 
+    /// <summary>
+    /// Texture なら "Texture" という文字列を返します。
+    /// </summary>
     public string Type =>
         DLLUtil.GetNativeString(Handle,
             NativeMethods.plateau_appearance_get_type);
@@ -19,6 +22,9 @@ public class Appearance : Object
         DLLUtil.GetNativeValue<bool>(Handle,
             NativeMethods.plateau_appearance_get_is_front);
 
+    /// <summary>
+    /// テーマ名を配列で返します。
+    /// </summary>
     public string[] Themes =>
         DLLUtil.GetNativeStringArrayByPtr(
             Handle,

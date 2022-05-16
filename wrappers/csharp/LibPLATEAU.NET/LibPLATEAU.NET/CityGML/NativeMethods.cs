@@ -522,54 +522,65 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_texture_themes_count(
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_count(
             [In] IntPtr handle,
             out int outCount,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_texture_themes(
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names(
             [In] IntPtr handle,
             [In, Out] IntPtr outThemeStrArrayHandle,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_texture_themes_str_sizes(
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_str_sizes(
             [In] IntPtr handle,
             [Out] int[] outSizeArray,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_material_themes_count(
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_count(
             [In] IntPtr handle,
             out int outCount,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_material_themes(
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names(
             [In] IntPtr handle,
             [In, Out] IntPtr outThemeStrArrayHandle,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName)]
-        internal static extern APIResult plateau_appearance_target_get_all_material_themes_str_sizes(
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_str_sizes(
             [In] IntPtr handle,
             [Out] int[] outSizeArray,
             [MarshalAs(UnmanagedType.U1)] bool front);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_appearance_target_get_texture_target_definition_for_theme(
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_theme_name(
             [In] IntPtr handle,
             [Out] out IntPtr outTextureTargetHandle,
             [In] string theme,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_appearance_target_get_material_target_definition(
+        internal static extern APIResult plateau_appearance_target_get_material_target_definition_by_theme_name(
             [In] IntPtr handle,
             [Out] out IntPtr outMaterialTargetHandle,
             [In] string themeName,
             [MarshalAs(UnmanagedType.U1)] bool front);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definitions_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_index(
+            [In] IntPtr handle,
+            out IntPtr outTexTargetDefHandle,
+            int index);
 
 
         // ***************

@@ -19,8 +19,8 @@ public class AppearanceTests
             .SelectMany(co => co.Geometries)
             .SelectMany(geom => geom.GeometryDescendantsDFS)
             .SelectMany(geom => geom.Polygons)
-            .Where(poly => poly.TextureThemesCount(true) > 0)
-            .Select(poly => poly.GetTextureTargetDefinition(poly.TextureThemes(true)[0], true))
+            .Where(poly => poly.TextureThemesCountOfFront(true) > 0)
+            .Select(poly => poly.GetTextureTargetDefinition(poly.TextureThemeNames(true)[0], true))
             .Select(ttd => ttd.Appearance)
             .First();
     }
@@ -41,11 +41,12 @@ public class AppearanceTests
     }
 
     [TestMethod]
-    public void Theme_Returns()
+    public void Themes_Returns_More_Than_Zero_Themes()
     {
         foreach (string theme in this.appearance.Themes)
         {
             Console.WriteLine($"theme: {theme}");
         }
+        Assert.IsTrue(this.appearance.Themes.Length > 0);
     }
 }

@@ -12,82 +12,32 @@ namespace LibPLATEAU.NET.CityGML
         internal AppearanceTarget(IntPtr handle) : base(handle)
         {
         }
-        
 
-        public int TextureThemesCount(bool front)
-        {
-            APIResult result = NativeMethods.plateau_appearance_target_get_all_texture_themes_count(
-                Handle, out int count, front);
-            DLLUtil.CheckDllError(result);
-            return count;
-        }
+        /// <summary>
+        /// 保持するテクスチャのテーマの数を返します。
+        /// </summary>
+        public int TextureThemesCount =>
+            DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_appearance_target_get_texture_target_definitions_count);
 
-        public string[] TextureThemes(bool front)
+        /// <summary>
+        /// インデックス指定で <see cref="TextureTargetDefinition"/> を取得します。
+        /// </summary>
+        public TextureTargetDefinition GetTextureTargetDefinition(int index)
         {
-            string[] ret = DLLUtil.GetNativeStringArrayByValue(
-                Handle,
-                (IntPtr handle, out int arrayLength) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_count(
-                        handle, out arrayLength, front
-                    );
-                    return result;
-                },
-                ( handle, strSizes) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes_str_sizes(
-                        handle, strSizes, front);
-                    return result;
-                },
-                ( handle, strPtrArrayPtr) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_texture_themes(
-                        handle, strPtrArrayPtr, front);
-                    return result;
-                }
-            );
-            return ret;
+            // TODO キャッシュを利用する
+            IntPtr ptr = DLLUtil.GetNativeValue<IntPtr>(Handle,index,
+                NativeMethods.plateau_appearance_target_get_texture_target_definition_by_index);
+            return new TextureTargetDefinition(ptr);
         }
         
-        public int MaterialThemesCount(bool front)
-        {
-            APIResult result = NativeMethods.plateau_appearance_target_get_all_material_themes_count(
-                Handle, out int count, front);
-            DLLUtil.CheckDllError(result);
-            return count;
-        }
-        
-        // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
-        public string[] MaterialThemes(bool front)
-        {
-            string[] ret = DLLUtil.GetNativeStringArrayByValue(
-                Handle,
-                (IntPtr handle, out int arrayLength) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_material_themes_count(
-                        handle, out arrayLength, front
-                    );
-                    return result;
-                },
-                ( handle, strSizes) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_material_themes_str_sizes(
-                        handle, strSizes, front);
-                    return result;
-                },
-                ( handle, strPtrArrayPtr) =>
-                {
-                    var result = NativeMethods.plateau_appearance_target_get_all_material_themes(
-                        handle, strPtrArrayPtr, front);
-                    return result;
-                }
-            );
-            return ret;
-        }
-
+        /// <summary>
+        /// テーマ名から <see cref="TextureTargetDefinition"/> を取得します。
+        /// 与えられたテーマ名に該当するものがない場合は <see cref="KeyNotFoundException"/> を投げます。
+        /// </summary>
         public TextureTargetDefinition GetTextureTargetDefinition(string themeName, bool front)
         {
-            var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_for_theme(
+            var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_by_theme_name(
                 Handle, out IntPtr texTargetHandle, themeName, front);
             if (result == APIResult.ErrorValueNotFound)
             {
@@ -97,10 +47,88 @@ namespace LibPLATEAU.NET.CityGML
             return new TextureTargetDefinition(texTargetHandle);
         }
 
-        // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
-        public MaterialTargetDefinition GetMaterialTargetDefinition(string themeName, bool front)
+        /// <summary>
+        /// 保持するテクスチャのテーマのうち、
+        /// <paramref name="front"/> が与えられたタイプであるものの数を返します。
+        /// </summary>
+        public int TextureThemesCountOfFront(bool front)
         {
-            var result = NativeMethods.plateau_appearance_target_get_material_target_definition(
+            APIResult result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names_count(
+                Handle, out int count, front);
+            DLLUtil.CheckDllError(result);
+            return count;
+        }
+
+        /// <summary>
+        /// テクスチャのテーマ名(0個以上)を取得して配列で返します。
+        /// </summary>
+        public string[] TextureThemeNames(bool front)
+        {
+            string[] ret = DLLUtil.GetNativeStringArrayByValue(
+                Handle,
+                (IntPtr handle, out int arrayLength) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names_count(
+                        handle, out arrayLength, front
+                    );
+                    return result;
+                },
+                ( handle, strSizes) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names_str_sizes(
+                        handle, strSizes, front);
+                    return result;
+                },
+                ( handle, strPtrArrayPtr) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_texture_theme_names(
+                        handle, strPtrArrayPtr, front);
+                    return result;
+                }
+            );
+            return ret;
+        }
+        
+        public int MaterialThemesCountByFront(bool front)
+        {
+            APIResult result = NativeMethods.plateau_appearance_target_get_all_material_theme_names_count(
+                Handle, out int count, front);
+            DLLUtil.CheckDllError(result);
+            return count;
+        }
+        
+        // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
+        public string[] MaterialThemeNames(bool front)
+        {
+            string[] ret = DLLUtil.GetNativeStringArrayByValue(
+                Handle,
+                (IntPtr handle, out int arrayLength) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_material_theme_names_count(
+                        handle, out arrayLength, front
+                    );
+                    return result;
+                },
+                ( handle, strSizes) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_material_theme_names_str_sizes(
+                        handle, strSizes, front);
+                    return result;
+                },
+                ( handle, strPtrArrayPtr) =>
+                {
+                    var result = NativeMethods.plateau_appearance_target_get_all_material_theme_names(
+                        handle, strPtrArrayPtr, front);
+                    return result;
+                }
+            );
+            return ret;
+        }
+
+        // TODO 未テスト MaterialTargetDefinition を利用したGMLファイルの例が見当たらないため
+        public MaterialTargetDefinition GetMaterialTargetDefinitionByThemeName(string themeName, bool front)
+        {
+            var result = NativeMethods.plateau_appearance_target_get_material_target_definition_by_theme_name(
                 Handle, out IntPtr matTargetHandle, themeName, front);
             if (result == APIResult.ErrorValueNotFound)
             {

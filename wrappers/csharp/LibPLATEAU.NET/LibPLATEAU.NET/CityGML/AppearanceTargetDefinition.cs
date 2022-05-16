@@ -3,6 +3,12 @@ using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML;
 
+/// <summary>
+/// <see cref="TextureTargetDefinition"/> , <see cref="MaterialTargetDefinition"/> の基底クラスです。
+/// <see cref="TargetID"/> , <see cref="Appearance"/> を保持します。
+/// <see cref="Appearance"/> は <see cref="TextureTargetDefinition"/> ならば <see cref="Texture"/> 型、
+/// <see cref="MaterialTargetDefinition"/> ならば <see cref="Material"/> 型です。
+/// </summary>
 public class AppearanceTargetDefinition<T> : Object where T : Appearance
 {
     internal AppearanceTargetDefinition(IntPtr handle) : base(handle)
