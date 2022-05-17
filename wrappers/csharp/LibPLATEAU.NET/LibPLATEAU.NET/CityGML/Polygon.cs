@@ -1,4 +1,6 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System;
+using System.Collections.Generic;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -12,8 +14,8 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Polygon : AppearanceTarget
     {
-        private LinearRing? cachedExteriorRing;
-        private LinearRing?[]? cachedInteriorRings; // キャッシュの初期状態は null とするので null許容型にします。
+        private LinearRing cachedExteriorRing;
+        private LinearRing[] cachedInteriorRings; // キャッシュの初期状態は null とするので null許容型にします。
         
         internal Polygon(IntPtr handle) : base(handle)
         {

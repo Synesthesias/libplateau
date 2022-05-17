@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Collections.Generic;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -12,7 +14,7 @@ namespace LibPLATEAU.NET.CityGML
         private readonly Dictionary<IntPtr, TextureTargetDefinition> cachedTexTargetDefs;
         internal AppearanceTarget(IntPtr handle) : base(handle)
         {
-            this.cachedTexTargetDefs = new();
+            this.cachedTexTargetDefs = new Dictionary<IntPtr, TextureTargetDefinition>();
         }
 
         /// <summary>

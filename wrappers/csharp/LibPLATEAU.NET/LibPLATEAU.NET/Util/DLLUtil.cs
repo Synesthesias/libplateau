@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util
@@ -206,7 +207,7 @@ namespace LibPLATEAU.NET.Util
         /// <param name="index">T型配列から値を読みたいインデックスです。</param>
         /// <param name="arrayLength">T型配列の要素数です。</param>
         /// <param name="generator">キャッシュに値がないとき、値を生成するための関数を指定します。</param>
-        public static T ArrayCache<T>(ref T?[]? cache, int index, int arrayLength, Func<T> generator)
+        public static T ArrayCache<T>(ref T[] cache, int index, int arrayLength, Func<T> generator)
         {
             if (cache == null)
             {
@@ -218,7 +219,7 @@ namespace LibPLATEAU.NET.Util
                 }
             }
 
-            T? item = cache[index];
+            T item = cache[index];
             // キャッシュがヒットしたとき
             if (item != null)
             {

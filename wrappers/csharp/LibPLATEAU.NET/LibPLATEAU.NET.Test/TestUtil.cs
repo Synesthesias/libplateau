@@ -5,7 +5,7 @@ using LibPLATEAU.NET.CityGML;
 namespace LibPLATEAU.NET.Test {
     public static class TestUtil {
 
-        private static readonly Dictionary<GmlFileCase, string> GMLPathes = new()
+        private static readonly Dictionary<GmlFileCase, string> GMLPathes = new Dictionary<GmlFileCase, string>
         {
             { GmlFileCase.Simple, "data/53392642_bldg_6697_op2.gml" },
             // { GmlFileCase.Minatomirai , "data/53392642_bldg_6697_op2.gml"} // 今のところ未使用

@@ -1,4 +1,6 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System;
+using System.Threading;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {

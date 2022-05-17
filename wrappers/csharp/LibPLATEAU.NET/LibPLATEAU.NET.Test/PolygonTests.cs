@@ -93,7 +93,7 @@ namespace LibPLATEAU.NET.Test
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
                 .SelectMany(geom => geom.Polygons)
                 .SelectMany(poly => poly.InteriorRings)
-                .FirstOrDefault(ring => ring.VertexCount > 0);
+                .FirstOrDefault(r => r.VertexCount > 0);
             Assert.IsNotNull(ring);
         }
 

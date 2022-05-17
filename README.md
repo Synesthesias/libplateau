@@ -59,7 +59,7 @@ cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="Re
 cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
 ```
 #### C#のビルド
-* マシンに dotnet 6.0以上 をインストールする。
+* マシンに dotnet 4.6 をインストールする。(Unityで利用するdotnetバージョンと同じ)
 * 以下のコマンドを実行する。
 ```
 cd (プロジェクトのルートディレクトリ）
@@ -85,7 +85,7 @@ dotnet test -c Release
 1. libplateauビルド(Release)
 2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
 3. 以下のファイルをUnityプロジェクトにコピー
-   1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/net6.0/LibPLATEAU.NET.dll
+   1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/net4.6/LibPLATEAU.NET.dll
    2. out/build/x64-Release/bin/citygml.dll
    3. out/build/x64-Release/bin/plateau.dll
    4. out/build/x64-Release/bin/plateau_c.dll
