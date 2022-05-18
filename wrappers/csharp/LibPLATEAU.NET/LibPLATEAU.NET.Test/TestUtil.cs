@@ -5,7 +5,7 @@ using LibPLATEAU.NET.CityGML;
 namespace LibPLATEAU.NET.Test {
     public static class TestUtil {
 
-        private static readonly Dictionary<GmlFileCase, string> gmlPathes = new()
+        private static readonly Dictionary<GmlFileCase, string> GMLPathes = new()
         {
             { GmlFileCase.Simple, "data/53392642_bldg_6697_op2.gml" },
             // { GmlFileCase.Minatomirai , "data/53392642_bldg_6697_op2.gml"} // 今のところ未使用
@@ -16,10 +16,10 @@ namespace LibPLATEAU.NET.Test {
         /// <summary>
         /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>
-        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, int optimize = 1, bool tessellate = true)
+        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true)
         {
             var parserParams = new CitygmlParserParams(optimize, tessellate);
-            var cityModel = CityGml.Load(gmlPathes[gmlFileCase], parserParams);
+            var cityModel = CityGml.Load(GMLPathes[gmlFileCase], parserParams);
             return cityModel;
         }
 
@@ -34,6 +34,19 @@ namespace LibPLATEAU.NET.Test {
             isNotZero &= Math.Abs(pos.X) > 0.01;
             isNotZero &= Math.Abs(pos.Y) > 0.01;
             isNotZero &= Math.Abs(pos.Z) > 0.01;
+            return isNotZero;
+        }
+
+        /// <summary>
+        /// <see cref="PlateauVector2f"/> の拡張メソッドです。
+        /// X, Y のうちいずれかが 0 に近い値であれば false を返します。
+        /// そうでなければ true を返します。
+        /// </summary>
+        public static bool IsNotZero(this PlateauVector2f pos)
+        {
+            bool isNotZero = true;
+            isNotZero &= Math.Abs(pos.X) > 0.01;
+            isNotZero &= Math.Abs(pos.Y) > 0.01;
             return isNotZero;
         }
     }

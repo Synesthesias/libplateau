@@ -40,9 +40,9 @@ DLL_VALUE_FUNC(plateau_geometry_get_lod,
              int,
              handle->lod())
 
-DLL_STRING_PTR_FUNC2(plateau_geometry_get_srs_name,
-                     Geometry,
-                     handle->getSRSName())
+DLL_STRING_PTR_FUNC(plateau_geometry_get_srs_name,
+                    Geometry,
+                    handle->getSRSName())
 
 DLL_VALUE_FUNC(plateau_geometry_get_line_string_count,
                Geometry,

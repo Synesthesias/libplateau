@@ -14,7 +14,7 @@ namespace LibPLATEAU.NET.Test
             var objPath = "53392642_bldg_6697_op2.obj";
             var parserParams = new CitygmlParserParams
             {
-                Optimize = 1
+                Optimize = true
             };
 
             var cityModel = CityGml.Load(GmlPath, parserParams);

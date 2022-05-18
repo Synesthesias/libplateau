@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util
@@ -15,12 +14,58 @@ namespace LibPLATEAU.NET.Util
         /// </summary>
         internal delegate APIResult GetterDelegate<T>(IntPtr handle, out T ret);
         internal delegate APIResult GetterDelegateInt<T>(IntPtr handle, out T ret, int i);
-        internal delegate APIResult IntGetDelegate(IntPtr handle, out int ret);
-        internal delegate APIResult StrPtrGetDelegate(IntPtr handle, out IntPtr ret);
+        internal delegate APIResult IntArrayGetDelegate(IntPtr handle, int[] ret);
+        internal delegate APIResult StrPtrLengthDelegate(IntPtr handle,out IntPtr strPtr,out int strLength);
+
+        internal delegate APIResult StrPtrLengthArrayDelegate(IntPtr handle, IntPtr[] strPointers, int[] strLengths);
+        internal delegate APIResult StrValueArrayGetDelegate(IntPtr handle, IntPtr strPtrArrayPtr);
+
+        /// <summary>
+        /// DLLから文字列のポインタの配列を受け取り、各ポインタから文字列を読んで string[] で返します。
+        /// 次の2つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// ・配列の要素数を得るメソッド
+        /// ・文字列のポインタの配列と、各文字列のバイト数を int[] で得るメソッド
+        /// </summary>
+        internal static string[] GetNativeStringArrayByPtr(
+            IntPtr handle,
+            GetterDelegate<int> arrayLengthGetter,
+            StrPtrLengthArrayDelegate strPtrAndLengthGetter)
+        {
+            int cnt = GetNativeValue(handle, arrayLengthGetter);
+            int[] strLengths = new int[cnt];
+            var strHandles = new IntPtr[cnt];
+            var result = strPtrAndLengthGetter(handle, strHandles, strLengths);
+            CheckDllError(result);
+            string[] ret = ReadNativeStrPtrArray(strHandles, strLengths);
+            return ret;
+        }
+
+        /// <summary>
+        /// DLL内の文字列の配列のコピーを受け取ります。
+        /// 次の3つの <see cref="NativeMethods"/> を引数で受け取り利用します。
+        /// ・配列の要素数を取得するメソッド
+        /// ・各文字列のバイト数を配列で取得するメソッド
+        /// ・文字列の配列のコピーを受け取るメソッド
+        /// </summary>
+        internal static string[] GetNativeStringArrayByValue(
+            IntPtr handle,
+            GetterDelegate<int> arrayLengthGetter,
+            IntArrayGetDelegate strLengthsGetter,
+            StrValueArrayGetDelegate strArrayGetter)
+        {
+            int cnt = GetNativeValue(handle, arrayLengthGetter);
+            int[] strSizes = new int[cnt];
+            var result = strLengthsGetter(handle, strSizes);
+            CheckDllError(result);
+            var strPtrArrayPtr = AllocPtrArray(cnt, strSizes);
+            result = strArrayGetter(handle, strPtrArrayPtr);
+            CheckDllError(result);
+            var ret = PtrToStringArray(strPtrArrayPtr, cnt, strSizes);
+            FreePtrArray(strPtrArrayPtr, cnt);
+            return ret;
+        }
         
         // 下の3つのメソッドは、 DLL側で一時的に生成した「文字列の配列」の完全なコピーが欲しいという状況で利用できます。
-        // 今のところ、代わりに DLL側で保持している文字列への「ポインタの配列」で済んでいるので利用していませんが、
-        // 今後は完全なコピーが欲しい状況もあるかもしれないので残しておきます。
 
         /// <summary>
         /// ポインタの配列を作ります。
@@ -102,29 +147,20 @@ namespace LibPLATEAU.NET.Util
                 throw new Exception($"Error in Lib Plateau DLL. APIResult = {result}");
             }
         }
+        
 
         /// <summary>
-        /// DLLから文字列のポインタを受け取り、文字列を読んで返します。
-        /// DLLの文字列を読み取る手順として
-        /// 1. 文字列の長さを調べるネイティブ関数を実行
-        /// 2. 文字列のポインタを取得するネイティブ関数を実行
-        /// 3. ポインタから長さ分を読む
-        /// の3つをまとめたメソッドになります。
-        /// したがって、上記 1 と 2 で利用するネイティブ関数を引数で指定する必要があります。
+        /// DLLから文字列のポインタと文字列のバイト数を受け取り、
+        /// それをもとに文字列を読んで返します。
         /// </summary>
-        /// <param name="handle"> <see cref="NativeMethods"/> のメソッドに渡すハンドルです。 </param>
-        /// <param name="strLengthGetter"> 文字列のバイト数を取得するための関数を指定します。 </param>
-        /// <param name="strPtrGetter"> 文字列のポインタを取得するための関数を指定します。 </param>
-        /// <returns></returns>
+        /// <param name="handle"> 関数に渡すハンドルです。 </param>
+        /// <param name="strPtrAndLengthGetter"> 文字列のポインタとバイト数を受け取るための関数を指定します。 </param>
         internal static string GetNativeString(
             IntPtr handle,
-            IntGetDelegate strLengthGetter,
-            StrPtrGetDelegate strPtrGetter
+            StrPtrLengthDelegate strPtrAndLengthGetter
         )
         {
-            APIResult result = strLengthGetter(handle, out int strLength);
-            CheckDllError(result);
-            result = strPtrGetter(handle, out IntPtr strPtr);
+            APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
             return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
         }
@@ -193,5 +229,28 @@ namespace LibPLATEAU.NET.Util
             cache[index] = item;
             return item;
         }
+        /// <summary>
+        /// 文字列のポインタの配列から各ポインタの文字を読み、
+        /// string[]で返します。
+        /// </summary>
+        public static string[] ReadNativeStrPtrArray(IntPtr[] strPointers, int[] strSizes)
+        {
+            if (strPointers.Length != strSizes.Length)
+            {
+                throw new ArgumentException(
+                    $"Array length of arguments should be same. {nameof(strPointers)}.Length = {strPointers.Length}, {nameof(strSizes)}.Length = {strSizes.Length}");
+            }
+
+            int cnt = strPointers.Length;
+            var ret = new string[cnt];
+            for (int i = 0; i < cnt; i++)
+            {
+                // -1 は null終端文字の分です。
+                ret[i] = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+            }
+
+            return ret;
+        }
+
     }
 }

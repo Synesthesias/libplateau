@@ -1,6 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
+
+// 文字列のサイズをDLLでやりとりする時の型を決めます。
+using DllStrSizeT = System.Int32;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -24,20 +26,39 @@ namespace LibPLATEAU.NET.CityGML
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PlateauVector2f
+    {
+        public float X;
+        public float Y;
+
+        public PlateauVector2f(float x, float y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
+
+        public override string ToString()
+        {
+            return $"({this.X}, {this.Y})";
+        }
+    }
+
     /// <summary>
     /// GMLファイルのパース時の設定です。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CitygmlParserParams
     {
-        public int Optimize;
+        [MarshalAs(UnmanagedType.U1)]
+        public bool Optimize;
         /// <summary>
         /// <see cref="Tessellate"/> を false に設定すると、 <see cref="Polygon"/> が頂点を保持する代わりに <see cref="LinearRing"/> を保持することがあります。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)]
         public bool Tessellate;
 
-        public CitygmlParserParams(int optimize = 1, bool tessellate = true)
+        public CitygmlParserParams(bool optimize = true, bool tessellate = true)
         {
             this.Optimize = optimize;
             this.Tessellate = tessellate;
@@ -110,7 +131,16 @@ namespace LibPLATEAU.NET.CityGML
 
         COT_All = 0xFFFFFFFFFFFFFFFFul
     };
-    
+
+    public enum TextureWrapMode
+    {
+        WM_NONE,
+        WM_WRAP,        // 繰り返し
+        WM_MIRROR,      // ミラーの繰り返し
+        WM_CLAMP,       // the texture is clamped to its edges
+        WM_BORDER       // the resulting color is specified by the borderColor element (RGBA)
+    }
+
     public enum GeometryType : ulong
     {
         GT_Unknown          = 1ul << 0,
@@ -146,10 +176,11 @@ namespace LibPLATEAU.NET.CityGML
     {
         private const string DllName = "plateau_c";
 
-        [DllImport(DllName)]
-        internal static extern IntPtr plateau_load_citygml(
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
-            [In] CitygmlParserParams parserParams);
+            [In] CitygmlParserParams parserParams,
+            out IntPtr cityModelHandle);
 
         [DllImport(DllName)]
         internal static extern IntPtr plateau_create_obj_writer();
@@ -157,7 +188,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);
 
-        [DllImport(DllName)]
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern void plateau_obj_writer_write(
             [In] IntPtr objWriter,
             [In] string objPath,
@@ -203,14 +234,15 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr cityModel);
 
         [DllImport(DllName)]
-        internal static extern void plateau_city_model_get_root_city_objects(
+        internal static extern APIResult plateau_city_model_get_root_city_objects(
             [In] IntPtr cityModel,
             [In, Out] IntPtr[] cityObjects,
             int count);
 
         [DllImport(DllName)]
-        internal static extern int plateau_city_model_get_root_city_object_count(
-            [In] IntPtr cityModel);
+        internal static extern APIResult plateau_city_model_get_root_city_object_count(
+            [In] IntPtr cityModel,
+            out int outCount);
 
 
         // ***************
@@ -261,12 +293,13 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_id(
             [In] IntPtr objHandle,
-            out IntPtr outStrPtr);
+            out IntPtr outStrPtr,
+            out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_id_str_length(
             [In] IntPtr objHandle,
-            out int outLength);
+            out DllStrSizeT outLength);
         
         
         [DllImport(DllName)]
@@ -296,21 +329,18 @@ namespace LibPLATEAU.NET.CityGML
         // ***************
         //  attributesmap_c.cpp
         // ***************
+        
         [DllImport(DllName)]
-        internal static extern APIResult plateau_attributes_map_get_key_count(
+        internal static extern APIResult plateau_attributes_map_get_keys_count(
             [In] IntPtr attributesMap,
             out int count);
 
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_attributes_map_get_key_sizes(
-            [In] IntPtr attributesMap,
-            [Out] int[] outSizeIntArray);
 
-        
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_keys(
             [In] IntPtr attributesMap,
-            [In, Out] IntPtr[] keyHandles);
+            [In, Out] IntPtr[] keyHandles,
+            [Out] int[] outKeySizes);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_attribute_value(
@@ -332,11 +362,7 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_string(
             [In] IntPtr attributeValue,
-            StringBuilder outValue);
-
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_attribute_value_get_str_length(
-            [In] IntPtr attributeValue,
+            out IntPtr strPtr,
             out int strLength);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
@@ -356,53 +382,33 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_address_get_country(
             [In] IntPtr addressHandle,
-            out IntPtr outCountryNamePtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_country_str_length(
-            [In] IntPtr addressHandle,
+            out IntPtr outCountryNamePtr,
             out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_locality(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_locality_str_length(
-            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr,
             out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_postal_code(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_postal_code_str_length(
-            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr,
             out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_name(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_thoroughfare_name_str_length(
-            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr,
             out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_address_get_thoroughfare_number(
             [In] IntPtr addressHandle,
-            out IntPtr outStrPtr);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_address_get_thoroughfare_number_str_length(
-            [In] IntPtr addressHandle,
+            out IntPtr outStrPtr,
             out int strLength);
-        
+
         // ***************
         //  geometry_c.cpp
         // ***************
@@ -442,12 +448,13 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_srs_name(
             [In] IntPtr geometryHandle,
-            out IntPtr outNameStrPtr);
+            out IntPtr outNameStrPtr,
+            out int outStrLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_srs_name_str_length(
             [In] IntPtr geometryHandle,
-            out int outLength);
+            out DllStrSizeT outLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_geometry_get_line_string_count(
@@ -508,5 +515,170 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             out IntPtr outRingHandle,
             int index);
+        
+        
+        // ***************
+        //  appearancetarget_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_count(
+            [In] IntPtr handle,
+            out int outCount,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names(
+            [In] IntPtr handle,
+            [In, Out] IntPtr outThemeStrArrayHandle,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_str_sizes(
+            [In] IntPtr handle,
+            [Out] int[] outSizeArray,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_count(
+            [In] IntPtr handle,
+            out int outCount,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names(
+            [In] IntPtr handle,
+            [In, Out] IntPtr outThemeStrArrayHandle,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_str_sizes(
+            [In] IntPtr handle,
+            [Out] int[] outSizeArray,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_theme_name(
+            [In] IntPtr handle,
+            [Out] out IntPtr outTextureTargetHandle,
+            [In] string theme,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_appearance_target_get_material_target_definition_by_theme_name(
+            [In] IntPtr handle,
+            [Out] out IntPtr outMaterialTargetHandle,
+            [In] string themeName,
+            [MarshalAs(UnmanagedType.U1)] bool front);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definitions_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_index(
+            [In] IntPtr handle,
+            out IntPtr outTexTargetDefHandle,
+            int index);
+
+
+        // ***************
+        //  texturetargetdefinition_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates_count(
+            [In] IntPtr handle,
+            out int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates(
+            [In] IntPtr handle,
+            out IntPtr outTexCoords,
+            int index);
+        
+        // ***************
+        //  texturecoordinates_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_get_coordinate(
+            [In] IntPtr handle,
+            [Out] out PlateauVector2f outCoord,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_get_target_linear_ring_id(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_coordinates_is_ring_target(
+            [In] IntPtr handle,
+            [MarshalAs(UnmanagedType.U1)] out bool outIsTarget,
+            [In] IntPtr ringHandle);
+        
+        // ***************
+        //  appearancetargetdefinition_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_definition_tex_get_target_id(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_target_definition_tex_get_appearance(
+            [In] IntPtr handle,
+            out IntPtr outTextureHandle);
+        
+        // ***************
+        //  texture_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_get_url(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_texture_get_wrap_mode(
+            [In] IntPtr handle,
+            out TextureWrapMode outWrapMode);
+        
+        // ***************
+        //  appearance_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_type(
+            [In] IntPtr handle,
+            out IntPtr strPtr,
+            out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_is_front(
+            [In] IntPtr handle,
+            [MarshalAs(UnmanagedType.U1)] out bool outIsFront);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_themes_count(
+            [In] IntPtr handle,
+            out int count);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_appearance_get_themes(
+            [In] IntPtr handle,
+            [In, Out] IntPtr[] outStrPointers,
+            [Out] int[] outStrSizes);
     }
 }

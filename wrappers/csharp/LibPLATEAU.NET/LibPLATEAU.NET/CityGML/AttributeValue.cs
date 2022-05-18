@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using LibPLATEAU.NET.Util;
 
 
@@ -35,18 +34,10 @@ namespace LibPLATEAU.NET.CityGML
         /// <see cref="Type"/> が String, Double, Integer, Data, Uri, Measure の場合に有効です。
         /// <see cref="Type"/> が <see cref="AttributeType.AttributeSet"/> の場合は意味を成しません。
         /// </summary>
-        public string AsString
-        {
-            get
-            {
-                int valueStrSize = DLLUtil.GetNativeValue<int>(this.handle,
-                    NativeMethods.plateau_attribute_value_get_str_length);
-                StringBuilder sb = new(valueStrSize);
-                NativeMethods.plateau_attribute_value_get_string(
-                    this.handle, sb);
-                return sb.ToString();
-            }
-        }
+        public string AsString =>
+            DLLUtil.GetNativeString(this.handle,
+                NativeMethods.plateau_attribute_value_get_string);
+
 
         /// <summary> 属性値を double にパースして返します。 </summary>
         public double AsDouble => Double.Parse(AsString);

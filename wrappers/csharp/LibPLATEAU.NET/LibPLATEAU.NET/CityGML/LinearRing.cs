@@ -1,5 +1,4 @@
-﻿using System;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -14,7 +13,13 @@ namespace LibPLATEAU.NET.CityGML
         {
         }
 
-        /// <summary> 頂点数を取得します。 </summary>
+        /// <summary>
+        /// 頂点数を取得します。
+        /// 注意:
+        /// GMLファイルのパース時の設定が tessellate = false のときに限り
+        /// 意味のある値を返します。
+        /// tessellate = true でパースした場合、この値は 0 になります。
+        /// </summary>
         public int VertexCount
         {
             get

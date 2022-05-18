@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Collections;
 using System.Text;
 using LibPLATEAU.NET.Util;
 
@@ -33,7 +29,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 int count = DLLUtil.GetNativeValue<int>(this.handle,
-                    NativeMethods.plateau_attributes_map_get_key_count);
+                    NativeMethods.plateau_attributes_map_get_keys_count);
                 return count;
             }
         }
@@ -47,18 +43,12 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 if (this.cachedKeys != null) return this.cachedKeys;
-                int[] keySizes = GetKeySizes();
-                int cnt = Count;
-
-                var keyHandles = new IntPtr[cnt];
-                this.cachedKeys = new string[cnt];
-
-                NativeMethods.plateau_attributes_map_get_keys(this.handle, keyHandles);
-                for (int i = 0; i < cnt; i++)
-                {
-                    this.cachedKeys[i] = Marshal.PtrToStringAnsi(keyHandles[i], keySizes[i] - 1);
-                }
-
+                
+                this.cachedKeys = DLLUtil.GetNativeStringArrayByPtr(
+                    this.handle,
+                    NativeMethods.plateau_attributes_map_get_keys_count,
+                    NativeMethods.plateau_attributes_map_get_keys);
+                
                 return this.cachedKeys;
             }
         }
@@ -126,17 +116,6 @@ namespace LibPLATEAU.NET.CityGML
             return false;
         }
 
-        /// <summary>
-        /// 属性の各キーの文字列としてのバイト数を配列で返します。
-        /// 例外が起きたときは各要素が -1 の配列を返します。
-        /// </summary>
-        private int[] GetKeySizes()
-        {
-            int[] keySizes = new int[Count];
-            NativeMethods.plateau_attributes_map_get_key_sizes(this.handle, keySizes);
-            return keySizes;
-        }
-        
         public IEnumerator<AttrPair> GetEnumerator()
         {
             return new AttributesMapEnumerator(this);

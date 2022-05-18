@@ -1,5 +1,4 @@
-﻿using System;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -37,7 +36,6 @@ namespace LibPLATEAU.NET.CityGML
                 
                 this.id = DLLUtil.GetNativeString(
                     Handle,
-                    NativeMethods.plateau_object_get_id_str_length,
                     NativeMethods.plateau_object_get_id);
                 return this.id;
             }

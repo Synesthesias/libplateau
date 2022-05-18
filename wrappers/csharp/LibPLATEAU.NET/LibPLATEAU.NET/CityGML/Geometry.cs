@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using LibPLATEAU.NET.Util;
+﻿using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -143,14 +141,14 @@ namespace LibPLATEAU.NET.CityGML
 
         /// <summary>
         /// SRSName を取得します。
-        /// TODO テスト未実装　GeometryでSRSNameが出てくる例が見当たらないため
+        /// SRSNameは典型的には次のようなURL形式の文字列になるはずです。
+        /// 例: "http://www.opengis.net/def/crs/EPSG/0/6697"
         /// </summary>
         public string SRSName
         {
             get
             {
                 string srsName = DLLUtil.GetNativeString(Handle,
-                    NativeMethods.plateau_geometry_get_srs_name_str_length,
                     NativeMethods.plateau_geometry_get_srs_name);
                 return srsName;
             }

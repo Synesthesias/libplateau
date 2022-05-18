@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -28,9 +29,11 @@ namespace LibPLATEAU.NET.CityGML
                     return Array.AsReadOnly(this.rootCityObjects);
                 }
 
-                var count = NativeMethods.plateau_city_model_get_root_city_object_count(this.Handle);
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_city_model_get_root_city_object_count);
                 var cityObjectHandles = new IntPtr[count];
-                NativeMethods.plateau_city_model_get_root_city_objects(this.Handle, cityObjectHandles, count);
+                APIResult result = NativeMethods.plateau_city_model_get_root_city_objects(this.Handle, cityObjectHandles, count);
+                DLLUtil.CheckDllError(result);
                 this.rootCityObjects = new CityObject[count];
                 for (var i = 0; i < count; ++i)
                 {
