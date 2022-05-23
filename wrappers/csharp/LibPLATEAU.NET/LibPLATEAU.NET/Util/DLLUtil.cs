@@ -247,7 +247,13 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                ret[i] = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+                string str = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+                if (str == null)
+                {
+                    str = "";
+                }
+
+                ret[i] = str;
             }
 
             return ret;

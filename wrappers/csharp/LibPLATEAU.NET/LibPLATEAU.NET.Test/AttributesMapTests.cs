@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -119,6 +120,27 @@ namespace LibPLATEAU.NET.Test
         public void Throws_KeyNotFoundException_When_Key_Not_Found()
         {
             var _ = this.attrMap["DummyNotFound"];
+        }
+
+        [TestMethod]
+        public void Do_CachedKeys_Working()
+        {
+            // 1回目
+            foreach (var attr in this.attrMap)
+            {
+                if (attr.Key == null)
+                {
+                    Assert.IsTrue(false);
+                }
+            }
+            // 2回目
+            foreach (var attr in this.attrMap)
+            {
+                if (attr.Key == null)
+                {
+                    Assert.IsTrue(false);
+                }
+            }
         }
 
     }
