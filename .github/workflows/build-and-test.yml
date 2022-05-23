@@ -40,14 +40,6 @@ jobs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-      # Windowsのロケール設定を日本語にします。
-      # TODO そうでないと文字化けします。本当は他のロケールでも動作させたいです。
-      # 文字化けが解決したらこのコマンドは不要です。
-    - name: Set Locale for Windows
-      if: runner.os == 'Windows'
-      run: Set-WinSystemLocale ja-JP
-
-
 
     - name: Configure CMake
       run: >
@@ -68,7 +60,7 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 3.1.x
 
     
     # TODO Platform="Any CPU" としているのはあくまで仮です。
