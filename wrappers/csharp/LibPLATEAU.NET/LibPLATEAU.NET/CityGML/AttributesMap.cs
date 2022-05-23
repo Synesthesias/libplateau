@@ -78,7 +78,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 APIResult result = NativeMethods.plateau_attributes_map_get_attribute_value(
-                    this.handle, key, out IntPtr valueHandle);
+                    this.handle, DLLUtil.StrToUtf8Bytes(key), out IntPtr valueHandle);
                 // キーが存在しないエラー
                 if (result == APIResult.ErrorValueNotFound)
                 {
@@ -98,7 +98,7 @@ namespace LibPLATEAU.NET.CityGML
         public bool ContainsKey(string key)
         {
             APIResult result =
-                NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
+                NativeMethods.plateau_attributes_map_do_contains_key(this.handle, DLLUtil.StrToUtf8Bytes(key), out bool doContainsKey);
             DLLUtil.CheckDllError(result);
             return doContainsKey;
         }

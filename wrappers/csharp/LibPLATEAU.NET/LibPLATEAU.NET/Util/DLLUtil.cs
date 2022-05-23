@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util
@@ -124,7 +126,8 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < count; i++)
             {
                 var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
-                ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i] - 1); // -1 は null終端文字を除くためです。
+                // ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i] - 1); // -1 は null終端文字を除くためです。
+                ret[i] = ReadUtf8Str(stringPtr, sizes[i] - 1);
                 // Console.WriteLine(BitConverter.ToString(PtrToBytes(stringPtr, sizes[i])));
             }
             return ret;
@@ -163,7 +166,8 @@ namespace LibPLATEAU.NET.Util
         {
             APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
-            return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
+            // return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
+            return ReadUtf8Str(strPtr, strLength - 1);
         }
 
         /// <summary>
@@ -247,7 +251,8 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                string str = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+                // string str = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1);
                 if (str == null)
                 {
                     str = "";
@@ -257,6 +262,27 @@ namespace LibPLATEAU.NET.Util
             }
 
             return ret;
+        }
+
+        public static string ReadUtf8Str(IntPtr strPtr, int strByteSize)
+        {
+            var data = new List<byte>(strByteSize);
+            for (int i = 0; i < strByteSize; i++)
+            {
+                byte b = Marshal.ReadByte(strPtr, i);
+                if (b == 0)
+                {
+                    break;
+                }
+                data.Add(b);
+            }
+
+            return Encoding.UTF8.GetString(data.ToArray());
+        }
+
+        public static byte[] StrToUtf8Bytes(string str)
+        {
+            return Encoding.UTF8.GetBytes(str);
         }
 
     }
