@@ -87,6 +87,7 @@ jobs:
     - name: Zip DLL(so, dylib) for Ubuntu and MacOS
       if: runner.os != 'Windows'
       run: |
+        mkdir /home/runner/work/output
         find . -name *.so -or -name *.dylib | tr  '\n' ' ' | xargs zip /home/runner/work/output/libplateau-${{matrix.os}}-dll.zip
 
     - name: Upload DLL(so, dylib) for Ubuntu and MacOS
