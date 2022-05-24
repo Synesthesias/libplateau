@@ -69,7 +69,7 @@ jobs:
       run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
     - name: Run Test of C# Wrapper
-      run: dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      run: 'dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET'
 
     - name: Copy DLL for Windows
       if: runner.os == 'Windows'
