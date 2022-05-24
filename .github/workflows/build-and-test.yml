@@ -90,10 +90,11 @@ jobs:
       run: |
         mkdir $HOME/output/
         find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $HOME/output -v
+        echo "HOME=$(echo $HOME) >> $GITHUB_ENV
 
     - name: Upload DLL(so, dylib) for Ubuntu and MacOS
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v2
       with:
         name: libplateau-${{matrix.os}}-dll
-        path: ${{HOME}}/output/
+        path: ${{env.HOME}}/output/
