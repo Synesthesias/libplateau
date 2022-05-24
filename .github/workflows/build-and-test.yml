@@ -71,3 +71,14 @@ jobs:
     - name: Run Test of C# Wrapper
       run: dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
 
+    - name: Zip DLL for Windows
+      if: runner.os == 'Windows'
+      run: |
+        Compress-Archive -Path ${{github.workspace}}\out\build\x64-Release\bin\*.dll -DestinationPath D:\a\output\libplateauWindowsDLL.zip
+
+    - name: Upload DLL for Windows
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: libplateauWindowsDLL
+        path: D:\a\output\libplateauWindowsDLL.zip
