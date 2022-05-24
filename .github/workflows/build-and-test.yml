@@ -89,7 +89,7 @@ jobs:
       if: runner.os != 'Windows'
       run: |
         mkdir $HOME/output/
-        find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $HOME/output -v
+        find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
         echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
 
     - name: Upload DLL(so, dylib) for Ubuntu and MacOS
