@@ -22,6 +22,8 @@ bin
 *.DotSettings.user
 
 # Test data
-/data/*
-!53392642*
+# テスト用データは自動テストで利用するので今のところはgitの管理下に置きますが、
+# 今後データが肥大化したらgitignoreを考える必要があるかもしれません。
+#/data/*
+#!53392642*
 !README.md
