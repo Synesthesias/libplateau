@@ -88,7 +88,7 @@ jobs:
     - name: Copy DLL(so, dylib) for Ubuntu and MacOS
       if: runner.os != 'Windows'
       run: |
-        mkdir $HOME/output
+        mkdir $HOME/output/
         find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $HOME/output
 
     - name: Upload DLL(so, dylib) for Ubuntu and MacOS
@@ -96,4 +96,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: libplateau-${{matrix.os}}-dll
-        path: $HOME/output
+        path: $HOME/output/
