@@ -75,7 +75,6 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         mkdir D:\a\output -Force
-#        Compress-Archive -Path ${{github.workspace}}\out\build\x64-Release\bin\*.dll -DestinationPath D:\a\output\libplateauWindowsDLL.zip
         Copy-Item -Filter *.dll -Path ${{github.workspace}}\out\build\x64-Release\bin -Destination D:\a\output
         Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\LibPLATEAU.NET\bin\Release\netcoreapp3.1\LibPLATEAU.NET.dll -Destination D:\a\output
 
