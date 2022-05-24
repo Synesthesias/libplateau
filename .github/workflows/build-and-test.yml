@@ -74,11 +74,24 @@ jobs:
     - name: Zip DLL for Windows
       if: runner.os == 'Windows'
       run: |
+        mkdir D:\a\output -Force
         Compress-Archive -Path ${{github.workspace}}\out\build\x64-Release\bin\*.dll -DestinationPath D:\a\output\libplateauWindowsDLL.zip
 
     - name: Upload DLL for Windows
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v2
       with:
-        name: libplateauWindowsDLL
+        name: libplateau-windows-dll
         path: D:\a\output\libplateauWindowsDLL.zip
+
+    - name: Zip DLL(so, dylib) for Ubuntu and MacOS
+      if: runner.os != 'Windows'
+      run: |
+        find . -name *.so -or -name *.dylib | tr  '\n' ' ' | xargs zip /home/runner/work/output/libplateau-${{matrix.os}}-dll.zip
+
+    - name: Upload DLL(so, dylib) for Ubuntu and MacOS
+      if: runner.os != 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: libplateau-${{matrix.os}}-dll
+        path: /home/runner/work/output/libplateau-${{matrix.os}}-dll.zip
