@@ -89,7 +89,7 @@ jobs:
       if: runner.os != 'Windows'
       run: |
         mkdir $HOME/output/
-        find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $HOME/output
+        find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp {} $HOME/output -v
 
     - name: Upload DLL(so, dylib) for Ubuntu and MacOS
       if: runner.os != 'Windows'
