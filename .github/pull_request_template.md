@@ -11,7 +11,23 @@
 - [ ] 自動ビルド・テストが通っていること
 - [ ] Squash and Mergeが選択されていること
 - [ ] (libcitygmlの変更がある場合)libcitygmlがmasterの最新版になっていること
-  - libcitygmlのPRを先にマージしてからsubmoduleをmasterに更新する。
+<!--
+ libcitygmlの変更がある場合、以下の手順でlibcitygmlのPRを先にマージしてからsubmoduleをmasterに更新する。
+1. libcitygmlのPRをmasterにマージ
+2. 以下のコマンドでsubmoduleをmasterに更新
+```
+# libcitygmlをmasterの最新版にする
+cd 3rdparty/libcitygml
+git checkout master
+git pull
+
+# submoduleを更新する
+cd ../..
+git add 3rdparty/libcitygml
+git commit -m "Update submodule"
+git push origin {ブランチ名}
+```
+-->
 
 ## 動作確認
 <!-- レビュアーが動作確認するのに必要な手順と結果を書く。 -->
