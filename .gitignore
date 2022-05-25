@@ -1,4 +1,4 @@
-CMakeLists.txt.user
+﻿CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
@@ -22,8 +22,3 @@ bin
 *.DotSettings.user
 
 # Test data
-# テスト用データは自動テストで利用するので今のところはgitの管理下に置きますが、
-# 今後データが肥大化したらgitignoreを考える必要があるかもしれません。
-#/data/*
-#!53392642*
-!README.md
