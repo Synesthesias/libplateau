@@ -56,7 +56,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
             std::cout << "建物ID : " << rbid << std::endl;
         }
         std::cout << "RootID : " << root_object->getId() << std::endl;
-        if (merge_mesh_flg_ && !rbid.empty()) {
+        if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject && !rbid.empty()) {
             ofs_ << "g " << root_object->getId() << std::endl;
         }
 
@@ -84,7 +84,7 @@ void ObjWriter::processChildCityObject(const citygml::CityObject& target_object,
     if (!cbid.empty()) {
         std::cout << "建物ID : " << cbid << std::endl;
     }
-    if (!merge_mesh_flg_ || !cbid.empty()) {
+    if (mesh_granularity_ == MeshGranularity::PerAtomicFeatureObject || (!cbid.empty() && mesh_granularity_ != MeshGranularity::PerCityModelArea) ) {
         ofs_ << "g " << target_object.getId() << std::endl;
     }
     std::cout << "ChildID : " << target_object.getId() << std::endl;
@@ -204,14 +204,6 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
     }
 }
 
-void ObjWriter::setMergeMeshFlg(bool value) {
-    merge_mesh_flg_ = value;
-}
-
-bool ObjWriter::getMergeMeshFlg() const {
-    return merge_mesh_flg_;
-}
-
 void ObjWriter::setDestAxes(AxesConversion value) {
     axes_ = value;
 }
@@ -286,4 +278,12 @@ void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned
             writeGeometry(new_target_geometry, v_offset, t_offset, recursive_flg);
         }
     }
+}
+
+void ObjWriter::setMeshGranularity(MeshGranularity value) {
+    mesh_granularity_ = value;
+}
+
+MeshGranularity ObjWriter::getMeshGranularity() const {
+    return mesh_granularity_;
 }
