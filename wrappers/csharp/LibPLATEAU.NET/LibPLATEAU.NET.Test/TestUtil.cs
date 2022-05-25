@@ -5,21 +5,24 @@ using LibPLATEAU.NET.CityGML;
 namespace LibPLATEAU.NET.Test {
     public static class TestUtil {
 
-        private static readonly Dictionary<GmlFileCase, string> GMLPathes = new()
+        private static readonly Dictionary<GmlFileCase, string> GmlPaths = new()
         {
-            { GmlFileCase.Simple, "data/53392642_bldg_6697_op2.gml" },
+            { GmlFileCase.Simple, "data/udx/bldg/53392642_bldg_6697_op2.gml" },
             // { GmlFileCase.Minatomirai , "data/53392642_bldg_6697_op2.gml"} // 今のところ未使用
         };
         
         public enum GmlFileCase{ Simple, Minatomirai }
-        
+
+        public static string GetGmlPath(GmlFileCase gmlFileCase)
+            => GmlPaths[gmlFileCase];
+
         /// <summary>
         /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>
         public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true)
         {
             var parserParams = new CitygmlParserParams(optimize, tessellate);
-            var cityModel = CityGml.Load(GMLPathes[gmlFileCase], parserParams);
+            var cityModel = CityGml.Load(GmlPaths[gmlFileCase], parserParams);
             return cityModel;
         }
 

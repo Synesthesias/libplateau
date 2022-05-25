@@ -51,7 +51,7 @@ int main()
     const citygml::ParserParams params;
     const auto logger = std::make_shared<StdLogger>();
     try {
-        city_model = citygml::load("../data/53392642_bldg_6697_op2.gml", params, logger);
+        city_model = citygml::load("../data/udx/bldg/53392642_bldg_6697_op2.gml", params, logger);
     }
     catch (std::exception e) {
         std::cout << e.what() << std::endl;
