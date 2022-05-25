@@ -1,4 +1,4 @@
-
+﻿
 # Github Actions で自動テストを行う方法を記述したものです。
 
 name: Build and Test
@@ -25,7 +25,7 @@ jobs:
         submodules: true
 
     - name: Update Submodules
-      run: git submodule update --recursive
+      run: git submodule update --init --recursive
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
