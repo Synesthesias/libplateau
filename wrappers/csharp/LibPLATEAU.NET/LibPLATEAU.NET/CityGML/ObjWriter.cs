@@ -58,26 +58,6 @@ namespace LibPLATEAU.NET.CityGML
             NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
         }
 
-        /*
-        /// <summary>
-        /// MergeMeshフラグを設定します。
-        /// </summary>
-        public void SetMergeMeshFlg(bool value)
-        {
-            NativeMethods.plateau_obj_writer_set_merge_mesh_flg(this.handle, value);
-        }
-
-        /// <summary>
-        /// 現在のMergeMeshフラグを返します。
-        /// </summary>
-        public bool GetMergeMeshFlg()
-        {
-            bool meshFlg = DLLUtil.GetNativeValue<bool>(this.handle,
-                NativeMethods.plateau_obj_writer_get_merge_mesh_flg);
-            return meshFlg;
-        }
-        */
-
         /// <summary>
         /// MeshGranularity（objの結合単位）を設定します。
         /// </summary>

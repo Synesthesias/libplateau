@@ -201,17 +201,7 @@ namespace LibPLATEAU.NET.CityGML
             [In] string objPath,
             [In] IntPtr cityModel,
             [In] string gmlPath);
-/*
-        [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_merge_mesh_flg(
-            [In] IntPtr objWriter,
-            bool value);
 
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_merge_mesh_flg(
-            [In] IntPtr objWriter,
-            out bool outMeshFlg);
-*/
         [DllImport(DllName)]
         internal static extern void plateau_obj_writer_set_mesh_granularity(
             [In] IntPtr objWriter,

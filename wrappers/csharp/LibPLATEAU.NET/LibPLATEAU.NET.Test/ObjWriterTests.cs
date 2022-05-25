@@ -21,17 +21,6 @@ namespace LibPLATEAU.NET.Test
 
             Assert.IsTrue(System.IO.File.Exists(objPath));
         }
-        /*
-        [TestMethod]
-        public void GetMergeMeshFlg_Returns_The_Same_Value_As_Set()
-        {
-            var writer = new ObjWriter();
-            writer.SetMergeMeshFlg(true);
-            Assert.AreEqual(writer.GetMergeMeshFlg(), true);
-            writer.SetMergeMeshFlg(false);
-            Assert.AreEqual(writer.GetMergeMeshFlg(), false);
-        }
-        */
 
         [TestMethod]
         public void GetMeshGranularity_Returns_The_Same_Value_As_Set()
