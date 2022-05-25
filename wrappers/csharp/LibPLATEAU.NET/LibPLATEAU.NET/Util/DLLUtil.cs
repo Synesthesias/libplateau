@@ -126,9 +126,7 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < count; i++)
             {
                 var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
-                // ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i] - 1); // -1 は null終端文字を除くためです。
                 ret[i] = ReadUtf8Str(stringPtr, sizes[i] - 1);
-                // Console.WriteLine(BitConverter.ToString(PtrToBytes(stringPtr, sizes[i])));
             }
             return ret;
         }
@@ -251,7 +249,6 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                // string str = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
                 string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1);
                 if (str == null)
                 {
