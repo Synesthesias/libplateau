@@ -24,7 +24,7 @@ jobs:
         submodules: true
 
     - name: Update Submodules
-      run: git submodule update --remote --recursive
+      run: git submodule update --init --recursive
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
