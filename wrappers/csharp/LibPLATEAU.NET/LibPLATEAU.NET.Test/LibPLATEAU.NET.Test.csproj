@@ -23,8 +23,9 @@
   <!-- コマンドは 2パターン書きます。上から Windows向け、 Linux向け(Mac含む)　です。-->
   <!-- C++でビルドしたライブラリの出力場所が両者で異なることに注意してください。-->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-$(Configuration)\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;xcopy /S /Y $(SolutionDir)..\..\..\data\gmls $(TargetDir)data\" />
-    <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="echo D | xcopy /S /Y $(SolutionDir)..\..\..\data\codelists $(TargetDir)..\..\codelists" />
+    <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="copy /Y $(SolutionDir)..\..\..\out\build\x64-$(Configuration)\bin\*.dll $(TargetDir)&#xD;&#xA;&#xD;&#xA;" />
+    <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="echo D | xcopy /S /Y $(SolutionDir)..\..\..\data\udx $(TargetDir)data\udx" />
+    <Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="echo D | xcopy /S /Y $(SolutionDir)..\..\..\data\codelists $(TargetDir)data\codelists" />
 	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="find $(SolutionDir)../../../out/build/x64-$(Configuration) -name *.so -or -name *.dylib | xargs -I {} cp {} $(TargetDir)" />
 	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="mkdir -p $(TargetDir)data/" />
 	<Exec Condition="$([MSBuild]::IsOSUnixLike())" Command="cp -R $(SolutionDir)../../../data/gmls/* $(TargetDir)data/" />
