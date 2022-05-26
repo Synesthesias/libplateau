@@ -4,6 +4,7 @@ runs:
   steps:
     - name: Update Submodules
       run: git submodule update --init --recursive
+      shell: bash
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
@@ -12,6 +13,7 @@ runs:
     - name: Install OpenGL API on Ubuntu machine
       if: runner.os == 'Linux'
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
+      shell: bash
 
       # Windowsのみ
     - name: Setup MSVC for Windows
@@ -27,12 +29,14 @@ runs:
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_CXX_FLAGS="-w"
+      shell: bash
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
 
 
 
     - name: Build by CMake
       run: cmake --build ${{github.workspace}}/out/build/x64-Release --config ${{env.BUILD_TYPE}}
+      shell: bash
 
 
     - name: Setup .NET Core SDK
@@ -45,3 +49,4 @@ runs:
     # どの値に設定すべきか要検討です。
     - name: Build C# Wrapper
       run: dotnet build -p:Configuration=Release -p:Platform="Any CPU" ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET
+      shell: bash
