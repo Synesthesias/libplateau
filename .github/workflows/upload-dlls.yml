@@ -1,0 +1,58 @@
+
+# github actions でビルドしてDLL等の成果物をアップロードする手順です。
+
+name: Upload DLLs
+
+# 手動でgithubサイトのボタンを押したときに実行します。
+on: workflow_dispatch
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+
+jobs:
+  upload-dlls:
+
+    runs-on: ${{matrix.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build
+        uses: ./.github/actions/build
+        with:
+          shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
+
+      - name: Copy DLL for Windows
+        if: runner.os == 'Windows'
+        run: |
+          mkdir D:\a\output -Force
+          Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release\bin\* -Destination D:\a\output
+          Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\LibPLATEAU.NET\bin\Release\netstandard2.0\LibPLATEAU.NET.dll -Destination D:\a\output
+
+      - name: Upload DLL for Windows
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v2
+        with:
+          name: libplateau-windows-dll
+          path: D:\a\output
+
+      - name: Copy DLL(so, dylib) for Ubuntu and MacOS
+        if: runner.os != 'Windows'
+        run: |
+          mkdir $HOME/output/
+          find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
+          echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
+
+      - name: Upload DLL(so, dylib) for Ubuntu and MacOS
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v2
+        with:
+          name: libplateau-${{matrix.os}}-dll
+          path: ${{env.HOME}}/output/
