@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
@@ -136,11 +135,11 @@ namespace LibPLATEAU.NET.CityGML
 
     public enum TextureWrapMode
     {
-        WM_NONE,
-        WM_WRAP,        // 繰り返し
-        WM_MIRROR,      // ミラーの繰り返し
-        WM_CLAMP,       // the texture is clamped to its edges
-        WM_BORDER       // the resulting color is specified by the borderColor element (RGBA)
+        WM_None,
+        WM_Wrap,        // 繰り返し
+        WM_Mirror,      // ミラーの繰り返し
+        WM_Clamp,       // the texture is clamped to its edges
+        WM_Border       // the resulting color is specified by the borderColor element (RGBA)
     }
 
     public enum GeometryType : ulong

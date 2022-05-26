@@ -10,10 +10,6 @@ namespace LibPLATEAU.NET.Test
         public void Write_Generates_Obj_File()
         {
             var objPath = "53392642_bldg_6697_op2.obj";
-            var parserParams = new CitygmlParserParams
-            {
-                Optimize = true
-            };
 
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
 

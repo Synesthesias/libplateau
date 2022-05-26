@@ -13,7 +13,7 @@ namespace LibPLATEAU.NET.CityGML
             if (result == APIResult.ErrorLoadingCityGml)
             {
                 throw new FileLoadException(
-                    $"Loading gml failed.\nPlease check codelist xml files are located in (gmlFolder)/../../codelistsgml\nAND gml file is located at {gmlPath}\nand ");
+                    $"Loading gml failed.\nPlease check codelist xml files are located in (gmlFolder)/../../codelists\nAND gml file is located at {gmlPath}\nand ");
             }
             DLLUtil.CheckDllError(result);
             return new CityModel(cityModelHandle);

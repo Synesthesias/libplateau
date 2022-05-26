@@ -39,7 +39,7 @@ namespace LibPLATEAU.NET.Test
         {
             TextureWrapMode wrapMode = this.texture.WrapMode;
             Console.WriteLine(wrapMode);
-            Assert.AreEqual(TextureWrapMode.WM_NONE, wrapMode);
+            Assert.AreEqual(TextureWrapMode.WM_None, wrapMode);
         }
     }
 }

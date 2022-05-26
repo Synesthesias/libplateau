@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -69,8 +68,9 @@ namespace LibPLATEAU.NET.Test
             const string key = "建物ID";
             const string valueInGmlFile = "13111-bldg-98";
             bool result = this.attrMap.TryGetValue(key, out AttributeValue value);
-            string actualStr = value.AsString;
             Assert.AreEqual(true, result);
+            Assert.IsNotNull(value);
+            string actualStr = value.AsString;
             Assert.AreEqual(valueInGmlFile, actualStr);
         }
         
