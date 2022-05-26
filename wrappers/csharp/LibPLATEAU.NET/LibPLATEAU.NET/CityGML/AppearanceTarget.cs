@@ -1,4 +1,6 @@
 ﻿
+using System;
+using System.Collections.Generic;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
@@ -12,7 +14,7 @@ namespace LibPLATEAU.NET.CityGML
         private readonly Dictionary<IntPtr, TextureTargetDefinition> cachedTexTargetDefs;
         internal AppearanceTarget(IntPtr handle) : base(handle)
         {
-            this.cachedTexTargetDefs = new();
+            this.cachedTexTargetDefs = new Dictionary<IntPtr, TextureTargetDefinition>();
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace LibPLATEAU.NET.CityGML
         public TextureTargetDefinition GetTextureTargetDefinition(string themeName, bool front)
         {
             var result = NativeMethods.plateau_appearance_target_get_texture_target_definition_by_theme_name(
-                Handle, out IntPtr ptr, themeName, front);
+                Handle, out IntPtr ptr, DLLUtil.StrToUtf8Bytes(themeName), front);
             if (result == APIResult.ErrorValueNotFound)
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");
@@ -153,7 +155,7 @@ namespace LibPLATEAU.NET.CityGML
         public MaterialTargetDefinition GetMaterialTargetDefinitionByThemeName(string themeName, bool front)
         {
             var result = NativeMethods.plateau_appearance_target_get_material_target_definition_by_theme_name(
-                Handle, out IntPtr matTargetHandle, themeName, front);
+                Handle, out IntPtr matTargetHandle, DLLUtil.StrToUtf8Bytes(themeName), front);
             if (result == APIResult.ErrorValueNotFound)
             {
                 throw new KeyNotFoundException($"themeName: {themeName} is not found.");

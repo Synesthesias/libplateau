@@ -28,7 +28,7 @@ namespace LibPLATEAU.NET.Test
             double[] getVal = this.featureObject.Envelope;
 
             // 参考用に envelope の中身を出力します。
-            StringBuilder sb = new();
+            StringBuilder sb = new StringBuilder();
             foreach (double d in getVal)
             {
                 sb.Append($"{d} ,  ");

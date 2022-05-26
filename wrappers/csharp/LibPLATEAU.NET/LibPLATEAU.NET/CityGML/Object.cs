@@ -1,4 +1,5 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -9,7 +10,7 @@ namespace LibPLATEAU.NET.CityGML
     public class Object
     {
         private readonly IntPtr handle;
-        private AttributesMap? attributesMap; // get されるまでは null なので null許容型とします。
+        private AttributesMap attributesMap; // get されるまでは null なので null許容型とします。
         private string id = "";
 
         internal Object(IntPtr handle)

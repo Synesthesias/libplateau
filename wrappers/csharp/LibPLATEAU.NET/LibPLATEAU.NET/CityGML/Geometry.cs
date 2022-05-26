@@ -1,4 +1,6 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System;
+using System.Collections.Generic;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -9,8 +11,8 @@ namespace LibPLATEAU.NET.CityGML
     /// </summary>
     public class Geometry : AppearanceTarget
     {
-        private Geometry?[]? cachedChildGeometries; // キャッシュの初期状態は null とするので null許容型にします。
-        private Polygon?[]? cachedPolygons;
+        private Geometry[] cachedChildGeometries; // キャッシュの初期状態は null とするので null許容型にします。
+        private Polygon[] cachedPolygons;
         public Geometry(IntPtr handle) : base(handle)
         {
         }

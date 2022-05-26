@@ -1,4 +1,6 @@
-﻿using LibPLATEAU.NET.Util;
+﻿using System;
+using System.Collections.Generic;
+using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML
 {
@@ -14,9 +16,9 @@ namespace LibPLATEAU.NET.CityGML
     public class CityObject : FeatureObject
     {
         private CityObjectType type = 0;
-        private Address? cachedAddress;
-        private CityObject?[]? cachedChildCityObjects; // キャッシュの初期状態は null とするので null許容型にします。
-        private Geometry?[]? cachedGeometries;
+        private Address cachedAddress;
+        private CityObject[] cachedChildCityObjects; // キャッシュの初期状態は null とするので null許容型にします。
+        private Geometry[] cachedGeometries;
 
         internal CityObject(IntPtr handle) : base(handle)
         {
