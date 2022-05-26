@@ -16,7 +16,9 @@ namespace LibPLATEAU.NET.Test
         public AttributesMapTests()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var cityObject = cityModel.RootCityObjects[0];
+            var cityObject = cityModel.RootCityObjects
+                .SelectMany(co => co.CityObjectDescendantsDFS)
+                .First(co => co.ID == "BLD_ae7f1207-dd09-45bc-8881-40533f3700bb");
             this.attrMap = cityObject.AttributesMap;
         }
         
@@ -65,7 +67,7 @@ namespace LibPLATEAU.NET.Test
         public void TryGetValue_When_Found_Returns_True_And_Value_Valid()
         {
             const string key = "建物ID";
-            const string valueInGmlFile = "13111-bldg-147301";
+            const string valueInGmlFile = "13111-bldg-98";
             bool result = this.attrMap.TryGetValue(key, out AttributeValue value);
             string actualStr = value.AsString;
             Assert.AreEqual(true, result);
@@ -98,7 +100,7 @@ namespace LibPLATEAU.NET.Test
         [TestMethod]
         public void Values_Contains_GML_Value()
         {
-            const string oneOfAttrValueInGmlFile = "13111-bldg-147301";
+            const string oneOfAttrValueInGmlFile = "13111-bldg-98";
             bool doContainValue = this.attrMap.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
             Assert.AreEqual(true, doContainValue);
         }
@@ -141,6 +143,21 @@ namespace LibPLATEAU.NET.Test
                     Assert.IsTrue(false);
                 }
             }
+        }
+
+        [TestMethod]
+        public void Keys_Not_Contain_Empty()
+        {
+            int emptyCount = 0;
+            foreach (var pair in this.attrMap)
+            {
+                if (string.IsNullOrEmpty(pair.Key))
+                {
+                    emptyCount++;
+                }
+                Console.WriteLine($"'{pair.Key}', '{pair.Value.AsString}'");
+            }
+            Assert.AreEqual(0, emptyCount);
         }
 
     }
