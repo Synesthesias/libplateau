@@ -53,7 +53,7 @@ int main()
     try {
         city_model = citygml::load("../data/udx/bldg/53392642_bldg_6697_op2.gml", params, logger);
     }
-    catch (std::exception e) {
+    catch (std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
