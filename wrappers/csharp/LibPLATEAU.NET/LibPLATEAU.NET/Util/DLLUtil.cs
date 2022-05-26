@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
 using LibPLATEAU.NET.CityGML;
 
 namespace LibPLATEAU.NET.Util
@@ -123,8 +126,7 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < count; i++)
             {
                 var stringPtr = ((IntPtr*)ptrOfStringArray)[i];
-                ret[i] = Marshal.PtrToStringAnsi(stringPtr, sizes[i] - 1); // -1 は null終端文字を除くためです。
-                // Console.WriteLine(BitConverter.ToString(PtrToBytes(stringPtr, sizes[i])));
+                ret[i] = ReadUtf8Str(stringPtr, sizes[i] - 1);
             }
             return ret;
         }
@@ -162,7 +164,8 @@ namespace LibPLATEAU.NET.Util
         {
             APIResult result = strPtrAndLengthGetter(handle, out IntPtr strPtr, out int strLength);
             CheckDllError(result);
-            return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
+            // return Marshal.PtrToStringAnsi(strPtr, strLength - 1); // -1 は null終端文字の分です。
+            return ReadUtf8Str(strPtr, strLength - 1);
         }
 
         /// <summary>
@@ -206,7 +209,7 @@ namespace LibPLATEAU.NET.Util
         /// <param name="index">T型配列から値を読みたいインデックスです。</param>
         /// <param name="arrayLength">T型配列の要素数です。</param>
         /// <param name="generator">キャッシュに値がないとき、値を生成するための関数を指定します。</param>
-        public static T ArrayCache<T>(ref T?[]? cache, int index, int arrayLength, Func<T> generator)
+        public static T ArrayCache<T>(ref T[] cache, int index, int arrayLength, Func<T> generator)
         {
             if (cache == null)
             {
@@ -218,7 +221,7 @@ namespace LibPLATEAU.NET.Util
                 }
             }
 
-            T? item = cache[index];
+            T item = cache[index];
             // キャッシュがヒットしたとき
             if (item != null)
             {
@@ -246,10 +249,37 @@ namespace LibPLATEAU.NET.Util
             for (int i = 0; i < cnt; i++)
             {
                 // -1 は null終端文字の分です。
-                ret[i] = Marshal.PtrToStringAnsi(strPointers[i], strSizes[i] - 1);
+                string str = ReadUtf8Str(strPointers[i], strSizes[i] - 1);
+                if (str == null)
+                {
+                    str = "";
+                }
+
+                ret[i] = str;
             }
 
             return ret;
+        }
+
+        public static string ReadUtf8Str(IntPtr strPtr, int strByteSize)
+        {
+            var data = new List<byte>(strByteSize);
+            for (int i = 0; i < strByteSize; i++)
+            {
+                byte b = Marshal.ReadByte(strPtr, i);
+                if (b == 0)
+                {
+                    break;
+                }
+                data.Add(b);
+            }
+
+            return Encoding.UTF8.GetString(data.ToArray());
+        }
+
+        public static byte[] StrToUtf8Bytes(string str)
+        {
+            return Encoding.UTF8.GetBytes(str);
         }
 
     }

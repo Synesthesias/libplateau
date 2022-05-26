@@ -77,6 +77,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
         }
     }
     ofs_.close();
+    ofs_mat_.close();
 }
 
 void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {

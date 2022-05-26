@@ -1,12 +1,16 @@
-﻿namespace LibPLATEAU.NET.CityGML;
+﻿using System;
 
-/// <summary>
-/// 未実装です。
-/// マテリアルを含むGMLの例が見当たらないため
-/// </summary>
-public class MaterialTargetDefinition : AppearanceTargetDefinition<Material>
+namespace LibPLATEAU.NET.CityGML
 {
-    internal MaterialTargetDefinition(IntPtr handle) : base(handle)
+
+    /// <summary>
+    /// 未実装です。
+    /// マテリアルを含むGMLの例が見当たらないため
+    /// </summary>
+    public class MaterialTargetDefinition : AppearanceTargetDefinition<Material>
     {
+        internal MaterialTargetDefinition(IntPtr handle) : base(handle)
+        {
+        }
     }
 }

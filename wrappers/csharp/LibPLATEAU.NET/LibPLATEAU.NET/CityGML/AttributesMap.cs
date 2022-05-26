@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using LibPLATEAU.NET.Util;
 
@@ -16,7 +19,7 @@ namespace LibPLATEAU.NET.CityGML
     public class AttributesMap : IReadOnlyDictionary<string, AttributeValue>
     {
         private readonly IntPtr handle;
-        private string[]? cachedKeys; // キャッシュの初期状態は null とするので null許容型にします。
+        private string[] cachedKeys; // キャッシュの初期状態は null とするので null許容型にします。
 
         internal AttributesMap(IntPtr handle)
         {
@@ -75,7 +78,7 @@ namespace LibPLATEAU.NET.CityGML
             get
             {
                 APIResult result = NativeMethods.plateau_attributes_map_get_attribute_value(
-                    this.handle, key, out IntPtr valueHandle);
+                    this.handle, DLLUtil.StrToUtf8Bytes(key), out IntPtr valueHandle);
                 // キーが存在しないエラー
                 if (result == APIResult.ErrorValueNotFound)
                 {
@@ -95,7 +98,7 @@ namespace LibPLATEAU.NET.CityGML
         public bool ContainsKey(string key)
         {
             APIResult result =
-                NativeMethods.plateau_attributes_map_do_contains_key(this.handle, key, out bool doContainsKey);
+                NativeMethods.plateau_attributes_map_do_contains_key(this.handle, DLLUtil.StrToUtf8Bytes(key), out bool doContainsKey);
             DLLUtil.CheckDllError(result);
             return doContainsKey;
         }
@@ -112,7 +115,7 @@ namespace LibPLATEAU.NET.CityGML
                 return true;
             }
 
-            value = null!;
+            value = null;
             return false;
         }
 
@@ -171,7 +174,10 @@ namespace LibPLATEAU.NET.CityGML
             {
                 get
                 {
-                    this.map.cachedKeys ??= this.map.Keys.ToArray();
+                    if (this.map.cachedKeys == null)
+                    {
+                        this.map.cachedKeys = this.map.Keys.ToArray();
+                    }
                     string key = this.map.cachedKeys[this.index];
                     return new KeyValuePair<string, AttributeValue>(key, this.map[key]);
                 }

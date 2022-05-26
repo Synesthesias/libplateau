@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
@@ -345,13 +346,13 @@ namespace LibPLATEAU.NET.CityGML
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_attribute_value(
             [In] IntPtr attributesMap,
-            [In] string key,
+            [In] byte[] keyUtf8,
             [Out] out IntPtr attrValuePtr);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_do_contains_key(
             [In] IntPtr attributesMap,
-            [In] string key,
+            [In] byte[] keyUtf8,
             out bool doContainsKey);
 
         
@@ -561,14 +562,14 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_appearance_target_get_texture_target_definition_by_theme_name(
             [In] IntPtr handle,
             [Out] out IntPtr outTextureTargetHandle,
-            [In] string theme,
+            [In] byte[] themeUtf8,
             [MarshalAs(UnmanagedType.U1)] bool front);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_appearance_target_get_material_target_definition_by_theme_name(
             [In] IntPtr handle,
             [Out] out IntPtr outMaterialTargetHandle,
-            [In] string themeName,
+            [In] byte[] themeNameUtf8,
             [MarshalAs(UnmanagedType.U1)] bool front);
 
         [DllImport(DllName)]
