@@ -77,6 +77,7 @@ namespace LibPLATEAU.NET.CityGML
         Success,
         ErrorUnknown,
         ErrorValueNotFound,
+        ErrorLoadingCityGml
     }
 
 
