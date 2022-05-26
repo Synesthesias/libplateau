@@ -3,8 +3,11 @@
 
 name: Upload DLLs
 
-# 手動でgithubサイトのボタンを押したときに実行します。
-on: workflow_dispatch
+# 手動でgithubサイトのボタンを押したときか、タグを作ったときに実行します。
+on:
+  workflow_dispatch:
+  create:
+    tags: '*'
 
 env:
   BUILD_TYPE: RelWithDebInfo
