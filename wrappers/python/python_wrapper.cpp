@@ -1,6 +1,15 @@
 #include <pybind11/pybind11.h>
 #include <string>
+
+
+// TODO この処理はまとめたい
+#if __has_include(<filesystem>)
 #include <filesystem>
+namespace filesystem = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+  namespace filesystem = std::experimental::filesystem;
+#endif
 
 #include <citygml/citygml.h>
 #include <citygml/citygmllogger.h>

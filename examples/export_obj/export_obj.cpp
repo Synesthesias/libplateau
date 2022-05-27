@@ -1,12 +1,18 @@
 #include <string>
-#include <filesystem>
 
 #include <citygml/citygml.h>
 #include <citygml/citygmllogger.h>
 
 #include <obj_writer.h>
 
-namespace fs = std::filesystem;
+// TODO この処理はまとめたい
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace filesystem = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+#include <experimental/filesystem>
+  namespace filesystem = std::experimental::filesystem;
+#endif
 
 namespace {
     class StdLogger : public citygml::CityGMLLogger {
@@ -54,7 +60,7 @@ namespace {
 int main() {
     try {
         const auto logger = std::make_shared<StdLogger>();
-        fs::path test_data_root_path = "../data";
+        filesystem::path test_data_root_path = "../data";
         test_data_root_path.make_preferred();
         citygml::ParserParams params;
         params.optimize = true;
@@ -63,7 +69,7 @@ int main() {
         writer.setDestAxes(AxesConversion::RUF);
         bool first_gml = true;
 
-        for (const auto& entry : fs::directory_iterator(test_data_root_path)) {
+        for (const auto& entry : filesystem::directory_iterator(test_data_root_path)) {
             if (entry.path().extension() != ".gml") {
                 continue;
             }
