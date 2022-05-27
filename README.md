@@ -127,3 +127,8 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 - push時、自動でビルドおよびユニットテストが行われます。
 - git tagを付けた時、またはgithubサイトから手動で Upload DLLs を押したときにビルドが走り、 
   成果物となるDLL等を3つのOSでまとめてダウンロードできます。
+
+# ライセンス
+- libplateau本体 未定
+- xerces-c Apacheライセンス 要 著作権表示 要 改変したことの告知
+- libcitygml  GNU LESSER GENERAL PUBLIC LICENSE
