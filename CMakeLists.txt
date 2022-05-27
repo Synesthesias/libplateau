@@ -56,7 +56,7 @@ set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
 ### libcitygmlのFindXercesを通すために手動で設定
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
-set(LIBCITYGML_DYNAMIC ON CACHE BOOL "" FORCE)
+set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 

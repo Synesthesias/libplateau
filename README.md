@@ -82,6 +82,9 @@ dotnet test -c Release
 
 ## デプロイ
 ### Unity
+手動でビルドの成果物をUntiyプロジェクトにコピーしても導入できますが、  
+代わりに Github Actions の自動ビルド (Upload DLLs) でも同じものをダウンロードできます。  
+手動の場合は以下のようにします。
 1. libplateauビルド(Release)
 2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
 3. 以下のファイルをUnityプロジェクトにコピー
@@ -117,3 +120,10 @@ dotnet test -c Release
 ## 文字コード
 - gmlのパース結果はC++の内部では UTF-8 で保持しています。
   - パーサー xerces-c は本家の挙動ではAnsiに変換して保持しますが、その挙動をUTF-8に変えました。Unityから日本語文字を扱う都合上の改変です。
+
+## CI (継続的インテグレーション)
+Github Actions によるCIを導入しています。  
+Windows, Mac, Linux でのテストと成果物のダウンロードができます。
+- push時、自動でビルドおよびユニットテストが行われます。
+- git tagを付けた時、またはgithubサイトから手動で Upload DLLs を押したときにビルドが走り、 
+  成果物となるDLL等を3つのOSでまとめてダウンロードできます。
