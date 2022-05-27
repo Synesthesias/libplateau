@@ -23,6 +23,15 @@ runs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
       shell: ${{ inputs.shell_type }}
 
+      # 参考 : https://askubuntu.com/questions/1256440/how-to-get-libstdc-with-c17-filesystem-headers-on-ubuntu-18-bionic
+    - name: Install g++9 for Ubuntu 18
+      if: runner.os == 'Linux'
+      run: |
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt update
+        sudo apt install gcc-9 g++-9
+
+
       # Windowsのみ
     - name: Setup MSVC for Windows
       if: runner.os == 'Windows'
