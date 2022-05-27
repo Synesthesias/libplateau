@@ -39,11 +39,11 @@ jobs:
           Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release\bin\* -Destination D:\a\output
           Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\LibPLATEAU.NET\bin\Release\netstandard2.0\LibPLATEAU.NET.dll -Destination D:\a\output
 
-      - name: Copy lib for Windows
-        if: runner.os == 'Windows'
-        run: |
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\3rdparty\libcitygml\lib\citygml.lib -Destination D:\a\output
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\src\plateau.lib -Destination D:\a\output
+#      - name: Copy lib for Windows
+#        if: runner.os == 'Windows'
+#        run: |
+#          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\3rdparty\libcitygml\lib\citygml.lib -Destination D:\a\output
+#          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\src\plateau.lib -Destination D:\a\output
 
       - name: Upload DLL for Windows
         if: runner.os == 'Windows'
