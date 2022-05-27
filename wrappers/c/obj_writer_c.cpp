@@ -38,17 +38,17 @@ extern "C" {
         API_CATCH;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_merge_mesh_flg(ObjWriter* obj_writer, const bool value) {
+    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_mesh_granularity(ObjWriter* obj_writer, const MeshGranularity value) {
         API_TRY{
-            obj_writer->setMergeMeshFlg(value);
+            obj_writer->setMeshGranularity(value);
         }
         API_CATCH;
     }
 
-    DLL_VALUE_FUNC(plateau_obj_writer_get_merge_mesh_flg,
+    DLL_VALUE_FUNC(plateau_obj_writer_get_mesh_granularity,
                    ObjWriter,
-                   bool,
-                   handle->getMergeMeshFlg())
+                   MeshGranularity,
+                   handle->getMeshGranularity())
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_dest_axes(ObjWriter* obj_writer, AxesConversion value) {
         API_TRY{

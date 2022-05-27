@@ -10,19 +10,25 @@ enum class AxesConversion {
     RUF
 };
 
+enum class MeshGranularity {
+    PerAtomicFeatureObject, // 最小地物単位(建物パーツ)
+    PerPrimaryFeatureObject, // 主要地物単位(建築物、道路等)
+    PerCityModelArea // 都市モデル地域単位(GMLファイル内のすべてを結合)
+};
+
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
     ObjWriter() : ofs_() {
     }
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
-    void setMergeMeshFlg(bool value);
-    bool getMergeMeshFlg() const;
     void setDestAxes(AxesConversion value);
     AxesConversion getDestAxes() const;
     void setValidReferencePoint(const citygml::CityModel& city_model);
     void getReferencePoint(double xyz[]) const;
     void setReferencePoint(const double xyz[]);
+    void setMeshGranularity(MeshGranularity value);
+    MeshGranularity getMeshGranularity() const;
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
@@ -37,7 +43,7 @@ private:
     std::ofstream ofs_mat_;
     std::string gml_file_path_, obj_file_path_;
     std::vector<std::string> mat_list_;
-    bool merge_mesh_flg_ = false;
     AxesConversion axes_ = AxesConversion::WNU;
     double ref_point_[3] = {0,0,0};
+    MeshGranularity mesh_granularity_ = MeshGranularity::PerPrimaryFeatureObject;
 };

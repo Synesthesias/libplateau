@@ -72,6 +72,13 @@ namespace LibPLATEAU.NET.CityGML
         RUF
     }
 
+    public enum MeshGranularity
+    {
+        PerAtomicFeatureObject, // 最小地物単位(建物パーツ)
+        PerPrimaryFeatureObject, // 主要地物単位(建築物、道路等)
+        PerCityModelArea // 都市モデル地域単位(GMLファイル内のすべてを結合)
+    }
+
     public enum APIResult
     {
         Success,
@@ -197,14 +204,14 @@ namespace LibPLATEAU.NET.CityGML
             [In] string gmlPath);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_merge_mesh_flg(
+        internal static extern void plateau_obj_writer_set_mesh_granularity(
             [In] IntPtr objWriter,
-            bool value);
+            MeshGranularity value);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_merge_mesh_flg(
+        internal static extern APIResult plateau_obj_writer_get_mesh_granularity(
             [In] IntPtr objWriter,
-            out bool outMeshFlg);
+            out MeshGranularity meshGranularity);
 
         [DllImport(DllName)]
         internal static extern void plateau_obj_writer_set_dest_axes(
