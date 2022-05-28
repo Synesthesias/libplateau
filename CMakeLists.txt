@@ -7,6 +7,14 @@ if(POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif()
 
+# Ubuntu 18 だとデフォルトでは gcc-7 になりますが、
+# std::filesystem を使うために gcc-8 以上にする必要があります。
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
+    set(CMAKE_CXX_COMPILER "g++9")
+  endif()
+endif()
+
 # MDd or MTでコンパイル
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:DebugDLL>")
 
