@@ -1,3 +1,9 @@
+
+
+# ビルドの方針
+# 最終的に libplateau_c.dll (or .so , .dylib ) が1つだけ出力されるようにします。
+# soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになります。
+
 # github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
 
