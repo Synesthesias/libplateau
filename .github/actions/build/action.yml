@@ -35,8 +35,8 @@ runs:
     - name: Specify gcc version for Linux
       if: runner.os == 'Linux'
       run: |
-        export CC="usr/bin/gcc-9"
-        export CXX="usr/bin/g++-9"
+        export CC="/usr/bin/gcc-9"
+        export CXX="/usr/bin/g++-9"
       shell: ${{ inputs.shell_type }}
 
 

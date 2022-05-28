@@ -55,7 +55,7 @@ sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 * 以下のコマンドを実行する。
 ```
 cd (プロジェクトのルートディレクトリ)
-cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PREFIX:PATH="./out/install/x64-Release" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
+cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
 cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
 ```
 #### C#のビルド
