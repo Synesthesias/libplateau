@@ -53,7 +53,7 @@ runs:
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
 
     - name: Configure CMake for Linux
-      if: runner.os = 'Linux'
+      if: runner.os == 'Linux'
       run: >
         cmake
         -S ${{github.workspace}} 
