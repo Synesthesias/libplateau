@@ -32,15 +32,16 @@ runs:
       # Linuxでgccのバージョンを指定します。
       # Ubuntu 18 だとデフォルトでは gcc-7 になりますが、
       # std::filesystem を使うために gcc-8 以上にする必要があります。
-    - name: Specify gcc version for Linux
-      if: runner.os == 'Linux'
-      run: |
-        export CC="/usr/bin/gcc-9"
-        export CXX="/usr/bin/g++-9"
-      shell: ${{ inputs.shell_type }}
+#    - name: Specify gcc version for Linux
+#      if: runner.os == 'Linux'
+#      run: |
+#        export CC="/usr/bin/gcc-9"
+#        export CXX="/usr/bin/g++-9"
+#      shell: ${{ inputs.shell_type }}
 
 
-    - name: Configure CMake
+    - name: Configure CMake for Windows
+      if: runner.os == 'Windows'
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -50,6 +51,19 @@ runs:
         -D CMAKE_CXX_FLAGS="-w"
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
+
+    - name: Configure CMake for Non Windows
+      if: runner.os != 'Windows'
+      run: >
+        cmake
+        -S ${{github.workspace}} 
+        -B ${{github.workspace}}/out/build/x64-Release 
+        -G "Ninja" 
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
+        -D CMAKE_CXX_FLAGS="-w"
+        -D CMAKE_CXX_COMPILER="usr/bin/g++-9"
+      shell: ${{ inputs.shell_type }}
+    # Ubuntu 18 だとデフォルトでは g++-7 になりますが、std::filesystem を使う都合上 g++-9 を指定します。
 
 
 
