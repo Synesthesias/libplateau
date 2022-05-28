@@ -29,16 +29,6 @@ runs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-      # Linuxでgccのバージョンを指定します。
-      # Ubuntu 18 だとデフォルトでは gcc-7 になりますが、
-      # std::filesystem を使うために gcc-8 以上にする必要があります。
-#    - name: Specify gcc version for Linux
-#      if: runner.os == 'Linux'
-#      run: |
-#        export CC="/usr/bin/gcc-9"
-#        export CXX="/usr/bin/g++-9"
-#      shell: ${{ inputs.shell_type }}
-
 
     - name: Configure CMake for Non Linux
       if: runner.os != 'Linux'
