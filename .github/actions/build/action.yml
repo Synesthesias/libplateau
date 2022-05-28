@@ -40,8 +40,8 @@ runs:
 #      shell: ${{ inputs.shell_type }}
 
 
-    - name: Configure CMake for Windows
-      if: runner.os == 'Windows'
+    - name: Configure CMake for Non Linux
+      if: runner.os != 'Linux'
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -52,8 +52,8 @@ runs:
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
 
-    - name: Configure CMake for Non Windows
-      if: runner.os != 'Windows'
+    - name: Configure CMake for Linux
+      if: runner.os != 'Linux'
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -64,6 +64,7 @@ runs:
         -D CMAKE_CXX_COMPILER="/usr/bin/g++-9"
       shell: ${{ inputs.shell_type }}
     # Ubuntu 18 だとデフォルトでは g++-7 になりますが、std::filesystem を使う都合上 g++-9 を指定します。
+    # TODO そこ以外は上と共通なのでまとめたい
 
 
 
