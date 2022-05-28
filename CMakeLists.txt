@@ -11,7 +11,7 @@ endif()
 # std::filesystem を使うために gcc-8 以上にする必要があります。
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    set(CMAKE_CXX_COMPILER "g++9")
+    set(CMAKE_CXX_COMPILER "g++-9")
   endif()
 endif()
 
