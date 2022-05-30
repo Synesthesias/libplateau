@@ -48,8 +48,6 @@ if(WIN32) # CMake文法上の WIN32
 endif()
 
 
-set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
-
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
 # 今回は文字コードを統一したいので UTF-8 にします。
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -77,6 +75,7 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 
 # plateau
 project(plateau)
+set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
 add_subdirectory("src")
 target_link_libraries(plateau PUBLIC citygml xerces-c)
 ## Examples
