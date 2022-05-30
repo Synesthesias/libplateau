@@ -1,10 +1,16 @@
 
+# 【概要】
+# PLATEAUの街モデルに関する機能を提供するネイティブライブラリ、libplateau_c をビルドします。
+
+# 【実行方法】
+# このCMakeListsの実行にあたってcmakeコマンドにどのような引数を渡せば良いかを知るには、
+# README.md を参照するか、 .github/actions/build/action.yml の Configure CMake の箇所を参照してコマンド例とします。
 
 # 【ビルドの方針】
 # 最終的に libplateau_c.dll (または .so , .dylib ) が1つだけ出力されるようにします。
 # なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
 # ビルド時の依存関係を矢印で表すと次のようになります。
-# libplateau_c.dll --> libplateau --> (libcitygml, xerces_c)
+# libplateau_c.dll --> libplateau --> (3rdparty/libcitygml, 3rdparty/xerces_c)
 
 # 【トラブルシューティング】
 # Linux の Unity で DllNotFoundException になった場合
