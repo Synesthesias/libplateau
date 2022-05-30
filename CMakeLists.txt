@@ -66,14 +66,14 @@ add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 # dependencies
-## Xerces-C
+## Xerces-C をビルドします。
 ### libcitygmlのFindXercesを通すために全てキャッシュ化
 set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/xerces-c")
 set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
 set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
 
-## libcitygml
+## libcitygml をビルドします。
 ### TODO: GDAL Support
 set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
 ### libcitygmlのFindXercesを通すために手動で設定
@@ -83,14 +83,14 @@ set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
-# libplateau
+# libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
 
-# plateau_c (Wrappers)
+# plateau_c をビルドします。
 add_subdirectory("wrappers/c")
 
 # python
