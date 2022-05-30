@@ -1,8 +1,18 @@
 
 
-# ビルドの方針
-# 最終的に libplateau_c.dll (or .so , .dylib ) が1つだけ出力されるようにします。
-# soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになります。
+# 【ビルドの方針】
+# 最終的に libplateau_c.dll (または .so , .dylib ) が1つだけ出力されるようにします。
+# なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
+# ビルド時の依存関係を矢印で表すと次のようになります。
+# libplateau_c.dll --> libplateau --> (libcitygml, xerces_c)
+
+# 【トラブルシューティング】
+# Linux の Unity で DllNotFoundException になった場合
+# .soファイルが存在しても、 .so が依存する .so ファイルが存在しない場合に DllNotFoundException になります。
+# 次のコマンドで .so がどのようなライブラリに依存するか調べると良いです。
+# objdump -x libplateau_c.so | grep NEEDED
+# ldd ./libplateau_c.so | grep "not found”
+
 
 # github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
