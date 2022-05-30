@@ -10,7 +10,7 @@
 # 最終的に libplateau_c.dll (または .so , .dylib ) が1つだけ出力されるようにします。
 # なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
 # ビルド時の依存関係を矢印で表すと次のようになります。
-# libplateau_c.dll --> libplateau --> (3rdparty/libcitygml, 3rdparty/xerces_c)
+# plateau_c.dll --> plateau --> (3rdparty/libcitygml, 3rdparty/xerces_c)
 
 # 【トラブルシューティング】
 # Linux の Unity で DllNotFoundException になった場合
@@ -47,22 +47,14 @@ if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
-project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
-
-# Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
-# ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
-include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
-if(COMPILER_SUPPORTS_PIC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif()
 
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
 # 今回は文字コードを統一したいので UTF-8 にします。
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 
 # dependencies
 ## Xerces-C
@@ -82,21 +74,30 @@ set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
-# Library generation
+
+# plateau
+project(plateau)
 add_subdirectory("src")
-
-
-# Examples
+target_link_libraries(plateau PUBLIC citygml xerces-c)
+## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
 
-# Wrappers
+# Wrappers (plateau_c)
+project(plateau_c)
 add_subdirectory("wrappers/c")
+target_link_libraries(plateau_c PUBLIC plateau)
+## Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
+set_target_properties(plateau_c PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+
+# python
 option(BUILD_PYTHON "Build python wrapper" OFF)
 if(BUILD_PYTHON)
   add_subdirectory("wrappers/python")
 endif(BUILD_PYTHON)
+
 
 # Copy data for testing
 file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")
