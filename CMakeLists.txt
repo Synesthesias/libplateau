@@ -65,9 +65,9 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 ## Xerces-C
 ### libcitygmlのFindXercesを通すために全てキャッシュ化
 set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
-add_subdirectory("3rdparty/xerces-c")
 set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
 set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
+add_subdirectory("3rdparty/xerces-c")
 
 ## libcitygml
 ### TODO: GDAL Support
