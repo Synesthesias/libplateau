@@ -47,6 +47,13 @@ if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
+# Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
+# ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
+if(COMPILER_SUPPORTS_PIC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
 # 今回は文字コードを統一したいので UTF-8 にします。
@@ -77,7 +84,6 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 project(plateau)
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
 add_subdirectory("src")
-set_target_properties(plateau PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(plateau PUBLIC citygml xerces-c)
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
@@ -88,8 +94,6 @@ add_subdirectory("examples/export_obj")
 project(plateau_c)
 add_subdirectory("wrappers/c")
 target_link_libraries(plateau_c PUBLIC plateau)
-## Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
-set_target_properties(plateau_c PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 
 # python
