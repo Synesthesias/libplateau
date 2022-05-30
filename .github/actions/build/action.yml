@@ -24,14 +24,20 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
-      # Windowsのみ
+      # Windowsのみコンパイラを用意
     - name: Setup MSVC for Windows
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
+      # Linuxのみコンパイラを明示
+    - name: Setup Additional Cmake Options in Linux
+      if: runner.os == 'Linux'
+      run: |
+        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=\"/usr/bin/g++-9\"" >> $GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+      # Ubuntu 18 だとデフォルトでは g++-7 になりますが、std::filesystem を使う都合上 g++-9 を指定します。
 
-    - name: Configure CMake for Non Linux
-      if: runner.os != 'Linux'
+    - name: Configure CMake
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -39,23 +45,9 @@ runs:
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_CXX_FLAGS="-w"
+        ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
-
-    - name: Configure CMake for Linux
-      if: runner.os == 'Linux'
-      run: >
-        cmake
-        -S ${{github.workspace}} 
-        -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Ninja" 
-        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
-        -D CMAKE_CXX_FLAGS="-w"
-        -D CMAKE_CXX_COMPILER="/usr/bin/g++-9"
-      shell: ${{ inputs.shell_type }}
-    # Ubuntu 18 だとデフォルトでは g++-7 になりますが、std::filesystem を使う都合上 g++-9 を指定します。
-    # TODO そこ以外は上と共通なのでまとめたい
-
 
 
     - name: Build by CMake
