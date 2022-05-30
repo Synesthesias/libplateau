@@ -76,8 +76,8 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 # plateau
 project(plateau)
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
-set_target_properties(plateau PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_subdirectory("src")
+set_target_properties(plateau PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(plateau PUBLIC citygml xerces-c)
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
