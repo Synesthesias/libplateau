@@ -1,5 +1,7 @@
 enable_language(C)
 
+project("libplateau_c")
+
 add_library(plateau_c SHARED
   "obj_writer_c.cpp"
   "libplateau_c.h"
@@ -26,3 +28,8 @@ add_library(plateau_c SHARED
 
 set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
+
+target_link_libraries(plateau_c PUBLIC plateau)
+#target_include_directories(plateau_c PUBLIC
+#    "${CMAKE_SOURCE_DIR}/include"
+#    "${LIBCITYGML_INCLUDE}")

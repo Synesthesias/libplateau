@@ -1,16 +1,10 @@
 
-# 【概要】
-# PLATEAUの街モデルに関する機能を提供するネイティブライブラリ、libplateau_c をビルドします。
-
-# 【実行方法】
-# このCMakeListsの実行にあたってcmakeコマンドにどのような引数を渡せば良いかを知るには、
-# README.md を参照するか、 .github/actions/build/action.yml の Configure CMake の箇所を参照してコマンド例とします。
 
 # 【ビルドの方針】
 # 最終的に libplateau_c.dll (または .so , .dylib ) が1つだけ出力されるようにします。
 # なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
 # ビルド時の依存関係を矢印で表すと次のようになります。
-# plateau_c.dll --> plateau --> (3rdparty/libcitygml, 3rdparty/xerces_c)
+# libplateau_c.dll --> libplateau --> (libcitygml, xerces_c)
 
 # 【トラブルシューティング】
 # Linux の Unity で DllNotFoundException になった場合
@@ -47,6 +41,10 @@ if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
+project("libplateau")
+
+set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
+
 # Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
 # ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
 include(CheckCXXCompilerFlag)
@@ -60,14 +58,13 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-
 # dependencies
 ## Xerces-C
 ### libcitygmlのFindXercesを通すために全てキャッシュ化
 set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
+add_subdirectory("3rdparty/xerces-c")
 set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
 set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
-add_subdirectory("3rdparty/xerces-c")
 
 ## libcitygml
 ### TODO: GDAL Support
@@ -79,29 +76,21 @@ set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
-
-# plateau
-project(plateau)
-set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
+# Library generation
 add_subdirectory("src")
-target_link_libraries(plateau PUBLIC citygml xerces-c)
-## Examples
+
+
+# Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
 
-# Wrappers (plateau_c)
-project(plateau_c)
+# Wrappers
 add_subdirectory("wrappers/c")
-target_link_libraries(plateau_c PUBLIC plateau)
-
-
-# python
 option(BUILD_PYTHON "Build python wrapper" OFF)
 if(BUILD_PYTHON)
   add_subdirectory("wrappers/python")
 endif(BUILD_PYTHON)
-
 
 # Copy data for testing
 file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")
