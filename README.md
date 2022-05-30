@@ -87,14 +87,12 @@ dotnet test -c Release
 ### Unity
 手動でビルドの成果物をUntiyプロジェクトにコピーしても導入できますが、  
 代わりに Github Actions の自動ビルド (Upload DLLs) でも同じものをダウンロードできます。  
-手動の場合は以下のようにします。
+手動の場合は以下のようにします。ただし、1つのOS向けのdllしかできません。
 1. libplateauビルド(Release)
 2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
 3. 以下のファイルをUnityプロジェクトにコピー
    1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/netstandard2.0/LibPLATEAU.NET.dll
-   2. out/build/x64-Release/bin/citygml.dll
-   3. out/build/x64-Release/bin/plateau.dll
-   4. out/build/x64-Release/bin/plateau_c.dll
+   2. out/build/x64-Release/bin/plateau_c.dll
 
 ## ディレクトリ構成
 - 3rdparty
@@ -128,10 +126,11 @@ dotnet test -c Release
 Github Actions によるCIを導入しています。  
 Windows, Mac, Linux でのテストと成果物のダウンロードができます。
 - push時、自動でビルドおよびユニットテストが行われます。
-- git tagを付けた時、またはgithubサイトから手動で Upload DLLs を押したときにビルドが走り、 
+- git tagを付けた時、またはgithubサイトから手動で Upload DLLs を実行したときにビルドが走り、 
   成果物となるDLL等を3つのOSでまとめてダウンロードできます。
+  githubサイトから手動で実行するには、 Actions → Workflows から Upload DLLs を選択 → Run workflow からブランチを選んで実行します。
 
 # ライセンス
-- libplateau本体 未定
-- xerces-c Apacheライセンス 要 著作権表示 要 改変したことの告知
-- libcitygml  GNU LESSER GENERAL PUBLIC LICENSE
+- libplateau本体： 未定
+- xerces-c： Apacheライセンス , 要 著作権表示 , 要 改変したことの告知
+- libcitygml：  GNU LESSER GENERAL PUBLIC LICENSE
