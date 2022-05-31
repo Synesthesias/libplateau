@@ -3,9 +3,13 @@
 #include "libplateau_c.h"
 #include "city_model_c.h"
 using namespace libplateau;
+using namespace citygml;
 
 extern "C" {
     // CityModelHandleの生成はplateau_load_citygmlから行われます。
+
+    // TODO CityModel::getCityObjectsOfType のラッパーも作っておくと便利かもしれません
+
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_city_model(
         const CityModelHandle* city_model_handle
@@ -35,4 +39,12 @@ extern "C" {
                    CityModelHandle,
                    int,
                    handle->getCityModel().getNumRootCityObjects())
+
+    DLL_PTR_FUNC(plateau_city_model_get_city_object_from_id,
+                 CityModelHandle,
+                 CityObject,
+                 handle->getCityModel().getCityObjectFromId(std::string(id_chars));
+                 if(*out == nullptr) return APIResult::ErrorValueNotFound;,
+                 ,const char* const id_chars)
+
 }
