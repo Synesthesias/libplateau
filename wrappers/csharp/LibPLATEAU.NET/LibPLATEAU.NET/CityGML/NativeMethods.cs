@@ -175,7 +175,7 @@ namespace LibPLATEAU.NET.CityGML
 
     internal static class NativeMethods
     {
-        private const string DllName = "plateau_c";
+        private const string DllName = "plateau";
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(

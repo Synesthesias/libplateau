@@ -1,24 +1,24 @@
 
 
 # 【概要】
-# PLATEAUの街モデルに関する機能を提供するネイティブライブラリ、libplateau_c をビルドします。
+# PLATEAUの街モデルに関する機能を提供するネイティブライブラリ、libplateau をビルドします。
 
 # 【実行方法】
 # このCMakeListsの実行にあたってcmakeコマンドにどのような引数を渡せば良いかを知るには、
 # README.md を参照するか、 .github/actions/build/action.yml の Configure CMake の箇所を参照してコマンド例とします。
 
 # 【ビルドの方針】
-# 最終的に libplateau_c.dll (または .so , .dylib ) が1つだけ出力されるようにします。
+# 最終的に libplateau.dll (または .so , .dylib ) が1つだけ出力されるようにします。
 # なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
 # ビルド時の依存関係を矢印で表すと次のようになります。
-# plateau_c.dll --> plateau --> (3rdparty/libcitygml, 3rdparty/xerces_c)
+# plateau.dll --> (c_wrapper, 各example) --> (3rdparty/libcitygml, 3rdparty/xerces_c)
 
 # 【トラブルシューティング】
 # Linux の Unity で DllNotFoundException になった場合
 # .soファイルが存在しても、 .so が依存する .so ファイルが存在しない場合に DllNotFoundException になります。
 # 次のコマンドで .so がどのようなライブラリに依存するか調べると良いです。
-# objdump -x libplateau_c.so | grep NEEDED
-# ldd ./libplateau_c.so | grep "not found”
+# objdump -x libplateau.so | grep NEEDED
+# ldd ./libplateau.so | grep "not found”
 
 
 # github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
@@ -89,9 +89,6 @@ add_subdirectory("src")
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
-
-# plateau_c をビルドします。
-add_subdirectory("wrappers/c")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
