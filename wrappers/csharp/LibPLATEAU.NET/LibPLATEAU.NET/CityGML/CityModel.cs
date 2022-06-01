@@ -54,7 +54,6 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public CityObject GetCityObjectById(string id)
         {
-            // byte[] idUtf8 = DLLUtil.StrToUtf8Bytes(id);
             var result = NativeMethods.plateau_city_model_get_city_object_by_id(
                 Handle, out IntPtr cityObjectPtr, id);
             if (result == APIResult.ErrorValueNotFound)
