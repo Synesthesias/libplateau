@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
@@ -84,6 +83,7 @@ namespace LibPLATEAU.NET.CityGML
         Success,
         ErrorUnknown,
         ErrorValueNotFound,
+        ErrorLoadingCityGml
     }
 
 
@@ -142,11 +142,11 @@ namespace LibPLATEAU.NET.CityGML
 
     public enum TextureWrapMode
     {
-        WM_NONE,
-        WM_WRAP,        // 繰り返し
-        WM_MIRROR,      // ミラーの繰り返し
-        WM_CLAMP,       // the texture is clamped to its edges
-        WM_BORDER       // the resulting color is specified by the borderColor element (RGBA)
+        WM_None,
+        WM_Wrap,        // 繰り返し
+        WM_Mirror,      // ミラーの繰り返し
+        WM_Clamp,       // the texture is clamped to its edges
+        WM_Border       // the resulting color is specified by the borderColor element (RGBA)
     }
 
     public enum GeometryType : ulong
@@ -182,7 +182,7 @@ namespace LibPLATEAU.NET.CityGML
 
     internal static class NativeMethods
     {
-        private const string DllName = "plateau_c";
+        private const string DllName = "plateau";
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_load_citygml(

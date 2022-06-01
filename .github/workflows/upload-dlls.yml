@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, macos-latest, ubuntu-18.04]
 
     steps:
       - uses: actions/checkout@v3
@@ -52,11 +52,11 @@ jobs:
           name: libplateau-windows-dll
           path: D:\a\output
 
-      - name: Copy DLL(so, dylib) for Ubuntu and MacOS
+      - name: Copy Libraries for Ubuntu and MacOS
         if: runner.os != 'Windows'
         run: |
           mkdir $HOME/output/
-          find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib -or -name *.a | xargs -I {} cp -v {} $HOME/output
           echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
 
       - name: Upload DLL(so, dylib) for Ubuntu and MacOS

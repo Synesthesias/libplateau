@@ -27,7 +27,11 @@ extern "C" {
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
             parser_params.tesselate = params.tessellate;
-            *outCityModelPtr = new CityModelHandle(citygml::load(gml_path, parser_params, nullptr));
+            auto city_model = citygml::load(gml_path, parser_params, nullptr);
+            if(city_model == nullptr){ // 例えば Codelists が見つからない時にエラーになります。
+                return APIResult::ErrorLoadingCityGml;
+            }
+            *outCityModelPtr = new CityModelHandle(city_model);
             return APIResult::Success;
         }
         API_CATCH;

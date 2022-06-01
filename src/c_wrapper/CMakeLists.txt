@@ -1,8 +1,8 @@
 enable_language(C)
 
-project("libplateau_c")
+#project("libplateau_c")
 
-add_library(plateau_c SHARED
+add_library(c_wrapper OBJECT
   "obj_writer_c.cpp"
   "libplateau_c.h"
   "citygml_c.cpp"
@@ -25,11 +25,8 @@ add_library(plateau_c SHARED
   "texture_c.cpp"
   "appearance_c.cpp")
 
+#target_link_libraries(c_wrapper PRIVATE citygml)
+target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
 
-set_target_properties(plateau_c PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+set_target_properties(c_wrapper PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
-
-target_link_libraries(plateau_c PRIVATE citygml plateau)
-target_include_directories(plateau PRIVATE
-    "${CMAKE_SOURCE_DIR}/include"
-    "${LIBCITYGML_INCLUDE}")

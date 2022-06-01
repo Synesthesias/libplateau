@@ -44,9 +44,12 @@ OSごとのビルド方法を記載する。
 * ユニットテストも合わせて実行可能。
 
 ### Linuxでのビルド
+利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とする。  
+それより新しいバージョンでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまう。
 #### C++のビルド
-* Ubuntuに入っているデフォルトの cmake などではバージョンが古い可能性がある。  
+* Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性がある。  
   その場合は新しいcmakeをマシンにインストールする。
+* Ubuntu 18 のデフォルトのコンパイラは g++-7 となっているが、それでは古いので g++-9 を導入する。
 * OpenGL API が必要なので、なければ以下のコマンドでインストールする。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
@@ -55,7 +58,7 @@ sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 * 以下のコマンドを実行する。
 ```
 cd (プロジェクトのルートディレクトリ)
-cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PREFIX:PATH="./out/install/x64-Release" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
+cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
 cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
 ```
 #### C#のビルド
@@ -82,13 +85,14 @@ dotnet test -c Release
 
 ## デプロイ
 ### Unity
+手動でビルドの成果物をUntiyプロジェクトにコピーしても導入できますが、  
+代わりに Github Actions の自動ビルド (Upload DLLs) でも同じものをダウンロードできます。  
+手動の場合は以下のようにします。ただし、1つのOS向けのdllしかできません。
 1. libplateauビルド(Release)
 2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
 3. 以下のファイルをUnityプロジェクトにコピー
    1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/netstandard2.0/LibPLATEAU.NET.dll
-   2. out/build/x64-Release/bin/citygml.dll
-   3. out/build/x64-Release/bin/plateau.dll
-   4. out/build/x64-Release/bin/plateau_c.dll
+   2. out/build/x64-Release/bin/plateau_c.dll
 
 ## ディレクトリ構成
 - 3rdparty
@@ -117,3 +121,16 @@ dotnet test -c Release
 ## 文字コード
 - gmlのパース結果はC++の内部では UTF-8 で保持しています。
   - パーサー xerces-c は本家の挙動ではAnsiに変換して保持しますが、その挙動をUTF-8に変えました。Unityから日本語文字を扱う都合上の改変です。
+
+## CI (継続的インテグレーション)
+Github Actions によるCIを導入しています。  
+Windows, Mac, Linux でのテストと成果物のダウンロードができます。
+- push時、自動でビルドおよびユニットテストが行われます。
+- git tagを付けた時、またはgithubサイトから手動で Upload DLLs を実行したときにビルドが走り、 
+  成果物となるDLL等を3つのOSでまとめてダウンロードできます。
+  githubサイトから手動で実行するには、 Actions → Workflows から Upload DLLs を選択 → Run workflow からブランチを選んで実行します。
+
+# ライセンス
+- libplateau本体： 未定
+- xerces-c： Apacheライセンス , 要 著作権表示 , 要 改変したことの告知
+- libcitygml：  GNU LESSER GENERAL PUBLIC LICENSE

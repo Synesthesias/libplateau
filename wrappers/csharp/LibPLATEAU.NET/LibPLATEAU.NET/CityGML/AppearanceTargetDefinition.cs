@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using LibPLATEAU.NET.Util;
 
 namespace LibPLATEAU.NET.CityGML

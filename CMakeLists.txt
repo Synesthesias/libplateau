@@ -1,3 +1,26 @@
+
+
+# 【概要】
+# PLATEAUの街モデルに関する機能を提供するネイティブライブラリ、libplateau をビルドします。
+
+# 【実行方法】
+# このCMakeListsの実行にあたってcmakeコマンドにどのような引数を渡せば良いかを知るには、
+# README.md を参照するか、 .github/actions/build/action.yml の Configure CMake の箇所を参照してコマンド例とします。
+
+# 【ビルドの方針】
+# 最終的に libplateau.dll (または .so , .dylib ) が1つだけ出力されるようにします(example, libを除く)。
+# なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
+# ビルド時の依存関係を矢印で表すと次のようになります。
+# plateau.dll (c_wrapperを含む)  --> (3rdparty/libcitygml, 3rdparty/xerces_c)
+
+# 【トラブルシューティング】
+# Linux の Unity で DllNotFoundException になった場合
+# .soファイルが存在しても、 .so が依存する .so ファイルが存在しない場合に DllNotFoundException になります。
+# 次のコマンドで .so がどのようなライブラリに依存するか調べると良いです。
+# objdump -x libplateau.so | grep NEEDED
+# ldd ./libplateau.so | grep "not found”
+
+
 # github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
 
@@ -43,34 +66,31 @@ add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 # dependencies
-## Xerces-C
+## Xerces-C をビルドします。
 ### libcitygmlのFindXercesを通すために全てキャッシュ化
 set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/xerces-c")
 set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
 set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
 
-## libcitygml
+## libcitygml をビルドします。
 ### TODO: GDAL Support
 set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
 ### libcitygmlのFindXercesを通すために手動で設定
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
-set(LIBCITYGML_DYNAMIC ON CACHE BOOL "" FORCE)
+set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
-# Library generation
+# libplateau をビルドします。
 add_subdirectory("src")
-
-
-# Examples
+## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
 
-# Wrappers
-add_subdirectory("wrappers/c")
+# python
 option(BUILD_PYTHON "Build python wrapper" OFF)
 if(BUILD_PYTHON)
   add_subdirectory("wrappers/python")
