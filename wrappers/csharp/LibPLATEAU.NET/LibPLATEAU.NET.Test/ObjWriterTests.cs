@@ -19,13 +19,15 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void GetMergeMeshFlg_Returns_The_Same_Value_As_Set()
+        public void GetMeshGranularity_Returns_The_Same_Value_As_Set()
         {
             var writer = new ObjWriter();
-            writer.SetMergeMeshFlg(true);
-            Assert.AreEqual(writer.GetMergeMeshFlg(), true);
-            writer.SetMergeMeshFlg(false);
-            Assert.AreEqual(writer.GetMergeMeshFlg(), false);
+            writer.SetMeshGranularity(MeshGranularity.PerAtomicFeatureObject);
+            Assert.AreEqual(writer.GetMeshGranularity(), MeshGranularity.PerAtomicFeatureObject);
+            writer.SetMeshGranularity(MeshGranularity.PerCityModelArea);
+            Assert.AreEqual(writer.GetMeshGranularity(), MeshGranularity.PerCityModelArea);
+            writer.SetMeshGranularity(MeshGranularity.PerPrimaryFeatureObject);
+            Assert.AreEqual(writer.GetMeshGranularity(), MeshGranularity.PerPrimaryFeatureObject);
         }
 
         [TestMethod]
