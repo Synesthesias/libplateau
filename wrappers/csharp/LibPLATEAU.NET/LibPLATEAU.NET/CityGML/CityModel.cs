@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading;
 using LibPLATEAU.NET.Util;
 
@@ -44,6 +46,22 @@ namespace LibPLATEAU.NET.CityGML
 
                 return Array.AsReadOnly(this.rootCityObjects);
             }
+        }
+
+        /// <summary>
+        /// idから <see cref="CityObject"/> を返します。
+        /// 該当idのものがない場合は <see cref="KeyNotFoundException"/> を投げます。
+        /// </summary>
+        public CityObject GetCityObjectById(string id)
+        {
+            var result = NativeMethods.plateau_city_model_get_city_object_by_id(
+                Handle, out IntPtr cityObjectPtr, id);
+            if (result == APIResult.ErrorValueNotFound)
+            {
+                throw new KeyNotFoundException($"id {id} is not found.");
+            }
+            DLLUtil.CheckDllError(result);
+            return new CityObject(cityObjectPtr);
         }
 
         internal CityModel(IntPtr handle)

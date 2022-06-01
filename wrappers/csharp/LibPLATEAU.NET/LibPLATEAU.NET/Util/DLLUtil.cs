@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using LibPLATEAU.NET.CityGML;
@@ -279,11 +280,13 @@ namespace LibPLATEAU.NET.Util
 
         public static byte[] StrToUtf8Bytes(string str)
         {
-            if (string.IsNullOrEmpty(str))
+            if (str == null)
             {
                 return new byte[] { 0 }; // null終端文字のみ
             }
-            return Encoding.UTF8.GetBytes(str);
+            var bytes = new List<byte>(Encoding.UTF8.GetBytes(str));
+            bytes.Add(0); // null終端文字
+            return bytes.ToArray();
         }
 
     }
