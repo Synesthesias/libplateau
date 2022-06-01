@@ -40,10 +40,10 @@ extern "C" {
                    int,
                    handle->getCityModel().getNumRootCityObjects())
 
-    DLL_PTR_FUNC(plateau_city_model_get_city_object_from_id,
+    DLL_PTR_FUNC(plateau_city_model_get_city_object_by_id,
                  CityModelHandle,
                  CityObject,
-                 handle->getCityModel().getCityObjectFromId(std::string(id_chars));
+                 handle->getCityModel().getCityObjectById(std::string(id_chars));
                  if(*out == nullptr) return APIResult::ErrorValueNotFound;,
                  ,const char* const id_chars)
 
