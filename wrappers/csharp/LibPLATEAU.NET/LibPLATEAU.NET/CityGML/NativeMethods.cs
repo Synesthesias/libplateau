@@ -253,7 +253,7 @@ namespace LibPLATEAU.NET.CityGML
             out int outCount);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_city_model_get_city_object_from_id(
+        internal static extern APIResult plateau_city_model_get_city_object_by_id(
             [In] IntPtr handle,
             out IntPtr cityObjectPtr,
             [In] string id);

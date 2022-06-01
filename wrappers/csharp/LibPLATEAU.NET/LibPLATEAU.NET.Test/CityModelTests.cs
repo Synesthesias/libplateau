@@ -18,7 +18,7 @@ namespace LibPLATEAU.NET.Test
         public void GetCityObjectFromId_Returns_CityObj_With_Same_ID()
         {
             const string id = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
-            var found = this.cityModel.GetCityObjectFromId(id);
+            var found = this.cityModel.GetCityObjectById(id);
             Assert.AreEqual(id, found.ID);
         }
 
@@ -27,7 +27,7 @@ namespace LibPLATEAU.NET.Test
         {
             Assert.ThrowsException<KeyNotFoundException>(() =>
             {
-                this.cityModel.GetCityObjectFromId("存在しないID-ダミー012");
+                this.cityModel.GetCityObjectById("存在しないID-ダミー012");
             });
         }
     }
