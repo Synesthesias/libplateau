@@ -252,15 +252,21 @@ void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsign
             std::cout << "Found LOD0 Geometry. Skipped it." << std::endl;
             continue;
         }
-        writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
+        writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);
     }
 }
 
 void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto pc = target_geometry.getPolygonsCount();
+    if(pc <= 0){
+        log("Polygon Count is zero on the target_geometry.");
+    }
     std::cout << "PolygonsCount = " << pc << std::endl;
     for (unsigned int k = 0; k < pc; k++) {
         const auto v_cnt = writeVertices(target_geometry.getPolygon(k)->getVertices());
+        if(v_cnt <= 0){
+            log("vertices count is zero in the polygon.");
+        }
 
         const auto citygmlTex = target_geometry.getPolygon(k)->getTextureFor("rgbTexture");
         bool tex_flg = false;
