@@ -50,12 +50,15 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_ << std::fixed << std::setprecision(6);
     const auto rc = city_model.getNumRootCityObjects();
-    std::cout << "NumRootCityObjects : " << rc << std::endl;
+    log(("NumRootCityObjects: " + std::to_string(rc)).c_str());
     ofs_ << "mtllib " << mat_file_name << std::endl;
+    int building_id_not_found_count = 0;
     for (const auto& root_object : city_model.getRootCityObjects()) {
-        const std::string rbid = root_object->getAttribute("建物ID");
-        if (!rbid.empty()) {
-            std::cout << "建物ID : " << rbid << std::endl;
+        const std::string rbid = root_object->getAttribute(u8"建物ID");
+        if (rbid.empty()){
+            building_id_not_found_count++;
+        } else {
+            std::cout << u8"建物ID : " << rbid << std::endl;
         }
         std::cout << "RootID : " << root_object->getId() << std::endl;
         if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject && !rbid.empty()) {
@@ -77,6 +80,9 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
             processChildCityObject(target_object, v_offset, t_offset);
         }
+    }
+    if(building_id_not_found_count > 0){
+        log((std::to_string(building_id_not_found_count) + " root city object(s) do not have building-id-attribute.").c_str());
     }
     ofs_.close();
     ofs_mat_.close();
