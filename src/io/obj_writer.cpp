@@ -308,6 +308,7 @@ void ObjWriter::setLogCallback(LogCallbackFuncType func) {
 }
 
 void ObjWriter::log(const char * text) {
+    std::cout << text << std::endl;
     if(logCallback_ == nullptr) return;
     (*logCallback_)(text);
 }
