@@ -18,7 +18,11 @@ namespace LibPLATEAU.NET.CityGML
         public PlateauVector3d ReferencePoint
         {
             get => NativeMethods.plateau_obj_writer_get_reference_point(this.handle);
-            set => NativeMethods.plateau_obj_writer_set_reference_point(this.handle, value);
+            set
+            {
+                APIResult result = NativeMethods.plateau_obj_writer_set_reference_point(this.handle, value);
+                DLLUtil.CheckDllError(result);
+            }
         }
 
         /// <summary>
@@ -87,7 +91,8 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public void SetDestAxes(AxesConversion value)
         {
-            NativeMethods.plateau_obj_writer_set_dest_axes(this.handle, value);
+            APIResult result = NativeMethods.plateau_obj_writer_set_dest_axes(this.handle, value);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>
@@ -106,7 +111,8 @@ namespace LibPLATEAU.NET.CityGML
         /// <param name="cityModel"></param>
         public void SetValidReferencePoint(CityModel cityModel)
         {
-            NativeMethods.plateau_obj_writer_set_valid_reference_point(this.handle, cityModel.Handle);
+            APIResult result = NativeMethods.plateau_obj_writer_set_valid_reference_point(this.handle, cityModel.Handle);
+            DLLUtil.CheckDllError(result);
         }
     }
 }

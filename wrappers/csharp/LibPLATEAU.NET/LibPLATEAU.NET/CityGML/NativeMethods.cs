@@ -216,7 +216,7 @@ namespace LibPLATEAU.NET.CityGML
             out MeshGranularity meshGranularity);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_dest_axes(
+        internal static extern APIResult plateau_obj_writer_set_dest_axes(
             [In] IntPtr objWriter,
             AxesConversion value);
 
@@ -230,12 +230,12 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr objWriter);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_reference_point(
+        internal static extern APIResult plateau_obj_writer_set_reference_point(
             [In] IntPtr objWriter,
             [In] PlateauVector3d referencePoint);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_valid_reference_point(
+        internal static extern APIResult plateau_obj_writer_set_valid_reference_point(
             [In] IntPtr objWriter,
             [In] IntPtr cityModel);
 
