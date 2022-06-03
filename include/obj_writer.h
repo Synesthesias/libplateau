@@ -41,7 +41,9 @@ private:
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
     void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
-    /// Execute method passed by setLogCallback. If not set, do nothing.
+    /// Print log to std::cout, and execute method passed by setLogCallback.
+    /// If callback is not set, do nothing.
+    /// This is used to pass log to DLL user.
     void log(const char* text);
     /// Throw Exception and call log().
     void throwException(std::string message);
