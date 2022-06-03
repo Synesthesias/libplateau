@@ -226,8 +226,9 @@ namespace LibPLATEAU.NET.CityGML
             out AxesConversion axesConversion);
 
         [DllImport(DllName)]
-        internal static extern PlateauVector3d plateau_obj_writer_get_reference_point(
-            [In] IntPtr objWriter);
+        internal static extern APIResult plateau_obj_writer_get_reference_point(
+            [In] IntPtr objWriter,
+            out PlateauVector3d outVector3);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_obj_writer_set_reference_point(

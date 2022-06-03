@@ -80,15 +80,18 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT plateau_vector3d LIBPLATEAU_C_API plateau_obj_writer_get_reference_point(const ObjWriter* obj_writer) {
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_obj_writer_get_reference_point(
+            const ObjWriter* obj_writer,
+            plateau_vector3d* const out_vector3) {
         API_TRY{
             // TODO: getReferencePointの返り値をTVec3d型に変更
             double ref[3];
             obj_writer->getReferencePoint(ref);
-            return plateau_vector3d{ ref[0], ref[1], ref[2] };
+            *out_vector3 = plateau_vector3d{ ref[0], ref[1], ref[2] };
+            return APIResult::Success;
         }
         API_CATCH;
-        return plateau_vector3d{ 0, 0, 0 };
+        return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_obj_writer_set_reference_point(ObjWriter* obj_writer, const plateau_vector3d reference_point) {

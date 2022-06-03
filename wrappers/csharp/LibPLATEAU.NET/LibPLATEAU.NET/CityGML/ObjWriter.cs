@@ -17,7 +17,12 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public PlateauVector3d ReferencePoint
         {
-            get => NativeMethods.plateau_obj_writer_get_reference_point(this.handle);
+            get
+            {
+                APIResult result = NativeMethods.plateau_obj_writer_get_reference_point(this.handle, out PlateauVector3d vector3);
+                DLLUtil.CheckDllError(result);
+                return vector3;
+            }
             set
             {
                 APIResult result = NativeMethods.plateau_obj_writer_set_reference_point(this.handle, value);
