@@ -191,7 +191,9 @@ namespace LibPLATEAU.NET.CityGML
             out IntPtr cityModelHandle);
 
         [DllImport(DllName)]
-        internal static extern IntPtr plateau_create_obj_writer();
+        internal static extern APIResult plateau_create_obj_writer(
+            out IntPtr outHandle
+            );
 
         [DllImport(DllName)]
         internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);

@@ -15,13 +15,15 @@ extern "C" {
         double z;
     };
 
-    LIBPLATEAU_C_EXPORT ObjWriter* LIBPLATEAU_C_API plateau_create_obj_writer() {
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_obj_writer(ObjWriter** out_obj_writer) {
         API_TRY{
-            return new ObjWriter;
+            *out_obj_writer = new ObjWriter;
+            return APIResult::Success;
         }
         API_CATCH;
-        return nullptr;
+        return APIResult::ErrorUnknown;
     }
+
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_obj_writer(ObjWriter* obj_writer) {
         API_TRY{

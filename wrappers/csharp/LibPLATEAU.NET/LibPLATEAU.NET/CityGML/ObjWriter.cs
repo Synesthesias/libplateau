@@ -26,7 +26,9 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public ObjWriter()
         {
-            this.handle = NativeMethods.plateau_create_obj_writer();
+            APIResult result = NativeMethods.plateau_create_obj_writer(out IntPtr outPtr);
+            DLLUtil.CheckDllError(result);
+            this.handle = outPtr;
         }
 
         ~ObjWriter()
