@@ -27,7 +27,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
-        throwException(std::string("Failed to open : ") + obj_file_path_);
+        throwException(std::string("Failed to open stream of obj path : ") + obj_file_path_);
     }
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
@@ -42,7 +42,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
-        throwException(std::string("Failed to open : ") + mat_file_path);
+        throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
     }
 
     ofs_mat_ << "newmtl obj_def_mat" << std::endl;
@@ -197,11 +197,11 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
-            throwException(std::string("Failed to open : ") + path_from);
+            throwException(std::string("Failed to open stream of material source path : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
-            throwException(std::string("Failed to open : ") + path_to);
+            throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
     }
