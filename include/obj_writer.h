@@ -11,14 +11,16 @@ enum class AxesConversion {
 };
 
 enum class MeshGranularity {
-    PerAtomicFeatureObject, // Å¬’n•¨’PˆÊ(Œš•¨ƒp[ƒc)
-    PerPrimaryFeatureObject, // å—v’n•¨’PˆÊ(Œš’z•¨A“¹˜H“™)
-    PerCityModelArea // “ssƒ‚ƒfƒ‹’nˆæ’PˆÊ(GMLƒtƒ@ƒCƒ‹“à‚Ì‚·‚×‚Ä‚ğŒ‹‡)
+    PerAtomicFeatureObject, // ï¿½Åï¿½ï¿½nï¿½ï¿½ï¿½Pï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½[ï¿½c)
+    PerPrimaryFeatureObject, // ï¿½ï¿½vï¿½nï¿½ï¿½ï¿½Pï¿½ï¿½(ï¿½ï¿½ï¿½zï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Hï¿½ï¿½)
+    PerCityModelArea // ï¿½sï¿½sï¿½ï¿½ï¿½fï¿½ï¿½ï¿½nï¿½ï¿½Pï¿½ï¿½(GMLï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ï¿½ï¿½×‚Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½)
 };
+
+typedef void(__stdcall *LogCallbackFuncType)(const char*);
 
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
-    ObjWriter() : ofs_() {
+    ObjWriter() : ofs_(), logCallback_(nullptr) {
     }
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
@@ -29,6 +31,7 @@ public:
     void setReferencePoint(const double xyz[]);
     void setMeshGranularity(MeshGranularity value);
     MeshGranularity getMeshGranularity() const;
+    void setLogCallback(void(*func)(const char*));
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
@@ -38,6 +41,10 @@ private:
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
     void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
+    /// Execute method passed by setLogCallback. If not set, do nothing.
+    void log(const char* text);
+    /// Throw Exception and call log().
+    void throwException(std::string message);
 
     std::ofstream ofs_;
     std::ofstream ofs_mat_;
@@ -46,4 +53,5 @@ private:
     AxesConversion axes_ = AxesConversion::WNU;
     double ref_point_[3] = {0,0,0};
     MeshGranularity mesh_granularity_ = MeshGranularity::PerPrimaryFeatureObject;
+    void(*logCallback_)(const char*);
 };

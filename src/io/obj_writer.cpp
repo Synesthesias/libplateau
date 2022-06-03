@@ -23,9 +23,11 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
 
+    log(("Convert Start. from " + gml_file_path + "\nto " + obj_file_path).c_str() );
+
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
-        throw std::runtime_error(std::string("Failed to open : ") + obj_file_path_);
+        throwException(std::string("Failed to open : ") + obj_file_path_);
     }
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
@@ -40,7 +42,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
-        throw std::runtime_error(std::string("Failed to open : ") + mat_file_path);
+        throwException(std::string("Failed to open : ") + mat_file_path);
     }
 
     ofs_mat_ << "newmtl obj_def_mat" << std::endl;
@@ -190,16 +192,16 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             mkdirResult = mkdir(to_dir.c_str(), 0777);
 #endif
             if (mkdirResult != 0) {
-                throw std::runtime_error(std::string("Failed to make directory : ") + to_dir);
+                throwException(std::string("Failed to make directory : ") + to_dir);
             }
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
-            throw std::runtime_error(std::string("Failed to open : ") + path_from);
+            throwException(std::string("Failed to open : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
-            throw std::runtime_error(std::string("Failed to open : ") + path_to);
+            throwException(std::string("Failed to open : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
     }
@@ -287,4 +289,18 @@ void ObjWriter::setMeshGranularity(MeshGranularity value) {
 
 MeshGranularity ObjWriter::getMeshGranularity() const {
     return mesh_granularity_;
+}
+
+void ObjWriter::setLogCallback(LogCallbackFuncType func) {
+    logCallback_ = func;
+}
+
+void ObjWriter::log(const char * text) {
+    if(logCallback_ == nullptr) return;
+    (*logCallback_)(text);
+}
+
+void ObjWriter::throwException(std::string message) {
+    log(message.c_str());
+    throw std::runtime_error(message);
 }

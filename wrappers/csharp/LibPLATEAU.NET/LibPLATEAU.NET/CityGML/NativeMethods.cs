@@ -180,6 +180,8 @@ namespace LibPLATEAU.NET.CityGML
         AttributeSet
     }
 
+    public delegate void LogCallbackFuncType(IntPtr textPtr);
+
     internal static class NativeMethods
     {
         private const string DllName = "plateau";
@@ -239,6 +241,11 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_obj_writer_set_valid_reference_point(
             [In] IntPtr objWriter,
             [In] IntPtr cityModel);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_obj_writer_set_log_callback(
+            [In] IntPtr objWriter,
+            IntPtr logFunction);
 
         [DllImport(DllName)]
         internal static extern int plateau_delete_city_model(

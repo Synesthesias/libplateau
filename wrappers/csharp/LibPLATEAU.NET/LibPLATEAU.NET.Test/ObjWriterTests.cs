@@ -1,3 +1,5 @@
+using System;
+using System.Runtime.InteropServices;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,6 +18,17 @@ namespace LibPLATEAU.NET.Test
             new ObjWriter().Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
 
             Assert.IsTrue(System.IO.File.Exists(objPath));
+        }
+
+        [TestMethod]
+        public void SetLogCallback_Do_Not_Throw_Error()
+        {
+            var writer = new ObjWriter();
+            LogCallbackFuncType logCallback = (ptr) => Console.WriteLine(Marshal.PtrToStringAnsi(ptr));
+            writer.SetLogCallback(logCallback);
+            var objPath = "53392642_bldg_6697_op2.obj";
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            writer.Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
         }
 
         [TestMethod]

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using LibPLATEAU.NET.Util;
 
@@ -69,6 +71,18 @@ namespace LibPLATEAU.NET.CityGML
         public void Write(string objPath, CityModel cityModel, string gmlPath)
         {
             APIResult result = NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
+            DLLUtil.CheckDllError(result);
+        }
+
+        /// <summary>
+        /// DLL内でのログメッセージの受け取り方を設定します。
+        /// </summary>
+        public void SetLogCallback(LogCallbackFuncType func)
+        {
+            APIResult result = NativeMethods.plateau_obj_writer_set_log_callback(
+                Handle,
+                Marshal.GetFunctionPointerForDelegate(func)
+            );
             DLLUtil.CheckDllError(result);
         }
 
