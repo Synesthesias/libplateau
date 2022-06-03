@@ -206,7 +206,7 @@ namespace LibPLATEAU.NET.CityGML
             [In] string gmlPath);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_mesh_granularity(
+        internal static extern APIResult plateau_obj_writer_set_mesh_granularity(
             [In] IntPtr objWriter,
             MeshGranularity value);
 

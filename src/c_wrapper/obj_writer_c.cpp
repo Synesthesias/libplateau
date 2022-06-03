@@ -42,11 +42,13 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_mesh_granularity(ObjWriter* obj_writer, const MeshGranularity value) {
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_obj_writer_set_mesh_granularity(ObjWriter* obj_writer, const MeshGranularity value) {
         API_TRY{
             obj_writer->setMeshGranularity(value);
+            return APIResult::Success;
         }
         API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 
     DLL_VALUE_FUNC(plateau_obj_writer_get_mesh_granularity,

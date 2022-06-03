@@ -68,7 +68,8 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public void SetMeshGranularity(MeshGranularity value)
         {
-            NativeMethods.plateau_obj_writer_set_mesh_granularity(this.handle, value);
+            APIResult result = NativeMethods.plateau_obj_writer_set_mesh_granularity(this.handle, value);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>
