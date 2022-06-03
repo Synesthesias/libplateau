@@ -16,7 +16,7 @@ enum class MeshGranularity {
     PerCityModelArea // �s�s���f���n��P��(GML�t�@�C�����̂��ׂĂ�����)
 };
 
-typedef void(__stdcall *LogCallbackFuncType)(const char*);
+typedef void(*LogCallbackFuncType)(const char*);
 
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
