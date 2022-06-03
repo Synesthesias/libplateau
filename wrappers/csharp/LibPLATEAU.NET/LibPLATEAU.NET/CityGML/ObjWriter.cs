@@ -59,7 +59,8 @@ namespace LibPLATEAU.NET.CityGML
         /// <param name="gmlPath"></param>
         public void Write(string objPath, CityModel cityModel, string gmlPath)
         {
-            NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
+            APIResult result = NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>

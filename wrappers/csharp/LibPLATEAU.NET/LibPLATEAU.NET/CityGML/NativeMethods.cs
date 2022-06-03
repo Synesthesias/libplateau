@@ -199,7 +199,7 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_obj_writer_write(
+        internal static extern APIResult plateau_obj_writer_write(
             [In] IntPtr objWriter,
             [In] string objPath,
             [In] IntPtr cityModel,

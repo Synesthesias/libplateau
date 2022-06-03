@@ -32,12 +32,14 @@ extern "C" {
         API_CATCH;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_write(ObjWriter* obj_writer, const char* obj_path, const CityModelHandle* city_model, const char* gml_path) {
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_obj_writer_write(ObjWriter* obj_writer, const char* obj_path, const CityModelHandle* city_model, const char* gml_path) {
         API_TRY{
             // TODO: replace '\\' -> '/' in ObjWriter
             obj_writer->write(obj_path, city_model->getCityModel(), gml_path);
+            return APIResult::Success;
         }
         API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_obj_writer_set_mesh_granularity(ObjWriter* obj_writer, const MeshGranularity value) {
