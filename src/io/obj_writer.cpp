@@ -23,11 +23,11 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
 
-    log(("Convert Start. from " + gml_file_path + "\nto " + obj_file_path).c_str() );
+    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start. from " + gml_file_path + "\nto " + obj_file_path );
 
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
-        throwException(std::string("Failed to open stream of obj path : ") + obj_file_path_);
+        dll_logger_->throwException(std::string("Failed to open stream of obj path : ") + obj_file_path_);
     }
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
@@ -42,7 +42,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
-        throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
+        dll_logger_->throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
     }
 
     ofs_mat_ << "newmtl obj_def_mat" << std::endl;
@@ -50,7 +50,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_ << std::fixed << std::setprecision(6);
     const auto rc = city_model.getNumRootCityObjects();
-    log(("NumRootCityObjects: " + std::to_string(rc)).c_str());
+    dll_logger_->log(DllLogLevel::LL_INFO, "NumRootCityObjects: " + std::to_string(rc));
     ofs_ << "mtllib " << mat_file_name << std::endl;
     int building_id_not_found_count = 0;
     for (const auto& root_object : city_model.getRootCityObjects()) {
@@ -82,7 +82,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
         }
     }
     if(building_id_not_found_count > 0){
-        log((std::to_string(building_id_not_found_count) + " root city object(s) do not have building-id-attribute.").c_str());
+        dll_logger_->log(DllLogLevel::LL_INFO, std::to_string(building_id_not_found_count) + " root city object(s) do not have building-id-attribute.");
     }
     ofs_.close();
     ofs_mat_.close();
@@ -198,16 +198,16 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             mkdirResult = mkdir(to_dir.c_str(), 0777);
 #endif
             if (mkdirResult != 0) {
-                throwException(std::string("Failed to make directory : ") + to_dir);
+                dll_logger_->throwException(std::string("Failed to make directory : ") + to_dir);
             }
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
-            throwException(std::string("Failed to open stream of material source path : ") + path_from);
+            dll_logger_->throwException(std::string("Failed to open stream of material source path : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
-            throwException(std::string("Failed to open stream of material destination path : ") + path_to);
+            dll_logger_->throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
     }
@@ -259,13 +259,13 @@ void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsign
 void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto pc = target_geometry.getPolygonsCount();
     if(pc <= 0){
-        log("Polygon Count is zero on the target_geometry.");
+        dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "Polygon Count is zero on the target_geometry.");
     }
     std::cout << "PolygonsCount = " << pc << std::endl;
     for (unsigned int k = 0; k < pc; k++) {
         const auto v_cnt = writeVertices(target_geometry.getPolygon(k)->getVertices());
         if(v_cnt <= 0){
-            log("vertices count is zero in the polygon.");
+            dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "vertices count is zero in the polygon.");
         }
 
         const auto citygmlTex = target_geometry.getPolygon(k)->getTextureFor("rgbTexture");
@@ -303,17 +303,6 @@ MeshGranularity ObjWriter::getMeshGranularity() const {
     return mesh_granularity_;
 }
 
-void ObjWriter::setLogCallback(LogCallbackFuncType func) {
-    logCallback_ = func;
-}
-
-void ObjWriter::log(const char * text) {
-    std::cout << text << std::endl;
-    if(logCallback_ == nullptr) return;
-    (*logCallback_)(text);
-}
-
-void ObjWriter::throwException(std::string message) {
-    log(message.c_str());
-    throw std::runtime_error(message);
+const PlateauDllLogger * ObjWriter::getLogger() const {
+    return dll_logger_.get();
 }

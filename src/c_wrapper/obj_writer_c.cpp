@@ -104,14 +104,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_obj_writer_set_log_callback(
-            ObjWriter* handle,
-            LogCallbackFuncType func){
-        API_TRY{
-            handle->setLogCallback(func);
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+DLL_PTR_FUNC(plateau_obj_writer_get_dll_logger,
+             ObjWriter,
+             PlateauDllLogger,
+             handle->getLogger())
 }

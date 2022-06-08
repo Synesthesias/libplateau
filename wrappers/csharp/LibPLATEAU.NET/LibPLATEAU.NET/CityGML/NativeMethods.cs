@@ -242,10 +242,11 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr objWriter,
             [In] IntPtr cityModel);
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_obj_writer_set_log_callback(
-            [In] IntPtr objWriter,
-            IntPtr logFunction);
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_obj_writer_get_dll_logger(
+            [In] IntPtr handle,
+            out IntPtr loggerHandle);
+        
 
         [DllImport(DllName)]
         internal static extern int plateau_delete_city_model(
@@ -704,5 +705,16 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             [In, Out] IntPtr[] outStrPointers,
             [Out] int[] outStrSizes);
+        
+        
+        // ***************
+        //  plateau_dll_logger_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dll_logger_set_callbacks(
+            [In] IntPtr handle,
+            [In] IntPtr errorCallbackFuncPtr,
+            [In] IntPtr warnCallbackPtrFuncPtr,
+            [In] IntPtr infoCallbackFuncPtr);
     }
 }

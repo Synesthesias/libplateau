@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,14 +23,27 @@ namespace LibPLATEAU.NET.Test
         }
 
         [TestMethod]
-        public void SetLogCallback_Do_Not_Throw_Error()
+        public void Dll_Log_Is_Sent_To_CSharp_StdOut()
         {
-            var writer = new ObjWriter();
-            LogCallbackFuncType logCallback = (ptr) => Console.WriteLine(Marshal.PtrToStringAnsi(ptr));
-            writer.SetLogCallback(logCallback);
+            var objWriter = new ObjWriter();
             var objPath = "53392642_bldg_6697_op2.obj";
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            writer.Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
+            
+            // コンソール出力を奪い取って中身を確認できるようにします。
+            var prevOut = Console.Out;
+            var builder = new StringBuilder();
+            var strWriter = new StringWriter(builder);
+            Console.SetOut(strWriter);
+
+            // ファイル変換でログが出てくることを期待します。
+            objWriter.Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
+            
+            // ログが出ていることを確認します。
+            var reader = new StringReader(builder.ToString());
+            string consoleMessage = reader.ReadToEnd();
+            StringAssert.Contains(consoleMessage, "Convert Start. from");
+            
+            Console.SetOut(prevOut);
         }
 
         [TestMethod]

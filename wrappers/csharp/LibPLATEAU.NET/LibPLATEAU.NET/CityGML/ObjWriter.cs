@@ -40,6 +40,8 @@ namespace LibPLATEAU.NET.CityGML
             APIResult result = NativeMethods.plateau_create_obj_writer(out IntPtr outPtr);
             DLLUtil.CheckDllError(result);
             this.handle = outPtr;
+            var logger = GetDllLogger();
+            logger.SetCallbacksToStdOut();
         }
 
         ~ObjWriter()
@@ -73,17 +75,15 @@ namespace LibPLATEAU.NET.CityGML
             APIResult result = NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
             DLLUtil.CheckDllError(result);
         }
-
-        /// <summary>
-        /// DLL内でのログメッセージの受け取り方を設定します。
-        /// </summary>
-        public void SetLogCallback(LogCallbackFuncType func)
+        
+        public DllLogger GetDllLogger()
         {
-            APIResult result = NativeMethods.plateau_obj_writer_set_log_callback(
+            APIResult result = NativeMethods.plateau_obj_writer_get_dll_logger(
                 Handle,
-                Marshal.GetFunctionPointerForDelegate(func)
+                out IntPtr loggerHandle
             );
             DLLUtil.CheckDllError(result);
+            return new DllLogger(loggerHandle);
         }
 
         /// <summary>
