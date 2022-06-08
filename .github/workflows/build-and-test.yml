@@ -29,5 +29,10 @@ jobs:
       with:
         shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
 
+    - name: Run Test
+      run: |
+        cd ${{github.workspace}}/out/build/x64-Release/bin
+        ./plateau_test
+
     - name: Run Test of C# Wrapper
       run: 'dotnet test -p:Configuration=Release -p:Platform="Any CPU" --verbosity normal ${{github.workspace}}/wrappers/csharp/LibPLATEAU.NET'
