@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <fstream>
 
@@ -11,9 +11,9 @@ enum class AxesConversion {
 };
 
 enum class MeshGranularity {
-    PerAtomicFeatureObject, // �ŏ��n���P��(�����p�[�c)
-    PerPrimaryFeatureObject, // ��v�n���P��(���z���A���H��)
-    PerCityModelArea // �s�s���f���n��P��(GML�t�@�C�����̂��ׂĂ�����)
+    PerAtomicFeatureObject, // 最小地物単位(建物パーツ)
+    PerPrimaryFeatureObject, // 主要地物単位(建築物、道路等)
+    PerCityModelArea // 都市モデル地域単位(GMLファイル内のすべてを結合)
 };
 
 typedef void(*LogCallbackFuncType)(const char*);
@@ -41,11 +41,13 @@ private:
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
     void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
-    /// Print log to std::cout, and execute method passed by setLogCallback().
-    /// If callback is not set, callback is not called.
-    /// This is used to pass log text to DLL user.
+
+    /// std::cout にログを出力し、 setLogCallback() で指定されたコールバックを実行します。
+    /// コールバックの指定がなければ、コールバックは実行せず std::cout のみにログを出力します。
+    /// 用途はDLLの利用者にログの文字列を渡すことです。
     void log(const char* text);
-    /// Throw Exception and call log().
+
+    /// 例外を投げ、log()をコールします。
     void throwException(std::string message);
 
     std::ofstream ofs_;
