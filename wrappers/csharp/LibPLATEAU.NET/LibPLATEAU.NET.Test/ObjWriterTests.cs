@@ -17,9 +17,9 @@ namespace LibPLATEAU.NET.Test
 
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
 
-            new ObjWriter().Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
+            new ObjWriter(DllLogLevel.Trace).Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
 
-            Assert.IsTrue(System.IO.File.Exists(objPath));
+            Assert.IsTrue(File.Exists(objPath));
         }
 
         [TestMethod]
