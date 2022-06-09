@@ -23,7 +23,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
 
-    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start. from " + gml_file_path + "\nto " + obj_file_path );
+    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start.\ngml path = " + gml_file_path + "\nto " + obj_file_path );
 
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {

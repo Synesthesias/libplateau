@@ -86,6 +86,15 @@ namespace LibPLATEAU.NET.CityGML
         ErrorLoadingCityGml
     }
 
+    public enum DllLogLevel
+    {
+        Error = 4,
+        Warning = 3,
+        Info = 2,
+        Debug = 1,
+        Trace = 0
+    }
+
 
     public enum CityObjectType : ulong
     {
@@ -190,7 +199,11 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
             [In] CitygmlParserParams parserParams,
-            out IntPtr cityModelHandle);
+            out IntPtr cityModelHandle,
+            DllLogLevel logLevel,
+            IntPtr logErrorCallbackFuncPtr,
+            IntPtr logWarnCallbackFuncPtr,
+            IntPtr logInfoCallbackFuncPtr);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_obj_writer(
@@ -716,5 +729,10 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr errorCallbackFuncPtr,
             [In] IntPtr warnCallbackPtrFuncPtr,
             [In] IntPtr infoCallbackFuncPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dll_logger_set_log_level(
+            [In] IntPtr handle,
+            DllLogLevel dllLogLevel);
     }
 }

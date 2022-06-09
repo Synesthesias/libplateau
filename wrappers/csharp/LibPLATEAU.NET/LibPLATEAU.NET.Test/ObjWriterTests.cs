@@ -36,12 +36,14 @@ namespace LibPLATEAU.NET.Test
             Console.SetOut(strWriter);
 
             // ファイル変換でログが出てくることを期待します。
+            // DLL内のログが C# の標準出力に転送されるはずです。
+            objWriter.GetDllLogger().SetLogLevel(DllLogLevel.Info);
             objWriter.Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
             
             // ログが出ていることを確認します。
             var reader = new StringReader(builder.ToString());
             string consoleMessage = reader.ReadToEnd();
-            StringAssert.Contains(consoleMessage, "Convert Start. from");
+            StringAssert.Contains(consoleMessage, "Convert Start.");
             
             Console.SetOut(prevOut);
         }

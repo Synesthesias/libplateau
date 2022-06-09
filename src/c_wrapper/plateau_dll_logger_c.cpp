@@ -16,4 +16,15 @@ extern "C"{
         return APIResult::ErrorUnknown;
     }
 
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dll_logger_set_log_level(
+            PlateauDllLogger* handle,
+            DllLogLevel logLevel
+            ){
+        API_TRY{
+            handle->setLogLevel(logLevel);
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
 }

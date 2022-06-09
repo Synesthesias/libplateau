@@ -35,13 +35,14 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// <see cref="ObjWriter"/>クラスのインスタンスを初期化します。
         /// </summary>
-        public ObjWriter()
+        public ObjWriter(DllLogLevel logLevel = DllLogLevel.Info)
         {
             APIResult result = NativeMethods.plateau_create_obj_writer(out IntPtr outPtr);
             DLLUtil.CheckDllError(result);
             this.handle = outPtr;
             var logger = GetDllLogger();
             logger.SetCallbacksToStdOut();
+            logger.SetLogLevel(logLevel);
         }
 
         ~ObjWriter()
@@ -76,6 +77,10 @@ namespace LibPLATEAU.NET.CityGML
             DLLUtil.CheckDllError(result);
         }
         
+        /// <summary>
+        /// 変換時のDLLのログ出力の細かさを変更するには、
+        /// 変換前にこのメソッドで <see cref="DllLogger"/> を取得して設定を変更します。
+        /// </summary>
         public DllLogger GetDllLogger()
         {
             APIResult result = NativeMethods.plateau_obj_writer_get_dll_logger(

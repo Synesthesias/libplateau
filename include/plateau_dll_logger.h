@@ -8,7 +8,7 @@ typedef void(*LogCallbackFuncPtr)(const char*);
  * @brief DLL内のログをDLLの利用者に渡すことを目的として CityGMLLogger を拡張したものです。
  * log()のコール時に、コールバックによってDLL利用者に文字列を渡します。
  */
-class LIBPLATEAU_EXPORT PlateauDllLogger : CityGMLLogger{
+class LIBPLATEAU_EXPORT PlateauDllLogger : public CityGMLLogger{
 
 
 public:

@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <citygml/citygml.h>
+#include <plateau_dll_logger.h>
 
 #include "libplateau_c.h"
 #include "city_model_c.h"
@@ -22,16 +23,24 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_load_citygml(
             const char* gml_path,
             const plateau_citygml_parser_params params,
-            const CityModelHandle** outCityModelPtr) {
+            const CityModelHandle** outCityModelPtr,
+            const DllLogLevel logLevel,
+            LogCallbackFuncPtr logErrorCallback,
+            LogCallbackFuncPtr logWarnCallback,
+            LogCallbackFuncPtr logInfoCallback) {
         API_TRY{
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
             parser_params.tesselate = params.tessellate;
-            auto city_model = citygml::load(gml_path, parser_params, nullptr);
+            auto logger = std::make_shared<PlateauDllLogger>(logLevel);
+            logger->setLogCallbacks(logErrorCallback, logWarnCallback, logInfoCallback);
+            logger->log(DllLogLevel::LL_INFO, std::string("Started Parsing gml file.\ngml path = ") + gml_path);
+            auto city_model = citygml::load(gml_path, parser_params, logger);
             if(city_model == nullptr){ // 例えば Codelists が見つからない時にエラーになります。
                 return APIResult::ErrorLoadingCityGml;
             }
             *outCityModelPtr = new CityModelHandle(city_model);
+            logger->log(DllLogLevel::LL_INFO, "Completed parsing gml.");
             return APIResult::Success;
         }
         API_CATCH;
