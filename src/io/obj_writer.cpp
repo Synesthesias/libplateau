@@ -52,14 +52,8 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     const auto rc = city_model.getNumRootCityObjects();
     dll_logger_->log(DllLogLevel::LL_INFO, "NumRootCityObjects: " + std::to_string(rc));
     ofs_ << "mtllib " << mat_file_name << std::endl;
-    int building_id_not_found_count = 0;
     for (const auto& root_object : city_model.getRootCityObjects()) {
         const std::string rbid = root_object->getAttribute(u8"建物ID");
-        if (rbid.empty()){
-            building_id_not_found_count++;
-        } else {
-            std::cout << u8"建物ID : " << rbid << std::endl;
-        }
         dll_logger_->log(DllLogLevel::LL_TRACE, "RootID : " + root_object->getId());
         if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject && !rbid.empty()) {
             ofs_ << "g " << root_object->getId() << std::endl;
@@ -80,9 +74,6 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
             processChildCityObject(target_object, v_offset, t_offset);
         }
-    }
-    if(building_id_not_found_count > 0){
-        dll_logger_->log(DllLogLevel::LL_INFO, std::to_string(building_id_not_found_count) + " root city object(s) do not have building-id-attribute.");
     }
     ofs_.close();
     ofs_mat_.close();

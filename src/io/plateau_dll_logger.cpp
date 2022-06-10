@@ -7,13 +7,13 @@ void PlateauDllLogger::log(CityGMLLogger::LOGLEVEL level, const std::string &mes
     LogCallbackFuncPtr callback;
     switch(level){
         case LOGLEVEL::LL_ERROR:
-            callback = logErrorCallback_;
+            callback = log_error_callback_;
             break;
         case LOGLEVEL::LL_WARNING:
-            callback = logWarnCallback_;
+            callback = log_warn_callback;
             break;
         default:
-            callback = logInfoCallback_;
+            callback = log_info_callback;
             break;
     }
     stream << message << std::endl;
@@ -25,8 +25,8 @@ void PlateauDllLogger::throwException(const std::string &message) {
     throw std::runtime_error(message);
 }
 
-void PlateauDllLogger::setLogCallbacks(LogCallbackFuncPtr errorCallback, LogCallbackFuncPtr warnCallback, LogCallbackFuncPtr infoCallback) {
-    logErrorCallback_ = errorCallback;
-    logWarnCallback_ = warnCallback;
-    logInfoCallback_ = infoCallback;
+void PlateauDllLogger::setLogCallbacks(LogCallbackFuncPtr error_callback, LogCallbackFuncPtr warn_callback, LogCallbackFuncPtr info_callback) {
+    log_error_callback_ = error_callback;
+    log_warn_callback = warn_callback;
+    log_info_callback = info_callback;
 }

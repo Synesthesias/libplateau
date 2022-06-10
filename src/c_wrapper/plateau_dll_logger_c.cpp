@@ -5,12 +5,12 @@ extern "C"{
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dll_logger_set_callbacks(
             PlateauDllLogger* handle,
-            LogCallbackFuncPtr errorCallback,
-            LogCallbackFuncPtr warnCallback,
-            LogCallbackFuncPtr infoCallback
+            LogCallbackFuncPtr error_callback,
+            LogCallbackFuncPtr warn_callback,
+            LogCallbackFuncPtr info_callback
             ){
         API_TRY{
-            handle->setLogCallbacks(errorCallback, warnCallback, infoCallback);
+            handle->setLogCallbacks(error_callback, warn_callback, info_callback);
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;
@@ -18,10 +18,10 @@ extern "C"{
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dll_logger_set_log_level(
             PlateauDllLogger* handle,
-            DllLogLevel logLevel
+            DllLogLevel log_level
             ){
         API_TRY{
-            handle->setLogLevel(logLevel);
+            handle->setLogLevel(log_level);
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;

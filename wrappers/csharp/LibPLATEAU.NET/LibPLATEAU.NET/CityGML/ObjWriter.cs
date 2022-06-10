@@ -35,7 +35,7 @@ namespace LibPLATEAU.NET.CityGML
         /// <summary>
         /// <see cref="ObjWriter"/>クラスのインスタンスを初期化します。
         /// </summary>
-        public ObjWriter(DllLogLevel logLevel = DllLogLevel.Info)
+        public ObjWriter(DllLogLevel logLevel = DllLogLevel.Error)
         {
             APIResult result = NativeMethods.plateau_create_obj_writer(out IntPtr outPtr);
             DLLUtil.CheckDllError(result);

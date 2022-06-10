@@ -16,24 +16,24 @@ public:
     /// どのログレベル以上を表示するかを指定します。
     explicit PlateauDllLogger(
             LOGLEVEL level = DllLogLevel::LL_INFO,
-            LogCallbackFuncPtr logErrorCallback = nullptr,
-            LogCallbackFuncPtr logWarnCallback = nullptr,
-            LogCallbackFuncPtr logInfoCallback = nullptr
+            LogCallbackFuncPtr log_error_callback = nullptr,
+            LogCallbackFuncPtr log_warn_callback = nullptr,
+            LogCallbackFuncPtr log_info_callback = nullptr
             ) : CityGMLLogger(level)
-            , logErrorCallback_(logErrorCallback)
-            , logWarnCallback_(logWarnCallback)
-            , logInfoCallback_(logInfoCallback)
+            , log_error_callback_(log_error_callback)
+            , log_warn_callback(log_warn_callback)
+            , log_info_callback(log_info_callback)
             {};
 
     void log(DllLogLevel level, const std::string& message, const char* file=nullptr, int line=-1) const override;
-    void setLogCallbacks(LogCallbackFuncPtr errorCallback, LogCallbackFuncPtr warnCallback, LogCallbackFuncPtr infoCallback);
+    void setLogCallbacks(LogCallbackFuncPtr error_callback, LogCallbackFuncPtr warn_callback, LogCallbackFuncPtr info_callback);
 
     /// エラーレベルの log() をコールした後に例外を出します。
     void throwException(const std::string &message);
 
 private:
-    LogCallbackFuncPtr logErrorCallback_;
-    LogCallbackFuncPtr logWarnCallback_;
-    LogCallbackFuncPtr logInfoCallback_;
+    LogCallbackFuncPtr log_error_callback_;
+    LogCallbackFuncPtr log_warn_callback;
+    LogCallbackFuncPtr log_info_callback;
 
 };
