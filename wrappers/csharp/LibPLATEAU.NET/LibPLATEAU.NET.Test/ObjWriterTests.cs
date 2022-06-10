@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using LibPLATEAU.NET.CityGML;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,9 +17,35 @@ namespace LibPLATEAU.NET.Test
 
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
 
-            new ObjWriter().Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
+            new ObjWriter(DllLogLevel.Trace).Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
 
-            Assert.IsTrue(System.IO.File.Exists(objPath));
+            Assert.IsTrue(File.Exists(objPath));
+        }
+
+        [TestMethod]
+        public void Dll_Log_Is_Sent_To_CSharp_StdOut()
+        {
+            var objWriter = new ObjWriter();
+            var objPath = "53392642_bldg_6697_op2.obj";
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            
+            // コンソール出力を奪い取って中身を確認できるようにします。
+            var prevOut = Console.Out;
+            var builder = new StringBuilder();
+            var strWriter = new StringWriter(builder);
+            Console.SetOut(strWriter);
+
+            // ファイル変換でログが出てくることを期待します。
+            // DLL内のログが C# の標準出力に転送されるはずです。
+            objWriter.GetDllLogger().SetLogLevel(DllLogLevel.Info);
+            objWriter.Write(objPath, cityModel, TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple));
+            
+            // ログが出ていることを確認します。
+            var reader = new StringReader(builder.ToString());
+            string consoleMessage = reader.ReadToEnd();
+            StringAssert.Contains(consoleMessage, "Convert Start.");
+            
+            Console.SetOut(prevOut);
         }
 
         [TestMethod]

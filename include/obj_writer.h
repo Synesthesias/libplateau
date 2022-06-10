@@ -1,9 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <fstream>
 
 #include <citygml/citygml.h>
 #include <libplateau_api.h>
+#include <plateau_dll_logger.h>
 
 enum class AxesConversion {
     WNU,
@@ -11,24 +12,25 @@ enum class AxesConversion {
 };
 
 enum class MeshGranularity {
-    PerAtomicFeatureObject, // Å¬’n•¨’PˆÊ(Œš•¨ƒp[ƒc)
-    PerPrimaryFeatureObject, // å—v’n•¨’PˆÊ(Œš’z•¨A“¹˜H“™)
-    PerCityModelArea // “ssƒ‚ƒfƒ‹’nˆæ’PˆÊ(GMLƒtƒ@ƒCƒ‹“à‚Ì‚·‚×‚Ä‚ğŒ‹‡)
+    PerAtomicFeatureObject, // æœ€å°åœ°ç‰©å˜ä½(å»ºç‰©ãƒ‘ãƒ¼ãƒ„)
+    PerPrimaryFeatureObject, // ä¸»è¦åœ°ç‰©å˜ä½(å»ºç¯‰ç‰©ã€é“è·¯ç­‰)
+    PerCityModelArea // éƒ½å¸‚ãƒ¢ãƒ‡ãƒ«åœ°åŸŸå˜ä½(GMLãƒ•ã‚¡ã‚¤ãƒ«å†…ã®ã™ã¹ã¦ã‚’çµåˆ)
 };
 
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
-    ObjWriter() : ofs_() {
+    ObjWriter() : ofs_(), dll_logger_(std::make_unique<PlateauDllLogger>()) {
     }
 
     void write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path);
     void setDestAxes(AxesConversion value);
-    AxesConversion getDestAxes() const;
+    [[nodiscard]] AxesConversion getDestAxes() const;
     void setValidReferencePoint(const citygml::CityModel& city_model);
     void getReferencePoint(double xyz[]) const;
     void setReferencePoint(const double xyz[]);
     void setMeshGranularity(MeshGranularity value);
-    MeshGranularity getMeshGranularity() const;
+    [[nodiscard]] MeshGranularity getMeshGranularity() const;
+    [[nodiscard]] const PlateauDllLogger * getLogger() const;
 
 private:
     unsigned int writeVertices(const std::vector<TVec3d>& vertices);
@@ -46,4 +48,5 @@ private:
     AxesConversion axes_ = AxesConversion::WNU;
     double ref_point_[3] = {0,0,0};
     MeshGranularity mesh_granularity_ = MeshGranularity::PerPrimaryFeatureObject;
+    std::unique_ptr<PlateauDllLogger> dll_logger_;
 };

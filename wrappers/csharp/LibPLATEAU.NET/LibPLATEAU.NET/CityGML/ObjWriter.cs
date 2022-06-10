@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using LibPLATEAU.NET.Util;
 
@@ -17,16 +19,30 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public PlateauVector3d ReferencePoint
         {
-            get => NativeMethods.plateau_obj_writer_get_reference_point(this.handle);
-            set => NativeMethods.plateau_obj_writer_set_reference_point(this.handle, value);
+            get
+            {
+                APIResult result = NativeMethods.plateau_obj_writer_get_reference_point(this.handle, out PlateauVector3d vector3);
+                DLLUtil.CheckDllError(result);
+                return vector3;
+            }
+            set
+            {
+                APIResult result = NativeMethods.plateau_obj_writer_set_reference_point(this.handle, value);
+                DLLUtil.CheckDllError(result);
+            }
         }
 
         /// <summary>
         /// <see cref="ObjWriter"/>クラスのインスタンスを初期化します。
         /// </summary>
-        public ObjWriter()
+        public ObjWriter(DllLogLevel logLevel = DllLogLevel.Error)
         {
-            this.handle = NativeMethods.plateau_create_obj_writer();
+            APIResult result = NativeMethods.plateau_create_obj_writer(out IntPtr outPtr);
+            DLLUtil.CheckDllError(result);
+            this.handle = outPtr;
+            var logger = GetDllLogger();
+            logger.SetCallbacksToStdOut();
+            logger.SetLogLevel(logLevel);
         }
 
         ~ObjWriter()
@@ -57,7 +73,22 @@ namespace LibPLATEAU.NET.CityGML
         /// <param name="gmlPath"></param>
         public void Write(string objPath, CityModel cityModel, string gmlPath)
         {
-            NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
+            APIResult result = NativeMethods.plateau_obj_writer_write(this.handle, objPath, cityModel.Handle, gmlPath);
+            DLLUtil.CheckDllError(result);
+        }
+        
+        /// <summary>
+        /// 変換時のDLLのログ出力の細かさを変更するには、
+        /// 変換前にこのメソッドで <see cref="DllLogger"/> を取得して設定を変更します。
+        /// </summary>
+        public DllLogger GetDllLogger()
+        {
+            APIResult result = NativeMethods.plateau_obj_writer_get_dll_logger(
+                Handle,
+                out IntPtr loggerHandle
+            );
+            DLLUtil.CheckDllError(result);
+            return new DllLogger(loggerHandle);
         }
 
         /// <summary>
@@ -65,7 +96,8 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public void SetMeshGranularity(MeshGranularity value)
         {
-            NativeMethods.plateau_obj_writer_set_mesh_granularity(this.handle, value);
+            APIResult result = NativeMethods.plateau_obj_writer_set_mesh_granularity(this.handle, value);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>
@@ -83,7 +115,8 @@ namespace LibPLATEAU.NET.CityGML
         /// </summary>
         public void SetDestAxes(AxesConversion value)
         {
-            NativeMethods.plateau_obj_writer_set_dest_axes(this.handle, value);
+            APIResult result = NativeMethods.plateau_obj_writer_set_dest_axes(this.handle, value);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>
@@ -102,7 +135,8 @@ namespace LibPLATEAU.NET.CityGML
         /// <param name="cityModel"></param>
         public void SetValidReferencePoint(CityModel cityModel)
         {
-            NativeMethods.plateau_obj_writer_set_valid_reference_point(this.handle, cityModel.Handle);
+            APIResult result = NativeMethods.plateau_obj_writer_set_valid_reference_point(this.handle, cityModel.Handle);
+            DLLUtil.CheckDllError(result);
         }
     }
 }

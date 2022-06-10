@@ -23,9 +23,11 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
 
+    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start.\ngml path = " + gml_file_path + "\nto " + obj_file_path );
+
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
-        throw std::runtime_error(std::string("Failed to open : ") + obj_file_path_);
+        dll_logger_->throwException(std::string("Failed to open stream of obj path : ") + obj_file_path_);
     }
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
@@ -40,7 +42,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
-        throw std::runtime_error(std::string("Failed to open : ") + mat_file_path);
+        dll_logger_->throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
     }
 
     ofs_mat_ << "newmtl obj_def_mat" << std::endl;
@@ -48,14 +50,11 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_ << std::fixed << std::setprecision(6);
     const auto rc = city_model.getNumRootCityObjects();
-    std::cout << "NumRootCityObjects : " << rc << std::endl;
+    dll_logger_->log(DllLogLevel::LL_INFO, "NumRootCityObjects: " + std::to_string(rc));
     ofs_ << "mtllib " << mat_file_name << std::endl;
     for (const auto& root_object : city_model.getRootCityObjects()) {
-        const std::string rbid = root_object->getAttribute("建物ID");
-        if (!rbid.empty()) {
-            std::cout << "建物ID : " << rbid << std::endl;
-        }
-        std::cout << "RootID : " << root_object->getId() << std::endl;
+        const std::string rbid = root_object->getAttribute(u8"建物ID");
+        dll_logger_->log(DllLogLevel::LL_TRACE, "RootID : " + root_object->getId());
         if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject && !rbid.empty()) {
             ofs_ << "g " << root_object->getId() << std::endl;
         }
@@ -68,8 +67,8 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
             writeCityObject(target_object, v_offset, t_offset, true);
         }
-        
-        std::cout << "ChildCityObjectsCount : " << cc << std::endl;
+
+        dll_logger_->log(DllLogLevel::LL_TRACE, "ChildCityObjectsCount : " + std::to_string(cc));
         for (unsigned int i = 0; i < cc; i++) {
             const auto& target_object = root_object->getChildCityObject(i);
 
@@ -83,18 +82,18 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {
     const std::string cbid = target_object.getAttribute("建物ID");
     if (!cbid.empty()) {
-        std::cout << "建物ID : " << cbid << std::endl;
+        dll_logger_->log(DllLogLevel::LL_TRACE, "建物ID : " + cbid);
     }
     if (mesh_granularity_ == MeshGranularity::PerAtomicFeatureObject || (!cbid.empty() && mesh_granularity_ != MeshGranularity::PerCityModelArea) ) {
         ofs_ << "g " << target_object.getId() << std::endl;
     }
-    std::cout << "ChildID : " << target_object.getId() << std::endl;
+    dll_logger_->log(DllLogLevel::LL_TRACE, "ChildID : " + target_object.getId());
 
     writeCityObject(target_object, v_offset, t_offset, false);
 
     const auto cc = target_object.getChildCityObjectsCount();
     if (cc != 0) {
-        std::cout << "grandChildCityObjectsCount : " << cc << std::endl;
+        dll_logger_->log(DllLogLevel::LL_TRACE, "grandChildCityObjectsCount : " + std::to_string(cc));
         for (unsigned int i = 0; i < cc; i++) {
             const auto& new_target_object = target_object.getChildCityObject(i);
 
@@ -190,16 +189,16 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             mkdirResult = mkdir(to_dir.c_str(), 0777);
 #endif
             if (mkdirResult != 0) {
-                throw std::runtime_error(std::string("Failed to make directory : ") + to_dir);
+                dll_logger_->throwException(std::string("Failed to make directory : ") + to_dir);
             }
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
-            throw std::runtime_error(std::string("Failed to open : ") + path_from);
+            dll_logger_->throwException(std::string("Failed to open stream of material source path : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
-            throw std::runtime_error(std::string("Failed to open : ") + path_to);
+            dll_logger_->throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
     }
@@ -224,7 +223,7 @@ void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {
     ref_point_[1] = (lower_bound.y + upper_bound.y) / 2.0;
     ref_point_[2] = lower_bound.z;
 
-    std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
+    dll_logger_->log(DllLogLevel::LL_TRACE, "Set ReferencePoint @ " + std::to_string(ref_point_[0]) + ", " + std::to_string(ref_point_[1]) + ", " + std::to_string(ref_point_[2]));
 }
 
 void ObjWriter::getReferencePoint(double xyz[]) const{
@@ -233,26 +232,32 @@ void ObjWriter::getReferencePoint(double xyz[]) const{
 
 void ObjWriter::setReferencePoint(const double xyz[]) {
     for (int i = 0; i < 3; i++) ref_point_[i] = xyz[i];
-    std::cout << "Set ReferencePoint @ " << ref_point_[0] << ", " << ref_point_[1] << ", " << ref_point_[2] << std::endl;
+    dll_logger_->log(DllLogLevel::LL_TRACE, "Set ReferencePoint @ " + std::to_string(ref_point_[0]) + ", " + std::to_string(ref_point_[1]) + ", " + std::to_string(ref_point_[2]));
 }
 
 void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto gc = target_object.getGeometriesCount();
-    std::cout << "GeometriesCount = " << gc << std::endl;
+    dll_logger_->log(DllLogLevel::LL_TRACE, "GeometriesCount = " + std::to_string(gc));
     for (unsigned int j = 0; j < gc; j++) {
         if (target_object.getGeometry(j).getLOD() == 0) {
-            std::cout << "Found LOD0 Geometry. Skipped it." << std::endl;
+            dll_logger_->log(DllLogLevel::LL_TRACE, "Found LOD0 Geometry. Skipped it.");
             continue;
         }
-        writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);       
+        writeGeometry(target_object.getGeometry(j), v_offset, t_offset, recursive_flg);
     }
 }
 
 void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto pc = target_geometry.getPolygonsCount();
-    std::cout << "PolygonsCount = " << pc << std::endl;
+    if(pc <= 0){
+        dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "Polygon Count is zero on the target_geometry.");
+    }
+    dll_logger_->log(DllLogLevel::LL_TRACE, "PolygonsCount = " + std::to_string(pc));
     for (unsigned int k = 0; k < pc; k++) {
         const auto v_cnt = writeVertices(target_geometry.getPolygon(k)->getVertices());
+        if(v_cnt <= 0){
+            dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "vertices count is zero in the polygon.");
+        }
 
         const auto citygmlTex = target_geometry.getPolygon(k)->getTextureFor("rgbTexture");
         bool tex_flg = false;
@@ -272,7 +277,7 @@ void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned
 
     const auto cgc = target_geometry.getGeometriesCount();
     if (cgc != 0 && recursive_flg) {
-        std::cout << "childGeometriesCount : " << cgc << std::endl;
+        dll_logger_->log(DllLogLevel::LL_TRACE, "childGeometriesCount : " + std::to_string(cgc));
         for (unsigned int i = 0; i < cgc; i++) {
             const auto& new_target_geometry = target_geometry.getGeometry(i);
 
@@ -287,4 +292,8 @@ void ObjWriter::setMeshGranularity(MeshGranularity value) {
 
 MeshGranularity ObjWriter::getMeshGranularity() const {
     return mesh_granularity_;
+}
+
+const PlateauDllLogger * ObjWriter::getLogger() const {
+    return dll_logger_.get();
 }

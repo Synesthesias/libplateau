@@ -86,6 +86,15 @@ namespace LibPLATEAU.NET.CityGML
         ErrorLoadingCityGml
     }
 
+    public enum DllLogLevel
+    {
+        Error = 4,
+        Warning = 3,
+        Info = 2,
+        Debug = 1,
+        Trace = 0
+    }
+
 
     public enum CityObjectType : ulong
     {
@@ -180,6 +189,8 @@ namespace LibPLATEAU.NET.CityGML
         AttributeSet
     }
 
+    public delegate void LogCallbackFuncType(IntPtr textPtr);
+
     internal static class NativeMethods
     {
         private const string DllName = "plateau";
@@ -188,23 +199,29 @@ namespace LibPLATEAU.NET.CityGML
         internal static extern APIResult plateau_load_citygml(
             [In] string gmlPath,
             [In] CitygmlParserParams parserParams,
-            out IntPtr cityModelHandle);
+            out IntPtr cityModelHandle,
+            DllLogLevel logLevel,
+            IntPtr logErrorCallbackFuncPtr,
+            IntPtr logWarnCallbackFuncPtr,
+            IntPtr logInfoCallbackFuncPtr);
 
         [DllImport(DllName)]
-        internal static extern IntPtr plateau_create_obj_writer();
+        internal static extern APIResult plateau_create_obj_writer(
+            out IntPtr outHandle
+            );
 
         [DllImport(DllName)]
         internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern void plateau_obj_writer_write(
+        internal static extern APIResult plateau_obj_writer_write(
             [In] IntPtr objWriter,
             [In] string objPath,
             [In] IntPtr cityModel,
             [In] string gmlPath);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_mesh_granularity(
+        internal static extern APIResult plateau_obj_writer_set_mesh_granularity(
             [In] IntPtr objWriter,
             MeshGranularity value);
 
@@ -214,7 +231,7 @@ namespace LibPLATEAU.NET.CityGML
             out MeshGranularity meshGranularity);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_dest_axes(
+        internal static extern APIResult plateau_obj_writer_set_dest_axes(
             [In] IntPtr objWriter,
             AxesConversion value);
 
@@ -224,18 +241,25 @@ namespace LibPLATEAU.NET.CityGML
             out AxesConversion axesConversion);
 
         [DllImport(DllName)]
-        internal static extern PlateauVector3d plateau_obj_writer_get_reference_point(
-            [In] IntPtr objWriter);
+        internal static extern APIResult plateau_obj_writer_get_reference_point(
+            [In] IntPtr objWriter,
+            out PlateauVector3d outVector3);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_reference_point(
+        internal static extern APIResult plateau_obj_writer_set_reference_point(
             [In] IntPtr objWriter,
             [In] PlateauVector3d referencePoint);
 
         [DllImport(DllName)]
-        internal static extern void plateau_obj_writer_set_valid_reference_point(
+        internal static extern APIResult plateau_obj_writer_set_valid_reference_point(
             [In] IntPtr objWriter,
             [In] IntPtr cityModel);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_obj_writer_get_dll_logger(
+            [In] IntPtr handle,
+            out IntPtr loggerHandle);
+        
 
         [DllImport(DllName)]
         internal static extern int plateau_delete_city_model(
@@ -694,5 +718,21 @@ namespace LibPLATEAU.NET.CityGML
             [In] IntPtr handle,
             [In, Out] IntPtr[] outStrPointers,
             [Out] int[] outStrSizes);
+        
+        
+        // ***************
+        //  plateau_dll_logger_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dll_logger_set_callbacks(
+            [In] IntPtr handle,
+            [In] IntPtr errorCallbackFuncPtr,
+            [In] IntPtr warnCallbackPtrFuncPtr,
+            [In] IntPtr infoCallbackFuncPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dll_logger_set_log_level(
+            [In] IntPtr handle,
+            DllLogLevel dllLogLevel);
     }
 }
