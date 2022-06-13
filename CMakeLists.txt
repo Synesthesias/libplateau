@@ -89,6 +89,8 @@ add_subdirectory("src")
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 
+## ユニットテスト
+add_subdirectory("test")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)

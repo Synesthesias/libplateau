@@ -7,3 +7,6 @@
 [submodule "wrappers/python/pybind11"]
 	path = wrappers/python/pybind11
 	url = https://github.com/pybind/pybind11.git
+[submodule "test/gtest"]
+	path = test/gtest
+	url = https://github.com/google/googletest

@@ -37,6 +37,7 @@ OSごとのビルド方法を記載する。
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開く。
 * 一度cmakeこけるので再度cmakeする。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行する。(Ctrl+Shift+B)
+* `plateau_test`を実行することでユニットテストを実行可能
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開く。
 * ビルドする。ただしC++側に変更があった場合、  
@@ -76,9 +77,8 @@ dotnet test -c Release
 
 ## サンプル
 ### log_skipped_elements
-取り合えず作ったサンプル。Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行する。
-
 パース出来なかった要素をすべて列挙してくれる。
+Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行する。
 
 ### export_obj
 .obj, .mtlをエクスポートしてくれる。
@@ -109,6 +109,8 @@ dotnet test -c Release
   - ヘッダファイル一式を置く。
 - src
   - 内部実装のソースコードを置く。
+- test
+  - ユニットテスト
 - wrappers
   - 他言語向けのwrapper実装を置く。
 - .github/workflows
