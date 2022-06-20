@@ -87,7 +87,8 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/ManagedDLL
-          cp ~/a/libplateau-windows-dll/*.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
+          cp ~/a/libplateau-windows-dll/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
+          cp ~/a/libplateau-windows-dll/LibPLATEAU.NET.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           cp ~/a/libplateau-ubuntu-18.04-dll/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           cp ~/a/libplateau-macos-latest-dll/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
 
