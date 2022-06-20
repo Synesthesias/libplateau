@@ -40,6 +40,7 @@ private:
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
     void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
+    void closeStreams();
 
     std::ofstream ofs_;
     std::ofstream ofs_mat_;
@@ -49,4 +50,5 @@ private:
     double ref_point_[3] = {0,0,0};
     MeshGranularity mesh_granularity_ = MeshGranularity::PerPrimaryFeatureObject;
     std::unique_ptr<PlateauDllLogger> dll_logger_;
+
 };

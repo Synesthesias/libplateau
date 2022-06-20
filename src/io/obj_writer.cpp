@@ -42,6 +42,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
+        ofs_.close();
         dll_logger_->throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
     }
 
@@ -189,15 +190,18 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             mkdirResult = mkdir(to_dir.c_str(), 0777);
 #endif
             if (mkdirResult != 0) {
+                closeStreams();
                 dll_logger_->throwException(std::string("Failed to make directory : ") + to_dir);
             }
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
+            closeStreams();
             dll_logger_->throwException(std::string("Failed to open stream of material source path : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
+            closeStreams();
             dll_logger_->throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
@@ -288,6 +292,11 @@ void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned
 
 void ObjWriter::setMeshGranularity(MeshGranularity value) {
     mesh_granularity_ = value;
+}
+
+void ObjWriter::closeStreams(){
+    if(ofs_.is_open()) ofs_.close();
+    if(ofs_mat_.is_open()) ofs_mat_.close();
 }
 
 MeshGranularity ObjWriter::getMeshGranularity() const {
