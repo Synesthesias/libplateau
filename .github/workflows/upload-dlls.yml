@@ -104,5 +104,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: all-libraries
-          path: ~/a
+          path: ~/a/plateau-plugins
           
