@@ -78,10 +78,12 @@ jobs:
     steps:
       - name: download-all-artifacts
         uses: actions/download-artifact@v2
+        with:
+          path: ~/artifacts/
 
       - name: sum-up-dynamic-libs
         run: |
-          cd etc/usr/artifacts/
+          cd ~/artifacts/
           mkdir -p ./plateau-plugins/dynamic-libs/Widows/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/MacOS/x86_64
