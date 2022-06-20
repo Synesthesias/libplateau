@@ -84,7 +84,7 @@ jobs:
       - name: sum-up-dynamic-libs
         run: |
           cd ~/artifacts/
-          mkdir -p ./plateau-plugins/dynamic-libs/Widows/x86_64
+          mkdir -p ./plateau-plugins/dynamic-libs/Windows/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/MacOS/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/ManagedDLL
