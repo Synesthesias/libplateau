@@ -88,18 +88,18 @@ jobs:
           mkdir -p ./plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/MacOS/x86_64
           mkdir -p ./plateau-plugins/dynamic-libs/ManagedDLL
-          cp ./windows-latest/*.dll ./plateau_plugins/dynamic-libs/Windows/x86_64
-          cp ./ubuntu-18.04/*.so ./plateau_plugins/dynamic-libs/Linux/x86_64
-          cp ./macos-latest/*.dylib ./plateau_plugins/dynamic-libs/MacOS/x86_64
+          cp ./libplateau-windows-dll/*.dll ./plateau_plugins/dynamic-libs/Windows/x86_64
+          cp ./libplateau-ubuntu-18.04-dll/*.so ./plateau_plugins/dynamic-libs/Linux/x86_64
+          cp ./libplateau-macos-latest-dll/*.dylib ./plateau_plugins/dynamic-libs/MacOS/x86_64
 
       - name: sum-up-static-libs
         run: |
           mkdir -p ./plateau-plugins/static-libs/windows
           mkdir -p ./plateau-plugins/static-libs/linux
           mkdir -p ./plateau-plugins/static-libs/macos
-          cp ./windows-latest/*.lib ./plateau_plugins/static-libs/windows
-          cp ./ubuntu-18.04/*.a ./plateau_plugins/static-libs/linux
-          cp ./macos-latest/*.a ./plateau_plugins/static-libs/macos
+          cp ./libplateau-windows-dll/*.lib ./plateau_plugins/static-libs/windows
+          cp ./libplateau-ubuntu-18.04-dll/*.a ./plateau_plugins/static-libs/linux
+          cp ./libplateau-macos-latest-dll/*.a ./plateau_plugins/static-libs/macos
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
