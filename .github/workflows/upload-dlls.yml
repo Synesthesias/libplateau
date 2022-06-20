@@ -13,6 +13,8 @@ env:
   BUILD_TYPE: RelWithDebInfo
 
 jobs:
+  # 1つ目のジョブです。
+  # OS別にビルドして、それぞれの成果物をアーティファクトとして保存します。
   upload-dlls:
 
     runs-on: ${{matrix.os}}
@@ -65,3 +67,41 @@ jobs:
         with:
           name: libplateau-${{matrix.os}}-dll
           path: ${{env.HOME}}/output/
+
+
+  # 2つ目のジョブです。
+  # OSごとのアーティファクトを1つにまとめます。
+  sum-up-dlls:
+    runs-on: ubuntu-latest
+    needs: upload-dlls
+
+    steps:
+      - name: download-all-artifacts
+        uses: actions/download-artifact@v2
+
+      - name: sum-up-dynamic-libs
+        run: |
+          cd etc/usr/artifacts/
+          mkdir -p ./plateau-plugins/dynamic-libs/Widows/x86_64
+          mkdir -p ./plateau-plugins/dynamic-libs/Linux/x86_64
+          mkdir -p ./plateau-plugins/dynamic-libs/MacOS/x86_64
+          mkdir -p ./plateau-plugins/dynamic-libs/ManagedDLL
+          cp ./windows-latest/*.dll ./plateau_plugins/dynamic-libs/Windows/x86_64
+          cp ./ubuntu-18.04/*.so ./plateau_plugins/dynamic-libs/Linux/x86_64
+          cp ./macos-latest/*.dylib ./plateau_plugins/dynamic-libs/MacOS/x86_64
+
+      - name: sum-up-static-libs
+        run: |
+          mkdir -p ./plateau-plugins/static-libs/windows
+          mkdir -p ./plateau-plugins/static-libs/linux
+          mkdir -p ./plateau-plugins/static-libs/macos
+          cp ./windows-latest/*.lib ./plateau_plugins/static-libs/windows
+          cp ./ubuntu-18.04/*.a ./plateau_plugins/static-libs/linux
+          cp ./macos-latest/*.a ./plateau_plugins/static-libs/macos
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-libraries
+          path: ./plateau_plugins
+          
