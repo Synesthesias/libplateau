@@ -42,6 +42,9 @@ private:
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void closeStreams();
 
+    ///与えられたパスのファイルを読み、"v " で始まる行があるかどうかをboolで返します。
+    bool doObjFileContainVertices(std::string obj_path);
+
     std::ofstream ofs_;
     std::ofstream ofs_mat_;
     std::string gml_file_path_, obj_file_path_;
@@ -50,5 +53,4 @@ private:
     double ref_point_[3] = {0,0,0};
     MeshGranularity mesh_granularity_ = MeshGranularity::PerPrimaryFeatureObject;
     std::unique_ptr<PlateauDllLogger> dll_logger_;
-
 };

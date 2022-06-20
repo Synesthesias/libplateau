@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <sys/stat.h>
+#include <filesystem>
 
 #if defined(_WIN32)
 #include <direct.h>
@@ -86,6 +87,12 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     }
     ofs_.close();
     ofs_mat_.close();
+
+    if(!doObjFileContainVertices(obj_file_path_)){
+        std::filesystem::remove(obj_file_path_);
+        std::filesystem::remove(mat_file_path);
+        dll_logger_->throwException("No vertex found. Deleting output obj & mat.");
+    }
 }
 
 void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {
@@ -305,6 +312,24 @@ void ObjWriter::setMeshGranularity(MeshGranularity value) {
 void ObjWriter::closeStreams(){
     if(ofs_.is_open()) ofs_.close();
     if(ofs_mat_.is_open()) ofs_mat_.close();
+}
+
+bool ObjWriter::doObjFileContainVertices(std::string obj_path){
+    auto obj_stream = std::ifstream(obj_path);
+    if(!obj_stream.is_open()){
+        dll_logger_->throwException("Output obj file is not found.");
+    }
+    const std::string search_prefix = "v ";
+    std::string line;
+    while(std::getline(obj_stream, line)){
+        if(line.size() > search_prefix.size() &&
+           std::equal(std::begin(search_prefix), std::end(search_prefix), std::begin(line))){
+            obj_stream.close();
+            return true;
+        }
+    }
+    obj_stream.close();
+    return false;
 }
 
 MeshGranularity ObjWriter::getMeshGranularity() const {
