@@ -43,7 +43,7 @@ private:
     void closeStreams();
 
     ///与えられたパスのファイルを読み、"v " で始まる行があるかどうかをboolで返します。
-    bool doObjFileContainVertices(std::string obj_path);
+    bool anyVertexExists(const std::string& obj_path);
 
     std::ofstream ofs_;
     std::ofstream ofs_mat_;

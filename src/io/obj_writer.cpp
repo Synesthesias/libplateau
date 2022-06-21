@@ -88,7 +88,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     ofs_.close();
     ofs_mat_.close();
 
-    if(!doObjFileContainVertices(obj_file_path_)){
+    if(!anyVertexExists(obj_file_path_)){
         std::filesystem::remove(obj_file_path_);
         std::filesystem::remove(mat_file_path);
         dll_logger_->throwException("No vertex found. Deleting output obj & mat.");
@@ -314,7 +314,7 @@ void ObjWriter::closeStreams(){
     if(ofs_mat_.is_open()) ofs_mat_.close();
 }
 
-bool ObjWriter::doObjFileContainVertices(std::string obj_path){
+bool ObjWriter::anyVertexExists(const std::string& obj_path){
     auto obj_stream = std::ifstream(obj_path);
     if(!obj_stream.is_open()){
         dll_logger_->throwException("Output obj file is not found.");
