@@ -40,6 +40,10 @@ private:
     void processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset);
     void writeCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
     void writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg);
+    void closeStreams();
+
+    ///与えられたパスのファイルを読み、"v " で始まる行があるかどうかをboolで返します。
+    bool anyVertexExists(const std::string& obj_path);
 
     std::ofstream ofs_;
     std::ofstream ofs_mat_;

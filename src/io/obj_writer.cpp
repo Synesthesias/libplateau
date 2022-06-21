@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <sys/stat.h>
+#include <filesystem>
 
 #if defined(_WIN32)
 #include <direct.h>
@@ -32,16 +33,19 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
     const size_t file_i = obj_file_path_.find_last_of(".");
-    const std::string mat_file_path = obj_file_path_.substr(0, file_i) + ".mtl";
-    std::string mat_file_name;
+    const std::string mat_file_path =  obj_file_path_.substr(0, file_i) + ".mtl";
+
+    std::string file_name_without_extension;
     if (dir_i == std::string::npos) {
-        mat_file_name = obj_file_path_.substr(0, file_i) + ".mtl";
+        file_name_without_extension = obj_file_path_.substr(0, file_i);
     } else {
-        mat_file_name = obj_file_path_.substr(dir_i + 1, file_i - dir_i - 1) + ".mtl";
+        file_name_without_extension = obj_file_path_.substr(dir_i + 1, file_i - dir_i - 1);
     }
+    std::string mat_file_name = file_name_without_extension + ".mtl";
 
     ofs_mat_ = std::ofstream(mat_file_path);
     if (!ofs_mat_.is_open()) {
+        ofs_.close();
         dll_logger_->throwException(std::string("Failed to open stream of material path : ") + mat_file_path);
     }
 
@@ -52,6 +56,12 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     const auto rc = city_model.getNumRootCityObjects();
     dll_logger_->log(DllLogLevel::LL_INFO, "NumRootCityObjects: " + std::to_string(rc));
     ofs_ << "mtllib " << mat_file_name << std::endl;
+
+    // メッシュを1つに結合する設定なら、その唯一のメッシュの名称を設定します。
+    if(mesh_granularity_ == MeshGranularity::PerCityModelArea){
+        ofs_ << "g " << file_name_without_extension << std::endl;
+    }
+
     for (const auto& root_object : city_model.getRootCityObjects()) {
         const std::string rbid = root_object->getAttribute(u8"建物ID");
         dll_logger_->log(DllLogLevel::LL_TRACE, "RootID : " + root_object->getId());
@@ -77,6 +87,12 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     }
     ofs_.close();
     ofs_mat_.close();
+
+    if(!anyVertexExists(obj_file_path_)){
+        std::filesystem::remove(obj_file_path_);
+        std::filesystem::remove(mat_file_path);
+        dll_logger_->throwException("No vertex found. Deleting output obj & mat.");
+    }
 }
 
 void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {
@@ -189,15 +205,18 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             mkdirResult = mkdir(to_dir.c_str(), 0777);
 #endif
             if (mkdirResult != 0) {
+                closeStreams();
                 dll_logger_->throwException(std::string("Failed to make directory : ") + to_dir);
             }
         }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
+            closeStreams();
             dll_logger_->throwException(std::string("Failed to open stream of material source path : ") + path_from);
         }
         std::ofstream ofstr(path_to, std::ios::binary);
         if (!ofstr.is_open()) {
+            closeStreams();
             dll_logger_->throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
@@ -288,6 +307,29 @@ void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned
 
 void ObjWriter::setMeshGranularity(MeshGranularity value) {
     mesh_granularity_ = value;
+}
+
+void ObjWriter::closeStreams(){
+    if(ofs_.is_open()) ofs_.close();
+    if(ofs_mat_.is_open()) ofs_mat_.close();
+}
+
+bool ObjWriter::anyVertexExists(const std::string& obj_path){
+    auto obj_stream = std::ifstream(obj_path);
+    if(!obj_stream.is_open()){
+        dll_logger_->throwException("Output obj file is not found.");
+    }
+    const std::string search_prefix = "v ";
+    std::string line;
+    while(std::getline(obj_stream, line)){
+        if(line.size() > search_prefix.size() &&
+           std::equal(std::begin(search_prefix), std::end(search_prefix), std::begin(line))){
+            obj_stream.close();
+            return true;
+        }
+    }
+    obj_stream.close();
+    return false;
 }
 
 MeshGranularity ObjWriter::getMeshGranularity() const {

@@ -129,8 +129,9 @@ Github Actions によるCIを導入しています。
 Windows, Mac, Linux でのテストと成果物のダウンロードができます。
 - push時、自動でビルドおよびユニットテストが行われます。
 - git tagを付けた時、またはgithubサイトから手動で Upload DLLs を実行したときにビルドが走り、 
-  成果物となるDLL等を3つのOSでまとめてダウンロードできます。
+  成果物となるDLL等を3つのOS向けにダウンロードできます。
   githubサイトから手動で実行するには、 Actions → Workflows から Upload DLLs を選択 → Run workflow からブランチを選んで実行します。
+  成果物を ```all-library``` という名前のzipでダウンロードできます。
 
 # ライセンス
 - libplateau本体： 未定
