@@ -18,13 +18,31 @@
 #include "obj_writer.h"
 #include "polar_to_plane_cartesian.h"
 
+namespace {
+    bool isPrimaryCityObject(const citygml::CityObject& object) {
+        const auto primary_type_mask = ~(
+            // LOD3建築物の部品
+            CityObject::CityObjectsType::COT_Door |
+            CityObject::CityObjectsType::COT_Window |
+            // LOD2建築物の部品
+            CityObject::CityObjectsType::COT_WallSurface |
+            CityObject::CityObjectsType::COT_RoofSurface |
+            CityObject::CityObjectsType::COT_GroundSurface |
+            CityObject::CityObjectsType::COT_ClosureSurface |
+            CityObject::CityObjectsType::COT_OuterFloorSurface |
+            CityObject::CityObjectsType::COT_OuterCeilingSurface
+        );
+        return static_cast<uint64_t>(object.getType() & primary_type_mask) != 0ull;
+    }
+}
+
 void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel& city_model, const std::string& gml_file_path) {
 
     gml_file_path_ = gml_file_path;
     obj_file_path_ = obj_file_path;
     unsigned int v_offset = 0, t_offset = 0;
 
-    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start.\ngml path = " + gml_file_path + "\nto " + obj_file_path );
+    dll_logger_->log(DllLogLevel::LL_INFO, "Convert Start.\ngml path = " + gml_file_path + "\nto " + obj_file_path);
 
     ofs_ = std::ofstream(obj_file_path_);
     if (!ofs_.is_open()) {
@@ -33,7 +51,7 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
 
     const size_t dir_i = obj_file_path_.find_last_of("/");
     const size_t file_i = obj_file_path_.find_last_of(".");
-    const std::string mat_file_path =  obj_file_path_.substr(0, file_i) + ".mtl";
+    const std::string mat_file_path = obj_file_path_.substr(0, file_i) + ".mtl";
 
     std::string file_name_without_extension;
     if (dir_i == std::string::npos) {
@@ -58,14 +76,12 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     ofs_ << "mtllib " << mat_file_name << std::endl;
 
     // メッシュを1つに結合する設定なら、その唯一のメッシュの名称を設定します。
-    if(mesh_granularity_ == MeshGranularity::PerCityModelArea){
+    if (mesh_granularity_ == MeshGranularity::PerCityModelArea) {
         ofs_ << "g " << file_name_without_extension << std::endl;
     }
 
     for (const auto& root_object : city_model.getRootCityObjects()) {
-        const std::string rbid = root_object->getAttribute(u8"建物ID");
-        dll_logger_->log(DllLogLevel::LL_TRACE, "RootID : " + root_object->getId());
-        if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject && !rbid.empty()) {
+        if (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject) {
             ofs_ << "g " << root_object->getId() << std::endl;
         }
 
@@ -88,28 +104,26 @@ void ObjWriter::write(const std::string& obj_file_path, const citygml::CityModel
     ofs_.close();
     ofs_mat_.close();
 
-    if(!anyVertexExists(obj_file_path_)){
+    if (!anyVertexExists(obj_file_path_)) {
+        dll_logger_->log(DllLogLevel::LL_INFO, "No vertex found. Deleting output obj & mat.");
         std::filesystem::remove(obj_file_path_);
         std::filesystem::remove(mat_file_path);
-        dll_logger_->throwException("No vertex found. Deleting output obj & mat.");
     }
 }
 
 void ObjWriter::processChildCityObject(const citygml::CityObject& target_object, unsigned int& v_offset, unsigned int& t_offset) {
-    const std::string cbid = target_object.getAttribute("建物ID");
-    if (!cbid.empty()) {
-        dll_logger_->log(DllLogLevel::LL_TRACE, "建物ID : " + cbid);
-    }
-    if (mesh_granularity_ == MeshGranularity::PerAtomicFeatureObject || (!cbid.empty() && mesh_granularity_ != MeshGranularity::PerCityModelArea) ) {
+    const auto should_start_new_group =
+        mesh_granularity_ == MeshGranularity::PerAtomicFeatureObject ||
+        (mesh_granularity_ == MeshGranularity::PerPrimaryFeatureObject &&
+         isPrimaryCityObject(target_object));
+    if (should_start_new_group) {
         ofs_ << "g " << target_object.getId() << std::endl;
     }
-    dll_logger_->log(DllLogLevel::LL_TRACE, "ChildID : " + target_object.getId());
 
     writeCityObject(target_object, v_offset, t_offset, false);
 
     const auto cc = target_object.getChildCityObjectsCount();
     if (cc != 0) {
-        dll_logger_->log(DllLogLevel::LL_TRACE, "grandChildCityObjectsCount : " + std::to_string(cc));
         for (unsigned int i = 0; i < cc; i++) {
             const auto& new_target_object = target_object.getChildCityObject(i);
 
@@ -127,11 +141,9 @@ unsigned int ObjWriter::writeVertices(const std::vector<TVec3d>& vertices) {
         for (int i = 0; i < 3; i++) xyz[i] -= ref_point_[i];
         if (axes_ == AxesConversion::WNU) {
             ofs_ << "v " << xyz[0] << " " << xyz[1] << " " << xyz[2] << std::endl;
-        }
-        else if (axes_ == AxesConversion::RUF) {
+        } else if (axes_ == AxesConversion::RUF) {
             ofs_ << "v " << -xyz[0] << " " << xyz[2] << " " << xyz[1] << std::endl;
-        } 
-        else {
+        } else {
             throw std::runtime_error("Unknown axes type.");
         }
         cnt++;
@@ -207,8 +219,8 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             if (mkdirResult != 0) {
                 closeStreams();
                 dll_logger_->throwException(std::string("Failed to make directory : ") + to_dir);
-            }
         }
+    }
         std::ifstream ifstr(path_from, std::ios::binary);
         if (!ifstr.is_open()) {
             closeStreams();
@@ -220,7 +232,7 @@ void ObjWriter::writeMaterial(const std::string& tex_path) {
             dll_logger_->throwException(std::string("Failed to open stream of material destination path : ") + path_to);
         }
         ofstr << ifstr.rdbuf();
-    }
+}
 }
 
 void ObjWriter::setDestAxes(AxesConversion value) {
@@ -237,15 +249,15 @@ void ObjWriter::setValidReferencePoint(const citygml::CityModel& city_model) {
 
     polar_to_plane_cartesian().convert(lower_bound);
     polar_to_plane_cartesian().convert(upper_bound);
-    
-    ref_point_[0] = (lower_bound.x + upper_bound.x)/2.0;
+
+    ref_point_[0] = (lower_bound.x + upper_bound.x) / 2.0;
     ref_point_[1] = (lower_bound.y + upper_bound.y) / 2.0;
     ref_point_[2] = lower_bound.z;
 
     dll_logger_->log(DllLogLevel::LL_TRACE, "Set ReferencePoint @ " + std::to_string(ref_point_[0]) + ", " + std::to_string(ref_point_[1]) + ", " + std::to_string(ref_point_[2]));
 }
 
-void ObjWriter::getReferencePoint(double xyz[]) const{
+void ObjWriter::getReferencePoint(double xyz[]) const {
     for (int i = 0; i < 3; i++) xyz[i] = ref_point_[i];
 }
 
@@ -268,13 +280,9 @@ void ObjWriter::writeCityObject(const citygml::CityObject& target_object, unsign
 
 void ObjWriter::writeGeometry(const citygml::Geometry& target_geometry, unsigned int& v_offset, unsigned int& t_offset, bool recursive_flg) {
     const auto pc = target_geometry.getPolygonsCount();
-    if(pc <= 0){
-        dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "Polygon Count is zero on the target_geometry.");
-    }
-    dll_logger_->log(DllLogLevel::LL_TRACE, "PolygonsCount = " + std::to_string(pc));
     for (unsigned int k = 0; k < pc; k++) {
         const auto v_cnt = writeVertices(target_geometry.getPolygon(k)->getVertices());
-        if(v_cnt <= 0){
+        if (v_cnt <= 0) {
             dll_logger_->log(CityGMLLogger::LOGLEVEL::LL_INFO, "vertices count is zero in the polygon.");
         }
 
@@ -309,21 +317,21 @@ void ObjWriter::setMeshGranularity(MeshGranularity value) {
     mesh_granularity_ = value;
 }
 
-void ObjWriter::closeStreams(){
-    if(ofs_.is_open()) ofs_.close();
-    if(ofs_mat_.is_open()) ofs_mat_.close();
+void ObjWriter::closeStreams() {
+    if (ofs_.is_open()) ofs_.close();
+    if (ofs_mat_.is_open()) ofs_mat_.close();
 }
 
-bool ObjWriter::anyVertexExists(const std::string& obj_path){
+bool ObjWriter::anyVertexExists(const std::string& obj_path) {
     auto obj_stream = std::ifstream(obj_path);
-    if(!obj_stream.is_open()){
+    if (!obj_stream.is_open()) {
         dll_logger_->throwException("Output obj file is not found.");
     }
     const std::string search_prefix = "v ";
     std::string line;
-    while(std::getline(obj_stream, line)){
-        if(line.size() > search_prefix.size() &&
-           std::equal(std::begin(search_prefix), std::end(search_prefix), std::begin(line))){
+    while (std::getline(obj_stream, line)) {
+        if (line.size() > search_prefix.size() &&
+           std::equal(std::begin(search_prefix), std::end(search_prefix), std::begin(line))) {
             obj_stream.close();
             return true;
         }
@@ -336,6 +344,6 @@ MeshGranularity ObjWriter::getMeshGranularity() const {
     return mesh_granularity_;
 }
 
-const PlateauDllLogger * ObjWriter::getLogger() const {
+const PlateauDllLogger* ObjWriter::getLogger() const {
     return dll_logger_.get();
 }
