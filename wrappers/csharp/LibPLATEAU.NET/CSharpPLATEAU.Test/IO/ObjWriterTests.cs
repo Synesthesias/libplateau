@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.CityGML;
+using PLATEAU.IO;
 
 namespace PLATEAU.Test.CityGML
 {
