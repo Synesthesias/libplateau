@@ -1,6 +1,19 @@
 #include "polar_to_plane_cartesian.h"
 #include <citygml/citygml.h>
 
+void polar_to_plane_cartesian::convert(TVec3d& position)
+{
+    double xyz[3];
+    xyz[0] = position.x;
+    xyz[1] = position.y;
+    xyz[2] = position.z;
+    convert(xyz);
+    position.x = xyz[0];
+    position.y = xyz[1];
+    position.z = xyz[2];
+}
+
+
 void polar_to_plane_cartesian::convert(double xyz[]) {
     //平面直角座標変換の計算方法は https://www.gsi.go.jp/common/000061216.pdf
     int a = 6378137;

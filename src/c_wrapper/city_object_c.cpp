@@ -1,5 +1,5 @@
 #include <iostream>
-#include <obj_writer.h>
+#include <citygml/cityobject.h>
 
 #include "libplateau_c.h"
 

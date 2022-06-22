@@ -1,9 +1,10 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 
-#include <obj_writer.h>
 #include <citygml/citygml.h>
 #include <citygml/citymodel.h>
+
+#include "plateau/io/mesh_converter.h"
 
 namespace {
     void assertFileExists(const std::string& file_path)
@@ -25,7 +26,7 @@ TEST(ObjWriter, OutputsObjAndMtl) {
     const citygml::ParserParams parser_params;
     const auto city_model = citygml::load(path, parser_params, nullptr);
 
-    ObjWriter().write(output_path, *city_model, path);
+    MeshConverter().convert(output_path, path, city_model);
 
     assertFileExists(output_path);
     assertFileExists(mtl_path);
