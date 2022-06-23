@@ -1,8 +1,9 @@
 #pragma once
+
 #include <string>
 #include <fstream>
 
-#include <citygml/citygml.h>
+#include <citygml/citymodel.h>
 #include <libplateau_api.h>
 #include <plateau_dll_logger.h>
 #include <plateau/io/mesh_convert_options.h>
@@ -14,11 +15,14 @@ public:
     /**
      * \brief GMLファイルをメッシュファイルに変換します。
      *
-     * city_modelを引数に指定する場合以下が必要です。
-     * - tesselateオプションがtrueでパースされていること
-     * - gml_file_pathのGMLファイルがパースされた都市モデルであること
+     * 変換後のメッシュファイル(.objもしくは.gltf)は出力先ディレクトリに<em>LOD{LODの値}_{gmlファイル名}.{拡張子}</em>という名前で格納され、
+     * .gmlから参照されるテクスチャファイル一式は出力先ディレクトリにコピーされます。
      *
-     * \param destination_directory 出力先のディレクトリ
+     * 引数として指定するcity_modelは以下を満たしている必要があります。
+     * - tessellateオプションがtrueでパースされていること
+     * - 入力GMLファイルがパースされた都市モデルであること
+     *
+     * \param destination_directory 出力先ディレクトリ
      * \param gml_file_path 入力GMLファイル
      * \param city_model 入力GMLファイルをパースした都市モデル。nullptrを入力した場合は内部でパースされます。
      */

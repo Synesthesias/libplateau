@@ -9,12 +9,13 @@
 
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
-    ObjWriter() :
-        v_offset_(0), uv_offset_(0), dll_logger_(std::make_shared<PlateauDllLogger>()) {
-    }
-
-    ObjWriter(std::shared_ptr<PlateauDllLogger> logger) :
-        v_offset_(0), uv_offset_(0), dll_logger_(std::move(logger)) {
+    ObjWriter(std::shared_ptr<PlateauDllLogger> logger = nullptr) :
+        v_offset_(0), uv_offset_(0) {
+        if (logger == nullptr) {
+            dll_logger_ = std::make_shared<PlateauDllLogger>();
+        } else {
+            dll_logger_ = std::move(logger);
+        }
     }
 
     void write(
@@ -38,9 +39,9 @@ private:
 
     // MTL書き出し
     void writeMtl(const std::string& obj_file_path);
-    
+
     MeshConvertOptions options_;
-    
+
     std::map<std::string, std::shared_ptr<const Texture>> required_materials_;
     unsigned v_offset_, uv_offset_;
 

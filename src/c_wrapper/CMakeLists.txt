@@ -3,7 +3,7 @@ enable_language(C)
 #project("libplateau_c")
 
 add_library(c_wrapper OBJECT
-  "obj_writer_c.cpp"
+  "mesh_converter_c.cpp"
   "libplateau_c.h"
   "citygml_c.cpp"
   "city_model_c.h"

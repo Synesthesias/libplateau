@@ -26,7 +26,7 @@ void MeshConverter::convert(const std::string& destination_directory, const std:
 
     for (unsigned lod = options_.min_lod; lod <= options_.max_lod; lod++) {
         const auto obj_file_path = fs::path(destination).append("LOD" + std::to_string(lod) + "_" + base_obj_name).string();
-        ObjWriter().write(obj_file_path, gml_file_path, *city_model, options_, lod);
+        ObjWriter(logger).write(obj_file_path, gml_file_path, *city_model, options_, lod);
     }
 }
 
