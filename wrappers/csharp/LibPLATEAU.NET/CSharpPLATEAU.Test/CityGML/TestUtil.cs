@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
+using PLATEAU.Interop;
 
 namespace PLATEAU.Test.CityGML {
     public static class TestUtil {

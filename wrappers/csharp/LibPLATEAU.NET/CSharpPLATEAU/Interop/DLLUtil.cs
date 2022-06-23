@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PLATEAU.CityGML.Util
+namespace PLATEAU.Interop
 {
     /// <summary>
     /// DLLとデータをやりとりするためのユーティリティクラスです。
