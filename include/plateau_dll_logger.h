@@ -22,8 +22,8 @@ public:
             LogCallbackFuncPtr log_info_callback = nullptr
     ) : CityGMLLogger(level)
         , log_error_callback_(log_error_callback)
-        , log_warn_callback(log_warn_callback)
-        , log_info_callback(log_info_callback) {
+        , log_warn_callback_(log_warn_callback)
+        , log_info_callback_(log_info_callback) {
     };
 
     void log(DllLogLevel level, const std::string& message, const char* file = nullptr, int line = -1) const override;
@@ -34,7 +34,6 @@ public:
 
 private:
     LogCallbackFuncPtr log_error_callback_;
-    LogCallbackFuncPtr log_warn_callback;
-    LogCallbackFuncPtr log_info_callback;
-
+    LogCallbackFuncPtr log_warn_callback_;
+    LogCallbackFuncPtr log_info_callback_;
 };

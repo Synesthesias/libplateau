@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PLATEAU.CityGML;
+using PLATEAU.IO;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;
 
-namespace PLATEAU.CityGML
+namespace PLATEAU.Interop
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
@@ -65,17 +67,18 @@ namespace PLATEAU.CityGML
         }
     }
 
-    public enum AxesConversion
-    {
-        WNU,
-        RUF
-    }
 
-    public enum MeshGranularity
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MeshConvertOptionsData
     {
-        PerAtomicFeatureObject, // 最小地物単位(建物パーツ)
-        PerPrimaryFeatureObject, // 主要地物単位(建築物、道路等)
-        PerCityModelArea // 都市モデル地域単位(GMLファイル内のすべてを結合)
+        public AxesConversion MeshAxes;
+        public PlateauVector3d ReferencePoint;
+        public MeshGranularity MeshGranularity;
+        public uint MinLOD;
+        public uint MaxLOD;
+        public bool ExportLowerLOD;
+        public bool ExportAppearance;
+        public bool ConvertLatLon;
     }
 
     public enum APIResult
@@ -95,100 +98,6 @@ namespace PLATEAU.CityGML
         Trace = 0
     }
 
-
-    public enum CityObjectType : ulong
-    {
-        COT_GenericCityObject = 1ul,
-        COT_Building = 1ul << 1,
-        COT_Room = 1ul << 2,
-        COT_BuildingInstallation = 1ul << 3,
-        COT_BuildingFurniture = 1ul << 4,
-        COT_Door = 1ul << 5,
-        COT_Window = 1ul << 6,
-        COT_CityFurniture = 1ul << 7,
-        COT_Track = 1ul << 8,
-        COT_Road = 1ul << 9,
-        COT_Railway = 1ul << 10,
-        COT_Square = 1ul << 11,
-        COT_PlantCover = 1ul << 12,
-        COT_SolitaryVegetationObject = 1ul << 13,
-        COT_WaterBody = 1ul << 14,
-        COT_ReliefFeature = 1ul << 15,
-        COT_ReliefComponent = 1ul << 35,
-        COT_TINRelief = 1ul << 36,
-        COT_MassPointRelief = 1ul << 37,
-        COT_BreaklineRelief = 1ul << 38,
-        COT_RasterRelief = 1ul << 39,
-        COT_LandUse = 1ul << 16,
-        COT_Tunnel = 1ul << 17,
-        COT_Bridge = 1ul << 18,
-        COT_BridgeConstructionElement = 1ul << 19,
-        COT_BridgeInstallation = 1ul << 20,
-        COT_BridgePart = 1ul << 21,
-        COT_BuildingPart = 1ul << 22,
-
-        COT_WallSurface = 1ul << 23,
-        COT_RoofSurface = 1ul << 24,
-        COT_GroundSurface = 1ul << 25,
-        COT_ClosureSurface = 1ul << 26,
-        COT_FloorSurface = 1ul << 27,
-        COT_InteriorWallSurface = 1ul << 28,
-        COT_CeilingSurface = 1ul << 29,
-        COT_CityObjectGroup = 1ul << 30,
-        COT_OuterCeilingSurface = 1ul << 31,
-        COT_OuterFloorSurface = 1ul << 32,
-
-
-        // covers all supertypes of tran::_TransportationObject that are not Track, Road, Railway or Square...
-        // there are to many for to few bits to explicitly enumerate them. However Track, Road, Railway or Square should be used most of the time
-        COT_TransportationObject = 1ul << 33,
-
-        // ADD Building model 
-        COT_IntBuildingInstallation = 1ul << 34,
-
-        COT_All = 0xFFFFFFFFFFFFFFFFul
-    };
-
-    public enum TextureWrapMode
-    {
-        WM_None,
-        WM_Wrap,        // 繰り返し
-        WM_Mirror,      // ミラーの繰り返し
-        WM_Clamp,       // the texture is clamped to its edges
-        WM_Border       // the resulting color is specified by the borderColor element (RGBA)
-    }
-
-    public enum GeometryType : ulong
-    {
-        GT_Unknown          = 1ul << 0,
-        GT_Roof             = 1ul << 1,
-        GT_Wall             = 1ul << 2,
-        GT_Ground           = 1ul << 3,
-        GT_Closure          = 1ul << 4,
-        GT_Floor            = 1ul << 5,
-        GT_InteriorWall     = 1ul << 6,
-        GT_Ceiling          = 1ul << 7,
-        GT_OuterCeiling     = 1ul << 8,
-        GT_OuterFloor       = 1ul << 9,
-        GT_Tin              = 1ul << 10,
-    }
-
-    /// <summary>
-    /// 属性の値の想定形式です。
-    /// 形式が String, Double, Integer, Data, Uri, Measure である場合、内部的にはデータは string です。
-    /// AttributeSet である場合、内部的にはデータは <see cref="AttributesMap"/> への参照です。
-    /// </summary>
-    public enum AttributeType
-    {
-        String,
-        Double,
-        Integer,
-        Data,
-        Uri,
-        Measure,
-        AttributeSet
-    }
-
     public delegate void LogCallbackFuncType(IntPtr textPtr);
 
     internal static class NativeMethods
@@ -206,60 +115,38 @@ namespace PLATEAU.CityGML
             IntPtr logInfoCallbackFuncPtr);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_create_obj_writer(
+        internal static extern APIResult plateau_create_mesh_converter(
             out IntPtr outHandle
             );
 
         [DllImport(DllName)]
-        internal static extern void plateau_delete_obj_writer([In] IntPtr objWriter);
+        internal static extern void plateau_delete_mesh_converter([In] IntPtr meshConverter);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_obj_writer_write(
-            [In] IntPtr objWriter,
-            [In] string objPath,
+        internal static extern APIResult plateau_mesh_converter_convert(
+            [In] IntPtr meshConverter,
+            [In] string destinationDirectory,
+            [In] string gmlPath,
             [In] IntPtr cityModel,
-            [In] string gmlPath);
+            [In] IntPtr logger);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_set_mesh_granularity(
-            [In] IntPtr objWriter,
-            MeshGranularity value);
+        internal static extern APIResult plateau_mesh_converter_set_options(
+            [In] IntPtr meshConverter,
+            MeshConvertOptionsData value);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_mesh_granularity(
-            [In] IntPtr objWriter,
-            out MeshGranularity meshGranularity);
+        internal static extern APIResult plateau_mesh_converter_get_options(
+            [In] IntPtr meshConverter,
+            out MeshConvertOptionsData value);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_set_dest_axes(
-            [In] IntPtr objWriter,
-            AxesConversion value);
+        internal static extern MeshConvertOptionsData plateau_create_mesh_convert_options();
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_dest_axes(
-            [In] IntPtr objWriter,
-            out AxesConversion axesConversion);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_reference_point(
-            [In] IntPtr objWriter,
-            out PlateauVector3d outVector3);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_set_reference_point(
-            [In] IntPtr objWriter,
-            [In] PlateauVector3d referencePoint);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_set_valid_reference_point(
-            [In] IntPtr objWriter,
+        internal static extern APIResult plateau_mesh_convert_options_set_valid_reference_point(
+            [In, Out] ref MeshConvertOptionsData options,
             [In] IntPtr cityModel);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_obj_writer_get_dll_logger(
-            [In] IntPtr handle,
-            out IntPtr loggerHandle);
-        
 
         [DllImport(DllName)]
         internal static extern int plateau_delete_city_model(
@@ -338,8 +225,8 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_object_get_id_str_length(
             [In] IntPtr objHandle,
             out DllStrSizeT outLength);
-        
-        
+
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_object_get_attributes_map(
             [In] IntPtr objHandle,
@@ -353,7 +240,7 @@ namespace PLATEAU.CityGML
         [DllImport(DllName)]
         internal static extern APIResult plateau_feature_object_get_envelope(
             [In] IntPtr featureObject,
-            [Out] double[] outEnvelope 
+            [Out] double[] outEnvelope
         );
 
         [DllImport(DllName)]
@@ -362,12 +249,12 @@ namespace PLATEAU.CityGML
             double lowerX, double lowerY, double lowerZ,
             double upperX, double upperY, double upperZ
         );
-        
-        
+
+
         // ***************
         //  attributesmap_c.cpp
         // ***************
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_attributes_map_get_keys_count(
             [In] IntPtr attributesMap,
@@ -379,24 +266,24 @@ namespace PLATEAU.CityGML
             [In] IntPtr attributesMap,
             [In, Out] IntPtr[] keyHandles,
             [Out] int[] outKeySizes);
-        
+
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_get_attribute_value(
             [In] IntPtr attributesMap,
             [In] byte[] keyUtf8,
             [Out] out IntPtr attrValuePtr);
-        
+
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attributes_map_do_contains_key(
             [In] IntPtr attributesMap,
             [In] byte[] keyUtf8,
             out bool doContainsKey);
 
-        
+
         // ***************
         //  attributevalue_c.cpp
         // ***************
-        
+
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_attribute_value_get_string(
             [In] IntPtr attributeValue,
@@ -412,8 +299,8 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_attribute_as_attribute_set(
             [In] IntPtr attributeValue,
             [Out] out IntPtr attrSetPtr);
-        
-        
+
+
         // ***************
         //  address_c.cpp
         // ***************
@@ -498,7 +385,7 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_geometry_get_line_string_count(
             [In] IntPtr handle,
             out int outCount);
-        
+
         // ***************
         //  polygon_c.cpp
         // ***************
@@ -528,7 +415,7 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_polygon_get_exterior_ring(
             [In] IntPtr handle,
             out IntPtr ringHandle);
-        
+
         // ***************
         //  linearring_c.cpp
         // ***************
@@ -553,42 +440,42 @@ namespace PLATEAU.CityGML
             [In] IntPtr handle,
             out IntPtr outRingHandle,
             int index);
-        
-        
+
+
         // ***************
         //  appearancetarget_c.cpp
         // ***************
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_count(
             [In] IntPtr handle,
             out int outCount,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names(
             [In] IntPtr handle,
             [In, Out] IntPtr outThemeStrArrayHandle,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_texture_theme_names_str_sizes(
             [In] IntPtr handle,
             [Out] int[] outSizeArray,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_count(
             [In] IntPtr handle,
             out int outCount,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_material_theme_names(
             [In] IntPtr handle,
             [In, Out] IntPtr outThemeStrArrayHandle,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_appearance_target_get_all_material_theme_names_str_sizes(
             [In] IntPtr handle,
@@ -601,7 +488,7 @@ namespace PLATEAU.CityGML
             [Out] out IntPtr outTextureTargetHandle,
             [In] byte[] themeUtf8,
             [MarshalAs(UnmanagedType.U1)] bool front);
-        
+
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_appearance_target_get_material_target_definition_by_theme_name(
             [In] IntPtr handle,
@@ -624,7 +511,7 @@ namespace PLATEAU.CityGML
         // ***************
         //  texturetargetdefinition_c.cpp
         // ***************
-        
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_texture_target_definition_get_texture_coordinates_count(
             [In] IntPtr handle,
@@ -635,7 +522,7 @@ namespace PLATEAU.CityGML
             [In] IntPtr handle,
             out IntPtr outTexCoords,
             int index);
-        
+
         // ***************
         //  texturecoordinates_c.cpp
         // ***************
@@ -662,7 +549,7 @@ namespace PLATEAU.CityGML
             [In] IntPtr handle,
             [MarshalAs(UnmanagedType.U1)] out bool outIsTarget,
             [In] IntPtr ringHandle);
-        
+
         // ***************
         //  appearancetargetdefinition_c.cpp
         // ***************
@@ -677,7 +564,7 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_appearance_target_definition_tex_get_appearance(
             [In] IntPtr handle,
             out IntPtr outTextureHandle);
-        
+
         // ***************
         //  texture_c.cpp
         // ***************
@@ -692,7 +579,7 @@ namespace PLATEAU.CityGML
         internal static extern APIResult plateau_texture_get_wrap_mode(
             [In] IntPtr handle,
             out TextureWrapMode outWrapMode);
-        
+
         // ***************
         //  appearance_c.cpp
         // ***************
@@ -718,11 +605,19 @@ namespace PLATEAU.CityGML
             [In] IntPtr handle,
             [In, Out] IntPtr[] outStrPointers,
             [Out] int[] outStrSizes);
-        
-        
+
+
         // ***************
         //  plateau_dll_logger_c.cpp
         // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dll_logger(
+            out IntPtr outHandle
+        );
+
+        [DllImport(DllName)]
+        internal static extern void plateau_delete_dll_logger([In] IntPtr dllLogger);
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_dll_logger_set_callbacks(
             [In] IntPtr handle,

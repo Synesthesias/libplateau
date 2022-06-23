@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using PLATEAU.CityGML.Util;
+using System.Threading;
 
-namespace PLATEAU.CityGML
+namespace PLATEAU.Interop
 {
     /// <summary>
     /// DLL側のログをC#側でコールバックで受け取ることができますが、
@@ -18,7 +17,7 @@ namespace PLATEAU.CityGML
         public IntPtr LogErrorFuncPtr => DelegateToPtr(LogError);
         public IntPtr LogWarnFuncPtr => DelegateToPtr(LogWarn);
         public IntPtr LogInfoFuncPtr => DelegateToPtr(LogInfo);
-        
+
         public static readonly LogCallbackFuncType StdErrFunc = messagePtr =>
             Console.Error.WriteLine(PtrToStr(messagePtr));
 
@@ -37,7 +36,7 @@ namespace PLATEAU.CityGML
         public static readonly LogCallbacks StdOut = new LogCallbacks(
             StdErrFunc, StdOutFunc, StdOutFunc
         );
-        
+
         private static string PtrToStr(IntPtr strPtr)
         {
             return Marshal.PtrToStringAnsi(strPtr);
@@ -46,23 +45,52 @@ namespace PLATEAU.CityGML
         private static IntPtr DelegateToPtr(LogCallbackFuncType func)
         {
             return Marshal.GetFunctionPointerForDelegate(func);
-        } 
+        }
     }
-    
-    
+
+
     /// <summary>
     /// DLL側のログをC#側にコールバックで転送するクラスです。
     /// C#側でログを表示するためのコールバックメソッドとログ詳細度を指定できます。
     /// </summary>
-    public class DllLogger
+    public class DllLogger : IDisposable
     {
         private IntPtr handle;
+        private int disposed;
+        private readonly bool hasOwnership = false;
 
-        
-        
+        internal IntPtr Handle => this.handle;
+
+        public DllLogger()
+        {
+            APIResult result = NativeMethods.plateau_create_dll_logger(out IntPtr outPtr);
+            DLLUtil.CheckDllError(result);
+            this.handle = outPtr;
+            this.hasOwnership = true;
+        }
+
         public DllLogger(IntPtr handle)
         {
             this.handle = handle;
+            this.hasOwnership = false;
+        }
+
+        ~DllLogger()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (!this.hasOwnership)
+                return;
+
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
+            {
+                NativeMethods.plateau_delete_dll_logger(this.handle);
+            }
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

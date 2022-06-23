@@ -126,8 +126,17 @@ namespace {
     }
 }
 
-void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path, const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod) {
-    dll_logger_->log(DllLogLevel::LL_INFO, "Start conversion.\ngml path = " + gml_file_path + "\nobj path = " + obj_file_path);
+void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path, const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod, std::shared_ptr<PlateauDllLogger> logger) {
+    // 内部保持するロガー用意
+    std::shared_ptr<PlateauDllLogger> local_logger;
+    if (logger == nullptr) {
+        local_logger = std::make_shared<PlateauDllLogger>();
+        dll_logger_ = local_logger;
+    } else {
+        dll_logger_ = logger;
+    }
+
+    dll_logger_.lock()->log(DllLogLevel::LL_INFO, "Start conversion.\ngml path = " + gml_file_path + "\nobj path = " + obj_file_path);
 
     // 内部状態初期化
     options_ = options;
@@ -139,7 +148,7 @@ void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_f
 
     // 中身が空ならOBJ削除
     if (v_offset_ == 0) {
-        dll_logger_->log(DllLogLevel::LL_INFO, "No vertex generated. Deleting output obj.");
+        dll_logger_.lock()->log(DllLogLevel::LL_INFO, "No vertex generated. Deleting output obj.");
         fs::remove(obj_file_path);
         return;
     }
@@ -154,13 +163,13 @@ void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_f
         writeMtl(obj_file_path);
     }
 
-    dll_logger_->log(DllLogLevel::LL_INFO, "Conversion succeeded");
+    dll_logger_.lock()->log(DllLogLevel::LL_INFO, "Conversion succeeded");
 }
 
 void ObjWriter::writeObj(const std::string& obj_file_path, const citygml::CityModel& city_model, unsigned lod) {
     auto ofs = std::ofstream(obj_file_path);
     if (!ofs.is_open()) {
-        dll_logger_->throwException(std::string("Failed to open stream of obj path : ") + obj_file_path);
+        dll_logger_.lock()->throwException(std::string("Failed to open stream of obj path : ") + obj_file_path);
     }
     ofs << std::fixed << std::setprecision(6);
 
@@ -344,7 +353,7 @@ void ObjWriter::writeMtl(const std::string& obj_file_path) {
     const auto mtl_file_path = fs::path(obj_file_path).replace_extension(".mtl").string();
     auto mtl_ofs = std::ofstream(mtl_file_path);
     if (!mtl_ofs.is_open()) {
-        dll_logger_->throwException(std::string("Failed to open mtl file: ") + mtl_file_path);
+        dll_logger_.lock()->throwException(std::string("Failed to open mtl file: ") + mtl_file_path);
     }
 
     mtl_ofs << generateDefaultMtl();
@@ -352,8 +361,4 @@ void ObjWriter::writeMtl(const std::string& obj_file_path) {
         const auto& texture_url = texture->getUrl();
         mtl_ofs << generateMtl(material_name, texture_url);
     }
-}
-
-const PlateauDllLogger* ObjWriter::getLogger() const {
-    return dll_logger_.get();
 }

@@ -8,6 +8,9 @@
 #include <plateau_dll_logger.h>
 #include <plateau/io/mesh_convert_options.h>
 
+/**
+ * \brief GMLファイルをメッシュファイルに変換する機能を提供します。
+ */
 class LIBPLATEAU_EXPORT MeshConverter {
 public:
     MeshConverter() = default;
@@ -15,7 +18,7 @@ public:
     /**
      * \brief GMLファイルをメッシュファイルに変換します。
      *
-     * 変換後のメッシュファイル(.objもしくは.gltf)は出力先ディレクトリに<em>LOD{LODの値}_{gmlファイル名}.{拡張子}</em>という名前で格納され、
+     * 変換後のメッシュファイル(OBJもしくはglTF)は出力先ディレクトリに<em>LOD{LODの値}_{gmlファイル名}.{拡張子}</em>という名前で格納され、
      * .gmlから参照されるテクスチャファイル一式は出力先ディレクトリにコピーされます。
      *
      * 引数として指定するcity_modelは以下を満たしている必要があります。
