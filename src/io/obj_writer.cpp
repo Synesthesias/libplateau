@@ -92,20 +92,30 @@ namespace {
         copy(src_path, dst_path, copy_options);
     }
 
-    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes) {
-        const auto referenced_position = position - reference_point;
-        auto converted_position = referenced_position;
+    TVec3d convertAxes(const TVec3d& position, const AxesConversion axes) {
+        TVec3d converted_position = position;
         switch (axes) {
-        case AxesConversion::WNU:
+        case AxesConversion::ENU:
             return converted_position;
-        case AxesConversion::RUF:
-            converted_position.x = -referenced_position.x;
-            converted_position.y = referenced_position.z;
-            converted_position.z = referenced_position.y;
+        case AxesConversion::WUN:
+            converted_position.x = -position.x;
+            converted_position.y = position.z;
+            converted_position.z = position.y;
+            return converted_position;
+        case AxesConversion::NWU:
+            converted_position.x = position.y;
+            converted_position.y = -position.x;
+            converted_position.z = position.z;
             return converted_position;
         default:
             throw std::out_of_range("Invalid argument");
         }
+    }
+
+    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale) {
+        const auto referenced_position = position - reference_point;
+        const auto scaled_position = referenced_position / unit_scale;
+        return convertAxes(scaled_position, axes);
     }
 
     unsigned getMaxLOD(const citygml::CityObject& object) {
@@ -126,15 +136,12 @@ namespace {
     }
 }
 
-void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path, const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod, std::shared_ptr<PlateauDllLogger> logger) {
-    // 内部保持するロガー用意
-    std::shared_ptr<PlateauDllLogger> local_logger;
-    if (logger == nullptr) {
-        local_logger = std::make_shared<PlateauDllLogger>();
-        dll_logger_ = local_logger;
-    } else {
-        dll_logger_ = logger;
-    }
+bool ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path, const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod, std::shared_ptr<PlateauDllLogger> logger) {
+    // 内部保持するロガー用意。引数指定されていない場合は関数スコープ
+    const auto& local_logger = logger == nullptr
+        ? std::make_shared<PlateauDllLogger>()
+        : logger;
+    dll_logger_ = local_logger;
 
     dll_logger_.lock()->log(DllLogLevel::LL_INFO, "Start conversion.\ngml path = " + gml_file_path + "\nobj path = " + obj_file_path);
 
@@ -150,7 +157,7 @@ void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_f
     if (v_offset_ == 0) {
         dll_logger_.lock()->log(DllLogLevel::LL_INFO, "No vertex generated. Deleting output obj.");
         fs::remove(obj_file_path);
-        return;
+        return false;
     }
 
     if (options_.export_appearance) {
@@ -164,6 +171,8 @@ void ObjWriter::write(const std::string& obj_file_path, const std::string& gml_f
     }
 
     dll_logger_.lock()->log(DllLogLevel::LL_INFO, "Conversion succeeded");
+
+    return true;
 }
 
 void ObjWriter::writeObj(const std::string& obj_file_path, const citygml::CityModel& city_model, unsigned lod) {
@@ -287,10 +296,8 @@ void ObjWriter::writeGeometry(std::ofstream& ofs, const citygml::Geometry& targe
 
 void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
     for (TVec3d vertex : vertices) {
-        if (options_.convert_lat_lon) {
-            polar_to_plane_cartesian().convert(vertex);
-        }
-        vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes);
+        polar_to_plane_cartesian().convert(vertex);
+        vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
         ofs << generateVertex(vertex);
     }
 }
