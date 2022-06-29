@@ -60,7 +60,7 @@ int main() {
         params.optimize = true;
         MeshConverter converter;
         MeshConvertOptions options;
-        options.mesh_axes = AxesConversion::RUF;
+        options.mesh_axes = AxesConversion::WUN;
         bool first_gml = true;
         options.mesh_granularity = MeshGranularity::PerPrimaryFeatureObject;
 
@@ -71,6 +71,8 @@ int main() {
             const auto city_model = load(entry.path().string(), params, logger);
             if (first_gml) {
                 MeshConvertOptionsFactory::setValidReferencePoint(options, *city_model);
+                options.reference_point = options.reference_point - TVec3d(10000, 1000, 0);
+                converter.setOptions(options);
                 first_gml = false;
             }
             const auto obj_path = entry.path().stem().string() + ".obj";

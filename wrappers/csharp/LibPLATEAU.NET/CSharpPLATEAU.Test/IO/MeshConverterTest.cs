@@ -16,8 +16,16 @@ namespace PLATEAU.Test.IO
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
-            new MeshConverter().Convert(".", TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple), cityModel);
             var objFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".obj";
+
+            File.Delete($"LOD0_{objFileName}");
+            File.Delete($"LOD1_{objFileName}");
+            File.Delete($"LOD2_{objFileName}");
+
+            var converter = new MeshConverter();
+            converter.Options.SetValidReferencePoint(cityModel);
+            converter.Convert(".", TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple), cityModel);
+
             Assert.IsTrue(File.Exists($"LOD0_{objFileName}"));
             Assert.IsTrue(File.Exists($"LOD1_{objFileName}"));
             Assert.IsTrue(File.Exists($"LOD2_{objFileName}"));

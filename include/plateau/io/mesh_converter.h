@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <fstream>
 
 #include <citygml/citymodel.h>
@@ -30,6 +31,24 @@ public:
      * \param city_model 入力GMLファイルをパースした都市モデル。nullptrを入力した場合は内部でパースされます。
      */
     void convert(const std::string& destination_directory, const std::string& gml_file_path, std::shared_ptr<const citygml::CityModel> city_model = nullptr, std::shared_ptr<PlateauDllLogger> logger = nullptr) const;
+
+    /**
+     * \brief GMLファイルをメッシュファイルに変換します。
+     *
+     * 変換後のメッシュファイル(OBJもしくはglTF)は出力先ディレクトリに<em>LOD{LODの値}_{gmlファイル名}.{拡張子}</em>という名前で格納され、
+     * .gmlから参照されるテクスチャファイル一式は出力先ディレクトリにコピーされます。
+     *
+     * 引数として指定するcity_modelは以下を満たしている必要があります。
+     * - tessellateオプションがtrueでパースされていること
+     * - 入力GMLファイルがパースされた都市モデルであること
+     *
+     * \param [in] destination_directory 出力先ディレクトリ
+     * \param [in] gml_file_path 入力GMLファイル
+     * \param [out] converted_files 変換後のメッシュファイル
+     * \param [in] city_model 入力GMLファイルをパースした都市モデル。nullptrを入力した場合は内部でパースされます。
+     */
+    void convert(const std::string& destination_directory, const std::string& gml_file_path,
+        std::vector<std::string>& converted_files, std::shared_ptr<const citygml::CityModel> city_model = nullptr, std::shared_ptr<PlateauDllLogger> logger = nullptr) const;
 
     /**
      * \brief メッシュ変換オプションを取得します。

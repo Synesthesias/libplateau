@@ -13,7 +13,7 @@ public:
         v_offset_(0), uv_offset_(0) {
     }
 
-    void write(
+    bool write(
         const std::string& obj_file_path,
         const std::string& gml_file_path,
         const citygml::CityModel& city_model,

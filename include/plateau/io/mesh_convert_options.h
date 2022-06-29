@@ -1,34 +1,34 @@
 #pragma once
 
 /**
- * \brief 座標系
+ * @enum AxesConversion
  *
  * 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。<br/>
  * N,S,E,Wはそれぞれ北,南,東,西<br/>
- * U,D,L,R,F,Bはそれぞれ上,下,左,右,前,後<br/>
+ * U,Dはそれぞれ上,下<br/>
  * に対応します。<br/>
  */
 enum class AxesConversion {
-    WNU,
-    RUF
+    //! PLATEAUでの座標系
+    ENU,
+    //! Unityでの座標系
+    WUN,
+    //! Unreal Engineでの座標系
+    NWU
 };
 
 /**
- * \brief メッシュの結合単位
+ * @enum MeshGranularity
+ *
+ * メッシュの結合単位
  */
 enum class MeshGranularity {
-    /**
-     * \brief 最小地物単位(LOD2, LOD3の各部品)
-     */
+    //! 最小地物単位(LOD2, LOD3の各部品)
     PerAtomicFeatureObject,
-    /**
-     * \brief 主要地物単位(建築物、道路等)
-     */
-     PerPrimaryFeatureObject,
-     /**
-      * \brief 都市モデル地域単位(GMLファイル内のすべてを結合)
-      */
-      PerCityModelArea
+    //! 主要地物単位(建築物、道路等)
+    PerPrimaryFeatureObject,
+    //! 都市モデル地域単位(GMLファイル内のすべてを結合)
+    PerCityModelArea
 };
 
 /**
@@ -73,18 +73,20 @@ struct MeshConvertOptions {
     bool export_appearance;
 
     /**
-     * \brief 緯度経度からメートルへの変換を行うかどうかを指定します。
+     * \brief メートル法基準での単位の倍率を指定します。
+     *
+     * Unreal Engine向けには0.01に設定し、cm単位で出力してください。
      */
-    bool convert_lat_lon;
+    float unit_scale;
 
     MeshConvertOptions() :
-        mesh_axes(AxesConversion::RUF),
+        mesh_axes(AxesConversion::WUN),
         reference_point(),
         mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
         min_lod(0),
         max_lod(3),
         export_lower_lod(true),
         export_appearance(true),
-        convert_lat_lon(true) {
+        unit_scale(1) {
     }
 };
