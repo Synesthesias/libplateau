@@ -1,16 +1,15 @@
 #pragma once
 
-#include <exception>
 #include <utility>
 
 #include "citygml/citymodel.h"
 
 /**
- * \brief
- * CityModelのリソースクラスです。
+ * \brief CityModelのリソースクラスです。
+ *
  * shared_ptrをマネージドコードから明示的に生成・破棄するために使用されます。
- * 生成はplateau_load_citygml関数で.gml読み込みと同時に行われます。
- * 破棄はplateau_delete_city_model関数で明示的に行ってください。
+ * このクラスのインスタンス生成はplateau_load_citygml関数で.gml読み込みと同時に行われます。
+ * このクラスのインスタンス破棄はplateau_delete_city_model関数で明示的に行ってください。
  */
 class CityModelHandle {
 public:
@@ -20,6 +19,10 @@ public:
 
     [[nodiscard]] const citygml::CityModel& getCityModel() const {
         return *city_model_;
+    }
+
+    [[nodiscard]] std::shared_ptr<const citygml::CityModel> getCityModelPtr() const {
+        return city_model_;
     }
 
 private:

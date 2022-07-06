@@ -28,24 +28,27 @@ OSごとのビルド方法を記載する。
 ### 共通
 - C++ の libplateau_c をビルドすると DLL ができる。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になる。
-- C++を Release 設定でビルドしたなら C# も Release 設定でビルドする必要がある。  
-- Debug設定 なら C# も Debug にする。これを間違うと古いDLLがコピーされてしまう。
-- ビルドの成果物（DLL）は後述のデプロイで利用可能。
+- C++とC#のビルド設定を合わせる必要がある。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされてしまう。）
 
-### Windowsでのビルド
+### 3つのOS向けにまとめてビルド
+- Github Actions で```Upload Dlls``` というワークフローを手動実行すると、  
+  CIの成果として3つのOS向けにビルドしたライブラリをまとめてダウンロードできる。
+
+### Windowsでの手動ビルド
 #### C++のビルド
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開く。
 * 一度cmakeこけるので再度cmakeする。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行する。(Ctrl+Shift+B)
+* `plateau_test`を実行することでユニットテストを実行可能
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開く。
 * ビルドする。ただしC++側に変更があった場合、  
   最新のDLLをC#側にコピーするため「ビルド」ではなく「リビルド」を選択する。
-* ユニットテストも合わせて実行可能。
+* C#ユニットテストも合わせて実行可能。
 
-### Linuxでのビルド
+### Linuxでの手動ビルド
 利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とする。  
-それより新しいバージョンでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまう。
+それより新しいバージョンのUbuntuでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまう。
 #### C++のビルド
 * Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性がある。  
   その場合は新しいcmakeをマシンにインストールする。
@@ -76,23 +79,15 @@ dotnet test -c Release
 
 ## サンプル
 ### log_skipped_elements
-取り合えず作ったサンプル。Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行する。
-
 パース出来なかった要素をすべて列挙してくれる。
+Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行する。
 
 ### export_obj
 .obj, .mtlをエクスポートしてくれる。
 
 ## デプロイ
 ### Unity
-手動でビルドの成果物をUntiyプロジェクトにコピーしても導入できますが、  
-代わりに Github Actions の自動ビルド (Upload DLLs) でも同じものをダウンロードできます。  
-手動の場合は以下のようにします。ただし、1つのOS向けのdllしかできません。
-1. libplateauビルド(Release)
-2. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET.slnを開きReleaseでビルド
-3. 以下のファイルをUnityプロジェクトにコピー
-   1. wrappers/csharp/LibPLATEAU.NET/LibPLATEAU.NET/bin/Release/netstandard2.0/LibPLATEAU.NET.dll
-   2. out/build/x64-Release/bin/plateau_c.dll
+PlateauUnitySDKへの導入については、そちらのREADMEを参照のこと。
 
 ## ディレクトリ構成
 - 3rdparty
@@ -109,6 +104,8 @@ dotnet test -c Release
   - ヘッダファイル一式を置く。
 - src
   - 内部実装のソースコードを置く。
+- test
+  - ユニットテスト
 - wrappers
   - 他言語向けのwrapper実装を置く。
 - .github/workflows
@@ -127,8 +124,9 @@ Github Actions によるCIを導入しています。
 Windows, Mac, Linux でのテストと成果物のダウンロードができます。
 - push時、自動でビルドおよびユニットテストが行われます。
 - git tagを付けた時、またはgithubサイトから手動で Upload DLLs を実行したときにビルドが走り、 
-  成果物となるDLL等を3つのOSでまとめてダウンロードできます。
+  成果物となるDLL等を3つのOS向けにダウンロードできます。
   githubサイトから手動で実行するには、 Actions → Workflows から Upload DLLs を選択 → Run workflow からブランチを選んで実行します。
+  成果物を ```all-library``` という名前のzipでダウンロードできます。
 
 # ライセンス
 - libplateau本体： 未定

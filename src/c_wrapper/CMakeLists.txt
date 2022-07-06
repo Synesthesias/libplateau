@@ -3,7 +3,7 @@ enable_language(C)
 #project("libplateau_c")
 
 add_library(c_wrapper OBJECT
-  "obj_writer_c.cpp"
+  "mesh_converter_c.cpp"
   "libplateau_c.h"
   "citygml_c.cpp"
   "city_model_c.h"
@@ -23,7 +23,8 @@ add_library(c_wrapper OBJECT
   "appearancetargetdefinition_c.cpp"
   "materialtargetdefinition_c.cpp"
   "texture_c.cpp"
-  "appearance_c.cpp")
+  "appearance_c.cpp"
+  "plateau_dll_logger_c.cpp")
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
