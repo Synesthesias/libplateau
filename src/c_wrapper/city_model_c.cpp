@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <citygml/cityobject.h>
+
 #include "libplateau_c.h"
 #include "city_model_c.h"
 using namespace libplateau;
@@ -39,6 +41,28 @@ extern "C" {
                    CityModelHandle,
                    int,
                    handle->getCityModel().getNumRootCityObjects())
+
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_city_model_get_all_city_objects_of_type(
+            const CityModelHandle* city_model_handle, const citygml::CityObject** city_objects, CityObject::CityObjectsType type, int count
+        ) {
+        API_TRY{
+            const auto& city_model = city_model_handle->getCityModel();
+            const auto city_object_vector = city_model.getAllCityObjectsOfType(type);
+            for (int i = 0; i < count; ++i) {
+                city_objects[i] = city_object_vector[i];
+            }
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    DLL_VALUE_FUNC(plateau_city_model_get_all_city_object_count_of_type,
+                   CityModelHandle,
+                   int,
+                   static_cast<int>(handle->getCityModel().getAllCityObjectsOfType(type).size()),
+                   ,citygml::CityObject::CityObjectsType type)
 
     DLL_PTR_FUNC(plateau_city_model_get_city_object_by_id,
                  CityModelHandle,
