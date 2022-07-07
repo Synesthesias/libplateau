@@ -10,30 +10,14 @@
 #include <citygml/polygon.h>
 #include <citygml/texture.h>
 
+#include <plateau/io/primary_city_object_types.h>
+
 #include "obj_writer.h"
 #include "polar_to_plane_cartesian.h"
 
 namespace fs = std::filesystem;
 
 namespace {
-    bool isPrimaryCityObject(const citygml::CityObject& object) {
-        const auto primary_type_mask = ~(
-            // LOD3建築物の部品
-            CityObject::CityObjectsType::COT_Door |
-            CityObject::CityObjectsType::COT_Window |
-            // LOD2建築物の部品
-            CityObject::CityObjectsType::COT_WallSurface |
-            CityObject::CityObjectsType::COT_RoofSurface |
-            CityObject::CityObjectsType::COT_GroundSurface |
-            CityObject::CityObjectsType::COT_ClosureSurface |
-            CityObject::CityObjectsType::COT_OuterFloorSurface |
-            CityObject::CityObjectsType::COT_OuterCeilingSurface |
-            // LOD2,3交通
-            CityObject::CityObjectsType::COT_TransportationObject
-        );
-        return static_cast<uint64_t>(object.getType() & primary_type_mask) != 0ull;
-    }
-
     void startMeshGroup(std::ofstream& obj_ofs, const std::string& name) {
         obj_ofs << "g " << name << std::endl;
     }
@@ -219,7 +203,7 @@ void ObjWriter::writeCityObject(std::ofstream& ofs, const citygml::CityObject& t
     }
 
     // 該当する地物ではない場合はスキップ
-    const auto is_primary = isPrimaryCityObject(target_object);
+    const auto is_primary = PrimaryCityObjectTypes::isPrimary(target_object.getType());
     auto should_write = false;
     auto should_start_new_group = false;
     switch (options_.mesh_granularity) {

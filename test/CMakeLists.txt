@@ -21,7 +21,8 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/gtest")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/gtest/googletest/include")
 
 add_executable(plateau_test
-    "test_mesh_converter.cpp")
+    "test_mesh_converter.cpp"
+    "test_primary_city_object_types.cpp")
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 

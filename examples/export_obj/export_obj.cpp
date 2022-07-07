@@ -71,14 +71,13 @@ int main() {
             const auto city_model = load(entry.path().string(), params, logger);
             if (first_gml) {
                 MeshConvertOptionsFactory::setValidReferencePoint(options, *city_model);
-                options.reference_point = options.reference_point - TVec3d(10000, 1000, 0);
                 converter.setOptions(options);
                 first_gml = false;
             }
-            const auto obj_path = entry.path().stem().string() + ".obj";
+            //const auto obj_path = entry.path().stem().string() + ".obj";
             auto gml_path = entry.path().string();
-            std::replace(gml_path.begin(), gml_path.end(), '\\', '/');
-            converter.convert(obj_path, gml_path, city_model);
+            //std::replace(gml_path.begin(), gml_path.end(), '\\', '/');
+            converter.convert(".", gml_path, city_model);
         }
     }
     catch (std::exception& e) {
