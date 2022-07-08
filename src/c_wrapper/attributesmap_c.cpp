@@ -48,4 +48,29 @@ extern "C" {
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
+
+//    DLL_STRING_PTR_FUNC(plateau_attributes_map_to_string,
+//                        AttributesMap,
+//                        AttributeValue::AttributesMapToString(*handle))
+
+    DLL_STRING_VALUE_FUNC(plateau_attributes_map_to_string,
+                          AttributesMap,
+                          AttributeValue::AttributesMapToString(*handle))
+
+
+
+
+//    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string(
+//            const AttributesMap *const handle,
+//            const char **const out_chars_ptr,
+//            dll_str_size_t *out_str_length){
+//        API_TRY{
+//            auto str = (AttributeValue::AttributesMapToString(*handle));
+//            *out_chars_ptr = str.c_str();
+//            *out_str_length = (dll_str_size_t)str.length() + 1;
+//            return APIResult::Success;
+//        }
+//        API_CATCH;
+//        return APIResult::ErrorUnknown;
+//    }
 }

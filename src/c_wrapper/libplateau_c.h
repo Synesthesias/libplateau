@@ -81,11 +81,34 @@ using dll_str_size_t = int;
         API_TRY{\
             auto& str = (STRING_GETTER); \
             *out_chars_ptr = str.c_str();\
-            *out_str_length = str.length() + 1; /* +1 は null終端文字列の分です。 */\
+            *out_str_length = (dll_str_size_t)str.length() + 1; /* +1 は null終端文字列の分です。 */\
             return APIResult::Success;                             \
         }                                                          \
         API_CATCH                                                  \
         return APIResult::ErrorUnknown;\
+    }
+
+/// 文字列のコピーを渡したい時に利用するマクロです。
+/// 関数を2つ作成します。
+/// 関数1つ目は FUNC_NAME_size という名称で、文字列のバイト数を渡します。
+/// 関数2つ目は FUNC_NAME という名称で、与えられたアドレスに文字列のコピーを書き込みます。
+/// DLL_STRING_PTR_FUNC との違いは、文字列のポインタではなく実体のコピーを渡すので
+/// C++側での文字列の寿命が短い場合でも利用できる点です。
+#define DLL_STRING_VALUE_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
+    DLL_VALUE_FUNC(FUNC_NAME ## _size, TARGET_TYPE, int, (int)(STRING_GETTER).length()+1) /* +1 はnull終端文字列の分 */ \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+            const TARGET_TYPE* const handle, \
+            char* const out_str_ptr){ \
+        API_TRY{                                                     \
+            auto str = (STRING_GETTER);                                                         \
+            auto chars = str.c_str(); \
+            auto len = (dll_str_size_t) (str.length()); \
+            strncpy(out_str_ptr, chars, len); \
+            out_str_ptr[len] = '\0'; /* 最後はnull終端文字*/                \
+            return APIResult::Success; \
+        } \
+        API_CATCH \
+        return APIResult::ErrorUnknown; \
     }
 
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。

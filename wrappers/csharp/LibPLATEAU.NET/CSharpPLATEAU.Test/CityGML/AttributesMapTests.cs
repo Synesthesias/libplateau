@@ -160,5 +160,13 @@ namespace PLATEAU.Test.CityGML
             Assert.AreEqual(0, emptyCount);
         }
 
+        [TestMethod]
+        public void ToString_Returns_Not_Empty()
+        {
+            string str = this.attrMap.ToString();
+            Console.WriteLine(str);
+            Assert.IsFalse(string.IsNullOrEmpty(str));
+        }
+
     }
 }
