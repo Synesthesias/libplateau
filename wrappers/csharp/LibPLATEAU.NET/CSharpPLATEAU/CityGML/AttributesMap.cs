@@ -141,6 +141,10 @@ namespace PLATEAU.CityGML
             return new AttributesMapEnumerator(this);
         }
 
+        /// <summary>
+        /// 属性の中身を、見やすくフォーマットした文字列にして返します。
+        /// 子の属性も再帰的に含みます。
+        /// </summary>
         public override string ToString()
         {
             return DLLUtil.GetNativeStringByValue(
@@ -148,55 +152,6 @@ namespace PLATEAU.CityGML
                 NativeMethods.plateau_attributes_map_to_string_size,
                 NativeMethods.plateau_attributes_map_to_string);
         }
-        
-        // TODO 以下の ToString と ToStringRecursive は、C#ではなくC++側で実装すべきというご指摘を頂いたので実装後削除する
-        /// <summary>
-        /// key と value と型 のセットをすべて文字にします。
-        /// </summary>
-        // public override string ToString()
-        // {
-        //     return ToStringRecursive(0);
-        // }
-        //
-        // private string ToStringRecursive(int depth)
-        // {
-        //     var sb = new StringBuilder();
-        //     
-        //     Indent(sb, depth);
-        //     
-        //     sb.Append("[ ");
-        //     foreach (var key in Keys)
-        //     {
-        //         // タイプと key を出力します。、
-        //         var type = this[key].Type;
-        //         sb.Append($"{{ ({type}) {key} => ");
-        //         // value を出力します。value が AttributeSet ならその中身を文字にします。
-        //         string valueStr;
-        //         if (type == AttributeType.AttributeSet)
-        //         {
-        //             valueStr = "\n" + this[key].AsAttrSet.ToStringRecursive(depth+1);
-        //         }
-        //         else
-        //         {
-        //             valueStr = this[key].AsString;
-        //         }
-        //
-        //         sb.Append(valueStr + " }\n");
-        //         Indent(sb, depth);
-        //     }
-        //
-        //     sb.Append("\n");
-        //     sb.Append("]");
-        //     return sb.ToString();
-        // }
-        //
-        // private void Indent(StringBuilder sb, int depth)
-        // {
-        //     for (int i = 0; i < depth; i++)
-        //     {
-        //         sb.Append("    ");
-        //     }
-        // }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
