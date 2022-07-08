@@ -55,7 +55,7 @@ extern "C" {
 
     DLL_STRING_VALUE_FUNC(plateau_attributes_map_to_string,
                           AttributesMap,
-                          AttributeValue::AttributesMapToString(*handle))
+                          AttributeValue::attributesMapToString(*handle))
 
 
 

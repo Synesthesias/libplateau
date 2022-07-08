@@ -82,12 +82,10 @@ namespace PLATEAU.Interop
         {
             var result = strSizeGetter(handle, out int strSize);
             CheckDllError(result);
-            Console.WriteLine($"strSize = {strSize}");
             IntPtr strPtr = Marshal.AllocCoTaskMem(strSize);
             var result2 = strGetter(handle, strPtr);
             CheckDllError(result2);
             string str = ReadUtf8Str(strPtr, strSize - 1);
-            Console.WriteLine($"str = {str}");
             Marshal.FreeCoTaskMem(strPtr);
             return str;
         }
