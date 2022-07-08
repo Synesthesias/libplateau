@@ -99,12 +99,12 @@ using dll_str_size_t = int;
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE* const handle, \
             char* const out_str_ptr){ \
-        API_TRY{                                                     \
-            auto str = (STRING_GETTER);                                                         \
+        API_TRY{ \
+            auto str = (STRING_GETTER); \
             auto chars = str.c_str(); \
             auto len = (dll_str_size_t) (str.length()); \
             strncpy(out_str_ptr, chars, len); \
-            out_str_ptr[len] = '\0'; /* 最後はnull終端文字*/                \
+            out_str_ptr[len] = '\0'; /* 最後はnull終端文字*/ \
             return APIResult::Success; \
         } \
         API_CATCH \
