@@ -1,5 +1,6 @@
 ﻿#include <citygml/attributesmap.h>
 #include "libplateau_c.h"
+#include <sstream>
 
 using namespace citygml;
 using namespace libplateau;
@@ -48,9 +49,36 @@ extern "C" {
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
+    
 
-    DLL_STRING_VALUE_FUNC(plateau_attributes_map_to_string,
-                          AttributesMap,
-                          AttributeValue::attributesMapToString(*handle))
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string_size(
+            const AttributesMap* const handle,
+            int* const out
+            ){
+        API_TRY{
+            std::stringstream ss;
+            ss << *handle;
+            *out = (int) ss.str().length() + 1;
+            return APIResult::Success;
+        }API_CATCH
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string(
+            const AttributesMap* const handle,
+            char *const out_str_ptr
+            ){
+        API_TRY{
+            std::stringstream ss;
+            ss << *handle;
+            auto str = ss.str();
+            auto chars = str.c_str();
+            auto len = (dll_str_size_t) (str.length());
+            strncpy(out_str_ptr, chars, len);
+            out_str_ptr[len] = '\0';
+            return APIResult::Success;
+        }API_CATCH
+        return APIResult::ErrorUnknown;
+    }
 
 }
