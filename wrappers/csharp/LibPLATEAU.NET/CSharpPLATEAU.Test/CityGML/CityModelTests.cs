@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.CityGML;
@@ -41,6 +43,22 @@ namespace PLATEAU.Test.CityGML
                     Assert.AreNotEqual(floorType, obj.Type);
                 }
             }
+        }
+
+        [TestMethod]
+        public void GetCityObjectsByType_Works_With_Multiple_Type_Flags()
+        {
+            // 今回のテストデータには、 COT_Building は含まれますが COT_Door は含まれません。
+            var typeFlags = CityObjectType.COT_Building | CityObjectType.COT_Door;
+            var foundCityObjs = this.cityModel.GetCityObjectsByType(typeFlags);
+            foreach (var cityObjs in foundCityObjs)
+            {
+                var type = cityObjs.Type;
+                Assert.IsTrue(type == CityObjectType.COT_Building || type == CityObjectType.COT_Door, 
+                    $"{nameof(CityModel.GetCityObjectsByType)} で得られるものはすべてタイプが指定のものとなります。");
+            }
+            Assert.IsTrue(foundCityObjs.Any(co => co.Type == CityObjectType.COT_Building),
+                $"{nameof(CityObjectType.COT_Building)} が1つ以上見つかります。");
         }
 
         [TestMethod]
