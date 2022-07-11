@@ -142,15 +142,15 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary>
-        /// key と value と型 のセットをすべて文字にします。
+        /// 属性の中身を、見やすくフォーマットした文字列にして返します。
+        /// 子の属性も再帰的に含みます。
         /// </summary>
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            sb.Append("[ ");
-            sb.Append(String.Join(", ", Keys.Select(key => $"{{ ({this[key].Type}) {key} , {this[key].AsString} }}")));
-            sb.Append(" ]");
-            return sb.ToString();
+            return DLLUtil.GetNativeStringByValue(
+                this.handle,
+                NativeMethods.plateau_attributes_map_to_string_size,
+                NativeMethods.plateau_attributes_map_to_string);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
