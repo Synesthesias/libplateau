@@ -49,7 +49,7 @@ extern "C" {
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
-    
+
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string_size(
             const AttributesMap* const handle,
