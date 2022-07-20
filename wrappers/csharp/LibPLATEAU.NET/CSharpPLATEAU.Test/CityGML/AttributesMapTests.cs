@@ -168,5 +168,14 @@ namespace PLATEAU.Test.CityGML
             Assert.IsFalse(string.IsNullOrEmpty(str));
         }
 
+        [TestMethod]
+        public void GetValueSlashSeparated_Returns_Nested_Value()
+        {
+            string slashKey = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）/浸水ランク";
+            bool result = this.attrMap.TryGetValueSlashSeparated(slashKey, out var val);
+            Assert.IsTrue(result);
+            Assert.AreEqual(val.AsString, "1");
+        }
+
     }
 }
