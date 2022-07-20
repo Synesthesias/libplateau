@@ -167,6 +167,5 @@ namespace PLATEAU.Test.CityGML
             Console.WriteLine(str);
             Assert.IsFalse(string.IsNullOrEmpty(str));
         }
-
     }
 }

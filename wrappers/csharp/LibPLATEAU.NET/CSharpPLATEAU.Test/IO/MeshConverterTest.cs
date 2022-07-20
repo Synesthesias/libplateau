@@ -4,6 +4,7 @@ using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Test.CityGML;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PLATEAU.Test.IO
@@ -12,7 +13,7 @@ namespace PLATEAU.Test.IO
     public class MeshConverterTest
     {
         [TestMethod]
-        public void Write_Generates_Obj_File_For_Every_LOD()
+        public void Convert_Generates_Obj_File_For_Every_LOD_And_Returns_Generated_File_Name()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
@@ -24,11 +25,19 @@ namespace PLATEAU.Test.IO
 
             var converter = new MeshConverter();
             converter.Options.SetValidReferencePoint(cityModel);
-            converter.Convert(".", TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple), cityModel);
-
-            Assert.IsTrue(File.Exists($"LOD0_{objFileName}"));
-            Assert.IsTrue(File.Exists($"LOD1_{objFileName}"));
-            Assert.IsTrue(File.Exists($"LOD2_{objFileName}"));
+            
+            // Convert実行します。
+            string[] exportedFileNames = converter.Convert(".", TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple), cityModel);
+            
+            // LODごとにファイルの実在と戻り値をチェックします。
+            for (int lod = 0; lod <= 2; lod++)
+            {
+                string expectedFileName = $"LOD{lod}_{objFileName}";
+                Assert.IsTrue(File.Exists(expectedFileName), "変換後ファイルが実在する");
+                bool doReturnedValueContainsExpected =
+                    exportedFileNames.Any(str => Path.GetFileName(str) == expectedFileName);
+                Assert.IsTrue(doReturnedValueContainsExpected, "変換後ファイル名が Convert の戻り値になっている");
+            }
         }
 
         [TestMethod]

@@ -48,6 +48,8 @@ extern "C" {
         API_CATCH;
     }
 
+    std::vector<std::string> plateau_mesh_converter_last_exported_model_files = {};
+
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_converter_convert(
             const MeshConverter* mesh_converter,
             const char* destination_directory,
@@ -55,16 +57,24 @@ extern "C" {
             PlateauDllLogger* logger) {
         API_TRY{
             const std::shared_ptr<PlateauDllLogger> logger_ptr(logger, [](auto) {});
+            plateau_mesh_converter_last_exported_model_files.clear();
             if (city_model == nullptr) {
-                mesh_converter->convert(destination_directory, gml_path, nullptr, logger_ptr);
+                mesh_converter->convert(destination_directory, gml_path, plateau_mesh_converter_last_exported_model_files, nullptr, logger_ptr);
             } else {
-                mesh_converter->convert(destination_directory, gml_path, city_model->getCityModelPtr(), logger_ptr);
+                mesh_converter->convert(destination_directory, gml_path, plateau_mesh_converter_last_exported_model_files, city_model->getCityModelPtr(), logger_ptr);
             }
             return APIResult::Success;
         }
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
+
+    // 上の convert 関数で生成された 3Dモデルファイル名(0個以上)を取得します。
+    DLL_STRING_PTR_ARRAY_FUNC2(plateau_mesh_converter_get_last_exported_model_file_names,
+                               MeshConverter,
+                               (int)plateau_mesh_converter_last_exported_model_files.size(),
+                               auto& file_name : plateau_mesh_converter_last_exported_model_files,
+                               file_name)
 
     DLL_VALUE_FUNC(plateau_mesh_converter_get_options,
                  MeshConverter,
