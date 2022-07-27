@@ -330,7 +330,7 @@ void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::shared_ptr
 
     // マテリアル名はテクスチャファイル名(拡張子抜き)
     const auto& texture_url = texture->getUrl();
-    const auto material_name = fs::u8path(texture_url).filename().replace_extension().string();
+    const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
 
     applyMaterial(ofs, material_name);
 
