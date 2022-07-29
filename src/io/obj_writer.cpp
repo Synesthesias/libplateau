@@ -66,8 +66,8 @@ namespace {
     }
 
     void copyTexture(const std::string& gml_path, const std::string& obj_path, const std::string& texture_url) {
-        const fs::path src_path = fs::path(gml_path).parent_path().append(texture_url);
-        const fs::path dst_path = fs::path(obj_path).parent_path().append(texture_url);
+        const auto src_path = fs::u8path(gml_path).parent_path().append(fs::u8path(texture_url).string());
+        const auto dst_path = fs::u8path(obj_path).parent_path().append(fs::u8path(texture_url).string());
 
         create_directory(dst_path.parent_path());
 
@@ -167,12 +167,12 @@ void ObjWriter::writeObj(const std::string& obj_file_path, const citygml::CityMo
     ofs << std::fixed << std::setprecision(6);
 
     // MTL参照
-    const auto mtl_file_name = fs::path(obj_file_path).filename().replace_extension(".mtl").string();
+    const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
     ofs << "mtllib " << mtl_file_name << std::endl;
 
     // エリア単位の場合拡張子無しファイル名がメッシュ名になります。
     if (options_.mesh_granularity == MeshGranularity::PerCityModelArea) {
-        startMeshGroup(ofs, fs::path(obj_file_path).filename().replace_extension().string());
+        startMeshGroup(ofs, fs::u8path(obj_file_path).filename().replace_extension().string());
     }
 
     for (const auto& root_object : city_model.getRootCityObjects()) {
@@ -330,7 +330,7 @@ void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::shared_ptr
 
     // マテリアル名はテクスチャファイル名(拡張子抜き)
     const auto& texture_url = texture->getUrl();
-    const auto material_name = fs::path(texture_url).filename().replace_extension().string();
+    const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
 
     applyMaterial(ofs, material_name);
 
@@ -341,7 +341,7 @@ void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::shared_ptr
 }
 
 void ObjWriter::writeMtl(const std::string& obj_file_path) {
-    const auto mtl_file_path = fs::path(obj_file_path).replace_extension(".mtl").string();
+    const auto mtl_file_path = fs::u8path(obj_file_path).replace_extension(".mtl").string();
     auto mtl_ofs = std::ofstream(mtl_file_path);
     if (!mtl_ofs.is_open()) {
         dll_logger_.lock()->throwException(std::string("Failed to open mtl file: ") + mtl_file_path);
