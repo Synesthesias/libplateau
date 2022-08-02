@@ -16,6 +16,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+link_libraries(stdc++fs)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -D_DEBUG -DFEATURE_ASSERTS_ENABLED")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
 
@@ -71,4 +72,3 @@ if(ENABLE_SAMPLES)
     add_subdirectory(glTF-SDK/GLTFSDK.Samples)
 endif()
 
-link_libraries(stdc++fs)
