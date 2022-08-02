@@ -92,6 +92,9 @@ add_subdirectory("examples/export_obj")
 ## ユニットテスト
 add_subdirectory("test")
 
+## glTF-SDK
+add_subdirectory("3rdparty/glTF-SDK")
+
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
 if(BUILD_PYTHON)
