@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
-if(UNIX)
+if(NOT WIN32)
     link_libraries(stdc++fs)
 endif()
 
