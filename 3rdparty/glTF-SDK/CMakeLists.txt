@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
+if(UNIX)
+    link_libraries(stdc++fs)
+endif()
+
 option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 if(ENABLE_UNIT_TESTS)
     enable_testing()
@@ -16,7 +20,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-link_libraries(stdc++fs)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -D_DEBUG -DFEATURE_ASSERTS_ENABLED")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
 
