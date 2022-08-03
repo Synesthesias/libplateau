@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
-if(UNIX AND NOT APPLE)
-    link_libraries(stdc++fs)
-endif()
+link_libraries(stdc++fs)
 
 option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 if(ENABLE_UNIT_TESTS)
