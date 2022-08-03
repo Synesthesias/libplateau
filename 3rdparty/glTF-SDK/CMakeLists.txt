@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
-if(NOT WIN32)
-    link_libraries(stdc++fs)
-endif()
-
 option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 if(ENABLE_UNIT_TESTS)
     enable_testing()
