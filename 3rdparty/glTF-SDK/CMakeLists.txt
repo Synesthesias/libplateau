@@ -75,6 +75,7 @@ if(ENABLE_SAMPLES)
     add_subdirectory(glTF-SDK/GLTFSDK.Samples)
 endif()
 
+unset(RULE_LAUNCH_COMPILE)
 find_program(CCACHE_EXE ccache)
 if(CCACHE_EXE)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
