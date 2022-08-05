@@ -5,6 +5,11 @@ if(UNIX AND NOT APPLE)
     link_libraries(stdc++fs)
 endif()
 
+find_program(CCACHE_EXE ccache)
+if(CCACHE_EXE)
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXE}")
+endif()
+
 option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 if(ENABLE_UNIT_TESTS)
     enable_testing()
@@ -30,9 +35,9 @@ if (WIN32)
         _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
     )
     # Multithreaded Build
-    #add_compile_options(
-    #    /MP
-    #)
+    add_compile_options(
+        /MP
+    )
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/glTF-SDK/Build/CMake/Modules")
