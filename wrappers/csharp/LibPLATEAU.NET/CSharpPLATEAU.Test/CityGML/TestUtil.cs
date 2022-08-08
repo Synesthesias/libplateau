@@ -20,10 +20,10 @@ namespace PLATEAU.Test.CityGML {
         /// <summary>
         /// テスト用のGMLファイルをロードして <see cref="CityModel"/> を返します。
         /// </summary>
-        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true)
+        public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true, bool ignoreGeometries = false)
         {
-            var parserParams = new CitygmlParserParams(optimize, tessellate);
-            var cityModel = CityGml.Load(GmlPaths[gmlFileCase], parserParams, LogCallbacks.StdOut);
+            var m_parserParams = new CitygmlParserParams(optimize, tessellate, ignoreGeometries);
+            var cityModel = CityGml.Load(GmlPaths[gmlFileCase], m_parserParams, LogCallbacks.StdOut);
             return cityModel;
         }
 
