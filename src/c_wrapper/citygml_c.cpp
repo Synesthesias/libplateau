@@ -13,10 +13,12 @@ extern "C" {
     struct plateau_citygml_parser_params {
         bool optimize;
         bool tessellate;
+        bool ignoreGeometries;
 
         plateau_citygml_parser_params()
             : optimize(true),
-              tessellate(true){
+              tessellate(true),
+              ignoreGeometries(false){
         }
     };
 
@@ -32,6 +34,7 @@ extern "C" {
             citygml::ParserParams parser_params;
             parser_params.optimize = params.optimize;
             parser_params.tesselate = params.tessellate;
+            parser_params.ignoreGeometries = params.ignoreGeometries;
             auto logger = std::make_shared<PlateauDllLogger>(logLevel);
             logger->setLogCallbacks(logErrorCallback, logWarnCallback, logInfoCallback);
             logger->log(DllLogLevel::LL_INFO, std::string("Started Parsing gml file.\ngml path = ") + gml_path);
