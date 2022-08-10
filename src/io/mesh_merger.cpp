@@ -32,12 +32,12 @@ namespace{
     }
 
     const Polygon* FindFirstPolygon(const Geometry& geometry){
-        unsigned int numPoly = geometry.getPolygonsCount();
+        auto numPoly = geometry.getPolygonsCount();
         for(int i=0; i<numPoly; i++){
             auto poly = geometry.getPolygon(i);
-            if(poly->getVertices().size() > 0) return poly.get();
+            if(!poly->getVertices().empty()) return poly.get();
         }
-        int numGeom = geometry.getGeometriesCount();
+        auto numGeom = geometry.getGeometriesCount();
         for(int i=0; i<numGeom; i++){
             auto found = FindFirstPolygon(geometry.getGeometry(i));
             if(found) return found;
@@ -50,12 +50,12 @@ namespace{
      * 最初に見つかったポリゴンを返します。なければ nullptr を返します。
      */
     const Polygon* FindFirstPolygon(const CityObject* cityObj){
-        int numObj = cityObj->getChildCityObjectsCount();
+        auto numObj = cityObj->getChildCityObjectsCount();
         for(int i=0; i<numObj; i++){
             auto found = FindFirstPolygon(&cityObj->getChildCityObject(i));
             if(found) return found;
         }
-        int numGeom = cityObj->getGeometriesCount();
+        auto numGeom = cityObj->getGeometriesCount();
         for(int i=0; i<numGeom; i++){
             auto found = FindFirstPolygon(cityObj->getGeometry(i));
             if(found) return found;
@@ -79,18 +79,20 @@ namespace{
                 return poly->getVertices().at(0);
             }
         }
-        return TVec3d(-999,-999,-999);
+        return TVec3d{-999,-999,-999};
     }
 
     /**
      * cityObjs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
      */
-    static void classifyCityObjsToGrid(GridIdToObjsMap& gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
+    void classifyCityObjsToGrid(GridIdToObjsMap& gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
             gridIdToObjsMap[gridId].push_back(co);
         }
     }
+
+
 }
 
 /*std::vector<PolygonWithUV2>*/void MeshMerger::GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY) {
@@ -109,6 +111,10 @@ namespace{
     }
 
     // TODO
+    int gridNum = gridNumX * gridNumY;
+    for(int i=0; i<gridNum; i++){
+
+    }
 
 //    return *new std::vector<PolygonWithUV2>{};
 }
