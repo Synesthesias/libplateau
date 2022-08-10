@@ -3,8 +3,8 @@ add_compile_definitions(LIBPLATEAU_BUILD)
 
 add_library(plateau SHARED "")
 
-target_link_libraries(plateau PUBLIC citygml xerces-c)
-target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
+target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK)
+target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}")
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})

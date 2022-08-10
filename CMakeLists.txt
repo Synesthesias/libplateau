@@ -65,6 +65,9 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+## ユニットテスト
+add_subdirectory("test")
+
 # dependencies
 ## Xerces-C をビルドします。
 ### libcitygmlのFindXercesを通すために全てキャッシュ化
@@ -83,17 +86,16 @@ set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/libcitygml")
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
+## glTF-SDK
+add_subdirectory("3rdparty/glTF-SDK")
+set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
+
 # libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
-
-## ユニットテスト
-add_subdirectory("test")
-
-## glTF-SDK
-add_subdirectory("3rdparty/glTF-SDK")
+add_subdirectory("examples/export_gltf")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
