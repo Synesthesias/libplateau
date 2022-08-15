@@ -96,12 +96,6 @@ namespace {
         }
     }
 
-    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale) {
-        const auto referenced_position = position - reference_point;
-        const auto scaled_position = referenced_position / unit_scale;
-        return convertAxes(scaled_position, axes);
-    }
-
     unsigned getMaxLOD(const citygml::CityObject& object) {
         unsigned max_lod = 0;
         for (unsigned i = 0; i < object.getGeometriesCount(); i++) {
@@ -352,4 +346,10 @@ void ObjWriter::writeMtl(const std::string& obj_file_path) {
         const auto& texture_url = texture->getUrl();
         mtl_ofs << generateMtl(material_name, texture_url);
     }
+}
+
+TVec3d ObjWriter::convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale) {
+    const auto referenced_position = position - reference_point;
+    const auto scaled_position = referenced_position / unit_scale;
+    return convertAxes(scaled_position, axes);
 }

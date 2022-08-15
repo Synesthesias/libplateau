@@ -20,6 +20,8 @@ public:
         MeshConvertOptions options, unsigned lod,
         std::shared_ptr<PlateauDllLogger> logger = nullptr);
 
+    static TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale);
+
 private:
     // OBJ書き出し
     void writeObj(const std::string& obj_file_path, const citygml::CityModel& city_model, unsigned lod);

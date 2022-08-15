@@ -1,5 +1,7 @@
 #include <plateau/io/mesh_merger.h>
+#include "polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
+#include "obj_writer.h"
 
 using GridIdToObjsMap = std::map<int, std::vector<const CityObject*>>;
 using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
@@ -120,6 +122,8 @@ namespace{
     }
 
 
+
+
 }
 
 void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
@@ -140,22 +144,39 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
 
     auto gridPolygons = std::make_shared<std::vector<PolygonWithUV2*>>();
     int gridNum = gridNumX * gridNumY;
+    // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
+        // グリッド内でマージするポリゴン
         auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
         int numObjInGrid = gridIdToObjsMap[i].size();
+        // グリッド内の各オブジェクトのループ
         for(int j=0; j<numObjInGrid; j++){
             auto cityObj = gridIdToObjsMap[i].at(j);
             auto polygons = PolygonVector();
             FindAllPolygons(*cityObj, polygons);
             auto numPoly = polygons.size();
+            // オブジェクト内の各ポリゴンのループ
             for(int k=0; k<numPoly; k++){
                 auto poly = polygons.at(k).get();
                 gridPoly->Merge(*poly);
             }
         }
+
         gridPolygons->push_back(gridPoly);
     }
-    
+
+    // 座標を変換
+    for(auto poly : *gridPolygons){
+        int numVert = poly->getVertices().size();
+        for(int i=0; i<numVert; i++){
+            auto& pos = poly->getVertices().at(i);
+            polar_to_plane_cartesian().convert(pos);
+            pos = ObjWriter::convertPosition(pos, TVec3d(0, 0, 0), AxesConversion::WUN, 1.0);
+            poly->getVertices().at(i) = pos;
+        }
+
+    }
+
     // Debug Print
     for(auto gridPoly : *gridPolygons){
         std::cout << "[" << gridPoly->getId() << "] ";
