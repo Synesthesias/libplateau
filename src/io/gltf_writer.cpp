@@ -330,36 +330,9 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
         std::string accessorIdTexCoords = "", materialId = "";
         if (!uvs.empty()) {
             accessorIdTexCoords = writeUVs(uvs, bufferBuilder);
-            Microsoft::glTF::Image image;
-
-            // マテリアル名はテクスチャファイル名(拡張子抜き)
+            
             const auto texture = polygon->getTextureFor("rgbTexture");
-            const auto& texture_url = texture->getUrl();
-            const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
-            const bool material_exists = required_materials_.find(material_name) != required_materials_.end();
-            if (!material_exists) {
-                required_materials_[material_name] = texture;
-
-                image.id = std::to_string(image_id_num_);
-                image_id_num_++;
-                image.uri = fs::u8path(texture_url).u8string();
-                auto imageId = document.images.Append(image, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-
-                gltf::Texture tex;
-                tex.imageId = imageId;
-                tex.id = std::to_string(texture_id_num_);
-                texture_id_num_++;
-                auto textureId = document.textures.Append(tex, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-
-                gltf::Material material;
-                material.metallicRoughness.baseColorFactor = gltf::Color4(0.5f, 0.5f, 0.5f, 1.0f);
-                material.metallicRoughness.metallicFactor = 0.0f;
-                material.metallicRoughness.roughnessFactor = 1.0f;
-                material.metallicRoughness.baseColorTexture.textureId = textureId;
-                materialId = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-                material_ids_[material_name] = materialId;
-            }
-            materialId = material_ids_[material_name];
+            materialId = writeMaterialReference(texture, document);
         } else {
             materialId = default_material_id_;
         }
@@ -432,4 +405,37 @@ void GltfWriter::writeNode(gltf::Document& document) {
     auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
     scene_.nodes.push_back(nodeId);
     mesh_.primitives.clear();
+}
+
+std::string GltfWriter::writeMaterialReference(const std::shared_ptr<const Texture>& texture, gltf::Document& document) {
+    // マテリアル名はテクスチャファイル名(拡張子抜き)
+    const auto& texture_url = texture->getUrl();
+    const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
+    const bool material_exists = required_materials_.find(material_name) != required_materials_.end();
+
+    if (!material_exists) {
+        Microsoft::glTF::Image image;
+
+        required_materials_[material_name] = texture;
+
+        image.id = std::to_string(image_id_num_);
+        image_id_num_++;
+        image.uri = fs::u8path(texture_url).u8string();
+        auto imageId = document.images.Append(image, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+
+        gltf::Texture tex;
+        tex.imageId = imageId;
+        tex.id = std::to_string(texture_id_num_);
+        texture_id_num_++;
+        auto textureId = document.textures.Append(tex, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+
+        gltf::Material material;
+        material.metallicRoughness.baseColorFactor = gltf::Color4(0.5f, 0.5f, 0.5f, 1.0f);
+        material.metallicRoughness.metallicFactor = 0.0f;
+        material.metallicRoughness.roughnessFactor = 1.0f;
+        material.metallicRoughness.baseColorTexture.textureId = textureId;
+        auto materialId = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+        material_ids_[material_name] = materialId;
+    }
+    return material_ids_[material_name];
 }

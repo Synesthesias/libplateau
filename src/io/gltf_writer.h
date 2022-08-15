@@ -36,6 +36,7 @@ private:
     std::string writeVertices(const std::vector<TVec3d>& vertices, Microsoft::glTF::BufferBuilder& bufferBuilder);
     std::string writeIndices(const std::vector<unsigned int>& indices, Microsoft::glTF::BufferBuilder& bufferBuilder);
     std::string writeUVs(const std::vector<TVec2f>& uvs, Microsoft::glTF::BufferBuilder& bufferBuilder);
+    std::string writeMaterialReference(const std::shared_ptr<const Texture>& texture, Microsoft::glTF::Document& document);
     void writeNode(Microsoft::glTF::Document& document);
 
     MeshConvertOptions options_;
