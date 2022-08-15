@@ -134,7 +134,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
     classifyCityObjsToGrid(gridIdToObjsMap, cityObjs, cityEnvelope, gridNumX, gridNumY);
 
     // Debug Print
-    for(auto pair : gridIdToObjsMap){
+    for(const auto& pair : gridIdToObjsMap){
         std::cout << "[grid " << pair.first << "] ";
         for(auto cityObj : pair.second){
             std::cout << cityObj->getId() << ", ";
@@ -148,7 +148,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴン
         auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
-        int numObjInGrid = gridIdToObjsMap[i].size();
+        auto numObjInGrid = gridIdToObjsMap[i].size();
         // グリッド内の各オブジェクトのループ
         for(int j=0; j<numObjInGrid; j++){
             auto cityObj = gridIdToObjsMap[i].at(j);
@@ -167,7 +167,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
 
     // 座標を変換
     for(auto poly : *gridPolygons){
-        int numVert = poly->getVertices().size();
+        auto numVert = poly->getVertices().size();
         for(int i=0; i<numVert; i++){
             auto& pos = poly->getVertices().at(i);
             polar_to_plane_cartesian().convert(pos);

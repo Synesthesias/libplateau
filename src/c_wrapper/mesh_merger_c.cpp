@@ -8,23 +8,15 @@ extern "C"{
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_new(
             MeshMerger** out_mesh_merger_ptr
             ){
-        API_TRY{
-            *out_mesh_merger_ptr = new MeshMerger();
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
+        *out_mesh_merger_ptr = new MeshMerger();
+        return APIResult::Success;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_delete(
             MeshMerger* mesh_merger_handle
             ){
-        API_TRY{
-            delete mesh_merger_handle;
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
+        delete mesh_merger_handle;
+        return APIResult::Success;
     }
 
 
