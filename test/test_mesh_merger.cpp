@@ -13,13 +13,15 @@ protected:
         params.tesselate = true;
 
         city_model_ = load(gml_path_, params);
+        logger_ = std::make_shared<PlateauDllLogger>();
     }
 
     std::string gml_path_;
     std::shared_ptr<const CityModel> city_model_;
+    std::shared_ptr<PlateauDllLogger> logger_;
 };
 
 TEST_F(MeshMergerTest, meshMergerTest){
     // TODO
-    MeshMerger::GridMerge(*city_model_, CityObject::CityObjectsType::COT_All, 5, 5);
+    MeshMerger::GridMerge(*city_model_, CityObject::CityObjectsType::COT_All, 5, 5, logger_);
 }

@@ -1,5 +1,8 @@
 #include <plateau/io/mesh_merger.h>
+#include "citygml/tesselator.h"
+
 using GridIdToObjsMap = std::map<int, std::vector<const CityObject*>>;
+using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{
     /**
@@ -31,7 +34,7 @@ namespace{
         return gridIdToObjsMap;
     }
 
-    const Polygon* FindFirstPolygon(const Geometry& geometry){
+    const citygml::Polygon* FindFirstPolygon(const Geometry& geometry){
         auto numPoly = geometry.getPolygonsCount();
         for(int i=0; i<numPoly; i++){
             auto poly = geometry.getPolygon(i);
@@ -49,7 +52,7 @@ namespace{
      * cityObjのポリゴンであり、頂点数が1以上であるものを検索します。
      * 最初に見つかったポリゴンを返します。なければ nullptr を返します。
      */
-    const Polygon* FindFirstPolygon(const CityObject* cityObj){
+    const citygml::Polygon* FindFirstPolygon(const CityObject* cityObj){
         auto numObj = cityObj->getChildCityObjectsCount();
         for(int i=0; i<numObj; i++){
             auto found = FindFirstPolygon(&cityObj->getChildCityObject(i));
@@ -62,6 +65,30 @@ namespace{
         }
         return nullptr;
     }
+
+    void FindAllPolygons(const Geometry& geom, PolygonVector& polygons){
+        auto numChild = geom.getGeometriesCount();
+        for(int i=0; i<numChild; i++){
+            FindAllPolygons(geom.getGeometry(i), polygons);
+        }
+        auto numPoly = geom.getPolygonsCount();
+        for(int i=0; i<numPoly; i++){
+            polygons.push_back(geom.getPolygon(i));
+        }
+    }
+
+    void FindAllPolygons(const CityObject& cityObj, PolygonVector& polygons){
+        auto numChild = cityObj.getChildCityObjectsCount();
+        for(int i=0; i<numChild; i++){
+            FindAllPolygons(cityObj.getChildCityObject(i), polygons);
+        }
+        auto numGeom = cityObj.getGeometriesCount();
+        for(int i=0; i<numGeom; i++){
+            FindAllPolygons(cityObj.getGeometry(i), polygons);
+        }
+    }
+
+
 
     /**
      * cityObjの位置を表現するにふさわしい1点の座標を返します。
@@ -95,7 +122,7 @@ namespace{
 
 }
 
-/*std::vector<PolygonWithUV2>*/void MeshMerger::GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY) {
+/*std::vector<PolygonWithUV2>*/void MeshMerger::GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
     auto& cityObjs = cityModel.getAllCityObjectsOfType(targetTypeMask);
     auto& cityEnvelope = cityModel.getEnvelope();
     auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
@@ -111,9 +138,30 @@ namespace{
     }
 
     // TODO
+    std::vector<PolygonWithUV2*> gridPolygons;
+//    Tesselator tesselator(logger);
+//    tesselator.setKeepVertices(false);
     int gridNum = gridNumX * gridNumY;
     for(int i=0; i<gridNum; i++){
+        auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
+        int numObjInGrid = gridIdToObjsMap[i].size();
+        for(int j=0; j<numObjInGrid; j++){
+            auto cityObj = gridIdToObjsMap[i].at(j);
+            auto polygons = PolygonVector();
+            FindAllPolygons(*cityObj, polygons);
+            auto numPoly = polygons.size();
+            for(int k=0; k<numPoly; k++){
+                auto poly = polygons.at(k).get();
+                gridPoly->Merge(*poly);
+            }
+        }
+        gridPolygons.push_back(gridPoly);
+    }
 
+    // Debug Print
+    for(auto gridPoly : gridPolygons){
+        std::cout << "[" << gridPoly->getId() << "] ";
+        std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
     }
 
 //    return *new std::vector<PolygonWithUV2>{};

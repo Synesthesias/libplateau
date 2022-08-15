@@ -11,5 +11,5 @@
  */
 class LIBPLATEAU_EXPORT MeshMerger {
 public:
-    static /*std::vector<PolygonWithUV2>*/ void GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY);
+    static /*std::vector<PolygonWithUV2>*/ void GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger);
 };
