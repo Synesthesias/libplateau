@@ -122,9 +122,10 @@ namespace{
 
 }
 
-/*std::vector<PolygonWithUV2>*/void MeshMerger::GridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
-    auto& cityObjs = cityModel.getAllCityObjectsOfType(targetTypeMask);
-    auto& cityEnvelope = cityModel.getEnvelope();
+void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
+
+    auto& cityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask);
+    auto& cityEnvelope = cityModel->getEnvelope();
     auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
     classifyCityObjsToGrid(gridIdToObjsMap, cityObjs, cityEnvelope, gridNumX, gridNumY);
 
@@ -137,10 +138,7 @@ namespace{
         std::cout << std::endl;
     }
 
-    // TODO
-    std::vector<PolygonWithUV2*> gridPolygons;
-//    Tesselator tesselator(logger);
-//    tesselator.setKeepVertices(false);
+    auto gridPolygons = std::make_shared<std::vector<PolygonWithUV2*>>();
     int gridNum = gridNumX * gridNumY;
     for(int i=0; i<gridNum; i++){
         auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
@@ -155,14 +153,17 @@ namespace{
                 gridPoly->Merge(*poly);
             }
         }
-        gridPolygons.push_back(gridPoly);
+        gridPolygons->push_back(gridPoly);
     }
-
+    
     // Debug Print
-    for(auto gridPoly : gridPolygons){
+    for(auto gridPoly : *gridPolygons){
         std::cout << "[" << gridPoly->getId() << "] ";
         std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
     }
+    lastGridMergeResult_ = gridPolygons;
+}
 
-//    return *new std::vector<PolygonWithUV2>{};
+MeshMerger::GridMergeResult MeshMerger::getLastGridMergeResult() {
+    return lastGridMergeResult_;
 }

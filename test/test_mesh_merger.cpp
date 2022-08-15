@@ -23,5 +23,6 @@ protected:
 
 TEST_F(MeshMergerTest, meshMergerTest){
     // TODO
-    MeshMerger::GridMerge(*city_model_, CityObject::CityObjectsType::COT_All, 5, 5, logger_);
+    auto meshMerger = MeshMerger();
+    meshMerger.gridMerge(city_model_.get(), CityObject::CityObjectsType::COT_All, 5, 5, logger_);
 }
