@@ -164,7 +164,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
             // TODO このminimumObjs で new している理由は、
             //  スタック領域に置くとUnityからP/Invokeでアクセスしたときに AccessViolation になるので
             //  ヒープに置いています。
-            //  しかしdeleteできていないのでメモリリークが置きます。
+            //  しかしdeleteできていないのでメモリリークしている疑惑があります。
             auto minimumObjs = new std::vector<const CityObject*>(0);
             childCityObjects(*primaryObj, *minimumObjs);
             for(auto minimumObj : *minimumObjs){

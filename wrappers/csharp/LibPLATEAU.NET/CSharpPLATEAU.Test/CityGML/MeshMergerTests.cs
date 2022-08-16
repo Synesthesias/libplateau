@@ -41,9 +41,11 @@ namespace PLATEAU.Test.CityGML
             var polygons = this.meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
             var multiTextures = polygons
                 .Select(poly => poly.GetMultiTexture())
-                .Where(multiTex => multiTex.Length > 0);
-            Assert.IsTrue(multiTextures.Count() >= 3, "MultiTextureを含むポリゴンが3つ以上あります");
-        }
+                .Where(multiTex => multiTex.Length > 0)
+                .ToArray();
+            Assert.IsTrue(multiTextures.Length >= 3, "MultiTextureを含むポリゴンが3つ以上あります");
+            Assert.IsFalse(string.IsNullOrEmpty(multiTextures[0][0].Texture.Url), "MultiTextureのURLにアクセスできる");
+    }
 
     }
 }
