@@ -25,7 +25,7 @@ namespace{
     }
 
     /**
-     * key が グリッド番号であり、 value が　CityObjectのvector であるmapを初期化します。
+     * key が グリッド番号であり、 value は　CityObjectのvector であるmapを初期化します。
      */
     GridIdToObjsMap initGridIdToObjsMap(const int gridNumX, const int gridNumY){
         int gridNum = gridNumX * gridNumY;
@@ -79,11 +79,12 @@ namespace{
         }
     }
 
+    /**
+     * cityObj に含まれるポリゴンをすべて検索し、polygonsリストに追加します。
+     * 子の CityObject は検索しません。
+     * 子の Geometry は再帰的に検索します。
+     */
     void FindAllPolygons(const CityObject& cityObj, PolygonVector& polygons){
-        auto numChild = cityObj.getChildCityObjectsCount();
-        for(int i=0; i<numChild; i++){
-            FindAllPolygons(cityObj.getChildCityObject(i), polygons);
-        }
         auto numGeom = cityObj.getGeometriesCount();
         for(int i=0; i<numGeom; i++){
             FindAllPolygons(cityObj.getGeometry(i), polygons);
@@ -98,7 +99,7 @@ namespace{
     TVec3d cityObjPos(const CityObject& cityObj){
         auto& envelope = cityObj.getEnvelope();
         if(envelope.validBounds()){
-            // cityObj の envelope がGMLファイル中に記載されていれば、その中心を返します。
+            // cityObj の envelope 情報がGMLファイル中に記載されていれば、その中心を返します。
             // しかし、CityObjectごとに記載されているケースは少ないです。
             return (envelope.getLowerBound() + envelope.getUpperBound())*0.5;
         }else{
@@ -128,12 +129,13 @@ namespace{
 
 void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
 
+    // cityModel に含まれる CityObject をグリッドに分類します。
     auto& cityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask);
     auto& cityEnvelope = cityModel->getEnvelope();
     auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
     classifyCityObjsToGrid(gridIdToObjsMap, cityObjs, cityEnvelope, gridNumX, gridNumY);
 
-    // Debug Print
+    // Debug Print (グリッド分類結果の表示)
     for(const auto& pair : gridIdToObjsMap){
         std::cout << "[grid " << pair.first << "] ";
         for(auto cityObj : pair.second){
@@ -142,11 +144,12 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
         std::cout << std::endl;
     }
 
+    // グリッドごとにメッシュを結合します。
     auto gridPolygons = std::make_shared<std::vector<PolygonWithUV2*>>();
     int gridNum = gridNumX * gridNumY;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
-        // グリッド内でマージするポリゴン
+        // グリッド内でマージするポリゴンの新規作成
         auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
         auto numObjInGrid = gridIdToObjsMap[i].size();
         // グリッド内の各オブジェクトのループ
@@ -158,6 +161,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
             // オブジェクト内の各ポリゴンのループ
             for(int k=0; k<numPoly; k++){
                 auto poly = polygons.at(k).get();
+                // 各ポリゴンを結合していきます。
                 gridPoly->Merge(*poly);
             }
         }
@@ -165,7 +169,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
         gridPolygons->push_back(gridPoly);
     }
 
-    // 座標を変換
+    // 座標を変換します。
     for(auto poly : *gridPolygons){
         auto numVert = poly->getVertices().size();
         for(int i=0; i<numVert; i++){

@@ -8,7 +8,7 @@ using UV2 = std::vector<TVec2f>;
 /**
  * PLATEAU向けに機能を拡張した citygml::Polygon です。
  * 拡張した機能:
- * ポリゴンマージ機能は、軽量化のために都市3Dモデルをグリッド状にまとめる MeshMerger::gridMerge で利用します。
+ * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshMerger::gridMerge で利用します。
  */
 class LIBPLATEAU_EXPORT PolygonWithUV2 : public Polygon{
 public:
@@ -17,7 +17,7 @@ public:
     const UV2& getUV2();
     /**
      * ポリゴンをマージします。
-     * 頂点リストとインデックスリストをそれぞれ結合します。
+     * 引数で与えられた頂点リストとインデックスリストをそれぞれ自身に追加します。
      * その他の情報のマージには未対応です。例えば LinearRing は変化しません。
      */
     void Merge(const Polygon &otherPoly);

@@ -24,8 +24,11 @@ void PolygonWithUV2::Merge(const Polygon &otherPoly) {
     int prevNumIndices = m_indices.size();
     auto& otherVertices = otherPoly.getVertices();
     auto& otherIndices = otherPoly.getIndices();
+    // 頂点リストの末尾に追加します。
     m_vertices.insert(m_vertices.end(), otherVertices.begin(), otherVertices.end());
+    // インデックスリストの末尾に追加します。
     m_indices.insert(m_indices.end(), otherIndices.begin(), otherIndices.end());
+    // 追加分のインデックスを新しい値にします。前の頂点の数だけインデックスの数値を大きくすれば良いです。
     for(int i=prevNumIndices; i<m_indices.size(); i++){
         m_indices.at(i) += prevNumVertices;
     }

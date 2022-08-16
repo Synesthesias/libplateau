@@ -14,7 +14,7 @@ class LIBPLATEAU_EXPORT MeshMerger {
 public:
     /**
      * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
-     * 結果は getLastGridMergeResult で取得できます。
+     * 結果は getLastGridMergeResult() で取得できます。
      */
     void gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, const std::shared_ptr<PlateauDllLogger> logger);
     GridMergeResult getLastGridMergeResult();
