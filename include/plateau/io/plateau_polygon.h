@@ -10,9 +10,9 @@ using UV2 = std::vector<TVec2f>;
  * 拡張した機能:
  * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshMerger::gridMerge で利用します。
  */
-class LIBPLATEAU_EXPORT PolygonWithUV2 : public Polygon{
+class LIBPLATEAU_EXPORT PlateauPolygon : public Polygon{
 public:
-    PolygonWithUV2(const std::string& id, std::shared_ptr<PlateauDllLogger> logger);
+    PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDllLogger> logger);
     void setUV2(std::unique_ptr<UV2> uv2);
     const UV2& getUV2();
     /**

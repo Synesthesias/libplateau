@@ -5,4 +5,4 @@ target_sources(plateau PRIVATE
     "polar_to_plane_cartesian.cpp"
     "plateau_dll_logger.cpp"
     "mesh_merger.cpp"
-    "polygon_with_uv2.cpp")
+    "plateau_polygon.cpp")

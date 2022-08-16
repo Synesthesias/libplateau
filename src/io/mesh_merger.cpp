@@ -179,12 +179,12 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
     }
 
     // グリッドごとにメッシュを結合します。
-    auto gridPolygons = std::make_shared<std::vector<PolygonWithUV2*>>();
+    auto gridPolygons = std::make_shared<std::vector<PlateauPolygon*>>();
     int gridNum = gridNumX * gridNumY;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
-        auto gridPoly = new PolygonWithUV2("grid" + std::to_string(i), logger);
+        auto gridPoly = new PlateauPolygon("grid" + std::to_string(i), logger);
         auto numObjInGrid = gridIdToObjsMap[i].size();
         // グリッド内の各オブジェクトのループ
         for(int j=0; j<numObjInGrid; j++){

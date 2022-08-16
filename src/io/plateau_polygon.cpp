@@ -1,13 +1,13 @@
 
-#include <plateau/io/polygon_with_uv2.h>
+#include <plateau/io/plateau_polygon.h>
 
-PolygonWithUV2::PolygonWithUV2(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
+PlateauPolygon::PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
     Polygon(id, logger),
     logger_(logger){
 }
 
 
-void PolygonWithUV2::setUV2(std::unique_ptr<UV2> uv2) {
+void PlateauPolygon::setUV2(std::unique_ptr<UV2> uv2) {
     if(uv2->size() != m_vertices.size()){
         logger_->throwException("Size of uv2 does not match num of vertices.");
         return;
@@ -15,11 +15,11 @@ void PolygonWithUV2::setUV2(std::unique_ptr<UV2> uv2) {
     uv2_ = std::move(uv2);
 }
 
-const UV2& PolygonWithUV2::getUV2(){
+const UV2& PlateauPolygon::getUV2(){
     return *uv2_;
 }
 
-void PolygonWithUV2::Merge(const Polygon &otherPoly) {
+void PlateauPolygon::Merge(const Polygon &otherPoly) {
     int prevNumVertices = m_vertices.size();
     int prevNumIndices = m_indices.size();
     auto& otherVertices = otherPoly.getVertices();
