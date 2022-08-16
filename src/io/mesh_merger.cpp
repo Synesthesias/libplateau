@@ -1,4 +1,5 @@
 #include <plateau/io/mesh_merger.h>
+#include <plateau/io/primary_city_object_types.h>
 #include "polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
 #include "obj_writer.h"
@@ -37,13 +38,13 @@ namespace{
     }
 
     const citygml::Polygon* FindFirstPolygon(const Geometry& geometry){
-        auto numPoly = geometry.getPolygonsCount();
-        for(int i=0; i<numPoly; i++){
+        unsigned int numPoly = geometry.getPolygonsCount();
+        for(unsigned int i=0; i<numPoly; i++){
             auto poly = geometry.getPolygon(i);
             if(!poly->getVertices().empty()) return poly.get();
         }
-        auto numGeom = geometry.getGeometriesCount();
-        for(int i=0; i<numGeom; i++){
+        unsigned int numGeom = geometry.getGeometriesCount();
+        for(unsigned int i=0; i<numGeom; i++){
             auto found = FindFirstPolygon(geometry.getGeometry(i));
             if(found) return found;
         }
@@ -55,13 +56,13 @@ namespace{
      * 最初に見つかったポリゴンを返します。なければ nullptr を返します。
      */
     const citygml::Polygon* FindFirstPolygon(const CityObject* cityObj){
-        auto numObj = cityObj->getChildCityObjectsCount();
-        for(int i=0; i<numObj; i++){
+        unsigned int numObj = cityObj->getChildCityObjectsCount();
+        for(unsigned int i=0; i<numObj; i++){
             auto found = FindFirstPolygon(&cityObj->getChildCityObject(i));
             if(found) return found;
         }
-        auto numGeom = cityObj->getGeometriesCount();
-        for(int i=0; i<numGeom; i++){
+        unsigned int numGeom = cityObj->getGeometriesCount();
+        for(unsigned int i=0; i<numGeom; i++){
             auto found = FindFirstPolygon(cityObj->getGeometry(i));
             if(found) return found;
         }
@@ -69,12 +70,12 @@ namespace{
     }
 
     void FindAllPolygons(const Geometry& geom, PolygonVector& polygons){
-        auto numChild = geom.getGeometriesCount();
-        for(int i=0; i<numChild; i++){
+        unsigned int numChild = geom.getGeometriesCount();
+        for(unsigned int i=0; i<numChild; i++){
             FindAllPolygons(geom.getGeometry(i), polygons);
         }
-        auto numPoly = geom.getPolygonsCount();
-        for(int i=0; i<numPoly; i++){
+        unsigned int numPoly = geom.getPolygonsCount();
+        for(unsigned int i=0; i<numPoly; i++){
             polygons.push_back(geom.getPolygon(i));
         }
     }
@@ -85,8 +86,8 @@ namespace{
      * 子の Geometry は再帰的に検索します。
      */
     void FindAllPolygons(const CityObject& cityObj, PolygonVector& polygons){
-        auto numGeom = cityObj.getGeometriesCount();
-        for(int i=0; i<numGeom; i++){
+        unsigned int numGeom = cityObj.getGeometriesCount();
+        for(unsigned int i=0; i<numGeom; i++){
             FindAllPolygons(cityObj.getGeometry(i), polygons);
         }
     }
@@ -122,20 +123,53 @@ namespace{
         }
     }
 
+    void childCityObjectsRecursive(const CityObject& cityObj, std::vector<const CityObject*>& childObjs){
+        childObjs.push_back(&cityObj);
+        unsigned int numChild = cityObj.getChildCityObjectsCount();
+        for(unsigned int i=0; i<numChild; i++){
+            auto& child = cityObj.getChildCityObject(i);
+            childCityObjectsRecursive(child, childObjs);
+        }
+    }
 
+    /**
+     * cityObj の子を再帰的に検索して vector で返します。
+     * ただし引数自身は戻り値に含めません。
+     */
+    std::vector<const CityObject*> childCityObjects(const CityObject& cityObj){
+        std::vector<const CityObject*> children;
+        unsigned int numChild = cityObj.getChildCityObjectsCount();
+        for(unsigned int i=0; i<numChild; i++){
+            auto& child = cityObj.getChildCityObject(i);
+            childCityObjectsRecursive(child, children);
+        }
+        return children;
+    }
 
 
 }
 
 void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
 
-    // cityModel に含まれる CityObject をグリッドに分類します。
-    auto& cityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask);
+    // cityModel に含まれる 主要地物 をグリッドに分類します。
+    auto& primaryCityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
     auto& cityEnvelope = cityModel->getEnvelope();
     auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
-    classifyCityObjsToGrid(gridIdToObjsMap, cityObjs, cityEnvelope, gridNumX, gridNumY);
+    classifyCityObjsToGrid(gridIdToObjsMap, primaryCityObjs, cityEnvelope, gridNumX, gridNumY);
 
-    // Debug Print (グリッド分類結果の表示)
+    // 主要地物の子（最小地物）を親と同じグリッドに追加します。
+    // 意図はグリッドの端で同じ建物が分断されないようにするためです。
+    for(auto& gridIdToObjs : gridIdToObjsMap){
+        int gridId = gridIdToObjs.first;
+        for(auto primaryObj : gridIdToObjs.second){
+            auto minimumObjs = childCityObjects(*primaryObj);
+            for(auto minimumObj : minimumObjs){
+                gridIdToObjsMap[gridId].push_back(minimumObj);
+            }
+        }
+    }
+
+    // デバッグ用表示 : グリッド分類結果
     for(const auto& pair : gridIdToObjsMap){
         std::cout << "[grid " << pair.first << "] ";
         for(auto cityObj : pair.second){
@@ -181,7 +215,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
 
     }
 
-    // Debug Print
+    // デバッグ用表示 : マージしたポリゴンの情報
     for(auto gridPoly : *gridPolygons){
         std::cout << "[" << gridPoly->getId() << "] ";
         std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
