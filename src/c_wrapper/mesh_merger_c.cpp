@@ -44,13 +44,13 @@ extern "C"{
      */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_get_last_result_of_grid_merge(
             MeshMerger* mesh_merger_handle,
-            Polygon** out_polygons
+            PlateauPolygon** out_plateau_polygons
     ){
         API_TRY{
             auto last_merge_result = mesh_merger_handle->getLastGridMergeResult();
             int num_polygons = (int)last_merge_result->size();
             for(int i=0; i<num_polygons; i++){
-                out_polygons[i] = last_merge_result->at(i);
+                out_plateau_polygons[i] = last_merge_result->at(i);
             }
             return APIResult::Success;
         }

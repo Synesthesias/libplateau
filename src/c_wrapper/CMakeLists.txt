@@ -25,7 +25,8 @@ add_library(c_wrapper OBJECT
   "texture_c.cpp"
   "appearance_c.cpp"
   "plateau_dll_logger_c.cpp"
-  "mesh_merger_c.cpp")
+  "mesh_merger_c.cpp"
+  "plateau_polygon_c.cpp")
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")

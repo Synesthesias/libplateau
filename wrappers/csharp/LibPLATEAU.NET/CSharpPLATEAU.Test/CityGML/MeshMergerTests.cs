@@ -24,8 +24,25 @@ namespace PLATEAU.Test.CityGML
             var logger = new DllLogger();
             logger.SetCallbacksToStdOut();
             var polygons = this.meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
+            foreach (var poly in polygons)
+            {
+                Console.WriteLine($"{poly.ID} : vertCount={poly.VertexCount}");
+            }
             int numGridsWithVertices = polygons.Count(poly => poly.VertexCount > 0);
-            Assert.IsTrue(numGridsWithVertices >= 10, "頂点を含むメッシュが10個以上ある");
+            Assert.IsTrue(numGridsWithVertices >= 7, "頂点を含むメッシュが7個以上ある");
+        }
+
+        [TestMethod]
+        public void GridMerge_Composes_MultiTexture()
+        {
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            var logger = new DllLogger();
+            logger.SetCallbacksToStdOut();
+            var polygons = this.meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
+            var multiTextures = polygons
+                .Select(poly => poly.GetMultiTexture())
+                .Where(multiTex => multiTex.Length > 0);
+            Assert.IsTrue(multiTextures.Count() >= 3, "MultiTextureを含むポリゴンが3つ以上あります");
         }
 
     }
