@@ -33,7 +33,7 @@ void MeshConverter::convert(
     if (options_.mesh_file_format == MeshFileFormat::OBJ) {
         base_file_name = fs::path(gml_file_name).replace_extension(".obj").string();
     } else {
-        base_file_name = fs::path(gml_file_name).replace_extension(".glb").string();
+        base_file_name = fs::path(gml_file_name).replace_extension(".glb").string();// you can choose ".glb" or ".gltf"
     }
     bool result;
     for (unsigned lod = options_.min_lod; lod <= options_.max_lod; lod++) {

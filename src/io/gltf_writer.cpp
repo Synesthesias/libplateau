@@ -123,13 +123,18 @@ bool GltfWriter::write(const std::string& gltf_file_path, const std::string& gml
     // 内部状態初期化
     options_ = options;
     v_offset_ = 0;
+    v_offset_total_ = 0;
     required_materials_.clear();
     node_name_ = "";
     image_id_num_ = 0;
     texture_id_num_ = 0;
-    mesh_.primitives.clear();
     scene_.nodes.clear();
+    mesh_.primitives.clear();
     material_ids_.clear();
+    positions_.clear();
+    texcoords_.clear();
+    indices_.clear();
+    current_material_id_ = "";
 
     std::filesystem::path path = gltf_file_path;
     if (path.is_relative()) {
@@ -185,7 +190,10 @@ bool GltfWriter::write(const std::string& gltf_file_path, const std::string& gml
     writeGltf(gltf_file_path, city_model, lod, document, bufferBuilder);
 
     // for last node
-    writeNode(document);
+    if (!indices_.empty()) {
+        writeMesh(document, bufferBuilder);
+        writeNode(document);
+    }
 
     document.SetDefaultScene(std::move(scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
     bufferBuilder.Output(document);
@@ -219,8 +227,8 @@ bool GltfWriter::write(const std::string& gltf_file_path, const std::string& gml
         }
     }
     
-    // 中身が空ならOBJ削除
-    if (v_offset_ == 0) {
+    // 中身が空ならファイル削除
+    if (v_offset_total_ == 0) {
         dll_logger_.lock()->log(DllLogLevel::LL_INFO, "No vertex generated. Deleting output obj.");
         fs::remove(gltf_file_path);
         return false;
@@ -300,9 +308,11 @@ void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsig
     }
 
     if (should_start_new_group) {
-        if (node_name_ != "") {
-            writeNode(document);
+        if (!indices_.empty()) {
+            writeMesh(document, bufferBuilder);
         }
+        if (!mesh_.primitives.empty()) writeNode(document);
+        
         std::stringstream ss;
         ss << "LOD" << lod << "_" << target_object.getId();
         node_name_ = ss.str();
@@ -318,32 +328,30 @@ void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsig
 void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
     for (unsigned int i = 0; i < target_geometry.getPolygonsCount(); i++) {
         const auto polygon = target_geometry.getPolygon(i);
-        
         const auto& indices = polygon->getIndices();
         if (indices.empty()) continue;
-        auto accessorIdIndices = writeIndices(indices, bufferBuilder);
-
-        const auto& vertices = polygon->getVertices();
-        auto accessorIdPositions = writeVertices(vertices, bufferBuilder);
-
+        
         const auto uvs = polygon->getTexCoordsForTheme("rgbTexture", true);
-        std::string accessorIdTexCoords = "", materialId = "";
-        if (!uvs.empty()) {
-            accessorIdTexCoords = writeUVs(uvs, bufferBuilder);
-            
+        std::string materialId = "";
+        if (!uvs.empty()) {          
             const auto texture = polygon->getTextureFor("rgbTexture");
             materialId = writeMaterialReference(texture, document);
         } else {
             materialId = default_material_id_;
         }
+        if (current_material_id_ == "") current_material_id_ = materialId;
 
-        gltf::MeshPrimitive meshPrimitive;
-        meshPrimitive.materialId = materialId;
-        meshPrimitive.indicesAccessorId = accessorIdIndices;
-        meshPrimitive.attributes[gltf::ACCESSOR_POSITION] = accessorIdPositions;
-        if(accessorIdTexCoords != "") meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
+        if (current_material_id_ != materialId && !indices_.empty() ) {
+            writeMesh(document, bufferBuilder);
+            current_material_id_ = materialId;
+        }
 
-        mesh_.primitives.push_back(meshPrimitive);
+        if (!uvs.empty()) writeUVs(uvs, bufferBuilder);
+
+        writeIndices(indices, bufferBuilder);
+
+        const auto& vertices = polygon->getVertices();
+        writeVertices(vertices, bufferBuilder);
 
         v_offset_ += vertices.size();
     }
@@ -354,47 +362,65 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
     }
 }
 
-std::string GltfWriter::writeVertices(const std::vector<TVec3d>& vertices, gltf::BufferBuilder& bufferBuilder) {
-    std::vector<float> positions;
-
+void GltfWriter::writeVertices(const std::vector<TVec3d>& vertices, gltf::BufferBuilder& bufferBuilder) {
     for (TVec3d vertex : vertices) {
         polar_to_plane_cartesian().convert(vertex);
         vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
-        positions.push_back((float)vertex.x);
-        positions.push_back((float)vertex.y);
-        positions.push_back((float)vertex.z);
+        positions_.push_back((float)vertex.x);
+        positions_.push_back((float)vertex.y);
+        positions_.push_back((float)vertex.z);
     }
+}
 
+void GltfWriter::writeUVs(const std::vector<TVec2f>& uvs, gltf::BufferBuilder& bufferBuilder) {
+    for (const auto& uv : uvs) {
+        texcoords_.push_back((float)uv.x);
+        texcoords_.push_back((float)1.0-(float)uv.y);
+    }
+}
+
+void GltfWriter::writeIndices(const std::vector<unsigned int>& indices, gltf::BufferBuilder& bufferBuilder) {
+    for (const auto& index : indices) {
+        indices_.push_back(index + v_offset_);
+    }
+}
+
+void GltfWriter::writeMesh(Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    // for index
+    bufferBuilder.AddBufferView(gltf::BufferViewTarget::ELEMENT_ARRAY_BUFFER);
+    auto accessorIdIndices = bufferBuilder.AddAccessor(indices_, { gltf::TYPE_SCALAR, gltf::COMPONENT_UNSIGNED_INT }).id;
+    indices_.clear();
+    v_offset_total_ += v_offset_;
+    v_offset_ = 0;
+
+    // for position
     bufferBuilder.AddBufferView(gltf::BufferViewTarget::ARRAY_BUFFER);
-
     std::vector<float> minValues(3U, std::numeric_limits<float>::max());
     std::vector<float> maxValues(3U, std::numeric_limits<float>::lowest());
-
-    const size_t positionCount = positions.size();
-
+    const size_t positionCount = positions_.size();
     for (size_t i = 0U, j = 0U; i < positionCount; ++i, j = (i % 3U)) {
-        minValues[j] = std::min(positions[i], minValues[j]);
-        maxValues[j] = std::max(positions[i], maxValues[j]);
+        minValues[j] = std::min(positions_[i], minValues[j]);
+        maxValues[j] = std::max(positions_[i], maxValues[j]);
     }
+    auto accessorIdPositions = bufferBuilder.AddAccessor(positions_, { gltf::TYPE_VEC3, gltf::COMPONENT_FLOAT, false, minValues, maxValues }).id;
+    positions_.clear();
 
-    return bufferBuilder.AddAccessor(positions, { gltf::TYPE_VEC3, gltf::COMPONENT_FLOAT, false, minValues, maxValues }).id;
-}
-
-std::string GltfWriter::writeUVs(const std::vector<TVec2f>& uvs, gltf::BufferBuilder& bufferBuilder) {
-    std::vector<float> texcoords;
-
-    for (const auto& uv : uvs) {
-        texcoords.push_back((float)uv.x);
-        texcoords.push_back((float)1.0-(float)uv.y);
+    // for uvs
+    std::string accessorIdTexCoords = "";
+    if (!texcoords_.empty()) {
+        bufferBuilder.AddBufferView(gltf::BufferViewTarget::ARRAY_BUFFER);
+        accessorIdTexCoords = bufferBuilder.AddAccessor(texcoords_, { gltf::TYPE_VEC2, gltf::COMPONENT_FLOAT }).id;
     }
-    bufferBuilder.AddBufferView(gltf::BufferViewTarget::ARRAY_BUFFER);
-    return bufferBuilder.AddAccessor(texcoords, { gltf::TYPE_VEC2, gltf::COMPONENT_FLOAT }).id;
-}
+    texcoords_.clear();
 
-std::string GltfWriter::writeIndices(const std::vector<unsigned int>& indices, gltf::BufferBuilder& bufferBuilder) {
-    
-    bufferBuilder.AddBufferView(gltf::BufferViewTarget::ELEMENT_ARRAY_BUFFER);
-    return bufferBuilder.AddAccessor(indices, { gltf::TYPE_SCALAR, gltf::COMPONENT_UNSIGNED_INT }).id;
+    gltf::MeshPrimitive meshPrimitive;
+    meshPrimitive.materialId = current_material_id_;
+    meshPrimitive.indicesAccessorId = accessorIdIndices;
+    meshPrimitive.attributes[gltf::ACCESSOR_POSITION] = accessorIdPositions;
+    if (accessorIdTexCoords != "") meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
+
+    mesh_.primitives.push_back(meshPrimitive);
+    current_material_id_ = "";
 }
 
 void GltfWriter::writeNode(gltf::Document& document) {
