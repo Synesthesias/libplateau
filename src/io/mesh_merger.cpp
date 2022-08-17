@@ -5,7 +5,7 @@
 #include "citygml/texture.h"
 #include "obj_writer.h"
 
-using GridIdToObjsMap = std::map<int, std::vector<const CityObject*>*>;
+using GridIdToObjsMap = std::map<int, std::list<const CityObject*>>;
 using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{
@@ -31,9 +31,9 @@ namespace{
      */
     GridIdToObjsMap* initGridIdToObjsMap(const int gridNumX, const int gridNumY){
         int gridNum = gridNumX * gridNumY;
-        GridIdToObjsMap* gridIdToObjsMap = new GridIdToObjsMap;
+        auto gridIdToObjsMap = new GridIdToObjsMap;
         for(int i=0; i<gridNum; i++){
-            (*gridIdToObjsMap)[i] = new std::vector<const CityObject*>;
+            gridIdToObjsMap->emplace(i, std::list<const CityObject*>());
         }
         return gridIdToObjsMap;
     }
@@ -120,11 +120,11 @@ namespace{
     void classifyCityObjsToGrid(GridIdToObjsMap* gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
-            (*gridIdToObjsMap)[gridId]->push_back(co);
+            gridIdToObjsMap->at(gridId).push_back(co);
         }
     }
 
-    void childCityObjectsRecursive(const CityObject& cityObj, std::vector<const CityObject*>& childObjs){
+    void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs){
         childObjs.push_back(&cityObj);
         unsigned int numChild = cityObj.getChildCityObjectsCount();
         for(unsigned int i=0; i<numChild; i++){
@@ -137,12 +137,14 @@ namespace{
      * cityObj の子を再帰的に検索して 引数のvector に格納します。
      * ただし引数のcityObj自身は含めません。
      */
-    void childCityObjects(const CityObject& cityObj, std::vector<const CityObject*>& children ){
+    std::unique_ptr<std::list<const CityObject*>> childCityObjects(const CityObject& cityObj ){
+        auto children = std::make_unique<std::list<const CityObject*>>();
         unsigned int numChild = cityObj.getChildCityObjectsCount();
         for(unsigned int i=0; i<numChild; i++){
             auto& child = cityObj.getChildCityObject(i);
-            childCityObjectsRecursive(child, children);
+            childCityObjectsRecursive(child, *children);
         }
+        return std::move(children);
     }
 
 
@@ -158,17 +160,11 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
-    for(auto& gridIdToObjs : *gridIdToObjsMap){
-        int gridId = gridIdToObjs.first;
-        for(auto primaryObj : *gridIdToObjs.second){
-            // TODO このminimumObjs で new している理由は、
-            //  スタック領域に置くとUnityからP/Invokeでアクセスしたときに AccessViolation になるので
-            //  ヒープに置いています。
-            //  しかしdeleteできていないのでメモリリークしている疑惑があります。
-            auto minimumObjs = new std::vector<const CityObject*>(0);
-            childCityObjects(*primaryObj, *minimumObjs);
+    for(auto& [gridId, primaryObjs] : *gridIdToObjsMap){
+        for(auto primaryObj : primaryObjs){
+            auto minimumObjs = childCityObjects(*primaryObj);
             for(auto minimumObj : *minimumObjs){
-                (*gridIdToObjsMap)[gridId]->push_back(minimumObj);
+                gridIdToObjsMap->at(gridId).push_back(minimumObj);
             }
         }
     }
@@ -176,7 +172,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
     // デバッグ用表示 : グリッド分類結果
     for(const auto& pair : *gridIdToObjsMap){
         std::cout << "[grid " << pair.first << "] ";
-        for(auto cityObj : *pair.second){
+        for(auto cityObj : pair.second){
             std::cout << cityObj->getId() << ", ";
         }
         std::cout << std::endl;
@@ -189,10 +185,8 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
         auto gridPoly = new PlateauPolygon("grid" + std::to_string(i), logger);
-        auto numObjInGrid = (*gridIdToObjsMap)[i]->size();
         // グリッド内の各オブジェクトのループ
-        for(int j=0; j<numObjInGrid; j++){
-            auto cityObj = (*gridIdToObjsMap)[i]->at(j);
+        for(auto cityObj : gridIdToObjsMap->at(i)){
             auto polygons = PolygonVector();
             FindAllPolygons(cityObj, polygons);
             auto numPoly = polygons.size();
@@ -230,6 +224,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
         std::cout << std::endl;
     }
     lastGridMergeResult_ = gridPolygons;
+    // TODO deleteするよりスマポに直す
     delete gridIdToObjsMap;
 }
 

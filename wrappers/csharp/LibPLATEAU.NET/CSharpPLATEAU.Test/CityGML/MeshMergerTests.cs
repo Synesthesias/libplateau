@@ -44,7 +44,7 @@ namespace PLATEAU.Test.CityGML
                 .Where(multiTex => multiTex.Length > 0)
                 .ToArray();
             Assert.IsTrue(multiTextures.Length >= 3, "MultiTextureを含むポリゴンが3つ以上あります");
-            Assert.IsFalse(string.IsNullOrEmpty(multiTextures[0][0].Texture.Url), "MultiTextureのURLにアクセスできる");
+            Assert.IsFalse(string.IsNullOrEmpty(multiTextures[0][0].Texture.Url), "MultiTextureのURLにアクセスできます");
     }
 
     }
