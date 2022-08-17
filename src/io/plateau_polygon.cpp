@@ -46,7 +46,11 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
         m_indices.at(i) += prevNumVertices;
     }
     // UV1を追加します。
-    const auto& otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
+    auto otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
+    // otherUV1 の数が頂点数に足りなければ 0 で埋めます
+    for(size_t i = otherUV1.size(); i < otherVertices.size(); i++){
+        otherUV1.emplace_back(0,0);
+    }
     uv1_->insert(uv1_->end(), otherUV1.begin(), otherUV1.end());
     // テクスチャが異なる場合は追加します。
     // TODO ここのコードは整理したい

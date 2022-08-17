@@ -34,3 +34,14 @@ TEST_F(MeshMergerTest, gridMerge_returns_polygons_with_vertices){
     }
     ASSERT_TRUE(numPolyWithVert >= 5);
 }
+
+TEST_F(MeshMergerTest, gridMerge_uv1_size_matches_num_of_vertices){
+    auto meshMerger = MeshMerger();
+    meshMerger.gridMerge(city_model_.get(), CityObject::CityObjectsType::COT_All, 5, 5, logger_);
+    auto result = meshMerger.getLastGridMergeResult();
+    for(auto poly : *result){
+        auto sizeOfUV1 = poly->getUV1().size();
+        auto numOfVertices = poly->getVertices().size();
+        ASSERT_EQ(sizeOfUV1, numOfVertices);
+    }
+}
