@@ -75,6 +75,10 @@ namespace{
         for(unsigned int i=0; i<numChild; i++){
             FindAllPolygons(geom.getGeometry(i), polygons);
         }
+
+        // TODO 今は対象LODは2のみで決め打ちしているが、今後はLODを選択できるようにしたい
+        if(geom.getLOD() != 2) return;
+
         unsigned int numPoly = geom.getPolygonsCount();
         for(unsigned int i=0; i<numPoly; i++){
             polygons.push_back(geom.getPolygon(i));

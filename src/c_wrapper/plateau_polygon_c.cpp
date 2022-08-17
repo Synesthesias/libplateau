@@ -29,4 +29,19 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_polygon_get_multi_texture
     API_CATCH;
     return APIResult::ErrorUnknown;
 }
+
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_polygon_get_uv1(
+        const PlateauPolygon* const plateau_polygon,
+        TVec2f* out_uvs
+        ){
+    API_TRY{
+        auto& uv1 = plateau_polygon->getUV1();
+        for(int i=0; i<uv1.size(); i++){
+            out_uvs[i] = uv1.at(i);
+        }
+        return APIResult::Success;
+    }
+    API_CATCH;
+    return APIResult::ErrorUnknown;
+}
 }
