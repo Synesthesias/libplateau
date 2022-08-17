@@ -49,6 +49,7 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
     const auto& otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
     uv1_->insert(uv1_->end(), otherUV1.begin(), otherUV1.end());
     // テクスチャが異なる場合は追加します。
+    // TODO ここのコードは整理したい
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
     bool isDifferentTex = multiTexture_->size() <= 0;
     if(!isDifferentTex){
@@ -58,6 +59,6 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
         }
     }
     if( isDifferentTex && otherTexture != nullptr){
-        (*multiTexture_)[prevNumVertices] = otherTexture;
+        (*multiTexture_)[prevNumIndices] = otherTexture;
     }
 }

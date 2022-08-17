@@ -4,6 +4,10 @@
 #include <libplateau_api.h>
 using namespace citygml;
 using UV = std::vector<TVec2f>;
+/**
+ * keyを Indicesリストのインデックス（つまり面情報）、 value を テクスチャとする map です。
+ * keyであるIndicesリストのインデックス以降（つまりこれ以降の面）は value のテクスチャを使う、という意です。
+ */
 using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
 
 /**
@@ -23,7 +27,7 @@ public:
     /**
      * ポリゴンをマージします。
      * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
-     * ・頂点リスト、インデックスリスト、UV1
+     * ・頂点リスト、インデックスリスト、UV1、テクスチャ
      * その他の情報のマージには未対応です。例えば LinearRing は変化しません。
      */
     void Merge(const Polygon &otherPoly);
@@ -32,8 +36,8 @@ private:
     std::unique_ptr<UV> uv1_;
     std::unique_ptr<UV> uv2_;
     /**
-     * MultiTexture は、頂点番号とTextureを対応付けるmapです。
-     * その頂点番号以降、次の頂点番号まではそのTextureであるとします。
+     * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
+     * その面以降、次の番号まではそのTextureであるとします。
      */
     std::unique_ptr<MultiTexture> multiTexture_;
     std::shared_ptr<PlateauDllLogger> logger_;
