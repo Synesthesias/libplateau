@@ -29,13 +29,13 @@ namespace{
     /**
      * key が グリッド番号であり、 value は　CityObjectのvector であるmapを初期化します。
      */
-    GridIdToObjsMap* initGridIdToObjsMap(const int gridNumX, const int gridNumY){
+    std::unique_ptr<GridIdToObjsMap> initGridIdToObjsMap(const int gridNumX, const int gridNumY){
         int gridNum = gridNumX * gridNumY;
-        auto gridIdToObjsMap = new GridIdToObjsMap;
+        auto gridIdToObjsMap = std::make_unique<GridIdToObjsMap>();
         for(int i=0; i<gridNum; i++){
             gridIdToObjsMap->emplace(i, std::list<const CityObject*>());
         }
-        return gridIdToObjsMap;
+        return std::move(gridIdToObjsMap);
     }
 
     const citygml::Polygon* FindFirstPolygon(const Geometry& geometry){
@@ -117,7 +117,7 @@ namespace{
     /**
      * cityObjs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
      */
-    void classifyCityObjsToGrid(GridIdToObjsMap* gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
+    void classifyCityObjsToGrid(std::unique_ptr<GridIdToObjsMap>& gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
             gridIdToObjsMap->at(gridId).push_back(co);
@@ -150,7 +150,7 @@ namespace{
 
 }
 
-void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY, std::shared_ptr<PlateauDllLogger> logger) {
+void MeshMerger::gridMerge(const CityModel *cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     auto& primaryCityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
@@ -224,8 +224,6 @@ void MeshMerger::gridMerge(const CityModel *cityModel, CityObject::CityObjectsTy
         std::cout << std::endl;
     }
     lastGridMergeResult_ = gridPolygons;
-    // TODO deleteするよりスマポに直す
-    delete gridIdToObjsMap;
 }
 
 MeshMerger::GridMergeResult MeshMerger::getLastGridMergeResult() {
