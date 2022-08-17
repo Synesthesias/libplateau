@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "citygml/citymodel.h"
 #include "citygml/citygml.h"
+#include "citygml/polygon.h"
 #include "plateau/io/mesh_merger.h"
 
 using namespace citygml;
@@ -21,8 +22,15 @@ protected:
     std::shared_ptr<PlateauDllLogger> logger_;
 };
 
-TEST_F(MeshMergerTest, meshMergerTest){
-    // TODO
+TEST_F(MeshMergerTest, gridMerge_returns_polygons_with_vertices){
     auto meshMerger = MeshMerger();
     meshMerger.gridMerge(city_model_.get(), CityObject::CityObjectsType::COT_All, 5, 5, logger_);
+    auto result = meshMerger.getLastGridMergeResult();
+    int numPolyWithVert = 0;
+    for(auto poly : *result){
+        if(!poly->getVertices().empty()){
+            numPolyWithVert++;
+        }
+    }
+    ASSERT_TRUE(numPolyWithVert >= 5);
 }
