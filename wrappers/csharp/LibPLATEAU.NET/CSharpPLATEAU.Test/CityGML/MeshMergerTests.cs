@@ -37,7 +37,11 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GridMerge_Size_Of_UV1_Equals_Num_Of_Vertices()
         {
-            
+            var polygons = LoadAndGridMerge();
+            foreach (var poly in polygons)
+            {
+                Assert.AreEqual(poly.GetUv1().Length, poly.VertexCount);
+            }
         }
 
         private static PlateauPolygon[] LoadAndGridMerge()
