@@ -20,5 +20,5 @@ public:
     GridMergeResult & getLastGridMergeResult();
 
 private:
-    std::shared_ptr<GridMergeResult> lastGridMergeResult_;
+    std::unique_ptr<GridMergeResult> lastGridMergeResult_;
 };

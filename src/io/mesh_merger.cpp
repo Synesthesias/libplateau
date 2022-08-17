@@ -94,11 +94,11 @@ namespace{
      * 子の CityObject は検索しません。
      * 子の Geometry は再帰的に検索します。
      */
-    std::unique_ptr<PolygonList> FindAllPolygons(const CityObject* cityObj){
+    std::unique_ptr<PolygonList> FindAllPolygons(const CityObject& cityObj){
         auto polygons = std::make_unique<PolygonList>();
-        unsigned int numGeom = cityObj->getGeometriesCount();
+        unsigned int numGeom = cityObj.getGeometriesCount();
         for(unsigned int i=0; i<numGeom; i++){
-            FindAllPolygons(cityObj->getGeometry(i), polygons);
+            FindAllPolygons(cityObj.getGeometry(i), polygons);
         }
         return std::move(polygons);
     }
@@ -190,7 +190,7 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
 //    }
 
     // グリッドごとにメッシュを結合します。
-    auto gridPolygons = std::make_shared<GridMergeResult>();
+    auto gridPolygons = std::make_unique<GridMergeResult>();
     int gridNum = gridNumX * gridNumY;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
@@ -199,7 +199,7 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
         auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
         for(auto cityObj : objsInGrid){
-            auto polygons = FindAllPolygons(cityObj);
+            auto polygons = FindAllPolygons(*cityObj);
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : *polygons){
                 // 各ポリゴンを結合していきます。
@@ -223,16 +223,17 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
     }
 
     // デバッグ用表示 : マージしたポリゴンの情報
-    for(auto& gridPoly : *gridPolygons){
-        std::cout << "[" << gridPoly->getId() << "] ";
-        std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
-        std::cout << "multiTexture : ";
-        for(auto& idToTex : gridPoly->getMultiTexture()){
-            std::cout << "(" << idToTex.first << ", " << (idToTex.second->getUrl()) << "),   ";
-        }
-        std::cout << std::endl;
-    }
-    lastGridMergeResult_ = gridPolygons;
+//    for(auto& gridPoly : *gridPolygons){
+//        std::cout << "[" << gridPoly->getId() << "] ";
+//        std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
+//        std::cout << "multiTexture : ";
+//        for(auto& idToTex : gridPoly->getMultiTexture()){
+//            std::cout << "(" << idToTex.first << ", " << (idToTex.second->getUrl()) << "),   ";
+//        }
+//        std::cout << std::endl;
+//    }
+
+    lastGridMergeResult_ = std::move(gridPolygons);
 }
 
 MeshMerger::GridMergeResult & MeshMerger::getLastGridMergeResult() {
