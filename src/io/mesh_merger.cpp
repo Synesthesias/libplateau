@@ -5,8 +5,12 @@
 #include "citygml/texture.h"
 #include "obj_writer.h"
 
+/**
+ * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
+ */
 using GridIdToObjsMap = std::map<int, std::list<const CityObject*>>;
-using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
+//using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
+using PolygonList = std::list<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{
     /**
@@ -70,7 +74,7 @@ namespace{
         return nullptr;
     }
 
-    void FindAllPolygons(const Geometry& geom, PolygonVector& polygons){
+    void FindAllPolygons(const Geometry& geom, std::unique_ptr<PolygonList>& polygons){
         unsigned int numChild = geom.getGeometriesCount();
         for(unsigned int i=0; i<numChild; i++){
             FindAllPolygons(geom.getGeometry(i), polygons);
@@ -81,7 +85,7 @@ namespace{
 
         unsigned int numPoly = geom.getPolygonsCount();
         for(unsigned int i=0; i<numPoly; i++){
-            polygons.push_back(geom.getPolygon(i));
+            polygons->push_back(geom.getPolygon(i));
         }
     }
 
@@ -90,11 +94,13 @@ namespace{
      * 子の CityObject は検索しません。
      * 子の Geometry は再帰的に検索します。
      */
-    void FindAllPolygons(const CityObject* cityObj, PolygonVector& polygons){
+    std::unique_ptr<PolygonList> FindAllPolygons(const CityObject* cityObj){
+        auto polygons = std::make_unique<PolygonList>();
         unsigned int numGeom = cityObj->getGeometriesCount();
         for(unsigned int i=0; i<numGeom; i++){
             FindAllPolygons(cityObj->getGeometry(i), polygons);
         }
+        return std::move(polygons);
     }
 
 
@@ -121,11 +127,13 @@ namespace{
     /**
      * cityObjs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
      */
-    void classifyCityObjsToGrid(std::unique_ptr<GridIdToObjsMap>& gridIdToObjsMap, const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
+    std::unique_ptr<GridIdToObjsMap> classifyCityObjsToGrid(const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
+        auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
             gridIdToObjsMap->at(gridId).push_back(co);
         }
+        return std::move(gridIdToObjsMap);
     }
 
     void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs){
@@ -138,7 +146,7 @@ namespace{
     }
 
     /**
-     * cityObj の子を再帰的に検索して 引数のvector に格納します。
+     * cityObj の子を再帰的に検索して返します。
      * ただし引数のcityObj自身は含めません。
      */
     std::unique_ptr<std::list<const CityObject*>> childCityObjects(const CityObject& cityObj ){
@@ -154,13 +162,12 @@ namespace{
 
 }
 
-void MeshMerger::gridMerge(const CityModel *cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
+void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
-    auto& primaryCityObjs = cityModel->getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
-    auto& cityEnvelope = cityModel->getEnvelope();
-    auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
-    classifyCityObjsToGrid(gridIdToObjsMap, primaryCityObjs, cityEnvelope, gridNumX, gridNumY);
+    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
+    auto& cityEnvelope = cityModel.getEnvelope();
+    auto gridIdToObjsMap = classifyCityObjsToGrid( primaryCityObjs, cityEnvelope, gridNumX, gridNumY);
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
@@ -174,39 +181,37 @@ void MeshMerger::gridMerge(const CityModel *cityModel, const CityObject::CityObj
     }
 
     // デバッグ用表示 : グリッド分類結果
-    for(const auto& pair : *gridIdToObjsMap){
-        std::cout << "[grid " << pair.first << "] ";
-        for(auto cityObj : pair.second){
-            std::cout << cityObj->getId() << ", ";
-        }
-        std::cout << std::endl;
-    }
+//    for(const auto& pair : *gridIdToObjsMap){
+//        std::cout << "[grid " << pair.first << "] ";
+//        for(auto cityObj : pair.second){
+//            std::cout << cityObj->getId() << ", ";
+//        }
+//        std::cout << std::endl;
+//    }
 
     // グリッドごとにメッシュを結合します。
-    auto gridPolygons = std::make_shared<std::vector<PlateauPolygon*>>();
+    auto gridPolygons = std::make_shared<GridMergeResult>();
     int gridNum = gridNumX * gridNumY;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
-        auto gridPoly = new PlateauPolygon("grid" + std::to_string(i), logger);
+        auto gridPoly = std::make_unique<PlateauPolygon>("grid" + std::to_string(i), logger);
+        auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
-        for(auto cityObj : gridIdToObjsMap->at(i)){
-            auto polygons = PolygonVector();
-            FindAllPolygons(cityObj, polygons);
-            auto numPoly = polygons.size();
+        for(auto cityObj : objsInGrid){
+            auto polygons = FindAllPolygons(cityObj);
             // オブジェクト内の各ポリゴンのループ
-            for(int k=0; k<numPoly; k++){
-                auto poly = polygons.at(k).get();
+            for(const auto& poly : *polygons){
                 // 各ポリゴンを結合していきます。
                 gridPoly->Merge(*poly);
             }
         }
 
-        gridPolygons->push_back(gridPoly);
+        gridPolygons->push_back(std::move(gridPoly));
     }
 
     // 座標を変換します。
-    for(auto poly : *gridPolygons){
+    for(auto& poly : *gridPolygons){
         auto numVert = poly->getVertices().size();
         for(int i=0; i<numVert; i++){
             auto& pos = poly->getVertices().at(i);
@@ -218,7 +223,7 @@ void MeshMerger::gridMerge(const CityModel *cityModel, const CityObject::CityObj
     }
 
     // デバッグ用表示 : マージしたポリゴンの情報
-    for(auto gridPoly : *gridPolygons){
+    for(auto& gridPoly : *gridPolygons){
         std::cout << "[" << gridPoly->getId() << "] ";
         std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
         std::cout << "multiTexture : ";
@@ -230,6 +235,6 @@ void MeshMerger::gridMerge(const CityModel *cityModel, const CityObject::CityObj
     lastGridMergeResult_ = gridPolygons;
 }
 
-MeshMerger::GridMergeResult MeshMerger::getLastGridMergeResult() {
-    return lastGridMergeResult_;
+MeshMerger::GridMergeResult & MeshMerger::getLastGridMergeResult() {
+    return *lastGridMergeResult_;
 }

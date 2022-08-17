@@ -30,9 +30,9 @@ extern "C"{
             PlateauDllLogger* logger){
         API_TRY{
             auto sharedLogger = std::make_shared<PlateauDllLogger>(*logger);
-            mesh_merger_handle->gridMerge(city_model_handle->getCityModelPtr().get(), target_type_mask, grid_num_x, grid_num_y,sharedLogger);
-            auto gridMergeResult = mesh_merger_handle->getLastGridMergeResult();
-            *out_num_polygons = (int)gridMergeResult->size();
+            mesh_merger_handle->gridMerge(*city_model_handle->getCityModelPtr(), target_type_mask, grid_num_x, grid_num_y,sharedLogger);
+            auto& gridMergeResult = mesh_merger_handle->getLastGridMergeResult();
+            *out_num_polygons = (int)gridMergeResult.size();
             return APIResult::Success;
         }
         API_CATCH;
@@ -47,10 +47,10 @@ extern "C"{
             PlateauPolygon** out_plateau_polygons
     ){
         API_TRY{
-            auto last_merge_result = mesh_merger_handle->getLastGridMergeResult();
-            int num_polygons = (int)last_merge_result->size();
+            auto& last_merge_result = mesh_merger_handle->getLastGridMergeResult();
+            int num_polygons = (int)last_merge_result.size();
             for(int i=0; i<num_polygons; i++){
-                out_plateau_polygons[i] = last_merge_result->at(i);
+                out_plateau_polygons[i] = last_merge_result.at(i).get();
             }
             return APIResult::Success;
         }
