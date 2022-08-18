@@ -210,13 +210,20 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
         gridPolygons->push_back(std::move(gridPoly));
     }
 
+    // 街の範囲の中心を基準点とします。
+    auto cityCenter = (cityEnvelope.getLowerBound() + cityEnvelope.getUpperBound()) / 2.0;
+    polar_to_plane_cartesian().convert(cityCenter);
+    cityCenter.z = 0.0; // ただし高さ方法は0を基準点とします。
+
     // 座標を変換します。
     for(auto& poly : *gridPolygons){
         auto numVert = poly->getVertices().size();
         for(int i=0; i<numVert; i++){
-            auto& pos = poly->getVertices().at(i);
+            auto pos = poly->getVertices().at(i);
             polar_to_plane_cartesian().convert(pos);
-            pos = ObjWriter::convertPosition(pos, TVec3d(0, 0, 0), AxesConversion::WUN, 1.0);
+            // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
+            // TODO AxesConversion, unit_scale は調整できるようにする
+            pos = ObjWriter::convertPosition(pos, cityCenter, AxesConversion::WUN, 1.0);
             poly->getVertices().at(i) = pos;
         }
 
