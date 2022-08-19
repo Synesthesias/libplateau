@@ -54,16 +54,18 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
     uv1_->insert(uv1_->end(), otherUV1.begin(), otherUV1.end());
     // テクスチャが異なる場合は追加します。
     // TODO ここのコードは整理したい
+    // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
+    //      テクスチャなしのサブメッシュは1つにまとめたいところです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
+    if(otherTexture == nullptr){
+        otherTexture = Texture::noneTexture;
+    }
     bool isDifferentTex = multiTexture_->size() <= 0;
     if(!isDifferentTex){
         auto& lastTexture = (*multiTexture_->rbegin()).second;
-        if(lastTexture != nullptr && otherTexture != nullptr){
+        if(lastTexture != nullptr){
             isDifferentTex |= otherTexture->getUrl() != lastTexture->getUrl();
         }
-    }
-    if(otherTexture == nullptr){
-        otherTexture = Texture::noneTexture;
     }
     if( isDifferentTex ){
         multiTexture_->emplace(prevNumIndices, otherTexture);
