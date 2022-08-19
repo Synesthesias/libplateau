@@ -22,3 +22,16 @@ public:
 private:
     std::unique_ptr<GridMergeResult> lastGridMergeResult_;
 };
+
+class CityObjectWithImportID{
+public:
+    CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID);
+    const CityObject *const getCityObject(){return cityObject;}
+    int getPrimaryImportID() {return primaryImportID;}
+    int getSecondaryImportID(){return secondaryImportID;}
+
+private:
+    const CityObject* const cityObject;
+    int primaryImportID;
+    int secondaryImportID;
+};

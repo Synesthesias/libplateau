@@ -6,6 +6,7 @@ PlateauPolygon::PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDll
     Polygon(id, logger),
     uv1_(std::make_unique<UV>()),
     uv2_(std::make_unique<UV>()),
+    uv3_(std::make_unique<UV>()),
     multiTexture_(std::make_unique<MultiTexture>()),
     logger_(logger){
 }
@@ -27,11 +28,15 @@ const UV& PlateauPolygon::getUV2() const{
     return *uv2_;
 }
 
+const UV& PlateauPolygon::getUV3() const{
+    return *uv3_;
+}
+
 const MultiTexture &PlateauPolygon::getMultiTexture() const {
     return *(multiTexture_);
 }
 
-void PlateauPolygon::Merge(const Polygon &otherPoly) {
+void PlateauPolygon::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
     if(otherPoly.getVertices().size() <= 0) return;
     int prevNumVertices = m_vertices.size();
     int prevNumIndices = m_indices.size();
@@ -45,6 +50,7 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
     for(int i=prevNumIndices; i<m_indices.size(); i++){
         m_indices.at(i) += prevNumVertices;
     }
+
     // UV1を追加します。
     auto otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
     // otherUV1 の数が頂点数に足りなければ 0 で埋めます
@@ -52,15 +58,22 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
         otherUV1.emplace_back(0,0);
     }
     uv1_->insert(uv1_->end(), otherUV1.begin(), otherUV1.end());
+
+    // UV2,UV3を追加します。UV値は追加分の頂点ですべて同じ値を取ります。
+    for(int i=0; i<otherVertices.size(); i++){
+        uv2_->push_back(UV2Element);
+        uv3_->push_back(UV3Element);
+    }
+
     // テクスチャが異なる場合は追加します。
     // TODO ここのコードは整理したい
     // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
-    //      テクスチャなしのサブメッシュは1つにまとめたいところです。
+    //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
     if(otherTexture == nullptr){
         otherTexture = Texture::noneTexture;
     }
-    bool isDifferentTex = multiTexture_->size() <= 0;
+    bool isDifferentTex = multiTexture_->empty();
     if(!isDifferentTex){
         auto& lastTexture = (*multiTexture_->rbegin()).second;
         if(lastTexture != nullptr){

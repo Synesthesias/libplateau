@@ -24,6 +24,7 @@ public:
     void setUV2(std::unique_ptr<UV> uv2);
     [[nodiscard]] const UV& getUV1() const;
     [[nodiscard]] const UV& getUV2() const;
+    [[nodiscard]] const UV& getUV3() const;
     [[nodiscard]] const MultiTexture& getMultiTexture() const;
     /**
      * ポリゴンをマージします。
@@ -33,11 +34,12 @@ public:
      * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTexture が構築されます。
      * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
      */
-    void Merge(const Polygon &otherPoly);
+    void Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element);
 
 private:
     std::unique_ptr<UV> uv1_;
     std::unique_ptr<UV> uv2_;
+    std::unique_ptr<UV> uv3_;
     /**
      * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
      * その面以降、次の番号まではそのTextureであるとします。

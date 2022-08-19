@@ -8,7 +8,7 @@
 /**
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
  */
-using GridIdToObjsMap = std::map<int, std::list<const CityObject*>>;
+using GridIdToObjsMap = std::map<int, std::list<std::unique_ptr<CityObjectWithImportID>>>;
 using PolygonList = std::list<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{
@@ -36,7 +36,7 @@ namespace{
         int gridNum = gridNumX * gridNumY;
         auto gridIdToObjsMap = std::make_unique<GridIdToObjsMap>();
         for(int i=0; i<gridNum; i++){
-            gridIdToObjsMap->emplace(i, std::list<const CityObject*>());
+            gridIdToObjsMap->emplace(i, std::list<std::unique_ptr<CityObjectWithImportID>>());
         }
         return std::move(gridIdToObjsMap);
     }
@@ -125,12 +125,16 @@ namespace{
 
     /**
      * cityObjs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
+     * また ImportID を割り振ります。
      */
     std::unique_ptr<GridIdToObjsMap> classifyCityObjsToGrid(const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
         auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
+        int primaryImportID = 0;
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
-            gridIdToObjsMap->at(gridId).push_back(co);
+            auto cityObjWithImportID = std::make_unique<CityObjectWithImportID>(co, primaryImportID, -1);
+            gridIdToObjsMap->at(gridId).push_back(std::move(cityObjWithImportID));
+            primaryImportID++;
         }
         return std::move(gridIdToObjsMap);
     }
@@ -158,7 +162,6 @@ namespace{
         return std::move(children);
     }
 
-
 }
 
 void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
@@ -171,10 +174,14 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
     for(auto& [gridId, primaryObjs] : *gridIdToObjsMap){
-        for(auto primaryObj : primaryObjs){
-            auto minimumObjs = childCityObjects(*primaryObj);
+        for(auto& primaryObj : primaryObjs){
+            int primaryID = primaryObj->getPrimaryImportID();
+            auto minimumObjs = childCityObjects(*primaryObj->getCityObject());
+            int secondaryID = 0;
             for(auto minimumObj : *minimumObjs){
-                gridIdToObjsMap->at(gridId).push_back(minimumObj);
+                auto minimumObjWithID = std::make_unique<CityObjectWithImportID>(minimumObj, primaryID, secondaryID);
+                gridIdToObjsMap->at(gridId).push_back(std::move(minimumObjWithID));
+                secondaryID++;
             }
         }
     }
@@ -197,12 +204,14 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
         auto gridPoly = std::make_unique<PlateauPolygon>("grid" + std::to_string(i), logger);
         auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
-        for(auto cityObj : objsInGrid){
-            auto polygons = FindAllPolygons(*cityObj);
+        for(auto& cityObj : objsInGrid){
+            auto polygons = FindAllPolygons(*cityObj->getCityObject());
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : *polygons){
                 // 各ポリゴンを結合していきます。
-                gridPoly->Merge(*poly);
+                auto uv2 = TVec2f(cityObj->getPrimaryImportID() + 0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
+                auto uv3 = TVec2f(cityObj->getSecondaryImportID() + 0.25, 0);
+                gridPoly->Merge(*poly, uv2, uv3);
             }
         }
 
@@ -244,4 +253,11 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
 
 MeshMerger::GridMergeResult & MeshMerger::getLastGridMergeResult() {
     return *lastGridMergeResult_;
+}
+
+CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
+    cityObject(cityObject),
+    primaryImportID(primaryImportID),
+    secondaryImportID(secondaryImportID) {
+
 }

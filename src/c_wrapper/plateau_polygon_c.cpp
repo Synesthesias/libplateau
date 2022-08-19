@@ -30,18 +30,26 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_polygon_get_multi_texture
     return APIResult::ErrorUnknown;
 }
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_polygon_get_uv1(
-        const PlateauPolygon* const plateau_polygon,
-        TVec2f* out_uvs
-        ){
-    API_TRY{
-        auto& uv1 = plateau_polygon->getUV1();
-        for(int i=0; i<uv1.size(); i++){
-            out_uvs[i] = uv1.at(i);
-        }
-        return APIResult::Success;
-    }
-    API_CATCH;
-    return APIResult::ErrorUnknown;
+#define PLATEAU_POLYGON_GET_UV(UV_INDEX)\
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_polygon_get_uv ## UV_INDEX  ( \
+        const PlateauPolygon* const plateau_polygon, \
+        TVec2f* out_uvs \
+){ \
+    API_TRY{ \
+        auto& uv = plateau_polygon->getUV ## UV_INDEX (); \
+        for(int i=0; i<uv.size(); i++){ \
+            out_uvs[i] = uv.at(i); \
+        } \
+        return APIResult::Success; \
+    } \
+    API_CATCH; \
+    return APIResult::ErrorUnknown; \
 }
+
+// UV1 を取得する関数
+PLATEAU_POLYGON_GET_UV(1)
+// UV2 を取得する関数
+PLATEAU_POLYGON_GET_UV(2)
+// UV3 を取得する関数
+PLATEAU_POLYGON_GET_UV(3)
 }

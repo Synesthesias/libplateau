@@ -37,11 +37,19 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void When_GridMerge_Then_Size_Of_UV1_Equals_Num_Of_Vertices()
         {
-            var polygons = LoadAndGridMerge();
-            foreach (var poly in polygons)
-            {
-                Assert.AreEqual(poly.GetUv1().Length, poly.VertexCount);
-            }
+            AssertSizeOfUvEqualsNumOfVertices(poly => poly.GetUv1());
+        }
+        
+        [TestMethod]
+        public void When_GridMerge_Then_Size_Of_UV2_Equals_Num_Of_Vertices()
+        {
+            AssertSizeOfUvEqualsNumOfVertices(poly => poly.GetUv2());
+        }
+        
+        [TestMethod]
+        public void When_GridMerge_Then_Size_Of_UV3_Equals_Num_Of_Vertices()
+        {
+            AssertSizeOfUvEqualsNumOfVertices(poly => poly.GetUv3());
         }
 
         private static PlateauPolygon[] LoadAndGridMerge()
@@ -52,6 +60,16 @@ namespace PLATEAU.Test.CityGML
             var meshMerger = new MeshMerger();
             var polygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
             return polygons;
+        }
+
+        private static void AssertSizeOfUvEqualsNumOfVertices(
+            Func<PlateauPolygon, PlateauVector2f[]> polygonToUvGetter)
+        {
+            var polygons = LoadAndGridMerge();
+            foreach (var poly in polygons)
+            {
+                Assert.AreEqual(polygonToUvGetter(poly).Length, poly.VertexCount);
+            }
         }
 
     }
