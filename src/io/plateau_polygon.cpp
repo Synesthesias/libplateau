@@ -62,7 +62,10 @@ void PlateauPolygon::Merge(const Polygon &otherPoly) {
             isDifferentTex |= otherTexture->getUrl() != lastTexture->getUrl();
         }
     }
-    if( isDifferentTex && otherTexture != nullptr){
-        (*multiTexture_)[prevNumIndices] = otherTexture;
+    if(otherTexture == nullptr){
+        otherTexture = Texture::noneTexture;
+    }
+    if( isDifferentTex ){
+        multiTexture_->emplace(prevNumIndices, otherTexture);
     }
 }

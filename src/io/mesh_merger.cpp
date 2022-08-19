@@ -9,7 +9,6 @@
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
  */
 using GridIdToObjsMap = std::map<int, std::list<const CityObject*>>;
-//using PolygonVector = std::vector<std::shared_ptr<const citygml::Polygon>>;
 using PolygonList = std::list<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{

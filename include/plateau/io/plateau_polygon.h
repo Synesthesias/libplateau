@@ -7,6 +7,7 @@ using UV = std::vector<TVec2f>;
 /**
  * keyを Indicesリストのインデックス（つまり面情報）、 value を テクスチャとする map です。
  * keyであるIndicesリストのインデックス以降（つまりこれ以降の面）は value のテクスチャを使う、という意です。
+ * 「この場所にはテクスチャがない」というケースでは、value の Texture は IDとURL が "noneTexture" という値である特別なテクスチャになります。
  */
 using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
 
@@ -29,6 +30,8 @@ public:
      * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
      * ・頂点リスト、インデックスリスト、UV1、テクスチャ
      * なおその他の情報のマージには未対応です。例えば LinearRing は変化しません。
+     * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTexture が構築されます。
+     * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
      */
     void Merge(const Polygon &otherPoly);
 
