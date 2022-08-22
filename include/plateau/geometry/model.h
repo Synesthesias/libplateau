@@ -9,12 +9,12 @@ namespace plateau::geometry{
      * すなわち、3Dメッシュ、テクスチャ参照などを階層構造（Nodeの繋がり）で保持したものです。
      */
     class LIBPLATEAU_EXPORT Model{
-//    public:
-//        Model();
-//        Node & addNode(Node &&node);
-//        std::vector<Node*> GetNodesRecursive();
-//    private:
-//        std::vector<Node> rootNodes;
+    public:
+        Model();
+        Node & addNode(Node &&node);
+        std::vector<Node*> GetNodesRecursive();
+    private:
+        std::vector<Node> rootNodes;
     };
 
 }

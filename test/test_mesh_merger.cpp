@@ -39,28 +39,28 @@ TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
 }
 
 TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
-    auto meshExtractor = new MeshExtractor();
+    auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    meshExtractor->gridMerge(*city_model_.get(), options, logger_);
-    auto& result = meshExtractor->getLastGridMergeResult();
+    meshExtractor.gridMerge(*city_model_.get(), options, logger_);
+    auto& result = meshExtractor.getLastGridMergeResult();
     for(auto& poly : result){
         auto sizeOfUV1 = poly.getUV1().size();
         auto numOfVertices = poly.getVertices().size();
         ASSERT_EQ(sizeOfUV1, numOfVertices);
     }
-    std::cout << "deleting meshExtractor" << std::endl;
-    delete meshExtractor;
-    std::cout << "deleted meshExtractor" << std::endl;
 }
 
-//TEST_F(MeshExtractorTest, extract){
-//    auto meshExtractor = MeshExtractor();
-//    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-//    auto model = meshExtractor.extract(*city_model_, options, logger_);
-//    auto nodes = model->GetNodesRecursive();
-//    for(auto node : nodes){
-//        std::cout << node->getName() << std::endl;
-//    }
-//    // TODO
-//    ASSERT_TRUE(true);
-//}
+TEST_F(MeshExtractorTest, extract){
+    auto meshExtractor = MeshExtractor();
+    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+    auto model = meshExtractor.extract(*city_model_, options, logger_);
+    auto nodes = model->GetNodesRecursive();
+    for(auto node : nodes){
+        auto& meshOpt = node->getMesh();
+        std::string meshName = meshOpt ? meshOpt->getId() : "noneMesh";
+        auto verticesCount = meshOpt ? meshOpt->getVertices().size() : 0;
+        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
+    }
+    // TODO
+    ASSERT_TRUE(true);
+}

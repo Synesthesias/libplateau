@@ -5,21 +5,22 @@
 using namespace plateau::geometry;
 
 
-//Model::Model() :
-//    rootNodes()
-//{
-//
-//}
-//
-//Node & Model::addNode(Node &&node) {
-//    rootNodes.push_back(node);
-//    return node;
-//}
-//
-//std::vector<Node *> Model::GetNodesRecursive() {
-//    auto children =  std::vector<Node *>();
-//    for(auto& node : rootNodes){
-//        node.GetChildrenRecursive(children);
-//    }
-//    return children;
-//}
+Model::Model() :
+    rootNodes()
+{
+
+}
+
+Node & Model::addNode(Node &&node) {
+    rootNodes.push_back(node);
+    return rootNodes.back();
+}
+
+std::vector<Node *> Model::GetNodesRecursive() {
+    auto children =  std::vector<Node *>();
+    for(auto& node : rootNodes){
+        node.GetChildrenRecursive(children);
+    }
+    std::cout << "child count : " << children.size() << std::endl;
+    return children;
+}

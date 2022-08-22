@@ -16,7 +16,7 @@ namespace plateau::geometry {
         using GridMergeResult = std::vector<Mesh>;
     public:
 
-//        std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
+        std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
 
         /**
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。

@@ -258,28 +258,27 @@ MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
     return lastGridMergeResult_;
 }
 
-//std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
-//    auto model = std::make_shared<Model>();
-//    auto rootNode = Node(std::string("Model"));
-//    rootNode = model->addNode(std::move(rootNode));
-//    // TODO optionsに応じた処理の切り替えは未実装
-//    switch(options.meshGranularity){
-//        case MeshGranularity::PerCityModelArea:
-//            gridMerge(cityModel, options, logger);
-//            auto& result = getLastGridMergeResult();
-//            int i = 0;
-//            for(auto& mesh : result){
-//                auto node = Node("grid" + std::to_string(i), std::move(*mesh));
-//                rootNode.addChildNode(std::move(node));
-//                i++;
-//            }
+std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
+    auto model = std::make_shared<Model>();
+    auto& rootNode = model->addNode(Node(std::string("Model")));
+    // TODO optionsに応じた処理の切り替えは未実装
+    switch(options.meshGranularity){
+        case MeshGranularity::PerCityModelArea:
+            gridMerge(cityModel, options, logger);
+            auto& result = getLastGridMergeResult();
+            std::cout << "result size : " << result.size() << std::endl;
+            int i = 0;
+            for(auto& mesh : result){
+                auto node = Node("grid" + std::to_string(i), std::move(mesh));
+                rootNode.addChildNode(std::move(node));
+                i++;
+            }
+            break;
+//        default:
 //            break;
-////        default:
-////            break;
-//    }
-//
-//    return model;
-//}
+    }
+    return model;
+}
 
 CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
     cityObject(cityObject),
