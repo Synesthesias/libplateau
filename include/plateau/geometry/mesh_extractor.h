@@ -13,7 +13,7 @@ namespace plateau::geometry {
  * GridMerge関数に CityModel を渡すと、配下のジオメトリをすべて検索して グリッド上のポリゴンにまとめます。
  */
     class LIBPLATEAU_EXPORT MeshExtractor {
-        using GridMergeResult = std::vector<std::unique_ptr<Mesh>>;
+        using GridMergeResult = std::vector<Mesh>;
     public:
 
 //        std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
@@ -30,7 +30,7 @@ namespace plateau::geometry {
         GridMergeResult &getLastGridMergeResult();
 
     private:
-        std::unique_ptr<GridMergeResult> lastGridMergeResult_;
+        GridMergeResult lastGridMergeResult_;
 
     };
 

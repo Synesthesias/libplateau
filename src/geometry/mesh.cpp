@@ -1,21 +1,23 @@
 
 #include <plateau/geometry/mesh.h>
+
+#include <memory>
 #include "citygml/texture.h"
 
 using namespace plateau::geometry;
 
 Mesh::Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger) :
     Polygon(id, logger),
-    uv1_(std::make_unique<UV>()),
-    uv2_(std::make_unique<UV>()),
-    uv3_(std::make_unique<UV>()),
-    multiTexture_(std::make_unique<MultiTexture>()),
+    uv1_(UV()),
+    uv2_(UV()),
+    uv3_(UV()),
+    multiTexture_(MultiTexture()),
     logger_(logger){
 }
 
 
-void Mesh::setUV2(std::unique_ptr<UV> uv2) {
-    if(uv2->size() != m_vertices.size()){
+void Mesh::setUV2(UV& uv2) {
+    if(uv2.size() != m_vertices.size()){
         logger_->throwException("Size of uv2 does not match num of vertices.");
         return;
     }
@@ -23,19 +25,19 @@ void Mesh::setUV2(std::unique_ptr<UV> uv2) {
 }
 
 const UV& Mesh::getUV1() const{
-    return *uv1_;
+    return uv1_;
 }
 
 const UV& Mesh::getUV2() const{
-    return *uv2_;
+    return uv2_;
 }
 
 const UV& Mesh::getUV3() const{
-    return *uv3_;
+    return uv3_;
 }
 
 const MultiTexture &Mesh::getMultiTexture() const {
-    return *multiTexture_;
+    return multiTexture_;
 }
 
 void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
@@ -60,17 +62,17 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     // UV1を追加します。
     auto& otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
     for(const auto & vec : otherUV1){
-        uv1_->push_back(vec);
+        uv1_.push_back(vec);
     }
     // otherUV1 の数が頂点数に足りなければ 0 で埋めます
     for(size_t i = otherUV1.size(); i < otherVertices.size(); i++){
-        uv1_->emplace_back(0,0);
+        uv1_.emplace_back(0,0);
     }
 
     // UV2,UV3を追加します。UV値は追加分の頂点ですべて同じ値を取ります。
     for(int i=0; i<otherVertices.size(); i++){
-        uv2_->push_back(UV2Element);
-        uv3_->push_back(UV3Element);
+        uv2_.push_back(UV2Element);
+        uv3_.push_back(UV3Element);
     }
 
     // テクスチャが異なる場合は追加します。
@@ -81,14 +83,14 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     if(otherTexture == nullptr){
         otherTexture = Texture::noneTexture;
     }
-    bool isDifferentTex = multiTexture_->empty();
+    bool isDifferentTex = multiTexture_.empty();
     if(!isDifferentTex){
-        auto& lastTexture = (*multiTexture_->rbegin()).second;
+        auto& lastTexture = (*multiTexture_.rbegin()).second;
         if(lastTexture != nullptr){
             isDifferentTex |= otherTexture->getUrl() != lastTexture->getUrl();
         }
     }
     if( isDifferentTex ){
-        multiTexture_->emplace(prevNumIndices, otherTexture);
+        multiTexture_.emplace(prevNumIndices, otherTexture);
     }
 }

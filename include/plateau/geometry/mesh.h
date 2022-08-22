@@ -26,7 +26,7 @@ namespace plateau::geometry {
     public:
         Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger);
 
-        void setUV2(std::unique_ptr<UV> uv2);
+        void setUV2(UV& uv2);
 
         [[nodiscard]] const UV &getUV1() const;
 
@@ -45,18 +45,16 @@ namespace plateau::geometry {
          * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
          */
         void Merge(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element);
-//        ~Mesh() override = default;
 
     private:
-        // TODO 以下、loggerを除いてはスマートポインタである必要はない気がする
-        std::unique_ptr<UV> uv1_;
-        std::unique_ptr<UV> uv2_;
-        std::unique_ptr<UV> uv3_;
+        UV uv1_;
+        UV uv2_;
+        UV uv3_;
         /**
          * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
          * その面以降、次の番号まではそのTextureであるとします。
          */
-        std::unique_ptr<MultiTexture> multiTexture_;
+        MultiTexture multiTexture_;
         std::shared_ptr<PlateauDllLogger> logger_;
     };
 }

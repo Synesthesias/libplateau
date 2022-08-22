@@ -199,12 +199,12 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
 //    }
 
     // グリッドごとにメッシュを結合します。
-    auto gridPolygons = std::make_unique<GridMergeResult>();
+    auto gridMeshes = GridMergeResult();
     int gridNum = options.gridCountOfSide * options.gridCountOfSide;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
-        // グリッド内でマージするポリゴンの新規作成
-        auto gridPoly = std::make_unique<Mesh>("grid" + std::to_string(i), logger);
+//        // グリッド内でマージするポリゴンの新規作成
+        auto gridMesh = Mesh("grid" + std::to_string(i), logger);
         auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
@@ -212,36 +212,36 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : *polygons){
                 // 各ポリゴンを結合していきます。
-                auto uv2 = TVec2f(cityObj->getPrimaryImportID() + 0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
-                auto uv3 = TVec2f(cityObj->getSecondaryImportID() + 0.25, 0);
-                gridPoly->Merge(*poly, uv2, uv3);
+                const auto uv2 = TVec2f(cityObj->getPrimaryImportID() + 0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
+                const auto uv3 = TVec2f(cityObj->getSecondaryImportID() + 0.25, 0);
+                gridMesh.Merge(*poly, uv2, uv3);
             }
         }
 
-        gridPolygons->push_back(std::move(gridPoly));
+        gridMeshes.push_back(std::move(gridMesh));
     }
-
+//
     // 街の範囲の中心を基準点とします。
     auto cityCenter = (cityEnvelope.getLowerBound() + cityEnvelope.getUpperBound()) / 2.0;
     polar_to_plane_cartesian().convert(cityCenter);
     cityCenter.z = 0.0; // ただし高さ方法は0を基準点とします。
 
     // 座標を変換します。
-    for(auto& poly : *gridPolygons){
-        auto numVert = poly->getVertices().size();
+    for(auto& poly : gridMeshes){
+        auto numVert = poly.getVertices().size();
         for(int i=0; i<numVert; i++){
-            auto pos = poly->getVertices().at(i);
+            auto pos = poly.getVertices().at(i);
             polar_to_plane_cartesian().convert(pos);
             // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
             // TODO AxesConversion, unit_scale は調整できるようにする
             pos = ObjWriter::convertPosition(pos, cityCenter, AxesConversion::WUN, 1.0);
-            poly->getVertices().at(i) = pos;
+            poly.getVertices().at(i) = pos;
         }
 
     }
 
     // デバッグ用表示 : マージしたポリゴンの情報
-//    for(auto& gridPoly : *gridPolygons){
+//    for(auto& gridPoly : *gridMeshes){
 //        std::cout << "[" << gridPoly->getId() << "] ";
 //        std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
 //        std::cout << "multiTexture : ";
@@ -251,11 +251,11 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
 //        std::cout << std::endl;
 //    }
 
-    lastGridMergeResult_ = std::move(gridPolygons);
+    lastGridMergeResult_ = std::move(gridMeshes);
 }
 
 MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
-    return *lastGridMergeResult_;
+    return lastGridMergeResult_;
 }
 
 //std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {

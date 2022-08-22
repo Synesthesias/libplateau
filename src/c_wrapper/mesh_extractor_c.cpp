@@ -54,7 +54,7 @@ extern "C"{
             auto& last_merge_result = mesh_merger_handle->getLastGridMergeResult();
             int num_polygons = (int)last_merge_result.size();
             for(int i=0; i<num_polygons; i++){
-                out_plateau_polygons[i] = last_merge_result.at(i).get();
+                out_plateau_polygons[i] = &last_merge_result.at(i);
             }
             return APIResult::Success;
         }
