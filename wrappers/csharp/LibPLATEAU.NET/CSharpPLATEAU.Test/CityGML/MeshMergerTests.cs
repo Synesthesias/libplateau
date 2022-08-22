@@ -57,7 +57,7 @@ namespace PLATEAU.Test.CityGML
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
             logger.SetCallbacksToStdOut();
-            var meshMerger = new MeshMerger();
+            var meshMerger = new MeshExtractor();
             var polygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
             return polygons;
         }

@@ -6,7 +6,7 @@
 
 #include <plateau/io/mesh_converter.h>
 
-#include "obj_writer.h"
+#include <plateau/io/obj_writer.h>
 
 namespace fs = std::filesystem;
 

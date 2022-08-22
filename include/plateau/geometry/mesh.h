@@ -15,7 +15,7 @@ using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
  * PLATEAU向けに機能を拡張した citygml::Polygon です。
  * 空の状態から Merge() によって頂点・面を追加していく使い方を想定しています。
  * 拡張した機能:
- * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshMerger::gridMerge で利用します。
+ * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshExtractor::gridMerge で利用します。
  * ・複数テクスチャ機能
  */
  // TODO Polygonを継承する必要はないかも

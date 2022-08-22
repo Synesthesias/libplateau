@@ -12,8 +12,8 @@
 
 #include <plateau/io/primary_city_object_types.h>
 
-#include "obj_writer.h"
-#include "polar_to_plane_cartesian.h"
+#include <plateau/io/obj_writer.h>
+#include <plateau/io/polar_to_plane_cartesian.h>
 
 namespace fs = std::filesystem;
 

@@ -1,9 +1,9 @@
-#include <plateau/io/mesh_merger.h>
+#include <plateau/geometry/mesh_extractor.h>
 #include <plateau/io/primary_city_object_types.h>
-#include "polar_to_plane_cartesian.h"
+#include <plateau/io/polar_to_plane_cartesian.h>
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
-#include "obj_writer.h"
+#include <plateau/io/obj_writer.h>
 
 /**
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
@@ -164,7 +164,7 @@ namespace{
 
 }
 
-void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
+void MeshExtractor::gridMerge(const CityModel &cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
@@ -251,7 +251,7 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
     lastGridMergeResult_ = std::move(gridPolygons);
 }
 
-MeshMerger::GridMergeResult & MeshMerger::getLastGridMergeResult() {
+MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
     return *lastGridMergeResult_;
 }
 

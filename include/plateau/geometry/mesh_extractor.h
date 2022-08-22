@@ -9,7 +9,7 @@
  * @brief
  * GridMerge関数に CityModel を渡すと、配下のジオメトリをすべて検索して グリッド上のポリゴンにまとめます。
  */
-class LIBPLATEAU_EXPORT MeshMerger {
+class LIBPLATEAU_EXPORT MeshExtractor {
     using GridMergeResult = std::vector<std::unique_ptr<Mesh>>;
 public:
     /**

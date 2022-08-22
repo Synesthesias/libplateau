@@ -25,7 +25,7 @@ add_library(c_wrapper OBJECT
   "texture_c.cpp"
   "appearance_c.cpp"
   "plateau_dll_logger_c.cpp"
-  "mesh_merger_c.cpp"
+  "mesh_extractor_c.cpp"
   "mesh_c.cpp")
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

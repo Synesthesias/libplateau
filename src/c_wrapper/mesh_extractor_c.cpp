@@ -1,27 +1,27 @@
 #include "libplateau_c.h"
 #include "city_model_c.h"
-#include <plateau/io/mesh_merger.h>
+#include <plateau/geometry/mesh_extractor.h>
 using namespace libplateau;
 
 extern "C"{
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_new(
-            MeshMerger** out_mesh_merger_ptr
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_new(
+            MeshExtractor** out_mesh_merger_ptr
             ){
-        *out_mesh_merger_ptr = new MeshMerger();
+        *out_mesh_merger_ptr = new MeshExtractor();
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_delete(
-            MeshMerger* mesh_merger_handle
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_delete(
+            MeshExtractor* mesh_merger_handle
             ){
         delete mesh_merger_handle;
         return APIResult::Success;
     }
 
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_grid_merge(
-            MeshMerger* mesh_merger_handle,
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_grid_merge(
+            MeshExtractor* mesh_merger_handle,
             const CityModelHandle* city_model_handle,
             CityObject::CityObjectsType target_type_mask,
             int grid_num_x,
@@ -40,10 +40,10 @@ extern "C"{
     }
 
     /**
-     * MeshMerger::gridMerge の結果を Polygonのアドレスの配列で返します。
+     * MeshExtractor::gridMerge の結果を Polygonのアドレスの配列で返します。
      */
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_get_last_result_of_grid_merge(
-            MeshMerger* mesh_merger_handle,
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_get_last_result_of_grid_merge(
+            MeshExtractor* mesh_merger_handle,
             Mesh** out_plateau_polygons
     ){
         API_TRY{
