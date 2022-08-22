@@ -10,3 +10,6 @@
 [submodule "test/gtest"]
 	path = test/gtest
 	url = https://github.com/google/googletest
+[submodule "3rdparty/glTF-SDK/glTF-SDK"]
+	path = 3rdparty/glTF-SDK/glTF-SDK
+	url = https://github.com/microsoft/glTF-SDK

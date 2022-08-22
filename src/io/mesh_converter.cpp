@@ -7,6 +7,7 @@
 #include <plateau/io/mesh_converter.h>
 
 #include "obj_writer.h"
+#include "gltf_writer.h"
 
 namespace fs = std::filesystem;
 
@@ -28,13 +29,22 @@ void MeshConverter::convert(
 
     const auto destination = fs::path(destination_directory).string();
     const auto gml_file_name = fs::path(gml_file_path).filename().string();
-    const auto base_obj_name = fs::path(gml_file_name).replace_extension(".obj").string();
-
+    std::string base_file_name;
+    if (options_.mesh_file_format == MeshFileFormat::OBJ) {
+        base_file_name = fs::path(gml_file_name).replace_extension(".obj").string();
+    } else {
+        base_file_name = fs::path(gml_file_name).replace_extension(".glb").string();// you can choose ".glb" or ".gltf"
+    }
+    bool result;
     for (unsigned lod = options_.min_lod; lod <= options_.max_lod; lod++) {
-        const auto obj_file_path = fs::path(destination).append("LOD" + std::to_string(lod) + "_" + base_obj_name).make_preferred().string();
-        const auto result = ObjWriter().write(obj_file_path, gml_file_path, *city_model, options_, lod, logger);
+        const auto out_file_path = fs::path(destination).append("LOD" + std::to_string(lod) + "_" + base_file_name).make_preferred().string();
+        if (options_.mesh_file_format == MeshFileFormat::OBJ) {
+            result = ObjWriter().write(out_file_path, gml_file_path, *city_model, options_, lod, logger);
+        } else {
+            result = GltfWriter().write(out_file_path, gml_file_path, *city_model, options_, lod, logger);
+        }
         if (result) {
-            converted_files.push_back(obj_file_path);
+            converted_files.push_back(out_file_path);
         }
     }
 }
