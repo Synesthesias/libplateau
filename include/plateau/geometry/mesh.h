@@ -2,6 +2,7 @@
 #include "citygml/polygon.h"
 #include "plateau_dll_logger.h"
 #include <libplateau_api.h>
+#include <optional>
 using namespace citygml;
 using UV = std::vector<TVec2f>;
 /**
@@ -23,7 +24,7 @@ namespace plateau::geometry {
     // TODO Polygonを継承する必要はないかも
     class LIBPLATEAU_EXPORT Mesh : public Polygon {
     public:
-        Mesh(const std::string &id, std::shared_ptr<PlateauDllLogger> logger);
+        Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger);
 
         void setUV2(std::unique_ptr<UV> uv2);
 
@@ -44,8 +45,10 @@ namespace plateau::geometry {
          * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
          */
         void Merge(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element);
+//        ~Mesh() override = default;
 
     private:
+        // TODO 以下、loggerを除いてはスマートポインタである必要はない気がする
         std::unique_ptr<UV> uv1_;
         std::unique_ptr<UV> uv2_;
         std::unique_ptr<UV> uv3_;

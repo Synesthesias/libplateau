@@ -166,12 +166,13 @@ namespace{
 
 }
 
-void MeshExtractor::gridMerge(const CityModel &cityModel, const CityObject::CityObjectsType targetTypeMask, const int gridNumX, const int gridNumY, const std::shared_ptr<PlateauDllLogger> &logger) {
+void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
+                              const std::shared_ptr<PlateauDllLogger> &logger) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
-    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(targetTypeMask & PrimaryCityObjectTypes::getPrimaryTypeMask());
+    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
     auto& cityEnvelope = cityModel.getEnvelope();
-    auto gridIdToObjsMap = classifyCityObjsToGrid( primaryCityObjs, cityEnvelope, gridNumX, gridNumY);
+    auto gridIdToObjsMap = classifyCityObjsToGrid( primaryCityObjs, cityEnvelope, options.gridCountOfSide, options.gridCountOfSide);
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
@@ -199,7 +200,7 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const CityObject::City
 
     // グリッドごとにメッシュを結合します。
     auto gridPolygons = std::make_unique<GridMergeResult>();
-    int gridNum = gridNumX * gridNumY;
+    int gridNum = options.gridCountOfSide * options.gridCountOfSide;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
@@ -256,6 +257,29 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const CityObject::City
 MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
     return *lastGridMergeResult_;
 }
+
+//std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
+//    auto model = std::make_shared<Model>();
+//    auto rootNode = Node(std::string("Model"));
+//    rootNode = model->addNode(std::move(rootNode));
+//    // TODO optionsに応じた処理の切り替えは未実装
+//    switch(options.meshGranularity){
+//        case MeshGranularity::PerCityModelArea:
+//            gridMerge(cityModel, options, logger);
+//            auto& result = getLastGridMergeResult();
+//            int i = 0;
+//            for(auto& mesh : result){
+//                auto node = Node("grid" + std::to_string(i), std::move(*mesh));
+//                rootNode.addChildNode(std::move(node));
+//                i++;
+//            }
+//            break;
+////        default:
+////            break;
+//    }
+//
+//    return model;
+//}
 
 CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
     cityObject(cityObject),

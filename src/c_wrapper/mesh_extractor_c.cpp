@@ -30,7 +30,11 @@ extern "C"{
             PlateauDllLogger* logger){
         API_TRY{
             auto sharedLogger = std::make_shared<PlateauDllLogger>(*logger);
-            mesh_merger_handle->gridMerge(*city_model_handle->getCityModelPtr(), target_type_mask, grid_num_x, grid_num_y,sharedLogger);
+
+            //TODO 仮
+            auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+
+            mesh_merger_handle->gridMerge(*city_model_handle->getCityModelPtr(), options, sharedLogger);
             auto& gridMergeResult = mesh_merger_handle->getLastGridMergeResult();
             *out_num_polygons = (int)gridMergeResult.size();
             return APIResult::Success;

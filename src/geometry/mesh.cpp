@@ -4,7 +4,7 @@
 
 using namespace plateau::geometry;
 
-Mesh::Mesh(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
+Mesh::Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger) :
     Polygon(id, logger),
     uv1_(std::make_unique<UV>()),
     uv2_(std::make_unique<UV>()),
@@ -35,31 +35,37 @@ const UV& Mesh::getUV3() const{
 }
 
 const MultiTexture &Mesh::getMultiTexture() const {
-    return *(multiTexture_);
+    return *multiTexture_;
 }
 
 void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
     if(otherPoly.getVertices().size() <= 0) return;
-    int prevNumVertices = m_vertices.size();
-    int prevNumIndices = m_indices.size();
+    unsigned prevNumVertices = m_vertices.size();
+    unsigned prevNumIndices = m_indices.size();
     auto& otherVertices = otherPoly.getVertices();
     auto& otherIndices = otherPoly.getIndices();
     // 頂点リストの末尾に追加します。
-    m_vertices.insert(m_vertices.end(), otherVertices.begin(), otherVertices.end());
+    for(const auto & otherVertex : otherVertices){
+        m_vertices.push_back(otherVertex);
+    }
     // インデックスリストの末尾に追加します。
-    m_indices.insert(m_indices.end(), otherIndices.begin(), otherIndices.end());
+    for(unsigned int otherIndex : otherIndices){
+        m_indices.push_back(otherIndex);
+    }
     // 追加分のインデックスを新しい値にします。前の頂点の数だけインデックスの数値を大きくすれば良いです。
-    for(int i=prevNumIndices; i<m_indices.size(); i++){
+    for(unsigned i=prevNumIndices; i<m_indices.size(); i++){
         m_indices.at(i) += prevNumVertices;
     }
 
     // UV1を追加します。
-    auto otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
+    auto& otherUV1 = otherPoly.getTexCoordsForTheme("rgbTexture", true);
+    for(const auto & vec : otherUV1){
+        uv1_->push_back(vec);
+    }
     // otherUV1 の数が頂点数に足りなければ 0 で埋めます
     for(size_t i = otherUV1.size(); i < otherVertices.size(); i++){
-        otherUV1.emplace_back(0,0);
+        uv1_->emplace_back(0,0);
     }
-    uv1_->insert(uv1_->end(), otherUV1.begin(), otherUV1.end());
 
     // UV2,UV3を追加します。UV値は追加分の頂点ですべて同じ値を取ります。
     for(int i=0; i<otherVertices.size(); i++){

@@ -26,7 +26,8 @@ protected:
 
 TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
     auto meshExtractor = MeshExtractor();
-    meshExtractor.gridMerge(*city_model_, CityObject::CityObjectsType::COT_All, 5, 5, logger_);
+    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+    meshExtractor.gridMerge(*city_model_, options, logger_);
     auto& result = meshExtractor.getLastGridMergeResult();
     int numPolyWithVert = 0;
     for(auto& poly : result){
@@ -39,7 +40,8 @@ TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
 
 TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
     auto meshExtractor = MeshExtractor();
-    meshExtractor.gridMerge(*city_model_.get(), CityObject::CityObjectsType::COT_All, 5, 5, logger_);
+    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+    meshExtractor.gridMerge(*city_model_.get(), options, logger_);
     auto& result = meshExtractor.getLastGridMergeResult();
     for(auto& poly : result){
         auto sizeOfUV1 = poly->getUV1().size();
@@ -47,3 +49,15 @@ TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
         ASSERT_EQ(sizeOfUV1, numOfVertices);
     }
 }
+
+//TEST_F(MeshExtractorTest, extract){
+//    auto meshExtractor = MeshExtractor();
+//    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+//    auto model = meshExtractor.extract(*city_model_, options, logger_);
+//    auto nodes = model->GetNodesRecursive();
+//    for(auto node : nodes){
+//        std::cout << node->getName() << std::endl;
+//    }
+//    // TODO
+//    ASSERT_TRUE(true);
+//}

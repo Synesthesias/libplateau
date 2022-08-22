@@ -4,15 +4,19 @@
 #include <plateau/geometry/mesh.h>
 #include <plateau/geometry/mesh_extract_options.h>
 #include "citygml/citymodel.h"
+#include "model.h"
 
 namespace plateau::geometry {
 /**
  * @brief
+ * CityModelからModel(メッシュ等)を取り出します。
  * GridMerge関数に CityModel を渡すと、配下のジオメトリをすべて検索して グリッド上のポリゴンにまとめます。
  */
     class LIBPLATEAU_EXPORT MeshExtractor {
         using GridMergeResult = std::vector<std::unique_ptr<Mesh>>;
     public:
+
+//        std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
 
         /**
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
@@ -20,7 +24,7 @@ namespace plateau::geometry {
          */
         // TODO これはプロトタイプ実装なので、仕様書に沿った形に書き換える必要があります。
         void
-        gridMerge(const CityModel &cityModel, CityObject::CityObjectsType targetTypeMask, int gridNumX, int gridNumY,
+        gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
                   const std::shared_ptr<PlateauDllLogger> &logger);
 
         GridMergeResult &getLastGridMergeResult();
