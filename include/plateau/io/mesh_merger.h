@@ -1,7 +1,7 @@
 #pragma once
 #include <libplateau_api.h>
 #include <memory>
-#include "plateau_polygon.h"
+#include <plateau/geometry/mesh.h>
 #include "citygml/citymodel.h"
 
 
@@ -10,7 +10,7 @@
  * GridMerge関数に CityModel を渡すと、配下のジオメトリをすべて検索して グリッド上のポリゴンにまとめます。
  */
 class LIBPLATEAU_EXPORT MeshMerger {
-    using GridMergeResult = std::vector<std::unique_ptr<PlateauPolygon>>;
+    using GridMergeResult = std::vector<std::unique_ptr<Mesh>>;
 public:
     /**
      * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。

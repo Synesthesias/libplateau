@@ -44,7 +44,7 @@ extern "C"{
      */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_get_last_result_of_grid_merge(
             MeshMerger* mesh_merger_handle,
-            PlateauPolygon** out_plateau_polygons
+            Mesh** out_plateau_polygons
     ){
         API_TRY{
             auto& last_merge_result = mesh_merger_handle->getLastGridMergeResult();

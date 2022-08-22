@@ -201,7 +201,7 @@ void MeshMerger::gridMerge(const CityModel &cityModel, const CityObject::CityObj
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
-        auto gridPoly = std::make_unique<PlateauPolygon>("grid" + std::to_string(i), logger);
+        auto gridPoly = std::make_unique<Mesh>("grid" + std::to_string(i), logger);
         auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){

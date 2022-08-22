@@ -1,8 +1,8 @@
 
-#include <plateau/io/plateau_polygon.h>
+#include <plateau/geometry/mesh.h>
 #include "citygml/texture.h"
 
-PlateauPolygon::PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
+Mesh::Mesh(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
     Polygon(id, logger),
     uv1_(std::make_unique<UV>()),
     uv2_(std::make_unique<UV>()),
@@ -12,7 +12,7 @@ PlateauPolygon::PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDll
 }
 
 
-void PlateauPolygon::setUV2(std::unique_ptr<UV> uv2) {
+void Mesh::setUV2(std::unique_ptr<UV> uv2) {
     if(uv2->size() != m_vertices.size()){
         logger_->throwException("Size of uv2 does not match num of vertices.");
         return;
@@ -20,23 +20,23 @@ void PlateauPolygon::setUV2(std::unique_ptr<UV> uv2) {
     uv2_ = std::move(uv2);
 }
 
-const UV& PlateauPolygon::getUV1() const{
+const UV& Mesh::getUV1() const{
     return *uv1_;
 }
 
-const UV& PlateauPolygon::getUV2() const{
+const UV& Mesh::getUV2() const{
     return *uv2_;
 }
 
-const UV& PlateauPolygon::getUV3() const{
+const UV& Mesh::getUV3() const{
     return *uv3_;
 }
 
-const MultiTexture &PlateauPolygon::getMultiTexture() const {
+const MultiTexture &Mesh::getMultiTexture() const {
     return *(multiTexture_);
 }
 
-void PlateauPolygon::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
+void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
     if(otherPoly.getVertices().size() <= 0) return;
     int prevNumVertices = m_vertices.size();
     int prevNumIndices = m_indices.size();

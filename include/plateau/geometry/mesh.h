@@ -18,9 +18,10 @@ using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
  * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshMerger::gridMerge で利用します。
  * ・複数テクスチャ機能
  */
-class LIBPLATEAU_EXPORT PlateauPolygon : public Polygon{
+ // TODO Polygonを継承する必要はないかも
+class LIBPLATEAU_EXPORT Mesh : public Polygon{
 public:
-    PlateauPolygon(const std::string& id, std::shared_ptr<PlateauDllLogger> logger);
+    Mesh(const std::string& id, std::shared_ptr<PlateauDllLogger> logger);
     void setUV2(std::unique_ptr<UV> uv2);
     [[nodiscard]] const UV& getUV1() const;
     [[nodiscard]] const UV& getUV2() const;

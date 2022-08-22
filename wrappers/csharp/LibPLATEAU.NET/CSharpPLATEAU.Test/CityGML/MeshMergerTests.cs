@@ -52,7 +52,7 @@ namespace PLATEAU.Test.CityGML
             AssertSizeOfUvEqualsNumOfVertices(poly => poly.GetUv3());
         }
 
-        private static PlateauPolygon[] LoadAndGridMerge()
+        private static Mesh[] LoadAndGridMerge()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
@@ -63,7 +63,7 @@ namespace PLATEAU.Test.CityGML
         }
 
         private static void AssertSizeOfUvEqualsNumOfVertices(
-            Func<PlateauPolygon, PlateauVector2f[]> polygonToUvGetter)
+            Func<Mesh, PlateauVector2f[]> polygonToUvGetter)
         {
             var polygons = LoadAndGridMerge();
             foreach (var poly in polygons)
