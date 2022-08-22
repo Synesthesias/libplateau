@@ -260,7 +260,7 @@ MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
 
 std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
     auto model = std::make_shared<Model>();
-    auto& rootNode = model->addNode(Node(std::string("Model")));
+    auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
     // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity){
         case MeshGranularity::PerCityModelArea:
