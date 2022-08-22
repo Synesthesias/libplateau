@@ -2,7 +2,7 @@
 #include "libplateau_c.h"
 using namespace citygml;
 using namespace libplateau;
-
+using namespace plateau::geometry;
 extern "C"{
 DLL_VALUE_FUNC(plateau_mesh_get_multi_texture_count,
                Mesh,

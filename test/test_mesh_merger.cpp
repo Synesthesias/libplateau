@@ -5,6 +5,8 @@
 #include <plateau/geometry/mesh_extractor.h>
 
 using namespace citygml;
+using namespace plateau::geometry;
+
 class MeshExtractorTest : public ::testing::Test {
 protected:
     virtual void SetUp() {

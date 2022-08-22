@@ -7,12 +7,12 @@
 #include "mesh.h"
 
 namespace plateau::geometry{
-    class ModelNode{
+    class Node{
     public:
-        explicit ModelNode(std::string& name);
+        explicit Node(std::string& name);
     private:
         std::string name_;
-        std::vector<ModelNode> childNodes_;
+        std::vector<Node> childNodes_;
         std::optional<Mesh> mesh_;
     };
 }

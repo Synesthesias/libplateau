@@ -11,6 +11,8 @@ using UV = std::vector<TVec2f>;
  */
 using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
 
+namespace plateau::geometry {
+
 /**
  * PLATEAU向けに機能を拡張した citygml::Polygon です。
  * 空の状態から Merge() によって頂点・面を追加していく使い方を想定しています。
@@ -18,33 +20,40 @@ using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
  * ・ポリゴンマージ機能 : 軽量化のために都市3Dモデルをグリッド状にまとめる MeshExtractor::gridMerge で利用します。
  * ・複数テクスチャ機能
  */
- // TODO Polygonを継承する必要はないかも
-class LIBPLATEAU_EXPORT Mesh : public Polygon{
-public:
-    Mesh(const std::string& id, std::shared_ptr<PlateauDllLogger> logger);
-    void setUV2(std::unique_ptr<UV> uv2);
-    [[nodiscard]] const UV& getUV1() const;
-    [[nodiscard]] const UV& getUV2() const;
-    [[nodiscard]] const UV& getUV3() const;
-    [[nodiscard]] const MultiTexture& getMultiTexture() const;
-    /**
-     * ポリゴンをマージします。
-     * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
-     * ・頂点リスト、インデックスリスト、UV1、テクスチャ
-     * なおその他の情報のマージには未対応です。例えば LinearRing は変化しません。
-     * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTexture が構築されます。
-     * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
-     */
-    void Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element);
+    // TODO Polygonを継承する必要はないかも
+    class LIBPLATEAU_EXPORT Mesh : public Polygon {
+    public:
+        Mesh(const std::string &id, std::shared_ptr<PlateauDllLogger> logger);
 
-private:
-    std::unique_ptr<UV> uv1_;
-    std::unique_ptr<UV> uv2_;
-    std::unique_ptr<UV> uv3_;
-    /**
-     * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
-     * その面以降、次の番号まではそのTextureであるとします。
-     */
-    std::unique_ptr<MultiTexture> multiTexture_;
-    std::shared_ptr<PlateauDllLogger> logger_;
-};
+        void setUV2(std::unique_ptr<UV> uv2);
+
+        [[nodiscard]] const UV &getUV1() const;
+
+        [[nodiscard]] const UV &getUV2() const;
+
+        [[nodiscard]] const UV &getUV3() const;
+
+        [[nodiscard]] const MultiTexture &getMultiTexture() const;
+
+        /**
+         * ポリゴンをマージします。
+         * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
+         * ・頂点リスト、インデックスリスト、UV1、テクスチャ
+         * なおその他の情報のマージには未対応です。例えば LinearRing は変化しません。
+         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTexture が構築されます。
+         * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
+         */
+        void Merge(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element);
+
+    private:
+        std::unique_ptr<UV> uv1_;
+        std::unique_ptr<UV> uv2_;
+        std::unique_ptr<UV> uv3_;
+        /**
+         * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
+         * その面以降、次の番号まではそのTextureであるとします。
+         */
+        std::unique_ptr<MultiTexture> multiTexture_;
+        std::shared_ptr<PlateauDllLogger> logger_;
+    };
+}

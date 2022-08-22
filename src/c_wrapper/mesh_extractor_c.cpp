@@ -2,7 +2,7 @@
 #include "city_model_c.h"
 #include <plateau/geometry/mesh_extractor.h>
 using namespace libplateau;
-
+using namespace plateau::geometry;
 extern "C"{
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_new(

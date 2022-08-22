@@ -2,6 +2,8 @@
 #include <plateau/geometry/mesh.h>
 #include "citygml/texture.h"
 
+using namespace plateau::geometry;
+
 Mesh::Mesh(const std::string& id, std::shared_ptr<PlateauDllLogger> logger) :
     Polygon(id, logger),
     uv1_(std::make_unique<UV>()),

@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <filesystem>
 
-#include <citygml/citygml.h>
 #include <citygml/citymodel.h>
 #include <citygml/geometry.h>
 #include <citygml/polygon.h>

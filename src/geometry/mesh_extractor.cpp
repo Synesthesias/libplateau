@@ -5,6 +5,8 @@
 #include "citygml/texture.h"
 #include <plateau/io/obj_writer.h>
 
+using namespace plateau::geometry;
+
 /**
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
  */
