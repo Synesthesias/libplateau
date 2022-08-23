@@ -19,7 +19,25 @@ extern "C"{
         return APIResult::Success;
     }
 
+    std::shared_ptr<Model> plateau_mesh_extractor_last_extract_result;
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract(
+            MeshExtractor* mesh_extractor,
+            CityModelHandle* city_model_handle,
+            MeshExtractOptions options,
+            PlateauDllLogger* logger,
+            Model** out_model_ptr){
+        API_TRY{
+            auto shared_logger = std::shared_ptr<PlateauDllLogger>(logger);
+            plateau_mesh_extractor_last_extract_result =
+                    mesh_extractor->extract(*city_model_handle->getCityModelPtr(), options, shared_logger);
+            *out_model_ptr = plateau_mesh_extractor_last_extract_result.get();
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
 
+    // TODO これは仕様変更につき不要になる見込み。extractで同じ機能をまかなえるようにする。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_grid_merge(
             MeshExtractor* mesh_merger_handle,
             const CityModelHandle* city_model_handle,
@@ -43,6 +61,7 @@ extern "C"{
         return APIResult::ErrorUnknown;
     }
 
+    // TODO これは仕様変更につき不要になる見込み。extractで同じ機能をまかなえるようにする。
     /**
      * MeshExtractor::gridMerge の結果を Polygonのアドレスの配列で返します。
      */

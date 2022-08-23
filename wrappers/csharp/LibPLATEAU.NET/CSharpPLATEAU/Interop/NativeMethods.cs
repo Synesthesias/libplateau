@@ -85,6 +85,18 @@ namespace PLATEAU.Interop
         public float UnitScale;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MeshExtractOptions
+    {
+        public PlateauVector3d ReferencePoint;
+        public AxesConversion MeshAxes;
+        public MeshGranularity MeshGranularity;
+        public int MaxLod;
+        public int MinLod;
+        [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
+        public int GridCountOfSide;
+    } 
+
     public enum APIResult
     {
         Success,
@@ -679,6 +691,14 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extractor_delete(
             [In] IntPtr outMeshMergerPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_extractor_extract(
+            [In] IntPtr meshExtractorPtr,
+            [In] IntPtr cityModelPtr,
+            MeshExtractOptions options,
+            [In] IntPtr loggerPtr,
+            out IntPtr outModelPtr);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extractor_grid_merge(

@@ -20,8 +20,8 @@ namespace plateau::geometry {
         TVec3d referencePoint;
         AxesConversion meshAxes;
         MeshGranularity meshGranularity;
-        unsigned maxLod;
-        unsigned minLod;
+        int maxLod;
+        int minLod;
         bool exportAppearance;
         int gridCountOfSide;
     };

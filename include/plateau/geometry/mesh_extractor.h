@@ -22,7 +22,7 @@ namespace plateau::geometry {
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
          * 結果は getLastGridMergeResult() で取得できます。
          */
-        // TODO これはプロトタイプ実装なので、仕様書に沿った形に書き換える必要があります。
+        // TODO 仕様変更に対応する。グリッドマージはextractの機能の一部になるのでprivateで良いはず。
         void
         gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
                   const std::shared_ptr<PlateauDllLogger> &logger);
@@ -30,6 +30,7 @@ namespace plateau::geometry {
         GridMergeResult &getLastGridMergeResult();
 
     private:
+        // TODO あとで消す。グリッドマージの結果はここで保存せず直接返すようにする。
         GridMergeResult lastGridMergeResult_;
 
     };

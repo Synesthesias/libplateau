@@ -203,7 +203,7 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
     int gridNum = options.gridCountOfSide * options.gridCountOfSide;
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
-//        // グリッド内でマージするポリゴンの新規作成
+        // グリッド内でマージするポリゴンの新規作成
         auto gridMesh = Mesh("grid" + std::to_string(i), logger);
         auto& objsInGrid = gridIdToObjsMap->at(i);
         // グリッド内の各オブジェクトのループ
@@ -220,7 +220,7 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
 
         gridMeshes.push_back(std::move(gridMesh));
     }
-//
+
     // 街の範囲の中心を基準点とします。
     auto cityCenter = (cityEnvelope.getLowerBound() + cityEnvelope.getUpperBound()) / 2.0;
     polar_to_plane_cartesian().convert(cityCenter);
@@ -265,8 +265,8 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshEx
     switch(options.meshGranularity){
         case MeshGranularity::PerCityModelArea:
             gridMerge(cityModel, options, logger);
+
             auto& result = getLastGridMergeResult();
-            std::cout << "result size : " << result.size() << std::endl;
             int i = 0;
             for(auto& mesh : result){
                 auto node = Node("grid" + std::to_string(i), std::move(mesh));

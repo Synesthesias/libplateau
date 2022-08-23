@@ -2,12 +2,15 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.CityGML;
+using PLATEAU.GeometryModel;
 using PLATEAU.Interop;
+using PLATEAU.IO;
+using PLATEAU.Test.CityGML;
 
-namespace PLATEAU.Test.CityGML
+namespace PLATEAU.Test.GeometryModel
 {
     [TestClass]
-    public class MeshMergerTests
+    public class MeshExtractorTests
     {
 
         [TestMethod]
@@ -52,13 +55,36 @@ namespace PLATEAU.Test.CityGML
             AssertSizeOfUvEqualsNumOfVertices(poly => poly.GetUv3());
         }
 
+        [TestMethod]
+        public void Extract()
+        {
+            // TODO
+            using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            var logger = new DllLogger();
+            logger.SetCallbacksToStdOut();
+            using var meshExtractor = new MeshExtractor();
+            var options = new MeshExtractOptions
+            {
+                ReferencePoint = new PlateauVector3d(0, 0, 0),
+                MeshAxes = AxesConversion.WUN,
+                MeshGranularity = MeshGranularity.PerCityModelArea,
+                MinLod = 2,
+                MaxLod = 2,
+                ExportAppearance = true,
+                GridCountOfSide = 5
+            };
+            var model = meshExtractor.Extract(cityModel, options, logger);
+            Assert.IsNotNull(model);
+        }
+        
+
         private static Mesh[] LoadAndGridMerge()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
             logger.SetCallbacksToStdOut();
-            var meshMerger = new MeshExtractor();
-            var polygons = meshMerger.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
+            var meshExtractor = new MeshExtractor();
+            var polygons = meshExtractor.GridMerge(cityModel, CityObjectType.COT_All, 5, 5, logger);
             return polygons;
         }
 

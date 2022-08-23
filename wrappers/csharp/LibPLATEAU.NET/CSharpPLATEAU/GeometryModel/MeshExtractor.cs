@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
-namespace PLATEAU.CityGML
+namespace PLATEAU.GeometryModel
 {
     /// <summary>
     /// <see cref="CityModel"/> の範囲をグリッド状に分割して、各グリッド内のメッシュを結合する機能を提供します。
@@ -32,7 +32,19 @@ namespace PLATEAU.CityGML
             DLLUtil.CheckDllError(result);
             this.isDisposed = true;
         }
+
+        public Model Extract(CityModel cityModel, MeshExtractOptions options, DllLogger logger)
+        {
+            var result = NativeMethods.plateau_mesh_extractor_extract(
+                this.handle, cityModel.Handle, options, logger.Handle,
+                out IntPtr outModelPtr
+            );
+            DLLUtil.CheckDllError(result);
+            return new Model(outModelPtr);
+        }
         
+        
+        // TODO 仕様変更にともない不要になる見込み。この機能は Extract メソッドに統合したい。
         public Mesh[] GridMerge(
             CityModel cityModel,
             CityObjectType targetTypeMask,
