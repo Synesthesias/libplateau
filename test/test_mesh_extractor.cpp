@@ -70,7 +70,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     ASSERT_EQ(firstChildName, "grid0");
 }
 
-void test_extract_from_c_wrapper(){
+Model* test_extract_from_c_wrapper(){
     auto gml_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
 
     ParserParams params;
@@ -83,14 +83,15 @@ void test_extract_from_c_wrapper(){
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
     auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
-    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
+
     plateau_mesh_extractor_delete(meshExtractor);
-    plateau_model_delete(model);
 }
 
-// Unityで数回ロードすると落ちるバグを再現しようとして結局再現できなかったテストです。
+// Unityで数回ロードすると落ちるバグを再現したものです。 meshExtractorのdelete後、modelへのアクセスでバグがありました。
 TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
     for(int i=0; i<10; i++){
-        test_extract_from_c_wrapper();
+        auto model = test_extract_from_c_wrapper();
+        ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
+        plateau_model_delete(model);
     }
 }
