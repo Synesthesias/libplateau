@@ -48,17 +48,22 @@ TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
     }
 }
 
-TEST_F(MeshExtractorTest, extract){
+TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
     auto model = meshExtractor.extract(*city_model_, options, logger_);
     auto nodes = model->getNodesRecursive();
-    for(auto node : nodes){
-        auto& meshOpt = node->getMesh();
-        std::string meshName = meshOpt ? meshOpt->getId() : "noneMesh";
-        auto verticesCount = meshOpt ? meshOpt->getVertices().size() : 0;
-        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
-    }
-    // TODO
-    ASSERT_TRUE(true);
+
+    // debug print
+//    for(auto node : nodes){
+//        auto& meshOpt = node->getMesh();
+//        std::string meshName = meshOpt ? meshOpt->getId() : "noneMesh";
+//        auto verticesCount = meshOpt ? meshOpt->getVertices().size() : 0;
+//        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
+//    }
+
+    std::string rootName = model->getRootNodeAt(0).getName();
+    ASSERT_EQ(rootName, "ModelRoot");
+    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
+    ASSERT_EQ(firstChildName, "grid0");
 }
