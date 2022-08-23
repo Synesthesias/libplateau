@@ -56,7 +56,7 @@ namespace PLATEAU.Test.GeometryModel
         }
 
         [TestMethod]
-        public void Extract()
+        public void Extract_Returns_Model_With_Nodes()
         {
             // TODO
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
@@ -74,7 +74,9 @@ namespace PLATEAU.Test.GeometryModel
                 GridCountOfSide = 5
             };
             var model = meshExtractor.Extract(cityModel, options, logger);
-            Assert.IsNotNull(model);
+            Assert.IsTrue(model.RootNodesCount > 0);
+            var firstNode = model.GetRootNodeAt(0);
+            Assert.IsNotNull(firstNode);
         }
         
 

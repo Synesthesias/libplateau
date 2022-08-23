@@ -744,5 +744,20 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_get_uv3(
             [In] IntPtr plateauPolygonPtr,
             PlateauVector2f[] outUvPosArray);
+        
+        
+        // ***************
+        //  model_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_nodes_count(
+            [In] IntPtr handle,
+            out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_get_root_node_at_index(
+            [In] IntPtr handle,
+            out IntPtr outNode,
+            int index);
     }
 }

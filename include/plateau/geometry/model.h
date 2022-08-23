@@ -12,9 +12,11 @@ namespace plateau::geometry{
     public:
         Model();
         Node & addNode(Node &&node);
-        std::vector<Node*> GetNodesRecursive();
+        std::vector<Node*> getNodesRecursive();
+        [[nodiscard]] int getRootNodesCount() const;
+        [[nodiscard]] const Node& getRootNodeAt(int index) const;
     private:
-        std::vector<Node> rootNodes;
+        std::vector<Node> rootNodes_;
     };
 
 }

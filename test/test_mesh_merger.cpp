@@ -54,7 +54,7 @@ TEST_F(MeshExtractorTest, extract){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
     auto model = meshExtractor.extract(*city_model_, options, logger_);
-    auto nodes = model->GetNodesRecursive();
+    auto nodes = model->getNodesRecursive();
     for(auto node : nodes){
         auto& meshOpt = node->getMesh();
         std::string meshName = meshOpt ? meshOpt->getId() : "noneMesh";
