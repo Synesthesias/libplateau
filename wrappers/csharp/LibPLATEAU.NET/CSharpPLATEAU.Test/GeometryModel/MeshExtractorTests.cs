@@ -58,7 +58,6 @@ namespace PLATEAU.Test.GeometryModel
         [TestMethod]
         public void Extract_Returns_Model_With_Nodes()
         {
-            // TODO
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
             logger.SetCallbacksToStdOut();
@@ -76,7 +75,11 @@ namespace PLATEAU.Test.GeometryModel
             var model = meshExtractor.Extract(cityModel, options, logger);
             Assert.IsTrue(model.RootNodesCount > 0);
             var firstNode = model.GetRootNodeAt(0);
-            Assert.IsNotNull(firstNode);
+            Assert.IsFalse(string.IsNullOrEmpty(firstNode.Name));
+            Assert.IsTrue(firstNode.ChildCount > 0);
+            var firstChild = firstNode.GetChildAt(0);
+            Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name));
+            Console.WriteLine(firstChild.Name);
         }
         
 

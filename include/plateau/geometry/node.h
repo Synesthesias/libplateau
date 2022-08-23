@@ -12,10 +12,12 @@ namespace plateau::geometry{
         Node();
         explicit Node(std::string &&name);
         Node(std::string &&name, Mesh &&mesh);
-        std::string& getName();
+        [[nodiscard]] const std::string& getName() const;
         std::optional<Mesh> & getMesh();
         void addChildNode(Node &&node);
         void GetChildrenRecursive(std::vector<Node *> &childVector);
+        [[nodiscard]] int getChildCount() const;
+        [[nodiscard]] const Node& getChildAt(int index) const;
     private:
         std::string name_;
         std::vector<Node> childNodes_;

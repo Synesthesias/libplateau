@@ -31,10 +31,18 @@ void Node::GetChildrenRecursive(std::vector<Node *> &childVector) {
     }
 }
 
-std::string &Node::getName() {
+const std::string &Node::getName() const {
     return name_;
 }
 
 std::optional<Mesh> & Node::getMesh() {
     return mesh_;
+}
+
+int Node::getChildCount() const {
+    return childNodes_.size();
+}
+
+const Node &Node::getChildAt(int index) const {
+    return childNodes_.at(index);
 }
