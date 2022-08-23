@@ -11,7 +11,7 @@ Model::Model() :
 
 }
 
-Node & Model::addNode(Node &&node) {
+Node & Model::addNode(const Node& node) { // TODO 本当はmoveにしたい
     rootNodes_.push_back(node);
     return rootNodes_.back();
 }

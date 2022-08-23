@@ -262,21 +262,18 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshEx
 Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) {
     auto model = new Model();
     auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
-//    // TODO optionsに応じた処理の切り替えは未実装
+    // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity) {
         case MeshGranularity::PerCityModelArea:
             auto result = gridMerge(cityModel, options);
 
             int i = 0;
             for (auto &mesh: result) {
-//                auto node = Node("grid" + std::to_string(i), mesh); // TODO 本当は move で meshを渡したい
-                auto node = new Node("test-test"); // TODO 仮
-                rootNode.addChildNode(*node); // TODO 本当は move でnodeを渡したい
+                auto node = Node("grid" + std::to_string(i), mesh); // TODO 本当は move で meshを渡したい
+                rootNode.addChildNode(node); // TODO 本当は move でnodeを渡したい
                 i++;
             }
             break;
-//        default:
-//            break;
     }
     return model;
 }

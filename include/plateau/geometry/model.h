@@ -11,7 +11,7 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT Model{
     public:
         Model();
-        Node & addNode(Node &&node);
+        Node & addNode(const Node& node);
         std::vector<Node*> getNodesRecursive();
         [[nodiscard]] int getRootNodesCount() const;
         [[nodiscard]] const Node& getRootNodeAt(int index) const;
