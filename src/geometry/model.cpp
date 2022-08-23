@@ -21,7 +21,6 @@ std::vector<Node *> Model::getNodesRecursive() {
     for(auto& node : rootNodes_){
         node.GetChildrenRecursive(children);
     }
-    std::cout << "child count : " << children.size() << std::endl;
     return children;
 }
 

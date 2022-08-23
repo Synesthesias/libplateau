@@ -34,11 +34,11 @@ namespace{
     /**
      * key が グリッド番号であり、 value は　CityObjectのvector であるmapを初期化します。
      */
-    std::unique_ptr<GridIdToObjsMap> initGridIdToObjsMap(const int gridNumX, const int gridNumY){
+    GridIdToObjsMap initGridIdToObjsMap(const int gridNumX, const int gridNumY){
         int gridNum = gridNumX * gridNumY;
-        auto gridIdToObjsMap = std::make_unique<GridIdToObjsMap>();
+        auto gridIdToObjsMap = GridIdToObjsMap();
         for(int i=0; i<gridNum; i++){
-            gridIdToObjsMap->emplace(i, std::list<std::unique_ptr<CityObjectWithImportID>>());
+            gridIdToObjsMap.emplace(i, std::list<std::unique_ptr<CityObjectWithImportID>>());
         }
         return std::move(gridIdToObjsMap);
     }
@@ -129,13 +129,13 @@ namespace{
      * cityObjs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
      * また ImportID を割り振ります。
      */
-    std::unique_ptr<GridIdToObjsMap> classifyCityObjsToGrid(const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
+    GridIdToObjsMap classifyCityObjsToGrid(const ConstCityObjects& cityObjs, const Envelope& cityEnvelope, int gridNumX, int gridNumY){
         auto gridIdToObjsMap = initGridIdToObjsMap(gridNumX, gridNumY);
         int primaryImportID = 0;
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
             auto cityObjWithImportID = std::make_unique<CityObjectWithImportID>(co, primaryImportID, -1);
-            gridIdToObjsMap->at(gridId).push_back(std::move(cityObjWithImportID));
+            gridIdToObjsMap.at(gridId).push_back(std::move(cityObjWithImportID));
             primaryImportID++;
         }
         return std::move(gridIdToObjsMap);
@@ -176,14 +176,14 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
-    for(auto& [gridId, primaryObjs] : *gridIdToObjsMap){
+    for(auto& [gridId, primaryObjs] : gridIdToObjsMap){
         for(auto& primaryObj : primaryObjs){
             int primaryID = primaryObj->getPrimaryImportID();
             auto minimumObjs = childCityObjects(*primaryObj->getCityObject());
             int secondaryID = 0;
             for(auto minimumObj : *minimumObjs){
                 auto minimumObjWithID = std::make_unique<CityObjectWithImportID>(minimumObj, primaryID, secondaryID);
-                gridIdToObjsMap->at(gridId).push_back(std::move(minimumObjWithID));
+                gridIdToObjsMap.at(gridId).push_back(std::move(minimumObjWithID));
                 secondaryID++;
             }
         }
@@ -205,7 +205,7 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
         auto gridMesh = Mesh("grid" + std::to_string(i), logger);
-        auto& objsInGrid = gridIdToObjsMap->at(i);
+        auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
             auto polygons = FindAllPolygons(*cityObj->getCityObject());
