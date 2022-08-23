@@ -11,7 +11,7 @@ using namespace plateau::geometry;
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
  */
 using GridIdToObjsMap = std::map<int, std::list<CityObjectWithImportID>>;
-using PolygonList = std::list<std::shared_ptr<const citygml::Polygon>>;
+using PolygonList = std::list<const citygml::Polygon*>;
 
 namespace{
     /**
@@ -75,7 +75,7 @@ namespace{
         return nullptr;
     }
 
-    void FindAllPolygons(const Geometry& geom, std::unique_ptr<PolygonList>& polygons){
+    void FindAllPolygons(const Geometry& geom,PolygonList& polygons){
         unsigned int numChild = geom.getGeometriesCount();
         for(unsigned int i=0; i<numChild; i++){
             FindAllPolygons(geom.getGeometry(i), polygons);
@@ -86,7 +86,7 @@ namespace{
 
         unsigned int numPoly = geom.getPolygonsCount();
         for(unsigned int i=0; i<numPoly; i++){
-            polygons->push_back(geom.getPolygon(i));
+            polygons.push_back(geom.getPolygon(i).get());
         }
     }
 
@@ -95,8 +95,8 @@ namespace{
      * 子の CityObject は検索しません。
      * 子の Geometry は再帰的に検索します。
      */
-    std::unique_ptr<PolygonList> FindAllPolygons(const CityObject& cityObj){
-        auto polygons = std::make_unique<PolygonList>();
+    PolygonList FindAllPolygons(const CityObject& cityObj){
+        auto polygons = PolygonList();
         unsigned int numGeom = cityObj.getGeometriesCount();
         for(unsigned int i=0; i<numGeom; i++){
             FindAllPolygons(cityObj.getGeometry(i), polygons);
@@ -210,7 +210,7 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
         for(auto& cityObj : objsInGrid){
             auto polygons = FindAllPolygons(*cityObj.getCityObject());
             // オブジェクト内の各ポリゴンのループ
-            for(const auto& poly : *polygons){
+            for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。
                 const auto uv2 = TVec2f((float)(cityObj.getPrimaryImportID()) + (float)0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
                 const auto uv3 = TVec2f((float)(cityObj.getSecondaryImportID()) + (float)0.25, 0);
