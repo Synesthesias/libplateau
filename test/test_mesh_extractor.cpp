@@ -54,7 +54,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
     auto cityModel = load(gml_path_, params_);
     auto model = meshExtractor.extract(*cityModel, options);
-//    auto nodes = model->getNodesRecursive();
+    auto nodes = model->getNodesRecursive();
 
     // debug print
 //    for(auto node : nodes){
@@ -64,14 +64,13 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
 //        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
 //    }
 
-// TODO
-//    std::string rootName = model->getRootNodeAt(0).getName();
-//    ASSERT_EQ(rootName, "ModelRoot");
-//    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
-//    ASSERT_EQ(firstChildName, "grid0");
-//    std::cout << model.use_count() << std::endl;
-//    model.reset();
-//    std::cout << model.use_count() << std::endl;
+    std::string rootName = model->getRootNodeAt(0).getName();
+    ASSERT_EQ(rootName, "ModelRoot");
+    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
+    ASSERT_EQ(firstChildName, "grid0");
+    std::cout << model.use_count() << std::endl;
+    model.reset();
+    std::cout << model.use_count() << std::endl;
 }
 
 // TODO 整理したい
@@ -94,7 +93,7 @@ void test_extract_from_c_wrapper(){
 //    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
 
-
+    ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
     plateau_model_delete(model);
     plateau_mesh_extractor_delete(meshExtractor);
@@ -102,8 +101,7 @@ void test_extract_from_c_wrapper(){
 
 // Unityで数回ロードすると落ちるバグを再現しようとしたもの
 TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
-    for(int i=0; i<10; i++){
+    for(int i=0; i<3; i++){
         test_extract_from_c_wrapper();
-
     }
 }

@@ -14,6 +14,7 @@ DLL_VALUE_FUNC(plateau_node_get_child_count,
                int,
                handle->getChildCount())
 
+// TODO 範囲外のindexが渡されたら APIResult で知らせるほうが安全
 DLL_PTR_FUNC(plateau_node_get_child_at_index,
             Node,
             Node,

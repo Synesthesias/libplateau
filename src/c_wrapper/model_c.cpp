@@ -24,6 +24,7 @@ DLL_VALUE_FUNC(plateau_model_get_root_nodes_count,
                int,
                handle->getRootNodesCount())
 
+// TODO 範囲外のindexが渡されたら APIResult で知らせる方が安全
 DLL_PTR_FUNC(plateau_model_get_root_node_at_index,
              Model,
              Node,
