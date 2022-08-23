@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
 namespace PLATEAU.GeometryModel
@@ -39,6 +40,21 @@ namespace PLATEAU.GeometryModel
                 this.handle, index,
                 NativeMethods.plateau_node_get_child_at_index);
             return new Node(childNodePtr);
+        }
+
+        public Mesh Mesh
+        {
+            get
+            {
+                var result = NativeMethods.plateau_node_get_mesh(
+                    this.handle, out IntPtr meshPtr);
+                if (result == APIResult.ErrorValueNotFound)
+                {
+                    return null;
+                }
+                DLLUtil.CheckDllError(result);
+                return new Mesh(meshPtr);
+            }
         }
     }
 }

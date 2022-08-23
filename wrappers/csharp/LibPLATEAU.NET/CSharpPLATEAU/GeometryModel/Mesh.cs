@@ -1,7 +1,8 @@
 ﻿using System;
+using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
-namespace PLATEAU.CityGML
+namespace PLATEAU.GeometryModel
 {
     /// <summary>
     /// LibCityGml の <see cref="Polygon"/> を継承して PLATEAU向けに機能拡張したものです。

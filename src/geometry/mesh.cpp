@@ -18,7 +18,9 @@ Mesh::Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger) :
 
 void Mesh::setUV2(UV& uv2) {
     if(uv2.size() != m_vertices.size()){
-        logger_->throwException("Size of uv2 does not match num of vertices.");
+        if(logger_){
+            logger_->throwException("Size of uv2 does not match num of vertices.");
+        }
         return;
     }
     uv2_ = std::move(uv2);

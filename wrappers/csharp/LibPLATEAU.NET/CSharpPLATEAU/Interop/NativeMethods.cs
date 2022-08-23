@@ -779,5 +779,10 @@ namespace PLATEAU.Interop
             [In] IntPtr nodeHandle,
             out IntPtr childNodePtr,
             int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_get_mesh(
+            [In] IntPtr nodeHandle,
+            out IntPtr outMeshPtr);
     }
 }

@@ -1,5 +1,6 @@
 #include "libplateau_c.h"
 #include <plateau/geometry/node.h>
+#include <plateau/geometry/mesh.h>
 using namespace libplateau;
 using namespace plateau::geometry;
 extern "C" {
@@ -18,4 +19,21 @@ DLL_PTR_FUNC(plateau_node_get_child_at_index,
             Node,
             &handle->getChildAt(index),
             ,int index)
+
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_get_mesh(
+        Node* node,
+        Mesh** out_mesh_ptr
+        ) {
+    API_TRY{
+        auto& mesh = node->getMesh();
+        if(mesh.has_value()){
+            *out_mesh_ptr = &mesh.value();
+        }else{
+            return APIResult::ErrorValueNotFound;
+        }
+        return APIResult::Success;
+    }
+    API_CATCH;
+    return APIResult::ErrorUnknown;
+}
 }

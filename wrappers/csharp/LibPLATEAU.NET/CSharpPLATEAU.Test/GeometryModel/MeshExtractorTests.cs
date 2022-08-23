@@ -56,7 +56,7 @@ namespace PLATEAU.Test.GeometryModel
         }
 
         [TestMethod]
-        public void Extract_Returns_Model_With_Nodes()
+        public void Extract_Returns_Model_With_Nodes_With_Mesh()
         {
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
@@ -73,13 +73,15 @@ namespace PLATEAU.Test.GeometryModel
                 GridCountOfSide = 5
             };
             var model = meshExtractor.Extract(cityModel, options, logger);
-            Assert.IsTrue(model.RootNodesCount > 0);
+            Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
             var firstNode = model.GetRootNodeAt(0);
-            Assert.IsFalse(string.IsNullOrEmpty(firstNode.Name));
-            Assert.IsTrue(firstNode.ChildCount > 0);
+            Assert.IsFalse(string.IsNullOrEmpty(firstNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");
+            Assert.IsTrue(firstNode.ChildCount > 0, "ルートノードの子を取得できる");
             var firstChild = firstNode.GetChildAt(0);
-            Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name));
-            Console.WriteLine(firstChild.Name);
+            Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name), "子ノードの名前を取得できる");
+            var firstMesh = firstChild.Mesh;
+            Assert.IsFalse(string.IsNullOrEmpty(firstMesh.ID), "メッシュを取得できる");
+            Assert.IsNull(firstNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
         }
         
 
