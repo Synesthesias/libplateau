@@ -85,9 +85,10 @@ Model* test_extract_from_c_wrapper(){
     auto nodes = model->getNodesRecursive();
 
     plateau_mesh_extractor_delete(meshExtractor);
+    return model;
 }
 
-// Unityで数回ロードすると落ちるバグを再現したものです。 meshExtractorのdelete後、modelへのアクセスでバグがありました。
+// Unityで数回ロードすると落ちるバグを再現しようとしてできなかったものです。
 TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
     for(int i=0; i<10; i++){
         auto model = test_extract_from_c_wrapper();
