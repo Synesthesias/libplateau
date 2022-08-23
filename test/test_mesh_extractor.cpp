@@ -3,6 +3,7 @@
 #include "citygml/citygml.h"
 #include "citygml/polygon.h"
 #include "../src/c_wrapper/mesh_extractor_c.cpp"
+#include "../src/c_wrapper/model_c.cpp"
 #include <plateau/geometry/mesh_extractor.h>
 
 using namespace citygml;
@@ -80,14 +81,16 @@ void test_extract_from_c_wrapper(){
     MeshExtractor* meshExtractor;
     plateau_mesh_extractor_new(&meshExtractor);
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto model = meshExtractor->extract(*city_model, options, logger);
+    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
     plateau_mesh_extractor_delete(meshExtractor);
+    plateau_model_delete(model);
 }
 
-TEST_F(MeshExtractorTest, extract_can_exec_twice){
-
-    test_extract_from_c_wrapper();
-    test_extract_from_c_wrapper();
+// Unityで数回ロードすると落ちるバグを再現しようとして結局再現できなかったテストです。
+TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
+    for(int i=0; i<10; i++){
+        test_extract_from_c_wrapper();
+    }
 }

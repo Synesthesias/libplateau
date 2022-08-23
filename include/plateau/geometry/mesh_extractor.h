@@ -48,11 +48,11 @@ namespace plateau::geometry {
     public:
         CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID);
 
-        const CityObject *const getCityObject() { return cityObject; }
+        const CityObject *getCityObject() { return cityObject; }
 
-        int getPrimaryImportID() { return primaryImportID; }
+        [[nodiscard]] int getPrimaryImportID() const { return primaryImportID; }
 
-        int getSecondaryImportID() { return secondaryImportID; }
+        [[nodiscard]] int getSecondaryImportID() const { return secondaryImportID; }
 
     private:
         const CityObject *const cityObject;

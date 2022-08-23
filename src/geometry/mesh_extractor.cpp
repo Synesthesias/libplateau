@@ -10,7 +10,7 @@ using namespace plateau::geometry;
 /**
  * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
  */
-using GridIdToObjsMap = std::map<int, std::list<std::unique_ptr<CityObjectWithImportID>>>;
+using GridIdToObjsMap = std::map<int, std::list<CityObjectWithImportID>>;
 using PolygonList = std::list<std::shared_ptr<const citygml::Polygon>>;
 
 namespace{
@@ -38,7 +38,7 @@ namespace{
         int gridNum = gridNumX * gridNumY;
         auto gridIdToObjsMap = GridIdToObjsMap();
         for(int i=0; i<gridNum; i++){
-            gridIdToObjsMap.emplace(i, std::list<std::unique_ptr<CityObjectWithImportID>>());
+            gridIdToObjsMap.emplace(i, std::list<CityObjectWithImportID>());
         }
         return std::move(gridIdToObjsMap);
     }
@@ -134,8 +134,8 @@ namespace{
         int primaryImportID = 0;
         for(auto co : cityObjs){
             int gridId = getGridId(cityEnvelope, cityObjPos(*co), gridNumX, gridNumY);
-            auto cityObjWithImportID = std::make_unique<CityObjectWithImportID>(co, primaryImportID, -1);
-            gridIdToObjsMap.at(gridId).push_back(std::move(cityObjWithImportID));
+            auto cityObjWithImportID = CityObjectWithImportID(co, primaryImportID, -1);
+            gridIdToObjsMap.at(gridId).push_back(cityObjWithImportID);
             primaryImportID++;
         }
         return std::move(gridIdToObjsMap);
@@ -178,11 +178,11 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
     for(auto& [gridId, primaryObjs] : gridIdToObjsMap){
         for(auto& primaryObj : primaryObjs){
-            int primaryID = primaryObj->getPrimaryImportID();
-            auto minimumObjs = childCityObjects(*primaryObj->getCityObject());
+            int primaryID = primaryObj.getPrimaryImportID();
+            auto minimumObjs = childCityObjects(*primaryObj.getCityObject());
             int secondaryID = 0;
             for(auto minimumObj : *minimumObjs){
-                auto minimumObjWithID = std::make_unique<CityObjectWithImportID>(minimumObj, primaryID, secondaryID);
+                auto minimumObjWithID = CityObjectWithImportID(minimumObj, primaryID, secondaryID);
                 gridIdToObjsMap.at(gridId).push_back(std::move(minimumObjWithID));
                 secondaryID++;
             }
@@ -208,12 +208,12 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
         auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
-            auto polygons = FindAllPolygons(*cityObj->getCityObject());
+            auto polygons = FindAllPolygons(*cityObj.getCityObject());
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : *polygons){
                 // 各ポリゴンを結合していきます。
-                const auto uv2 = TVec2f(cityObj->getPrimaryImportID() + 0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
-                const auto uv3 = TVec2f(cityObj->getSecondaryImportID() + 0.25, 0);
+                const auto uv2 = TVec2f((float)(cityObj.getPrimaryImportID()) + (float)0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
+                const auto uv3 = TVec2f((float)(cityObj.getSecondaryImportID()) + (float)0.25, 0);
                 gridMesh.Merge(*poly, uv2, uv3);
             }
         }
