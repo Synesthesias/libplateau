@@ -2,6 +2,7 @@
 #include "citygml/citymodel.h"
 #include "citygml/citygml.h"
 #include "citygml/polygon.h"
+#include "../src/c_wrapper/mesh_extractor_c.cpp"
 #include <plateau/geometry/mesh_extractor.h>
 
 using namespace citygml;
@@ -66,4 +67,27 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     ASSERT_EQ(rootName, "ModelRoot");
     std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
     ASSERT_EQ(firstChildName, "grid0");
+}
+
+void test_extract_from_c_wrapper(){
+    auto gml_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+
+    ParserParams params;
+    params.tesselate = true;
+
+    auto city_model = load(gml_path, params);
+    auto logger = std::make_shared<PlateauDllLogger>();
+    MeshExtractor* meshExtractor;
+    plateau_mesh_extractor_new(&meshExtractor);
+    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+    auto model = meshExtractor->extract(*city_model, options, logger);
+    auto nodes = model->getNodesRecursive();
+    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
+    plateau_mesh_extractor_delete(meshExtractor);
+}
+
+TEST_F(MeshExtractorTest, extract_can_exec_twice){
+
+    test_extract_from_c_wrapper();
+    test_extract_from_c_wrapper();
 }

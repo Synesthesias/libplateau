@@ -251,19 +251,26 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
 //        std::cout << std::endl;
 //    }
 
-    return std::move(gridMeshes);
+    return gridMeshes;
 }
 
 std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
-    auto model = std::make_shared<Model>();
+    auto modelPtr = extract_to_row_pointer(cityModel, options, logger);
+    auto sharedModel = std::unique_ptr<Model>(modelPtr);
+    return std::move(sharedModel);
+}
+
+Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options,
+                                             const std::shared_ptr<PlateauDllLogger> &logger) {
+    auto model = new Model();
     auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
     // TODO optionsに応じた処理の切り替えは未実装
-    switch(options.meshGranularity){
+    switch(options.meshGranularity) {
         case MeshGranularity::PerCityModelArea:
             auto result = gridMerge(cityModel, options, logger);
 
             int i = 0;
-            for(auto& mesh : result){
+            for (auto &mesh: result) {
                 auto node = Node("grid" + std::to_string(i), std::move(mesh));
                 rootNode.addChildNode(std::move(node));
                 i++;

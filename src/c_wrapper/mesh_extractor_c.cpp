@@ -5,21 +5,28 @@ using namespace libplateau;
 using namespace plateau::geometry;
 extern "C"{
 
+//    std::shared_ptr<Model> plateau_mesh_extractor_last_extract_result;
+
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_new(
-            MeshExtractor** out_mesh_merger_ptr
+            MeshExtractor** out_mesh_extractor_ptr
             ){
-        *out_mesh_merger_ptr = new MeshExtractor();
+        *out_mesh_extractor_ptr = new MeshExtractor();
         return APIResult::Success;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_delete(
-            MeshExtractor* mesh_merger_handle
+            MeshExtractor* mesh_extractor
             ){
-        delete mesh_merger_handle;
+        delete mesh_extractor;
         return APIResult::Success;
     }
 
-    std::shared_ptr<Model> plateau_mesh_extractor_last_extract_result;
+
+    /**
+     * MeshExtractor::extract して結果を out_model_ptr に格納します。
+     * out_model_ptr は new した生ポインタになるので、deleteはDLL利用者の責任です。
+     * ただしModelをdeleteすると配下のNode,Meshにもアクセスできなくなるので注意してください。
+     */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract(
             MeshExtractor* mesh_extractor,
             CityModelHandle* city_model_handle,
@@ -28,9 +35,9 @@ extern "C"{
             Model** out_model_ptr){
         API_TRY{
             auto shared_logger = std::shared_ptr<PlateauDllLogger>(logger);
-            plateau_mesh_extractor_last_extract_result =
-                    mesh_extractor->extract(*city_model_handle->getCityModelPtr(), options, shared_logger);
-            *out_model_ptr = plateau_mesh_extractor_last_extract_result.get();
+            auto modelPtr =
+                    mesh_extractor->extract_to_row_pointer(*city_model_handle->getCityModelPtr(), options, shared_logger);
+            *out_model_ptr = modelPtr;
             return APIResult::Success;
         }
         API_CATCH;

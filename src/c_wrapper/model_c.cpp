@@ -4,6 +4,21 @@ using namespace libplateau;
 using namespace plateau::geometry;
 extern "C" {
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_model_new(
+        Model** out_model_ptr
+        ){
+    *out_model_ptr = new Model();
+    return APIResult::Success;
+}
+
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_model_delete(
+        Model* model_ptr
+        ){
+    delete model_ptr;
+    return APIResult::Success;
+}
+
+
 DLL_VALUE_FUNC(plateau_model_get_root_nodes_count,
                Model,
                int,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using PLATEAU.CityGML;
 using PLATEAU.Interop;
 
@@ -11,7 +12,7 @@ namespace PLATEAU.GeometryModel
     public class MeshExtractor : IDisposable
     {
         private readonly IntPtr handle;
-        private bool isDisposed;
+        private int disposed;
 
         public MeshExtractor()
         {
@@ -27,10 +28,11 @@ namespace PLATEAU.GeometryModel
 
         public void Dispose()
         {
-            if (this.isDisposed) return;
-            var result = NativeMethods.plateau_mesh_extractor_delete(this.handle);
-            DLLUtil.CheckDllError(result);
-            this.isDisposed = true;
+            if (Interlocked.Exchange(ref this.disposed, 1) == 0)
+            {
+                NativeMethods.plateau_mesh_extractor_delete(this.handle);
+            }
+            GC.SuppressFinalize(this);
         }
 
         public Model Extract(CityModel cityModel, MeshExtractOptions options, DllLogger logger)

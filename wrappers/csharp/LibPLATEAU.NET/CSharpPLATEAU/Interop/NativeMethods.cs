@@ -750,6 +750,16 @@ namespace PLATEAU.Interop
         // ***************
         //  model_c.cpp
         // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_new(
+            out IntPtr outModelPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_model_delete(
+            [In] IntPtr modelPtr);
+
+
         [DllImport(DllName)]
         internal static extern APIResult plateau_model_get_root_nodes_count(
             [In] IntPtr handle,
