@@ -24,22 +24,20 @@ namespace plateau::geometry {
          * 具体的には、Nodeの階層構造はゲームエンジンにおいて表現したいゲームオブジェクトの階層構造と対応します。
          * Nodeの持つ Mesh の情報は、ゲームエンジン側で頂点座標、UVの配列をコピーすれば必要なメッシュをゲームエンジン側で生成できるようになっています。
          */
-        std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
+        std::shared_ptr<Model> extract(const CityModel &cityModel, MeshExtractOptions options);
 
         /**
          * extract関数について、戻り値がスマートポインタの代わりに生ポインタになった版です。
          * DLL利用者とModelをやりとりするには生ポインタである必要があるための措置です。
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
-        Model* extract_to_row_pointer(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
+        Model *extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options);
 
         /**
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
          */
         // TODO 仕様変更に対応する。グリッドマージはextractの機能の一部になるのでprivateで良いはず。
-        GridMergeResult gridMerge(
-                const CityModel &cityModel, const MeshExtractOptions &options,
-                const std::shared_ptr<PlateauDllLogger> &logger);
+        GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options);
 
     private:
     };

@@ -16,22 +16,18 @@ protected:
     virtual void SetUp() {
         gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
 
-        ParserParams params;
-        params.tesselate = true;
-
-        city_model_ = load(gml_path_, params);
-        logger_ = std::make_shared<PlateauDllLogger>();
+        params_.tesselate = true;
     }
-
+    ParserParams params_;
     std::string gml_path_;
-    std::shared_ptr<const CityModel> city_model_;
-    std::shared_ptr<PlateauDllLogger> logger_;
 };
 
 TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto result = meshExtractor.gridMerge(*city_model_, options, logger_);
+
+    auto cityModel = load(gml_path_, params_);
+    auto result = meshExtractor.gridMerge(*cityModel, options);
     int numPolyWithVert = 0;
     for(auto& poly : result){
         if(!poly.getVertices().empty()){
@@ -44,7 +40,8 @@ TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
 TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto result = meshExtractor.gridMerge(*city_model_.get(), options, logger_);
+    auto cityModel = load(gml_path_, params_);
+    auto result = meshExtractor.gridMerge(*cityModel, options);
     for(auto& poly : result){
         auto sizeOfUV1 = poly.getUV1().size();
         auto numOfVertices = poly.getVertices().size();
@@ -55,8 +52,9 @@ TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
 TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto model = meshExtractor.extract(*city_model_, options, logger_);
-    auto nodes = model->getNodesRecursive();
+    auto cityModel = load(gml_path_, params_);
+    auto model = meshExtractor.extract(*cityModel, options);
+//    auto nodes = model->getNodesRecursive();
 
     // debug print
 //    for(auto node : nodes){
@@ -66,12 +64,17 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
 //        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
 //    }
 
-    std::string rootName = model->getRootNodeAt(0).getName();
-    ASSERT_EQ(rootName, "ModelRoot");
-    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
-    ASSERT_EQ(firstChildName, "grid0");
+// TODO
+//    std::string rootName = model->getRootNodeAt(0).getName();
+//    ASSERT_EQ(rootName, "ModelRoot");
+//    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
+//    ASSERT_EQ(firstChildName, "grid0");
+//    std::cout << model.use_count() << std::endl;
+//    model.reset();
+//    std::cout << model.use_count() << std::endl;
 }
 
+// TODO 整理したい
 void test_extract_from_c_wrapper(){
     auto gml_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
 
@@ -81,14 +84,13 @@ void test_extract_from_c_wrapper(){
 //    auto city_model = load(gml_path, params);
     const CityModelHandle* cityModelHandleConst;
     plateau_load_citygml(gml_path, plateau_citygml_parser_params(), &cityModelHandleConst, DllLogLevel::LL_INFO, nullptr, nullptr, nullptr);
-    auto logger = std::make_shared<PlateauDllLogger>();
     MeshExtractor* meshExtractor;
     plateau_mesh_extractor_new(&meshExtractor);
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
 
     Model* model;
     CityModelHandle* cityModelHandle = const_cast<CityModelHandle *>(cityModelHandleConst);
-    plateau_mesh_extractor_extract(meshExtractor, cityModelHandle, options, logger.get(), &model);
+    plateau_mesh_extractor_extract(meshExtractor, cityModelHandle, options, &model);
 //    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
 

@@ -31,12 +31,10 @@ extern "C"{
             MeshExtractor* mesh_extractor,
             CityModelHandle* city_model_handle,
             MeshExtractOptions options,
-            PlateauDllLogger* logger,
             Model** out_model_ptr){
         API_TRY{
-            auto shared_logger = std::shared_ptr<PlateauDllLogger>(logger);
             auto modelPtr =
-                    mesh_extractor->extract_to_row_pointer(*city_model_handle->getCityModelPtr(), options, shared_logger);
+                    mesh_extractor->extract_to_row_pointer(*city_model_handle->getCityModelPtr(), options);
             *out_model_ptr = modelPtr;
             return APIResult::Success;
         }

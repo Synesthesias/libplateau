@@ -24,9 +24,9 @@ namespace plateau::geometry {
     // TODO Polygonを継承する必要はないかも
     class LIBPLATEAU_EXPORT Mesh : public Polygon {
     public:
-        Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger);
+        Mesh(const std::string &id);
 
-        void setUV2(UV& uv2);
+        void setUV2(const UV& uv2);
 
         [[nodiscard]] const UV &getUV1() const;
 
@@ -55,6 +55,5 @@ namespace plateau::geometry {
          * その面以降、次の番号まではそのTextureであるとします。
          */
         MultiTexture multiTexture_;
-        std::shared_ptr<PlateauDllLogger> logger_;
     };
 }

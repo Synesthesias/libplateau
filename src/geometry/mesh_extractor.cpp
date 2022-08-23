@@ -166,8 +166,7 @@ namespace{
 
 }
 
-GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
-                              const std::shared_ptr<PlateauDllLogger> &logger) {
+GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
@@ -204,7 +203,7 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
     // グリッドごとのループ
     for(int i=0; i<gridNum; i++){
         // グリッド内でマージするポリゴンの新規作成
-        auto gridMesh = Mesh("grid" + std::to_string(i), logger);
+        auto gridMesh = Mesh("grid" + std::to_string(i));
         auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
@@ -254,25 +253,25 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
     return gridMeshes;
 }
 
-std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
-    auto modelPtr = extract_to_row_pointer(cityModel, options, logger);
+std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options) {
+    auto modelPtr = extract_to_row_pointer(cityModel, options);
     auto sharedModel = std::unique_ptr<Model>(modelPtr);
-    return std::move(sharedModel);
+    return sharedModel; // TODO これはmoveにしたほうが良いのか？
 }
 
-Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options,
-                                             const std::shared_ptr<PlateauDllLogger> &logger) {
+Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) {
     auto model = new Model();
     auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
-    // TODO optionsに応じた処理の切り替えは未実装
+//    // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity) {
         case MeshGranularity::PerCityModelArea:
-            auto result = gridMerge(cityModel, options, logger);
+            auto result = gridMerge(cityModel, options);
 
             int i = 0;
             for (auto &mesh: result) {
-                auto node = Node("grid" + std::to_string(i), std::move(mesh));
-                rootNode.addChildNode(std::move(node));
+//                auto node = Node("grid" + std::to_string(i), mesh); // TODO 本当は move で meshを渡したい
+                auto node = new Node("test-test"); // TODO 仮
+                rootNode.addChildNode(*node); // TODO 本当は move でnodeを渡したい
                 i++;
             }
             break;

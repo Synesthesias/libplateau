@@ -11,16 +11,17 @@ Node::Node(std::string name) :
 {}
 
 Node::Node(std::string name, Mesh mesh):
-    name_(name),
+    name_(std::move(name)),
     childNodes_(),
-    mesh_(std::move(mesh))
+    mesh_(mesh) // TODO 本当はmoveにしたい？
 {
 }
 
 Node::Node(): Node("") {
 }
 
-void Node::addChildNode(Node node) {
+void Node::addChildNode(const Node& node) {
+    // TODO ここがコピーになっているので効率が悪い？
     childNodes_.push_back(node);
 }
 

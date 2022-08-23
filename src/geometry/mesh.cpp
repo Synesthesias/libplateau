@@ -6,24 +6,22 @@
 
 using namespace plateau::geometry;
 
-Mesh::Mesh(const std::string &&id, std::shared_ptr<PlateauDllLogger> logger) :
-    Polygon(id, logger),
+Mesh::Mesh(const std::string &id) :
     uv1_(UV()),
     uv2_(UV()),
     uv3_(UV()),
     multiTexture_(MultiTexture()),
-    logger_(logger){
+    // TODO ここでPolygonに渡すためだけに間に合わせ的に作った shared_ptr がどう動くのかは未検証
+    Polygon(id, std::make_shared<PlateauDllLogger>()){
 }
 
 
-void Mesh::setUV2(UV& uv2) {
+void Mesh::setUV2(const UV& uv2) {
     if(uv2.size() != m_vertices.size()){
-        if(logger_){
-            logger_->throwException("Size of uv2 does not match num of vertices.");
-        }
+        std::cerr << "Size of uv2 does not match num of vertices." << std::endl;
         return;
     }
-    uv2_ = std::move(uv2);
+    uv2_ = uv2;
 }
 
 const UV& Mesh::getUV1() const{
