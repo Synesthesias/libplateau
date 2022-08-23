@@ -4,6 +4,8 @@
 #include "citygml/polygon.h"
 #include "../src/c_wrapper/mesh_extractor_c.cpp"
 #include "../src/c_wrapper/model_c.cpp"
+#include "../src/c_wrapper/city_model_c.cpp"
+#include "../src/c_wrapper/citygml_c.cpp"
 #include <plateau/geometry/mesh_extractor.h>
 
 using namespace citygml;
@@ -70,29 +72,36 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
     ASSERT_EQ(firstChildName, "grid0");
 }
 
-Model* test_extract_from_c_wrapper(){
+void test_extract_from_c_wrapper(){
     auto gml_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
 
     ParserParams params;
     params.tesselate = true;
 
-    auto city_model = load(gml_path, params);
+//    auto city_model = load(gml_path, params);
+    const CityModelHandle* cityModelHandleConst;
+    plateau_load_citygml(gml_path, plateau_citygml_parser_params(), &cityModelHandleConst, DllLogLevel::LL_INFO, nullptr, nullptr, nullptr);
     auto logger = std::make_shared<PlateauDllLogger>();
     MeshExtractor* meshExtractor;
     plateau_mesh_extractor_new(&meshExtractor);
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
+
+    Model* model;
+    CityModelHandle* cityModelHandle = const_cast<CityModelHandle *>(cityModelHandleConst);
+    plateau_mesh_extractor_extract(meshExtractor, cityModelHandle, options, logger.get(), &model);
+//    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
 
+
+    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
+    plateau_model_delete(model);
     plateau_mesh_extractor_delete(meshExtractor);
-    return model;
 }
 
-// Unityで数回ロードすると落ちるバグを再現しようとしてできなかったものです。
+// Unityで数回ロードすると落ちるバグを再現しようとしたもの
 TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
     for(int i=0; i<10; i++){
-        auto model = test_extract_from_c_wrapper();
-        ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
-        plateau_model_delete(model);
+        test_extract_from_c_wrapper();
+
     }
 }

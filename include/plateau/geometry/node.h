@@ -10,11 +10,11 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT Node{
     public:
         Node();
-        explicit Node(std::string &&name);
-        Node(std::string &&name, Mesh &&mesh);
+        explicit Node(std::string name);
+        Node(std::string name, Mesh mesh);
         [[nodiscard]] const std::string& getName() const;
         std::optional<Mesh> & getMesh();
-        void addChildNode(Node &&node);
+        void addChildNode(Node node);
         void GetChildrenRecursive(std::vector<Node *> &childVector);
         [[nodiscard]] int getChildCount() const;
         [[nodiscard]] const Node& getChildAt(int index) const;

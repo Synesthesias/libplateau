@@ -4,14 +4,14 @@
 
 using namespace plateau::geometry;
 
-Node::Node(std::string &&name) :
+Node::Node(std::string name) :
     name_(std::move(name)),
     childNodes_(),
     mesh_(std::nullopt)
 {}
 
-Node::Node(std::string &&name, Mesh &&mesh):
-    name_(std::move(name)),
+Node::Node(std::string name, Mesh mesh):
+    name_(name),
     childNodes_(),
     mesh_(std::move(mesh))
 {
@@ -20,7 +20,7 @@ Node::Node(std::string &&name, Mesh &&mesh):
 Node::Node(): Node("") {
 }
 
-void Node::addChildNode(Node &&node) {
+void Node::addChildNode(Node node) {
     childNodes_.push_back(node);
 }
 
