@@ -166,7 +166,7 @@ namespace{
 
 }
 
-void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
+GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
                               const std::shared_ptr<PlateauDllLogger> &logger) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
@@ -251,11 +251,7 @@ void MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptio
 //        std::cout << std::endl;
 //    }
 
-    lastGridMergeResult_ = std::move(gridMeshes);
-}
-
-MeshExtractor::GridMergeResult & MeshExtractor::getLastGridMergeResult() {
-    return lastGridMergeResult_;
+    return std::move(gridMeshes);
 }
 
 std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger) {
@@ -264,9 +260,8 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshEx
     // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity){
         case MeshGranularity::PerCityModelArea:
-            gridMerge(cityModel, options, logger);
+            auto result = gridMerge(cityModel, options, logger);
 
-            auto& result = getLastGridMergeResult();
             int i = 0;
             for(auto& mesh : result){
                 auto node = Node("grid" + std::to_string(i), std::move(mesh));

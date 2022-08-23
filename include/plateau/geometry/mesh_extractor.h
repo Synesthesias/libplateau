@@ -7,13 +7,13 @@
 #include "model.h"
 
 namespace plateau::geometry {
+    using GridMergeResult = std::vector<Mesh>;
 /**
  * @brief
  * CityModelからModel(メッシュ等)を取り出します。
  * GridMerge関数に CityModel を渡すと、配下のジオメトリをすべて検索して グリッド上のポリゴンにまとめます。
  */
     class LIBPLATEAU_EXPORT MeshExtractor {
-        using GridMergeResult = std::vector<Mesh>;
     public:
 
         std::shared_ptr<Model> extract(const CityModel& cityModel, MeshExtractOptions options, const std::shared_ptr<PlateauDllLogger> &logger);
@@ -23,15 +23,11 @@ namespace plateau::geometry {
          * 結果は getLastGridMergeResult() で取得できます。
          */
         // TODO 仕様変更に対応する。グリッドマージはextractの機能の一部になるのでprivateで良いはず。
-        void
-        gridMerge(const CityModel &cityModel, const MeshExtractOptions &options,
-                  const std::shared_ptr<PlateauDllLogger> &logger);
-
-        GridMergeResult &getLastGridMergeResult();
+        static GridMergeResult gridMerge(
+                const CityModel &cityModel, const MeshExtractOptions &options,
+                const std::shared_ptr<PlateauDllLogger> &logger);
 
     private:
-        // TODO あとで消す。グリッドマージの結果はここで保存せず直接返すようにする。
-        GridMergeResult lastGridMergeResult_;
 
     };
 

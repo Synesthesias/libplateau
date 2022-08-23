@@ -27,8 +27,7 @@ protected:
 TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    meshExtractor.gridMerge(*city_model_, options, logger_);
-    auto& result = meshExtractor.getLastGridMergeResult();
+    auto result = meshExtractor.gridMerge(*city_model_, options, logger_);
     int numPolyWithVert = 0;
     for(auto& poly : result){
         if(!poly.getVertices().empty()){
@@ -41,8 +40,7 @@ TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
 TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
     auto meshExtractor = MeshExtractor();
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    meshExtractor.gridMerge(*city_model_.get(), options, logger_);
-    auto& result = meshExtractor.getLastGridMergeResult();
+    auto result = meshExtractor.gridMerge(*city_model_.get(), options, logger_);
     for(auto& poly : result){
         auto sizeOfUV1 = poly.getUV1().size();
         auto numOfVertices = poly.getVertices().size();
