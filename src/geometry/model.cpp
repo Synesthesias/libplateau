@@ -11,7 +11,7 @@ Model::Model() :
 
 }
 
-Node & Model::addNode(const Node& node) { // TODO 本当はmoveにしたい
+Node & Model::addNode(const Node& node) { // TODO moveにしたほうが早いか？
     rootNodes_.push_back(node);
     return rootNodes_.back();
 }
@@ -25,7 +25,7 @@ std::vector<Node *> Model::getNodesRecursive() {
 }
 
 int Model::getRootNodesCount() const {
-    return rootNodes_.size();
+    return (int)rootNodes_.size();
 }
 
 Node & Model::getRootNodeAt(int index){

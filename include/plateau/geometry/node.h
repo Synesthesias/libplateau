@@ -7,18 +7,22 @@
 #include "mesh.h"
 
 namespace plateau::geometry{
+    /**
+     * 見た目に関する情報であり、 Model 以下の階層構造を構成するノードです。
+     * ノードは名前、メッシュ、子Nodeを持ちます。
+     * メッシュは頂点、UV、テクスチャを持ちます。
+     */
     struct LIBPLATEAU_EXPORT Node{
     public:
         Node();
         explicit Node(std::string name);
         Node(std::string name, Mesh mesh);
         [[nodiscard]] const std::string& getName() const;
-        std::optional<Mesh> & getMesh();
+        [[nodiscard]] std::optional<Mesh> getMesh() const;
         void addChildNode(const Node& node);
         void GetChildrenRecursive(std::vector<Node *> &childVector);
         [[nodiscard]] int getChildCount() const;
-        Node getChildAt(int index);
-        [[nodiscard]] const Node& getChildAt(int index) const;
+        [[nodiscard]] Node getChildAt(int index) const;
     private:
         std::string name_;
         std::vector<Node> childNodes_;
