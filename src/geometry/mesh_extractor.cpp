@@ -253,13 +253,13 @@ GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshE
     return gridMeshes;
 }
 
-std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshExtractOptions options) {
+std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) const {
     auto modelPtr = extract_to_row_pointer(cityModel, options);
     auto sharedModel = std::unique_ptr<Model>(modelPtr);
     return sharedModel; // TODO これはmoveにしたほうが良いのか？
 }
 
-Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) const {
+Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) const {
     auto model = new Model();
     auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
     // TODO optionsに応じた処理の切り替えは未実装

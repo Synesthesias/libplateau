@@ -88,7 +88,7 @@ TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
     }
 }
 
-// TODO 整理したい
+
 void MeshExtractorTest::test_extract_from_c_wrapper(){
 
     const CityModelHandle* city_model_handle;

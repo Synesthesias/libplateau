@@ -8,7 +8,7 @@ extern "C"{
 //    std::shared_ptr<Model> plateau_mesh_extractor_last_extract_result;
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_new(
-            MeshExtractor** out_mesh_extractor_ptr
+            MeshExtractor** const out_mesh_extractor_ptr
             ){
         *out_mesh_extractor_ptr = new MeshExtractor();
         return APIResult::Success;
@@ -30,7 +30,7 @@ extern "C"{
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract(
             const MeshExtractor* const mesh_extractor,
             const CityModelHandle* const city_model_handle,
-            MeshExtractOptions options,
+            const MeshExtractOptions options,
             Model** const out_model_ptr){
         API_TRY{
             auto modelPtr =
