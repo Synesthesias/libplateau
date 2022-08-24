@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 #include "citygml/citymodel.h"
 #include "citygml/citygml.h"
-#include "citygml/polygon.h"
 #include "../src/c_wrapper/mesh_extractor_c.cpp"
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
@@ -13,93 +12,87 @@ using namespace plateau::geometry;
 
 class MeshExtractorTest : public ::testing::Test {
 protected:
-    virtual void SetUp() {
-        gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
-
+    void SetUp() override {
         params_.tesselate = true;
     }
+
+    // テストで使う共通パーツです。
+    MeshExtractor mesh_extractor_ = MeshExtractor();
     ParserParams params_;
-    std::string gml_path_;
+    const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+    MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);;
+    std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
+    void test_extract_from_c_wrapper();
 };
 
-TEST_F(MeshExtractorTest, gridMerge_returns_polygons_with_vertices){
-    auto meshExtractor = MeshExtractor();
-    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
 
-    auto cityModel = load(gml_path_, params_);
-    auto result = meshExtractor.gridMerge(*cityModel, options);
-    int numPolyWithVert = 0;
-    for(auto& poly : result){
-        if(!poly.getVertices().empty()){
-            numPolyWithVert++;
+TEST_F(MeshExtractorTest, gridMerge_returns_meshes_with_vertices){
+    auto result = mesh_extractor_.gridMerge(*city_model_, mesh_extract_options_);
+    int num_mesh_with_vert = 0;
+    for(auto& mesh : result){
+        if(!mesh.getVertices().empty()){
+            num_mesh_with_vert++;
         }
     }
-    ASSERT_TRUE(numPolyWithVert >= 5);
+    ASSERT_TRUE(num_mesh_with_vert >= 5);
 }
 
 TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
-    auto meshExtractor = MeshExtractor();
-    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto cityModel = load(gml_path_, params_);
-    auto result = meshExtractor.gridMerge(*cityModel, options);
-    for(auto& poly : result){
-        auto sizeOfUV1 = poly.getUV1().size();
-        auto numOfVertices = poly.getVertices().size();
-        ASSERT_EQ(sizeOfUV1, numOfVertices);
+    auto result = mesh_extractor_.gridMerge(*city_model_, mesh_extract_options_);
+    for(auto& mesh : result){
+        auto size_of_uv1 = mesh.getUV1().size();
+        auto num_of_vertices = mesh.getVertices().size();
+        ASSERT_EQ(size_of_uv1, num_of_vertices);
     }
 }
 
-TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
-    auto meshExtractor = MeshExtractor();
-    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
-    auto cityModel = load(gml_path_, params_);
-    auto model = meshExtractor.extract(*cityModel, options);
+TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){
+    auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
     auto nodes = model->getNodesRecursive();
+    auto& root_node = model->getRootNodeAt(0);
+    std::string root_name = root_node.getName();
+    ASSERT_EQ(root_name, "ModelRoot");
 
-    // debug print
-//    for(auto node : nodes){
-//        auto& meshOpt = node->getMesh();
-//        std::string meshName = meshOpt ? meshOpt->getId() : "noneMesh";
-//        auto verticesCount = meshOpt ? meshOpt->getVertices().size() : 0;
-//        std::cout << node->getName() << " : meshId=" << meshName << ", verticesCount=" << verticesCount <<  std::endl;
-//    }
+    const auto& child_node = root_node.getChildAt(0);
+    auto& child_name = child_node.getName();
+    ASSERT_EQ(child_name, "grid0");
 
-    std::string rootName = model->getRootNodeAt(0).getName();
-    ASSERT_EQ(rootName, "ModelRoot");
-    auto rootNode = model->getRootNodeAt(0);
-    auto childNode = rootNode.getChildAt(0);
-    std::string firstChildName = childNode.getName();
-    ASSERT_EQ(firstChildName, "grid0");
 
-    // テクスチャURLがあることの確認
-    int numChild = rootNode.getChildCount();
-    int foundTextureNum = 0;
-    for(int i=0; i<numChild; i++){
-        auto child = rootNode.getChildAt(i);
-        auto meshOpt = child.getMesh();
-        if(!meshOpt.has_value()) continue;
-        auto& multiTex = meshOpt.value().getMultiTexture();
-        if(multiTex.empty()) continue;
-        for(auto texPair : multiTex){
+}
+
+TEST_F(MeshExtractorTest, extract_result_have_texture_url){
+    auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
+    auto nodes = model->getNodesRecursive();
+    auto& root_node = model->getRootNodeAt(0);
+    // 存在するテクスチャURLを検索します。
+    int num_child = root_node.getChildCount();
+    int found_texture_num = 0;
+    for(int i=0; i < num_child; i++){
+        auto child = root_node.getChildAt(i);
+        auto mesh_opt = child.getMesh();
+        if(!mesh_opt.has_value()) continue;
+        auto& multi_tex = mesh_opt.value().getMultiTexture();
+        if(multi_tex.empty()) continue;
+        for(auto& texPair : multi_tex){
             auto& texUrl = texPair.second;
             if(texUrl.empty()) continue;
-            std::cout << "texture url: " << texUrl << std::endl;
-            foundTextureNum++;
+            found_texture_num++;
         }
     }
-    ASSERT_TRUE(foundTextureNum > 0);
+    ASSERT_TRUE(found_texture_num > 5);
+}
+
+TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
+    for(int i=0; i<3; i++){
+        test_extract_from_c_wrapper();
+    }
 }
 
 // TODO 整理したい
-void test_extract_from_c_wrapper(){
-    auto gml_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+void MeshExtractorTest::test_extract_from_c_wrapper(){
 
-    ParserParams params;
-    params.tesselate = true;
-
-//    auto city_model = load(gml_path, params);
     const CityModelHandle* cityModelHandleConst;
-    plateau_load_citygml(gml_path, plateau_citygml_parser_params(), &cityModelHandleConst, DllLogLevel::LL_INFO, nullptr, nullptr, nullptr);
+    plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &cityModelHandleConst, DllLogLevel::LL_INFO, nullptr, nullptr, nullptr);
     MeshExtractor* meshExtractor;
     plateau_mesh_extractor_new(&meshExtractor);
     auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
@@ -107,18 +100,10 @@ void test_extract_from_c_wrapper(){
     Model* model;
     CityModelHandle* cityModelHandle = const_cast<CityModelHandle *>(cityModelHandleConst);
     plateau_mesh_extractor_extract(meshExtractor, cityModelHandle, options, &model);
-//    auto model = meshExtractor->extract_to_row_pointer(*city_model, options, logger);
     auto nodes = model->getNodesRecursive();
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
     plateau_model_delete(model);
     plateau_mesh_extractor_delete(meshExtractor);
-}
-
-// Unityで数回ロードすると落ちるバグを再現しようとしたもの
-TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
-    for(int i=0; i<3; i++){
-        test_extract_from_c_wrapper();
-    }
 }
