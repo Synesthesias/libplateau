@@ -23,6 +23,10 @@ namespace plateau::geometry {
         int maxLod;
         int minLod;
         bool exportAppearance;
+        /**
+         * グリッド分けする時の、1辺の分割数です。
+         * この数の2乗がグリッドの数になります。
+         */
         int gridCountOfSide;
     };
 }

@@ -165,27 +165,19 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
-    for(auto& [gridId, primaryObjs] : gridIdToObjsMap){
+    for(const auto& [gridId, primaryObjs] : gridIdToObjsMap){
         for(auto& primaryObj : primaryObjs){
             int primaryID = primaryObj.getPrimaryImportID();
-            auto minimumObjs = childCityObjects(*primaryObj.getCityObject());
+            auto atomicObjs = childCityObjects(*primaryObj.getCityObject());
             int secondaryID = 0;
-            for(auto minimumObj : *minimumObjs){
-                auto minimumObjWithID = CityObjectWithImportID(minimumObj, primaryID, secondaryID);
-                gridIdToObjsMap.at(gridId).push_back(std::move(minimumObjWithID));
+            for(auto atomicObj : *atomicObjs){
+                auto atomicObjWithID = CityObjectWithImportID{atomicObj, primaryID, secondaryID};
+                gridIdToObjsMap.at(gridId).push_back(atomicObjWithID);
                 secondaryID++;
             }
         }
     }
 
-    // デバッグ用表示 : グリッド分類結果
-//    for(const auto& pair : *gridIdToObjsMap){
-//        std::cout << "[grid " << pair.first << "] ";
-//        for(auto cityObj : pair.second){
-//            std::cout << cityObj->getId() << ", ";
-//        }
-//        std::cout << std::endl;
-//    }
 
     // グリッドごとにメッシュを結合します。
     auto gridMeshes = GridMergeResult();
@@ -228,17 +220,6 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         }
 
     }
-
-    // デバッグ用表示 : マージしたポリゴンの情報
-//    for(auto& gridPoly : *gridMeshes){
-//        std::cout << "[" << gridPoly->getId() << "] ";
-//        std::cout << "numVertices : " << gridPoly->getVertices().size() << std::endl;
-//        std::cout << "multiTexture : ";
-//        for(auto& idToTex : gridPoly->getMultiTexture()){
-//            std::cout << "(" << idToTex.first << ", " << (idToTex.second->getUrl()) << "),   ";
-//        }
-//        std::cout << std::endl;
-//    }
 
     return gridMeshes;
 }
