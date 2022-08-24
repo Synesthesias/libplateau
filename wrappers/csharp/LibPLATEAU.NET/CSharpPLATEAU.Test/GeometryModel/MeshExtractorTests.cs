@@ -73,7 +73,7 @@ namespace PLATEAU.Test.GeometryModel
                 ExportAppearance = true,
                 GridCountOfSide = 5
             };
-            var model = meshExtractor.Extract(cityModel, options, logger);
+            var model = meshExtractor.Extract(cityModel, options);
             Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
             var firstNode = model.GetRootNodeAt(0);
             Assert.IsFalse(string.IsNullOrEmpty(firstNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");
