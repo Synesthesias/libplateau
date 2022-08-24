@@ -166,7 +166,7 @@ namespace{
 
 }
 
-GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) {
+GridMergeResult MeshExtractor::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) const {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
@@ -259,7 +259,7 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, MeshEx
     return sharedModel; // TODO これはmoveにしたほうが良いのか？
 }
 
-Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) {
+Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) const {
     auto model = new Model();
     auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
     // TODO optionsに応じた処理の切り替えは未実装

@@ -28,10 +28,10 @@ extern "C"{
      * ただしModelをdeleteすると配下のNode,Meshにもアクセスできなくなるので注意してください。
      */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract(
-            MeshExtractor* mesh_extractor,
-            CityModelHandle* city_model_handle,
+            const MeshExtractor* const mesh_extractor,
+            const CityModelHandle* const city_model_handle,
             MeshExtractOptions options,
-            Model** out_model_ptr){
+            Model** const out_model_ptr){
         API_TRY{
             auto modelPtr =
                     mesh_extractor->extract_to_row_pointer(*city_model_handle->getCityModelPtr(), options);

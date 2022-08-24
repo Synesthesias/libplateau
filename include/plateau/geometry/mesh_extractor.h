@@ -31,13 +31,13 @@ namespace plateau::geometry {
          * DLL利用者とModelをやりとりするには生ポインタである必要があるための措置です。
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
-        Model *extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options);
+        Model *extract_to_row_pointer(const CityModel &cityModel, MeshExtractOptions options) const;
 
         /**
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
          */
         // TODO 仕様変更に対応する。グリッドマージはextractの機能の一部になるのでprivateで良いはず。
-        GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options);
+        GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) const;
 
     private:
     };

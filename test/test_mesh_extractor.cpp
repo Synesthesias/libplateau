@@ -91,19 +91,17 @@ TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
 // TODO 整理したい
 void MeshExtractorTest::test_extract_from_c_wrapper(){
 
-    const CityModelHandle* cityModelHandleConst;
-    plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &cityModelHandleConst, DllLogLevel::LL_INFO, nullptr, nullptr, nullptr);
-    MeshExtractor* meshExtractor;
-    plateau_mesh_extractor_new(&meshExtractor);
-    auto options = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);
+    const CityModelHandle* city_model_handle;
+    plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &city_model_handle, DllLogLevel::LL_WARNING, nullptr, nullptr, nullptr);
+    MeshExtractor* mesh_extractor;
+    plateau_mesh_extractor_new(&mesh_extractor);
 
     Model* model;
-    CityModelHandle* cityModelHandle = const_cast<CityModelHandle *>(cityModelHandleConst);
-    plateau_mesh_extractor_extract(meshExtractor, cityModelHandle, options, &model);
+    plateau_mesh_extractor_extract(mesh_extractor, city_model_handle, mesh_extract_options_, &model);
     auto nodes = model->getNodesRecursive();
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");
     plateau_model_delete(model);
-    plateau_mesh_extractor_delete(meshExtractor);
+    plateau_mesh_extractor_delete(mesh_extractor);
 }
