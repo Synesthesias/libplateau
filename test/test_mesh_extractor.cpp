@@ -5,6 +5,7 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
+#include "plateau/geometry/grid_merger.h"
 #include <plateau/geometry/mesh_extractor.h>
 
 using namespace citygml;
@@ -25,9 +26,9 @@ protected:
     void test_extract_from_c_wrapper();
 };
 
-
+// TODO test_mesh_merger.cpp を作ってそちらに移動する
 TEST_F(MeshExtractorTest, gridMerge_returns_meshes_with_vertices){
-    auto result = mesh_extractor_.gridMerge(*city_model_, mesh_extract_options_);
+    auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_);
     int num_mesh_with_vert = 0;
     for(auto& mesh : result){
         if(!mesh.getVertices().empty()){
@@ -37,12 +38,17 @@ TEST_F(MeshExtractorTest, gridMerge_returns_meshes_with_vertices){
     ASSERT_TRUE(num_mesh_with_vert >= 5);
 }
 
-TEST_F(MeshExtractorTest, gridMerge_uv1_size_matches_num_of_vertices){
-    auto result = mesh_extractor_.gridMerge(*city_model_, mesh_extract_options_);
+// TODO 同上、移動
+TEST_F(MeshExtractorTest, gridMerge_uv_size_matches_num_of_vertices){
+    auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_);
     for(auto& mesh : result){
         auto size_of_uv1 = mesh.getUV1().size();
+        auto size_of_uv2 = mesh.getUV2().size();
+        auto size_of_uv3 = mesh.getUV3().size();
         auto num_of_vertices = mesh.getVertices().size();
         ASSERT_EQ(size_of_uv1, num_of_vertices);
+        ASSERT_EQ(size_of_uv2, num_of_vertices);
+        ASSERT_EQ(size_of_uv3, num_of_vertices);
     }
 }
 

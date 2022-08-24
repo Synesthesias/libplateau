@@ -7,7 +7,6 @@
 #include "model.h"
 
 namespace plateau::geometry {
-    using GridMergeResult = std::vector<Mesh>;
 /**
  * @brief
  * CityModelからModel(メッシュ等)を取り出します。
@@ -32,12 +31,6 @@ namespace plateau::geometry {
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
         [[nodiscard]] Model *extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) const;
-
-        /**
-         * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合します。
-         */
-        // TODO 仕様変更に対応する。グリッドマージはextractの機能の一部になるのでprivateで良いはず。
-        [[nodiscard]] GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) const;
 
     private:
     };
