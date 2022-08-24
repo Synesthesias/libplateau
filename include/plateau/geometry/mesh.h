@@ -22,9 +22,15 @@ namespace plateau::geometry {
  * ・複数テクスチャ機能
  */
     // TODO Polygonを継承する必要はないかも
-    class LIBPLATEAU_EXPORT Mesh : public Polygon {
+    class LIBPLATEAU_EXPORT Mesh {
     public:
         Mesh(const std::string &id);
+
+        // TODO const関数とconstでない関数で2つ同じ実装があるけど、まとめられそうな気がする
+        [[nodiscard]] std::vector<TVec3d> & getVertices();
+        [[nodiscard]] const std::vector<TVec3d>& getVerticesConst() const;
+
+        [[nodiscard]] const std::vector<int> & getIndices() const;
 
         void setUV2(const UV& uv2);
 
@@ -47,6 +53,8 @@ namespace plateau::geometry {
         void Merge(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element);
 
     private:
+        std::vector<TVec3d> vertices_;
+        std::vector<int> indices_;
         UV uv1_;
         UV uv2_;
         UV uv3_;

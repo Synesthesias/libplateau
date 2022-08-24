@@ -7,17 +7,29 @@
 using namespace plateau::geometry;
 
 Mesh::Mesh(const std::string &id) :
+    vertices_(),
     uv1_(UV()),
     uv2_(UV()),
     uv3_(UV()),
-    multiTexture_(MultiTextureURL()),
-    // TODO ここでPolygonに渡すためだけに間に合わせ的に作った shared_ptr がどう動くのかは未検証
-    Polygon(id, std::make_shared<PlateauDllLogger>()){
+    multiTexture_(MultiTextureURL()){
+}
+
+std::vector<TVec3d> & Mesh::getVertices() {
+    return vertices_;
+}
+
+const std::vector<TVec3d> &Mesh::getVerticesConst() const {
+    return vertices_;
+}
+
+
+const std::vector<int> & Mesh::getIndices() const {
+    return indices_;
 }
 
 
 void Mesh::setUV2(const UV& uv2) {
-    if(uv2.size() != m_vertices.size()){
+    if(uv2.size() != vertices_.size()){
         std::cerr << "Size of uv2 does not match num of vertices." << std::endl;
         return;
     }
@@ -41,22 +53,22 @@ const MultiTextureURL &Mesh::getMultiTexture() const {
 }
 
 void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
-    if(otherPoly.getVertices().size() <= 0) return;
-    unsigned prevNumVertices = m_vertices.size();
-    unsigned prevNumIndices = m_indices.size();
+    if(otherPoly.getVertices().empty()) return;
+    unsigned prevNumVertices = vertices_.size();
+    unsigned prevNumIndices = indices_.size();
     auto& otherVertices = otherPoly.getVertices();
     auto& otherIndices = otherPoly.getIndices();
     // 頂点リストの末尾に追加します。
     for(const auto & otherVertex : otherVertices){
-        m_vertices.push_back(otherVertex);
+        vertices_.push_back(otherVertex);
     }
     // インデックスリストの末尾に追加します。
     for(unsigned int otherIndex : otherIndices){
-        m_indices.push_back(otherIndex);
+        indices_.push_back(otherIndex);
     }
     // 追加分のインデックスを新しい値にします。前の頂点の数だけインデックスの数値を大きくすれば良いです。
-    for(unsigned i=prevNumIndices; i<m_indices.size(); i++){
-        m_indices.at(i) += prevNumVertices;
+    for(unsigned i=prevNumIndices; i<indices_.size(); i++){
+        indices_.at(i) += prevNumVertices;
     }
 
     // UV1を追加します。

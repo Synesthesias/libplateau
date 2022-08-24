@@ -73,16 +73,33 @@ namespace PLATEAU.Test.GeometryModel
                 ExportAppearance = true,
                 GridCountOfSide = 5
             };
+            // TODO 下記でいろいろテストしているので分けた方が良いのでは？
             var model = meshExtractor.Extract(cityModel, options);
             Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
-            var firstNode = model.GetRootNodeAt(0);
-            Assert.IsFalse(string.IsNullOrEmpty(firstNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");
-            Assert.IsTrue(firstNode.ChildCount > 0, "ルートノードの子を取得できる");
-            var firstChild = firstNode.GetChildAt(0);
+            var rootNode = model.GetRootNodeAt(0);
+            Assert.IsFalse(string.IsNullOrEmpty(rootNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");
+            Assert.IsTrue(rootNode.ChildCount > 0, "ルートノードの子を取得できる");
+            var firstChild = rootNode.GetChildAt(0);
             Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name), "子ノードの名前を取得できる");
-            var firstMesh = firstChild.Mesh;
-            Assert.IsFalse(string.IsNullOrEmpty(firstMesh.ID), "メッシュを取得できる");
-            Assert.IsNull(firstNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
+            // メッシュを含むノードを検索
+            bool doMeshExist = false;
+            Mesh foundMesh = null;
+            for (int i = 0; i < rootNode.ChildCount; i++)
+            {
+                var child = rootNode.GetChildAt(i);
+                var mesh = child.Mesh;
+                if (mesh == null) continue;
+                if (mesh.VerticesCount > 0 && mesh.IndicesCount >= 3)
+                {
+                    doMeshExist = true;
+                    foundMesh = mesh;
+                    break;
+                }
+            }
+            Assert.IsTrue(doMeshExist, "頂点と面が1つ以上あるメッシュが存在する");
+            Assert.IsTrue(foundMesh.GetVertexAt(0).IsNotZero(), "メッシュの頂点を取得できる");
+            Assert.IsTrue(foundMesh.GetIndiceAt(0) >= 0, "メッシュのIndicesリストの要素を取得できる");
+            Assert.IsNull(rootNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
         }
         
         // TODO　以下のコメントアウトしたテストを別の形に書き直す

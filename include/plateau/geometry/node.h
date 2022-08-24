@@ -18,11 +18,14 @@ namespace plateau::geometry{
         explicit Node(std::string name);
         Node(std::string name, Mesh mesh);
         [[nodiscard]] const std::string& getName() const;
-        [[nodiscard]] std::optional<Mesh> getMesh() const;
+        [[nodiscard]] std::optional<Mesh> & getMesh();
         void addChildNode(const Node& node);
         void GetChildrenRecursive(std::vector<Node *> &childVector);
         [[nodiscard]] int getChildCount() const;
-        [[nodiscard]] Node getChildAt(int index) const;
+
+        // TODO const版とそうでない版で2通りあるけど、まとめる方法がある気がする
+        [[nodiscard]] Node & getChildAt(int index);
+        [[nodiscard]] const Node &getConstChildAt(int index) const;
     private:
         std::string name_;
         std::vector<Node> childNodes_;

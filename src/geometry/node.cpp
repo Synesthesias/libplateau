@@ -36,7 +36,7 @@ const std::string &Node::getName() const {
     return name_;
 }
 
-std::optional<Mesh> Node::getMesh() const{
+std::optional<Mesh> & Node::getMesh(){
     return mesh_;
 }
 
@@ -44,6 +44,10 @@ int Node::getChildCount() const {
     return (int)childNodes_.size();
 }
 
-Node Node::getChildAt(int index) const {
+Node & Node::getChildAt(int index) {
+    return childNodes_.at(index);
+}
+
+const Node& Node::getConstChildAt(int index) const{
     return childNodes_.at(index);
 }

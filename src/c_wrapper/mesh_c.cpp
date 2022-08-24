@@ -4,6 +4,31 @@ using namespace citygml;
 using namespace libplateau;
 using namespace plateau::geometry;
 extern "C"{
+
+DLL_VALUE_FUNC(plateau_mesh_get_vertices_count,
+               Mesh,
+               int,
+               handle->getVerticesConst().size())
+
+// TODO indexのチェックをしたほうが安全
+DLL_VALUE_FUNC(plateau_mesh_get_vertex_at_index,
+               Mesh,
+               TVec3d,
+               handle->getVerticesConst().at(index),
+               ,int index)
+
+DLL_VALUE_FUNC(plateau_mesh_get_indices_count,
+              Mesh,
+              int,
+              handle->getIndices().size())
+
+// TODO indexのチェックをしたほうが安全
+DLL_VALUE_FUNC(plateau_mesh_get_indice_at_index,
+             Mesh,
+             int,
+             handle->getIndices().at(index),
+             ,int index)
+
 DLL_VALUE_FUNC(plateau_mesh_get_multi_texture_count,
                Mesh,
                int,

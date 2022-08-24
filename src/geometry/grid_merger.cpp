@@ -208,15 +208,15 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
     cityCenter.z = 0.0; // ただし高さ方法は0を基準点とします。
 
     // 座標を変換します。
-    for(auto& poly : gridMeshes){
-        auto numVert = poly.getVertices().size();
+    for(auto& mesh : gridMeshes){
+        auto numVert = mesh.getVertices().size();
         for(int i=0; i<numVert; i++){
-            auto pos = poly.getVertices().at(i);
+            auto pos = mesh.getVertices().at(i);
             polar_to_plane_cartesian().convert(pos);
             // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
             // TODO AxesConversion, unit_scale は調整できるようにする
             pos = ObjWriter::convertPosition(pos, cityCenter, AxesConversion::WUN, 1.0);
-            poly.getVertices().at(i) = pos;
+            mesh.getVertices().at(i) = pos;
         }
 
     }
