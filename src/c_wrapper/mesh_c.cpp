@@ -17,11 +17,11 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_multi_texture(
         int* const out_str_lengths
         ) {
     API_TRY {
-        auto multiTex = plateau_mesh->getMultiTexture();
+        auto& multiTex = plateau_mesh->getMultiTexture();
         int i = 0;
         for(auto& indexToTex : multiTex){
             int index = indexToTex.first;
-            auto tex_url = indexToTex.second;
+            auto& tex_url = indexToTex.second;
             out_vertex_index_array[i] = index;
             out_url_str_pointers[i] = tex_url.c_str();
             out_str_lengths[i] = (int)tex_url.length() + 1; // +1 はnull終端文字の分
