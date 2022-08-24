@@ -27,7 +27,7 @@ protected:
 };
 
 
-TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){
+TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
     auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
     auto nodes = model->getNodesRecursive();
     auto& root_node = model->getRootNodeAt(0);
@@ -41,7 +41,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){
 
 }
 
-TEST_F(MeshExtractorTest, extract_result_have_texture_url){
+TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
     auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
     auto nodes = model->getNodesRecursive();
     auto& root_node = model->getRootNodeAt(0);
@@ -63,7 +63,7 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){
     ASSERT_TRUE(found_texture_num > 5);
 }
 
-TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){
+TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){ // NOLINT
     for(int i=0; i<3; i++){
         test_extract_from_c_wrapper();
     }

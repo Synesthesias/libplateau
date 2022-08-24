@@ -17,7 +17,7 @@ protected:
     std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
 };
 
-TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices){
+TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices){ // NOLINT
     auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_);
     int num_mesh_with_vert = 0;
     for(auto& mesh : result){
@@ -28,7 +28,7 @@ TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices){
     ASSERT_TRUE(num_mesh_with_vert >= 5);
 }
 
-TEST_F(GridMergerTest, gridMerge_uv_size_matches_num_of_vertices){
+TEST_F(GridMergerTest, gridMerge_uv_size_matches_num_of_vertices){ // NOLINT
     auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_);
     for(auto& mesh : result){
         auto size_of_uv1 = mesh.getUV1().size();
