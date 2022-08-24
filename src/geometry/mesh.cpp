@@ -10,7 +10,7 @@ Mesh::Mesh(const std::string &id) :
     uv1_(UV()),
     uv2_(UV()),
     uv3_(UV()),
-    multiTexture_(MultiTexture()),
+    multiTexture_(MultiTextureURL()),
     // TODO ここでPolygonに渡すためだけに間に合わせ的に作った shared_ptr がどう動くのかは未検証
     Polygon(id, std::make_shared<PlateauDllLogger>()){
 }
@@ -36,7 +36,7 @@ const UV& Mesh::getUV3() const{
     return uv3_;
 }
 
-const MultiTexture &Mesh::getMultiTexture() const {
+const MultiTextureURL &Mesh::getMultiTexture() const {
     return multiTexture_;
 }
 
@@ -80,17 +80,18 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
     //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
+    std::string otherTextureURL;
     if(otherTexture == nullptr){
-        otherTexture = Texture::noneTexture;
+        otherTextureURL = std::string("");
+    }else{
+        otherTextureURL = otherTexture->getUrl();
     }
     bool isDifferentTex = multiTexture_.empty();
     if(!isDifferentTex){
-        auto& lastTexture = (*multiTexture_.rbegin()).second;
-        if(lastTexture != nullptr){
-            isDifferentTex |= otherTexture->getUrl() != lastTexture->getUrl();
-        }
+        auto& lastTextureURL = (*multiTexture_.rbegin()).second;
+        isDifferentTex |= otherTextureURL != lastTextureURL;
     }
     if( isDifferentTex ){
-        multiTexture_.emplace(prevNumIndices, otherTexture);
+        multiTexture_.emplace(prevNumIndices, otherTextureURL);
     }
 }

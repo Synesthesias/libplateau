@@ -66,11 +66,28 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_and_name){
 
     std::string rootName = model->getRootNodeAt(0).getName();
     ASSERT_EQ(rootName, "ModelRoot");
-    std::string firstChildName = model->getRootNodeAt(0).getChildAt(0).getName();
+    auto rootNode = model->getRootNodeAt(0);
+    auto childNode = rootNode.getChildAt(0);
+    std::string firstChildName = childNode.getName();
     ASSERT_EQ(firstChildName, "grid0");
-    std::cout << model.use_count() << std::endl;
-    model.reset();
-    std::cout << model.use_count() << std::endl;
+
+    // テクスチャURLがあることの確認
+    int numChild = rootNode.getChildCount();
+    int foundTextureNum = 0;
+    for(int i=0; i<numChild; i++){
+        auto child = rootNode.getChildAt(i);
+        auto meshOpt = child.getMesh();
+        if(!meshOpt.has_value()) continue;
+        auto& multiTex = meshOpt.value().getMultiTexture();
+        if(multiTex.empty()) continue;
+        for(auto texPair : multiTex){
+            auto& texUrl = texPair.second;
+            if(texUrl.empty()) continue;
+            std::cout << "texture url: " << texUrl << std::endl;
+            foundTextureNum++;
+        }
+    }
+    ASSERT_TRUE(foundTextureNum > 0);
 }
 
 // TODO 整理したい

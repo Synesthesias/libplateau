@@ -28,6 +28,10 @@ int Model::getRootNodesCount() const {
     return rootNodes_.size();
 }
 
-const Node &Model::getRootNodeAt(int index) const{
+Node & Model::getRootNodeAt(int index){
+    return rootNodes_.at(index);
+}
+
+const Node &Model::getRootNodeAt(int index) const {
     return rootNodes_.at(index);
 }

@@ -7,7 +7,7 @@
 #include "mesh.h"
 
 namespace plateau::geometry{
-    class LIBPLATEAU_EXPORT Node{
+    struct LIBPLATEAU_EXPORT Node{
     public:
         Node();
         explicit Node(std::string name);
@@ -17,6 +17,7 @@ namespace plateau::geometry{
         void addChildNode(const Node& node);
         void GetChildrenRecursive(std::vector<Node *> &childVector);
         [[nodiscard]] int getChildCount() const;
+        Node getChildAt(int index);
         [[nodiscard]] const Node& getChildAt(int index) const;
     private:
         std::string name_;

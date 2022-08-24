@@ -6,11 +6,11 @@
 using namespace citygml;
 using UV = std::vector<TVec2f>;
 /**
- * keyを Indicesリストのインデックス（つまり面情報）、 value を テクスチャとする map です。
- * keyであるIndicesリストのインデックス以降（つまりこれ以降の面）は value のテクスチャを使う、という意です。
- * 「この場所にはテクスチャがない」というケースでは、value の Texture は IDとURL が "noneTexture" という値である特別なテクスチャになります。
+ * keyを Indicesリストのインデックス（つまり面情報）、 value を テクスチャURLとする map です。
+ * keyであるIndicesリストのインデックス以降（つまりこれ以降の面）は value のURLのテクスチャを使う、という意です。
+ * 「この場所にはテクスチャがない」というケースでは、valueは 空文字列 になります。
  */
-using MultiTexture = std::map<int, std::shared_ptr<const Texture>>;
+using MultiTextureURL = std::map<int, std::string>;
 
 namespace plateau::geometry {
 
@@ -34,15 +34,15 @@ namespace plateau::geometry {
 
         [[nodiscard]] const UV &getUV3() const;
 
-        [[nodiscard]] const MultiTexture &getMultiTexture() const;
+        [[nodiscard]] const MultiTextureURL &getMultiTexture() const;
 
         /**
          * ポリゴンをマージします。
          * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
          * ・頂点リスト、インデックスリスト、UV1、テクスチャ
          * なおその他の情報のマージには未対応です。例えば LinearRing は変化しません。
-         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTexture が構築されます。
-         * テクスチャがない範囲では、それに対応する MultiTexture の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
+         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける MultiTextureURL が構築されます。
+         * テクスチャがない範囲では、それに対応する MultiTextureURL の Texture は ID と URL が "noneTexture" である特別なテクスチャになります。
          */
         void Merge(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element);
 
@@ -51,9 +51,9 @@ namespace plateau::geometry {
         UV uv2_;
         UV uv3_;
         /**
-         * MultiTexture は、IndicesリストのインデックスとTextureを対応付けるmapです。
-         * その面以降、次の番号まではそのTextureであるとします。
+         * MultiTextureURL は、IndicesリストのインデックスとTexture の URLを対応付けるmapです。
+         * その面以降、次の番号まではそのURLのTextureであるとします。
          */
-        MultiTexture multiTexture_;
+        MultiTextureURL multiTexture_;
     };
 }
