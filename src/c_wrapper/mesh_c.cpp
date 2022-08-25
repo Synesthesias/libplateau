@@ -30,12 +30,19 @@ DLL_VALUE_FUNC(plateau_mesh_get_indice_at_index,
              ,int index)
 
              // TODO 以下のコメントアウトした部分を新しいSubMeshクラスに対応するよう書き換える
-//DLL_VALUE_FUNC(plateau_mesh_get_multi_texture_count,
-//               Mesh,
-//               int,
-//               handle->getMultiTexture().size())
-//
-//
+DLL_VALUE_FUNC(plateau_mesh_get_sub_mesh_count,
+               Mesh,
+               int,
+               handle->getSubMeshes().size())
+
+// TODO indexの範囲チェックしたほうが安全かも
+DLL_PTR_FUNC(plateau_mesh_get_sub_mesh_at_index,
+             Mesh,
+             SubMesh,
+             &handle->getSubMeshes().at(index),
+             ,int index)
+
+// TODO ↓不要
 //LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_multi_texture(
 //        const Mesh* const plateau_mesh,
 //        int* const out_vertex_index_array,

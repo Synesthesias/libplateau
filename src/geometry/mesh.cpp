@@ -102,13 +102,19 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     }else{
         otherTexturePath = otherTexture->getUrl();
     }
+    // 前と同じテクスチャかどうか判定します
     bool isDifferentTex = subMeshes_.empty();
     if(!isDifferentTex){
-        auto& lastTexturePath = subMeshes_.rbegin()->texturePath;
+        auto& lastTexturePath = subMeshes_.rbegin()->getTexturePath();
         isDifferentTex |= otherTexturePath != lastTexturePath;
     }
+    // 判定終わり
     if( isDifferentTex ){
-        SubMesh::addSubMesh(prevNumIndices, indices_.size(), otherTexturePath, subMeshes_);
+        // テクスチャが違うなら、サブメッシュを追加します。
+        SubMesh::addSubMesh(prevNumIndices, indices_.size()-1, otherTexturePath, subMeshes_);
+    }else{
+        // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
+        subMeshes_.at(subMeshes_.size()-1).setEndIndex(indices_.size()-1);
     }
 }
 

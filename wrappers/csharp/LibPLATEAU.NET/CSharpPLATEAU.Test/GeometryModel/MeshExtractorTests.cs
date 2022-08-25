@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.CityGML;
 using PLATEAU.GeometryModel;
@@ -73,7 +74,8 @@ namespace PLATEAU.Test.GeometryModel
                 ExportAppearance = true,
                 GridCountOfSide = 5
             };
-            // TODO 下記でいろいろテストしているので分けた方が良いのでは？
+            
+            // TODO 下記でいろいろテストしているので分けた方が良い
             var model = meshExtractor.Extract(cityModel, options);
             Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
             var rootNode = model.GetRootNodeAt(0);
@@ -100,6 +102,11 @@ namespace PLATEAU.Test.GeometryModel
             Assert.IsTrue(foundMesh.GetVertexAt(0).IsNotZero(), "メッシュの頂点を取得できる");
             Assert.IsTrue(foundMesh.GetIndiceAt(0) >= 0, "メッシュのIndicesリストの要素を取得できる");
             Assert.IsNull(rootNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
+            Assert.IsTrue(foundMesh.SubMeshCount > 0, "メッシュにはサブメッシュが存在する");
+            var subMesh = foundMesh.GetSubMeshAt(0);
+            Assert.IsTrue(subMesh.StartIndex >= 0, "サブメッシュのStartIndexを取得できる");
+            Assert.IsTrue(subMesh.EndIndex >= 0, "サブメッシュのEndIndexを取得できる");
+            Assert.IsNotNull(subMesh.TexturePath, "サブメッシュのテクスチャパスを取得できる");
         }
         
         // TODO　以下のコメントアウトしたテストを別の形に書き直す

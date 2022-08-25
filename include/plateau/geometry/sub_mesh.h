@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <libplateau_api.h>
 
 namespace plateau::geometry{
     /**
@@ -10,18 +11,26 @@ namespace plateau::geometry{
      *
      * 詳しくは Model クラスのコメントをご覧ください。
      */
-    struct SubMesh{
-        SubMesh(int startIndex, int endIndex, std::string texturePath);
+    class LIBPLATEAU_EXPORT SubMesh{
+    public:
+        SubMesh(size_t startIndex, size_t endIndex, std::string texturePath);
         /**
          * 引数で与えられた SubMesh の vector に SubMesh を追加します。
          */
         static void addSubMesh(size_t startIndex, size_t endIndex, std::string texturePath, std::vector<SubMesh> &vector);
+
+        [[nodiscard]] size_t getStartIndex() const;
+        [[nodiscard]] size_t getEndIndex() const;
+        [[nodiscard]] const std::string& getTexturePath() const;
+        void setEndIndex(int endIndex);
+
+    private:
         /**
-         * startIndex, endIndex は、Meshの Indices リストの中のある範囲を表現します。
+         * startIndex_, endIndex は、Meshの Indices リストの中のある範囲を表現します。
          * 範囲は [start, end] (endを範囲に含む) です。
          */
-        size_t startIndex;
-        size_t endIndex;
-        std::string texturePath;
+        size_t startIndex_;
+        size_t endIndex_;
+        std::string texturePath_;
     };
 }

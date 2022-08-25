@@ -55,7 +55,7 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
         auto& sub_meshes = mesh_opt.value().getSubMeshes();
         if(sub_meshes.empty()) continue;
         for(auto& sub_mesh : sub_meshes){
-            auto& texUrl = sub_mesh.texturePath;
+            auto& texUrl = sub_mesh.getTexturePath();
             if(texUrl.empty()) continue;
             found_texture_num++;
         }
