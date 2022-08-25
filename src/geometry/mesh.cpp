@@ -68,11 +68,11 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     }
     // インデックスリストの末尾に追加します。
     for(unsigned int otherIndex : otherIndices){
-        indices_.push_back(otherIndex);
+        indices_.push_back((int)otherIndex);
     }
     // 追加分のインデックスを新しい値にします。前の頂点の数だけインデックスの数値を大きくすれば良いです。
     for(unsigned i=prevNumIndices; i<indices_.size(); i++){
-        indices_.at(i) += prevNumVertices;
+        indices_.at(i) += (int)prevNumVertices;
     }
 
     // UV1を追加します。
@@ -114,7 +114,7 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
         SubMesh::addSubMesh(prevNumIndices, indices_.size()-1, otherTexturePath, subMeshes_);
     }else{
         // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
-        subMeshes_.at(subMeshes_.size()-1).setEndIndex(indices_.size()-1);
+        subMeshes_.at(subMeshes_.size()-1).setEndIndex((int)indices_.size()-1);
     }
 }
 
