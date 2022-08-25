@@ -8,11 +8,15 @@
 
 namespace plateau::geometry{
     /**
-     * 見た目に関する情報であり、 Model 以下の階層構造を構成するノードです。
-     * ノードは名前、メッシュ、子Nodeを持ちます。
-     * メッシュは頂点、UV、テクスチャを持ちます。
+     * Model 以下の階層構造を構成するノードです。
+     * Node は 0個以上の 子Node を持つため階層構造になります。
+     *
+     * 詳しくは Model クラスのコメントをご覧ください。
+     *
+     * Node::name_ はゲームエンジン側ではゲームオブジェクトの名前として解釈されることが想定され、
+     * Node::mesh_ はそのゲームオブジェクトの持つメッシュとして解釈されることが想定されます。
      */
-    struct LIBPLATEAU_EXPORT Node{
+    class LIBPLATEAU_EXPORT Node{
     public:
         Node();
         explicit Node(std::string name);

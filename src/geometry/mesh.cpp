@@ -11,7 +11,7 @@ Mesh::Mesh(const std::string &id) :
     uv1_(UV()),
     uv2_(UV()),
     uv3_(UV()),
-    multiTexture_(MultiTextureURL()){
+    subMeshes_(){
 }
 
 std::vector<TVec3d> & Mesh::getVertices() {
@@ -48,8 +48,12 @@ const UV& Mesh::getUV3() const{
     return uv3_;
 }
 
-const MultiTextureURL &Mesh::getMultiTexture() const {
-    return multiTexture_;
+//const MultiTextureURL &Mesh::getMultiTexture() const {
+//    return multiTexture_;
+//}
+
+const std::vector<SubMesh> &Mesh::getSubMeshes() const {
+    return subMeshes_;
 }
 
 void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
@@ -92,18 +96,19 @@ void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2
     // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
     //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
-    std::string otherTextureURL;
+    std::string otherTexturePath;
     if(otherTexture == nullptr){
-        otherTextureURL = std::string("");
+        otherTexturePath = std::string("");
     }else{
-        otherTextureURL = otherTexture->getUrl();
+        otherTexturePath = otherTexture->getUrl();
     }
-    bool isDifferentTex = multiTexture_.empty();
+    bool isDifferentTex = subMeshes_.empty();
     if(!isDifferentTex){
-        auto& lastTextureURL = (*multiTexture_.rbegin()).second;
-        isDifferentTex |= otherTextureURL != lastTextureURL;
+        auto& lastTexturePath = subMeshes_.rbegin()->texturePath;
+        isDifferentTex |= otherTexturePath != lastTexturePath;
     }
     if( isDifferentTex ){
-        multiTexture_.emplace(prevNumIndices, otherTextureURL);
+        SubMesh::addSubMesh(prevNumIndices, indices_.size(), otherTexturePath, subMeshes_);
     }
 }
+

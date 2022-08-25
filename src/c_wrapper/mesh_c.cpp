@@ -29,34 +29,35 @@ DLL_VALUE_FUNC(plateau_mesh_get_indice_at_index,
              handle->getIndices().at(index),
              ,int index)
 
-DLL_VALUE_FUNC(plateau_mesh_get_multi_texture_count,
-               Mesh,
-               int,
-               handle->getMultiTexture().size())
-
-
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_multi_texture(
-        const Mesh* const plateau_mesh,
-        int* const out_vertex_index_array,
-        const char** const out_url_str_pointers,
-        int* const out_str_lengths
-        ) {
-    API_TRY {
-        auto& multiTex = plateau_mesh->getMultiTexture();
-        int i = 0;
-        for(auto& indexToTex : multiTex){
-            int index = indexToTex.first;
-            auto& tex_url = indexToTex.second;
-            out_vertex_index_array[i] = index;
-            out_url_str_pointers[i] = tex_url.c_str();
-            out_str_lengths[i] = (int)tex_url.length() + 1; // +1 はnull終端文字の分
-            i++;
-        }
-        return APIResult::Success;
-    }
-    API_CATCH;
-    return APIResult::ErrorUnknown;
-}
+             // TODO 以下のコメントアウトした部分を新しいSubMeshクラスに対応するよう書き換える
+//DLL_VALUE_FUNC(plateau_mesh_get_multi_texture_count,
+//               Mesh,
+//               int,
+//               handle->getMultiTexture().size())
+//
+//
+//LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_multi_texture(
+//        const Mesh* const plateau_mesh,
+//        int* const out_vertex_index_array,
+//        const char** const out_url_str_pointers,
+//        int* const out_str_lengths
+//        ) {
+//    API_TRY {
+//        auto& multiTex = plateau_mesh->getMultiTexture();
+//        int i = 0;
+//        for(auto& indexToTex : multiTex){
+//            int index = indexToTex.first;
+//            auto& tex_url = indexToTex.second;
+//            out_vertex_index_array[i] = index;
+//            out_url_str_pointers[i] = tex_url.c_str();
+//            out_str_lengths[i] = (int)tex_url.length() + 1; // +1 はnull終端文字の分
+//            i++;
+//        }
+//        return APIResult::Success;
+//    }
+//    API_CATCH;
+//    return APIResult::ErrorUnknown;
+//}
 
 /**
  * UVを取得するマクロです。

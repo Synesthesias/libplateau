@@ -27,6 +27,7 @@ add_library(c_wrapper OBJECT
   "plateau_dll_logger_c.cpp"
   "mesh_extractor_c.cpp"
   "mesh_c.cpp"
+  "sub_mesh_c.cpp"
   "model_c.cpp"
   "node_c.cpp")
 

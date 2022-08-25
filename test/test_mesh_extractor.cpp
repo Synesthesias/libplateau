@@ -52,10 +52,10 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
         auto child = root_node.getChildAt(i);
         auto mesh_opt = child.getMesh();
         if(!mesh_opt.has_value()) continue;
-        auto& multi_tex = mesh_opt.value().getMultiTexture();
-        if(multi_tex.empty()) continue;
-        for(auto& texPair : multi_tex){
-            auto& texUrl = texPair.second;
+        auto& sub_meshes = mesh_opt.value().getSubMeshes();
+        if(sub_meshes.empty()) continue;
+        for(auto& sub_mesh : sub_meshes){
+            auto& texUrl = sub_mesh.texturePath;
             if(texUrl.empty()) continue;
             found_texture_num++;
         }
