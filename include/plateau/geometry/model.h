@@ -20,7 +20,6 @@ namespace plateau::geometry{
     public:
         Model();
         Node & addNode(const Node& node);
-        std::vector<Node*> getNodesRecursive();
         [[nodiscard]] int getRootNodesCount() const;
         Node & getRootNodeAt(int index);
         [[nodiscard]] const Node& getRootNodeAt(int index) const;

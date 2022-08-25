@@ -25,13 +25,6 @@ void Node::addChildNode(const Node& node) {
     childNodes_.push_back(node);
 }
 
-void Node::GetChildrenRecursive(std::vector<Node *> &childVector) {
-    childVector.push_back(this);
-    for(auto& child : childNodes_){
-        child.GetChildrenRecursive(childVector);
-    }
-}
-
 const std::string &Node::getName() const {
     return name_;
 }

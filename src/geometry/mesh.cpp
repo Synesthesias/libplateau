@@ -22,15 +22,13 @@ const std::vector<TVec3d> &Mesh::getVerticesConst() const {
     return vertices_;
 }
 
-
 const std::vector<int> & Mesh::getIndices() const {
     return indices_;
 }
 
-
 void Mesh::setUV2(const UV& uv2) {
     if(uv2.size() != vertices_.size()){
-        std::cerr << "Size of uv2 does not match num of vertices." << std::endl;
+        throw std::exception("Size of uv2 does not match num of vertices.");
         return;
     }
     uv2_ = uv2;
@@ -47,10 +45,6 @@ const UV& Mesh::getUV2() const{
 const UV& Mesh::getUV3() const{
     return uv3_;
 }
-
-//const MultiTextureURL &Mesh::getMultiTexture() const {
-//    return multiTexture_;
-//}
 
 const std::vector<SubMesh> &Mesh::getSubMeshes() const {
     return subMeshes_;

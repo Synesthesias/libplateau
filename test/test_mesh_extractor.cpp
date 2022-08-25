@@ -29,7 +29,6 @@ protected:
 
 TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
     auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
-    auto nodes = model->getNodesRecursive();
     auto& root_node = model->getRootNodeAt(0);
     std::string root_name = root_node.getName();
     ASSERT_EQ(root_name, "ModelRoot");
@@ -43,7 +42,6 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
 
 TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
     auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
-    auto nodes = model->getNodesRecursive();
     auto& root_node = model->getRootNodeAt(0);
     // 存在するテクスチャURLを検索します。
     int num_child = root_node.getChildCount();
@@ -79,7 +77,6 @@ void MeshExtractorTest::test_extract_from_c_wrapper(){
 
     Model* model;
     plateau_mesh_extractor_extract(mesh_extractor, city_model_handle, mesh_extract_options_, &model);
-    auto nodes = model->getNodesRecursive();
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "grid0");

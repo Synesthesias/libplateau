@@ -24,7 +24,6 @@ namespace plateau::geometry{
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();
         void addChildNode(const Node& node);
-        void GetChildrenRecursive(std::vector<Node *> &childVector);
         [[nodiscard]] int getChildCount() const;
 
         // TODO const版とそうでない版で2通りあるけど、まとめる方法がある気がする

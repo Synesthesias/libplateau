@@ -16,13 +16,6 @@ Node & Model::addNode(const Node& node) { // TODO moveにしたほうが早い�
     return rootNodes_.back();
 }
 
-std::vector<Node *> Model::getNodesRecursive() {
-    auto children =  std::vector<Node *>();
-    for(auto& node : rootNodes_){
-        node.GetChildrenRecursive(children);
-    }
-    return children;
-}
 
 int Model::getRootNodesCount() const {
     return (int)rootNodes_.size();
