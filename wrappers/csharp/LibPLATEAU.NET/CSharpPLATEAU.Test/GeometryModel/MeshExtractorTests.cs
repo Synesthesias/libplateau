@@ -69,8 +69,8 @@ namespace PLATEAU.Test.GeometryModel
                 ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
-                MinLod = 2,
-                MaxLod = 2,
+                MinLOD = 2,
+                MaxLOD = 2,
                 ExportAppearance = true,
                 GridCountOfSide = 5,
                 UnitScale = 1f

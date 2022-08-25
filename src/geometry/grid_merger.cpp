@@ -192,9 +192,10 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。
+                // importID をメッシュに残すためにuv2, uv3 を利用しています。UVなので2次元floatの値を取りますが、実際に伝えたい値はUVごとに1つのintです。
                 const auto uv2 = TVec2f((float)(cityObj.getPrimaryImportID()) + (float)0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
                 const auto uv3 = TVec2f((float)(cityObj.getSecondaryImportID()) + (float)0.25, 0);
-                gridMesh.Merge(*poly, uv2, uv3);
+                gridMesh.merge(*poly, options, uv2, uv3);
             }
         }
 
