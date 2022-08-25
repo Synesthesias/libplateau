@@ -157,7 +157,11 @@ void Mesh::addSubMesh(const Polygon &otherPoly) {
 }
 
 void Mesh::extendLastSubMesh() {
-    subMeshes_.at(subMeshes_.size()-1).setEndIndex((int)indices_.size()-1);
+    if(subMeshes_.empty()){
+        subMeshes_.emplace_back(0, indices_.size()-1, "");
+    }else {
+        subMeshes_.at(subMeshes_.size() - 1).setEndIndex((int) indices_.size() - 1);
+    }
 }
 
 bool Mesh::isValidPolygon(const Polygon& otherPoly){

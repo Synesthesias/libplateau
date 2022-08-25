@@ -89,6 +89,7 @@ namespace plateau::geometry {
         /**
          * 直前の SubMesh の範囲を拡大し、範囲の終わりがindicesリストの最後を指すようにします。
          * 利用すべき状況 : 形状を追加したけど、テクスチャは前と同じものにしたいとう状況で利用できます。
+         * SubMeshがない場合は最初の1つをテクスチャなしで追加します。
          */
         void extendLastSubMesh();
         static bool isValidPolygon(const Polygon& otherPoly);
