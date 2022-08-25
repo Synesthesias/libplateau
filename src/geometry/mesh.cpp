@@ -83,7 +83,6 @@ void Mesh::Merge(const Polygon& otherPoly, const TVec2f& UV2Element, const TVec2
     }
 
     // テクスチャが異なる場合は追加します。
-    // TODO ここのコードは整理したい
     // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
     //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
@@ -93,13 +92,16 @@ void Mesh::Merge(const Polygon& otherPoly, const TVec2f& UV2Element, const TVec2
     }else{
         otherTexturePath = otherTexture->getUrl();
     }
-    // 前と同じテクスチャかどうか判定します
-    bool isDifferentTex = subMeshes_.empty();
-    if(!isDifferentTex){
+
+    // 前と同じテクスチャかどうか判定します。
+    bool isDifferentTex;
+    if(subMeshes_.empty()){
+        isDifferentTex = true;
+    }else{
         auto& lastTexturePath = subMeshes_.rbegin()->getTexturePath();
-        isDifferentTex |= otherTexturePath != lastTexturePath;
+        isDifferentTex = otherTexturePath != lastTexturePath;
     }
-    // 判定終わり
+
     if( isDifferentTex ){
         // テクスチャが違うなら、サブメッシュを追加します。
         SubMesh::addSubMesh(prevNumIndices, indices_.size()-1, otherTexturePath, subMeshes_);

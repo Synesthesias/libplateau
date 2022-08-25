@@ -14,6 +14,7 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT SubMesh{
     public:
         SubMesh(size_t startIndex, size_t endIndex, std::string texturePath);
+
         /**
          * 引数で与えられた SubMesh の vector に SubMesh を追加します。
          */

@@ -5,36 +5,36 @@ using namespace libplateau;
 using namespace plateau::geometry;
 extern "C" {
 
-DLL_STRING_PTR_FUNC(plateau_node_get_name,
-                    Node,
-                    handle->getName())
+    DLL_STRING_PTR_FUNC(plateau_node_get_name,
+                        Node,
+                        handle->getName())
 
-DLL_VALUE_FUNC(plateau_node_get_child_count,
-               Node,
-               int,
-               handle->getChildCount())
+    DLL_VALUE_FUNC(plateau_node_get_child_count,
+                   Node,
+                   int,
+                   handle->getChildCount())
 
-// TODO 範囲外のindexが渡されたら APIResult で知らせるほうが安全
-DLL_PTR_FUNC(plateau_node_get_child_at_index,
-            Node,
-            Node,
-            &handle->getConstChildAt(index),
-            ,int index)
+    // TODO 範囲外のindexが渡されたら APIResult で知らせるほうが安全
+    DLL_PTR_FUNC(plateau_node_get_child_at_index,
+                Node,
+                Node,
+                &handle->getConstChildAt(index),
+                ,int index)
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_get_mesh(
-        Node* node,
-        Mesh** out_mesh_ptr
-        ) {
-    API_TRY{
-        auto& mesh = node->getMesh();
-        if(mesh.has_value()){
-            *out_mesh_ptr = &mesh.value();
-        }else{
-            return APIResult::ErrorValueNotFound;
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_get_mesh(
+            Node* node,
+            Mesh** out_mesh_ptr
+            ) {
+        API_TRY{
+            auto& mesh = node->getMesh();
+            if(mesh.has_value()){
+                *out_mesh_ptr = &mesh.value();
+            }else{
+                return APIResult::ErrorValueNotFound;
+            }
+            return APIResult::Success;
         }
-        return APIResult::Success;
+        API_CATCH;
+        return APIResult::ErrorUnknown;
     }
-    API_CATCH;
-    return APIResult::ErrorUnknown;
-}
 }
