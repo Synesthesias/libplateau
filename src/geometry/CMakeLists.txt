@@ -5,4 +5,5 @@ target_sources(plateau PRIVATE
         "mesh_extractor.cpp"
         "model.cpp"
         "grid_merger.cpp"
+        "geometry_utils.cpp"
 )

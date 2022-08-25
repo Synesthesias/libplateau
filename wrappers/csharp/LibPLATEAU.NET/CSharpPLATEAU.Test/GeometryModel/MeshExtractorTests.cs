@@ -66,7 +66,7 @@ namespace PLATEAU.Test.GeometryModel
             using var meshExtractor = new MeshExtractor();
             var options = new MeshExtractOptions
             {
-                ReferencePoint = new PlateauVector3d(0, 0, 0),
+                ReferencePoint = cityModel.CenterPoint,
                 MeshAxes = AxesConversion.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
                 MinLod = 2,

@@ -126,14 +126,13 @@ namespace{
         return std::move(children);
     }
 
-    void FindAllPolygons(const Geometry& geom,PolygonList& polygons){
+    void FindAllPolygons(const Geometry& geom, PolygonList& polygons, int minLOD, int maxLOD){
         unsigned int numChild = geom.getGeometriesCount();
         for(unsigned int i=0; i<numChild; i++){
-            FindAllPolygons(geom.getGeometry(i), polygons);
+            FindAllPolygons(geom.getGeometry(i), polygons, minLOD, maxLOD);
         }
 
-        // TODO 今は対象LODは2のみで決め打ちしているが、今後はLODを選択できるようにしたい
-        if(geom.getLOD() != 2) return;
+        if(geom.getLOD() < minLOD || geom.getLOD() > maxLOD) return;
 
         unsigned int numPoly = geom.getPolygonsCount();
         for(unsigned int i=0; i<numPoly; i++){
@@ -146,11 +145,11 @@ namespace{
      * 子の CityObject は検索しません。
      * 子の Geometry は再帰的に検索します。
      */
-    PolygonList FindAllPolygons(const CityObject& cityObj){
+    PolygonList FindAllPolygons(const CityObject& cityObj, int minLOD, int maxLOD){
         auto polygons = PolygonList();
         unsigned int numGeom = cityObj.getGeometriesCount();
         for(unsigned int i=0; i<numGeom; i++){
-            FindAllPolygons(cityObj.getGeometry(i), polygons);
+            FindAllPolygons(cityObj.getGeometry(i), polygons, minLOD, maxLOD);
         }
         return std::move(polygons);
     }
@@ -189,7 +188,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
-            auto polygons = FindAllPolygons(*cityObj.getCityObject());
+            auto polygons = FindAllPolygons(*cityObj.getCityObject(), options.minLOD, options.maxLOD);
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。
@@ -202,11 +201,6 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         gridMeshes.push_back(std::move(gridMesh));
     }
 
-    // 街の範囲の中心を基準点とします。
-    auto cityCenter = (cityEnvelope.getLowerBound() + cityEnvelope.getUpperBound()) / 2.0;
-    polar_to_plane_cartesian().convert(cityCenter);
-    cityCenter.z = 0.0; // ただし高さ方法は0を基準点とします。
-
     // 座標を変換します。
     for(auto& mesh : gridMeshes){
         auto numVert = mesh.getVertices().size();
@@ -215,7 +209,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
             polar_to_plane_cartesian().convert(pos);
             // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
             // TODO AxesConversion, unit_scale は調整できるようにする
-            pos = ObjWriter::convertPosition(pos, cityCenter, AxesConversion::WUN, 1.0);
+            pos = ObjWriter::convertPosition(pos, options.referencePoint, AxesConversion::WUN, 1.0);
             mesh.getVertices().at(i) = pos;
         }
 

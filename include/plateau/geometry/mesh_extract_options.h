@@ -11,8 +11,8 @@ namespace plateau::geometry {
                 referencePoint(referencePoint),
                 meshAxes(meshAxes),
                 meshGranularity(meshGranularity),
-                maxLod(maxLod),
-                minLod(minLod),
+                maxLOD(maxLod),
+                minLOD(minLod),
                 exportAppearance(exportAppearance),
                 gridCountOfSide(gridCountOfSide){}
 
@@ -20,8 +20,8 @@ namespace plateau::geometry {
         TVec3d referencePoint;
         AxesConversion meshAxes;
         MeshGranularity meshGranularity;
-        int maxLod;
-        int minLod;
+        int maxLOD;
+        int minLOD;
         bool exportAppearance;
         /**
          * グリッド分けする時の、1辺の分割数です。
