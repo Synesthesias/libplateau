@@ -18,13 +18,13 @@ namespace plateau::geometry{
      */
     class LIBPLATEAU_EXPORT Node{
     public:
-        Node();
+//        Node();
         explicit Node(std::string name);
         Node(std::string name, Mesh mesh);
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();
         void addChildNode(const Node& node);
-        [[nodiscard]] int getChildCount() const;
+        [[nodiscard]] size_t getChildCount() const;
 
         // TODO const版とそうでない版で2通りあるけど、まとめる方法がある気がする
         [[nodiscard]] Node & getChildAt(int index);

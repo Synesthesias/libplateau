@@ -1,6 +1,4 @@
-
 #include <plateau/geometry/mesh.h>
-
 #include <memory>
 #include "citygml/texture.h"
 
@@ -14,22 +12,21 @@ Mesh::Mesh(const std::string &id) :
     subMeshes_(){
 }
 
-std::vector<TVec3d> & Mesh::getVertices() {
+std::vector<TVec3d>& Mesh::getVertices() {
     return vertices_;
 }
 
-const std::vector<TVec3d> &Mesh::getVerticesConst() const {
+const std::vector<TVec3d>& Mesh::getVerticesConst() const {
     return vertices_;
 }
 
-const std::vector<int> & Mesh::getIndices() const {
+const std::vector<int>& Mesh::getIndices() const {
     return indices_;
 }
 
 void Mesh::setUV2(const UV& uv2) {
     if(uv2.size() != vertices_.size()){
         throw std::exception("Size of uv2 does not match num of vertices.");
-        return;
     }
     uv2_ = uv2;
 }
@@ -46,11 +43,11 @@ const UV& Mesh::getUV3() const{
     return uv3_;
 }
 
-const std::vector<SubMesh> &Mesh::getSubMeshes() const {
+const std::vector<SubMesh>& Mesh::getSubMeshes() const {
     return subMeshes_;
 }
 
-void Mesh::Merge(const Polygon &otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
+void Mesh::Merge(const Polygon& otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
     if(otherPoly.getVertices().empty()) return;
     unsigned prevNumVertices = vertices_.size();
     unsigned prevNumIndices = indices_.size();

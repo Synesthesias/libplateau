@@ -19,10 +19,10 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT Model{
     public:
         Model();
-        Node & addNode(const Node& node);
-        [[nodiscard]] int getRootNodesCount() const;
-        Node & getRootNodeAt(int index);
-        [[nodiscard]] const Node& getRootNodeAt(int index) const;
+        void addNode(const Node& node);
+        [[nodiscard]] size_t getRootNodesCount() const;
+        Node & getRootNodeAt(size_t index);
+        [[nodiscard]] const Node& getRootNodeAt(size_t index) const;
     private:
         std::vector<Node> rootNodes_;
     };

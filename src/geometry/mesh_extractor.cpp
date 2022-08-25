@@ -17,7 +17,8 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const 
 
 Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) const {
     auto model = new Model();
-    auto& rootNode = model->addNode(Node(std::string("ModelRoot")));
+    model->addNode(Node(std::string("ModelRoot")));
+    auto& rootNode = model->getRootNodeAt(0);
     // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity) {
         case MeshGranularity::PerCityModelArea:

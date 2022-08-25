@@ -1,30 +1,23 @@
 #include <plateau/geometry/node.h>
 #include "plateau/geometry/model.h"
 
-
 using namespace plateau::geometry;
 
-
 Model::Model() :
-        rootNodes_()
-{
+        rootNodes_(){}
 
-}
-
-Node & Model::addNode(const Node& node) { // TODO moveにしたほうが早いか？
+void Model::addNode(const Node& node) { // TODO moveにしたほうが早いか？
     rootNodes_.push_back(node);
-    return rootNodes_.back();
 }
 
-
-int Model::getRootNodesCount() const {
-    return (int)rootNodes_.size();
+size_t Model::getRootNodesCount() const {
+    return rootNodes_.size();
 }
 
-Node & Model::getRootNodeAt(int index){
+Node& Model::getRootNodeAt(size_t index){
     return rootNodes_.at(index);
 }
 
-const Node &Model::getRootNodeAt(int index) const {
+const Node &Model::getRootNodeAt(size_t index) const {
     return rootNodes_.at(index);
 }
