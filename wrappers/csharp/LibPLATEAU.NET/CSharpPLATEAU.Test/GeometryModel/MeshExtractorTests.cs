@@ -72,7 +72,8 @@ namespace PLATEAU.Test.GeometryModel
                 MinLod = 2,
                 MaxLod = 2,
                 ExportAppearance = true,
-                GridCountOfSide = 5
+                GridCountOfSide = 5,
+                UnitScale = 1f
             };
             
             // TODO 下記でいろいろテストしているので分けた方が良い

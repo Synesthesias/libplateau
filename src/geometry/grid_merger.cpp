@@ -208,8 +208,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
             auto pos = mesh.getVertices().at(i);
             polar_to_plane_cartesian().convert(pos);
             // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
-            // TODO AxesConversion, unit_scale は調整できるようにする
-            pos = ObjWriter::convertPosition(pos, options.referencePoint, AxesConversion::WUN, 1.0);
+            pos = ObjWriter::convertPosition(pos, options.referencePoint, options.meshAxes, options.unitScale);
             mesh.getVertices().at(i) = pos;
         }
 

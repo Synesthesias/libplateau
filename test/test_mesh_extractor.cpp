@@ -21,7 +21,7 @@ protected:
     MeshExtractor mesh_extractor_ = MeshExtractor();
     ParserParams params_;
     const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
-    MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5);;
+    MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5, 1.0);;
     std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
     void test_extract_from_c_wrapper();
 };
