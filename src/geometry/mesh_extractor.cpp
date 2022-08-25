@@ -8,26 +8,29 @@
 
 using namespace plateau::geometry;
 
-
-std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) const {
+std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) {
     auto modelPtr = extract_to_row_pointer(cityModel, options);
     auto sharedModel = std::unique_ptr<Model>(modelPtr);
-    return sharedModel; // TODO これはmoveにしたほうが良いのか？
+    return sharedModel;
 }
 
-Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) const {
+Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) {
     auto model = new Model();
     model->addNode(Node(std::string("ModelRoot")));
     auto& rootNode = model->getRootNodeAt(0);
     // TODO optionsに応じた処理の切り替えは未実装
     switch(options.meshGranularity) {
         case MeshGranularity::PerCityModelArea:
+
+            // 都市をグリッドに分け、グリッドごとにメッシュをマージします。
             auto result = GridMerger::gridMerge(cityModel, options);
 
+            // 次のような階層構造を作ります:
+            // rootNode -> 子(複数) -> グリッドごとのノード -> 所有 -> グリッドメッシュ
             int i = 0;
             for (auto &mesh: result) {
-                auto node = Node("grid" + std::to_string(i), mesh); // TODO 本当は move で meshを渡したい
-                rootNode.addChildNode(node); // TODO 本当は move でnodeを渡したい
+                auto node = Node("grid" + std::to_string(i), mesh); // TODO meshの渡し方、コピーになってるけど効率良い渡し方があるのでは？
+                rootNode.addChildNode(node); // TODO nodeの渡し方、コピーになってるけど効率良い渡し方があるのでは？
                 i++;
             }
             break;
@@ -39,5 +42,4 @@ CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObjec
     cityObject(cityObject),
     primaryImportID(primaryImportID),
     secondaryImportID(secondaryImportID) {
-
 }
