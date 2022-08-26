@@ -78,7 +78,7 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                     auto atomicMesh = Mesh(atomicObj->getId());
                     atomicMesh.mergePolygonsInCityObject(*atomicObj, options, TVec2f{0, 0}, TVec2f{0, 0});
                     auto atomicNode = Node(atomicObj->getId(), atomicMesh);
-                    primaryNode.addChildNode(atomicNode);
+                    primaryNode.addChildNode(atomicNode); // TODO メッシュ、ノードの渡し方
                 }
                 rootNode.addChildNode(primaryNode);
             }
