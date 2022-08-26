@@ -66,6 +66,17 @@ TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){ // NOLINT
     }
 }
 
+TEST_F(MeshExtractorTest, when_extract_atomic_building_then_primary_nodes_have_no_mesh_and_atomic_nodes_have_mesh){
+    MeshExtractOptions options = mesh_extract_options_;
+    options.meshGranularity = MeshGranularity::PerAtomicFeatureObject;
+    auto model = MeshExtractor::extract(*city_model_, options);
+    auto first_primary_node = model->getRootNodeAt(0).getChildAt(0);
+    auto first_atomic_node = first_primary_node.getChildAt(0);
+    ASSERT_FALSE(first_primary_node.getMesh().has_value());
+    ASSERT_TRUE(first_atomic_node.getMesh().has_value());
+
+}
+
 
 void MeshExtractorTest::test_extract_from_c_wrapper(){
 

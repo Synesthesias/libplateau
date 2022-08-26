@@ -64,8 +64,8 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                 // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。主要地物にもメッシュを含めるとダブるため含めません。
                 auto primaryMesh = std::optional<Mesh>(std::nullopt);
                 bool shouldContainPrimaryMesh =
-                        options.maxLOD < 2 ||
-                                static_cast<std::underlying_type<CityObject::CityObjectsType>::type>(primaryObj->getType() | CityObject::CityObjectsType::COT_Building) != 0;
+                        !(options.maxLOD >= 2 &&
+                                (primaryObj->getType() & CityObject::CityObjectsType::COT_Building) != (CityObject::CityObjectsType)0);
                 if(shouldContainPrimaryMesh) {
                     primaryMesh = Mesh(primaryObj->getId());
                     primaryMesh->mergePolygonsInCityObject(*primaryObj, options, TVec2f{0, 0}, TVec2f{0, 0});
