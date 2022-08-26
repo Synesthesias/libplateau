@@ -28,7 +28,7 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
             auto result = GridMerger::gridMerge(cityModel, options);
             int i = 0;
             for (auto &mesh: result) {
-                auto node = Node("grid" + std::to_string(i), mesh); // TODO meshの渡し方、コピーになってるけど効率良い渡し方があるのでは？
+                auto node = Node("grid" + std::to_string(i), std::move(mesh)); // TODO meshの渡し方、コピーになってるけど効率良い渡し方があるのでは？
                 rootNode.addChildNode(node); // TODO nodeの渡し方、コピーになってるけど効率良い渡し方があるのでは？
                 i++;
             }
@@ -77,7 +77,7 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                     // 最小地物のノードを作成
                     auto atomicMesh = Mesh(atomicObj->getId());
                     atomicMesh.mergePolygonsInCityObject(*atomicObj, options, TVec2f{0, 0}, TVec2f{0, 0});
-                    auto atomicNode = Node(atomicObj->getId(), atomicMesh);
+                    auto atomicNode = Node(atomicObj->getId(), std::move(atomicMesh));
                     primaryNode.addChildNode(atomicNode); // TODO メッシュ、ノードの渡し方
                 }
                 rootNode.addChildNode(primaryNode);

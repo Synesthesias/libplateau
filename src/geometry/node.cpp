@@ -9,7 +9,7 @@ Node::Node(std::string name) :
     mesh_(std::nullopt)
     {}
 
-Node::Node(std::string name, Mesh mesh):
+Node::Node(std::string name, Mesh &&mesh):
     name_(std::move(name)),
     childNodes_(),
     mesh_(mesh) // TODO 本当はmoveにしたい？
