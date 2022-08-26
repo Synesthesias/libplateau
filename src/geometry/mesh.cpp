@@ -1,6 +1,10 @@
 #include <plateau/geometry/mesh.h>
 #include <memory>
 #include "citygml/texture.h"
+#include "citygml/cityobject.h"
+#include "plateau/geometry/geometry_utils.h"
+#include "plateau/io/polar_to_plane_cartesian.h"
+#include "plateau/io/obj_writer.h"
 
 using namespace plateau::geometry;
 
@@ -50,40 +54,67 @@ const std::vector<SubMesh>& Mesh::getSubMeshes() const {
 void Mesh::merge(const Polygon &otherPoly, MeshExtractOptions options, const TVec2f &UV2Element, const TVec2f &UV3Element){
     if(!isValidPolygon(otherPoly)) return;
     if(options.exportAppearance){
-        mergeWithTexture(otherPoly, UV2Element, UV3Element);
+        mergeWithTexture(otherPoly, options, UV2Element, UV3Element);
     }else{
-        mergeWithoutTexture(otherPoly, UV2Element, UV3Element);
+        mergeWithoutTexture(otherPoly, UV2Element, UV3Element, options);
     }
 }
 
-void Mesh::mergeWithTexture(const Polygon& otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element) {
+void Mesh::mergePolygonsInCityObject(const CityObject &cityObject, const MeshExtractOptions &options,
+                                     const TVec2f &UV3Element,
+                                     const TVec2f &UV2Element) {
+    auto polygons = GeometryUtils::findAllPolygons(cityObject, options.minLOD, options.maxLOD);
+    for(auto poly : polygons){
+        this->merge(*poly, options, UV2Element, UV3Element);
+    }
+}
+
+void Mesh::mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, const TVec2f &UV2Element, const TVec2f &UV3Element,
+                                      const MeshExtractOptions &options) {
+    for(auto obj : cityObjects){
+        mergePolygonsInCityObject(*obj, options, UV3Element, UV2Element);
+    }
+}
+
+void Mesh::mergeWithTexture(const Polygon &otherPoly, const MeshExtractOptions &options, const TVec2f &UV2Element,
+                            const TVec2f &UV3Element) {
     if(!isValidPolygon(otherPoly)) return;
-    mergeShape(otherPoly, UV2Element, UV3Element);
+    mergeShape(otherPoly, UV2Element, UV3Element, options);
     addSubMesh(otherPoly);
 }
 
-void Mesh::mergeWithoutTexture(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element){
+void Mesh::mergeWithoutTexture(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element,
+                               const MeshExtractOptions &options) {
     if(!isValidPolygon(otherPoly)) return;
-    mergeShape(otherPoly, UV2Element, UV3Element);
+    mergeShape(otherPoly, UV2Element, UV3Element, options);
     extendLastSubMesh();
 
 }
 
-void Mesh::mergeShape(const Polygon& otherPoly, const TVec2f& UV2Element, const TVec2f& UV3Element){
+void Mesh::mergeShape(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element,
+                      const MeshExtractOptions &options) {
     unsigned prevNumVertices = vertices_.size();
     auto& otherVertices = otherPoly.getVertices();
     auto& otherIndices = otherPoly.getIndices();
 
-    addVerticesList(otherVertices);
+    addVerticesList(otherVertices, options);
     addIndicesList(otherIndices, prevNumVertices);
     addUV1(otherPoly);
     addUV2WithSameVal(UV2Element, otherVertices.size());
     addUV3WithSameVal(UV3Element, otherVertices.size());
 }
 
-void Mesh::addVerticesList(const std::vector<TVec3d>& otherVertices){
-    for(const auto & otherVertex : otherVertices){
-        vertices_.push_back(otherVertex);
+void Mesh::addVerticesList(const std::vector<TVec3d> &otherVertices, const MeshExtractOptions &options) {
+    // 各頂点を座標変換しながら追加します。
+    for(const auto & otherPos : otherVertices){
+        // otherPos は極座標系です。
+        auto pos = otherPos;
+        // デカルト座標系に直します。
+        polar_to_plane_cartesian().convert(pos);
+        // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
+        // オプションに応じて座標系を変更します。
+        pos = ObjWriter::convertPosition(pos, options.referencePoint, options.meshAxes, options.unitScale);
+        vertices_.push_back(pos);
     }
 }
 

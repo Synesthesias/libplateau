@@ -10,7 +10,6 @@ namespace plateau::geometry{
     * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
     */
     using GridIdToObjsMap = std::map<int, std::list<CityObjectWithImportID>>;
-    using PolygonList = std::list<const citygml::Polygon*>;
     using GridMergeResult = std::vector<Mesh>;
 
     /**

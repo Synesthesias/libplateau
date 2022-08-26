@@ -1,6 +1,10 @@
 #pragma once
 
+#include <list>
 #include "citygml/citymodel.h"
+#include "citygml/polygon.h"
+#include "mesh.h"
+
 using namespace citygml;
 
 namespace plateau::geometry{
@@ -14,5 +18,28 @@ namespace plateau::geometry{
          * 中心点が分からないので原点座標を返します。
          */
         static TVec3d getCenterPoint(const CityModel& cityModel);
+
+        /**
+         * cityObj に含まれるポリゴンをすべて検索し、リストで返します。
+         * 子の CityObject は検索しません。
+         * 子の Geometry は再帰的に検索します。
+         */
+        static std::list<const citygml::Polygon*> findAllPolygons(const CityObject& cityObj, unsigned int minLOD, unsigned int maxLOD);
+
+        /**
+         * findAllPolygons のジオメトリを対象とする版です。
+         * 結果は引数の polygons に格納します。
+         */
+        static void findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned int minLOD, unsigned int maxLOD);
+
+        /**
+         * cityObj の子を再帰的に検索して返します。
+         * ただし引数のcityObj自身は含めません。
+         */
+        static std::list<const CityObject*> getChildCityObjectsRecursive(const CityObject& cityObj);
+
+    private:
+
+        static void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs);
     };
 }

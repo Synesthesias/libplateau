@@ -2,6 +2,7 @@
 #include "plateau/io/primary_city_object_types.h"
 #include "plateau/io/polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
+#include "plateau/geometry/geometry_utils.h"
 
 using namespace plateau::geometry;
 
@@ -103,56 +104,6 @@ namespace{
         return std::move(gridIdToObjsMap);
     }
 
-    void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs){
-        childObjs.push_back(&cityObj);
-        unsigned int numChild = cityObj.getChildCityObjectsCount();
-        for(unsigned int i=0; i<numChild; i++){
-            auto& child = cityObj.getChildCityObject(i);
-            childCityObjectsRecursive(child, childObjs);
-        }
-    }
-
-    /**
-     * cityObj の子を再帰的に検索して返します。
-     * ただし引数のcityObj自身は含めません。
-     */
-    std::unique_ptr<std::list<const CityObject*>> childCityObjects(const CityObject& cityObj ){
-        auto children = std::make_unique<std::list<const CityObject*>>();
-        unsigned int numChild = cityObj.getChildCityObjectsCount();
-        for(unsigned int i=0; i<numChild; i++){
-            auto& child = cityObj.getChildCityObject(i);
-            childCityObjectsRecursive(child, *children);
-        }
-        return std::move(children);
-    }
-
-    void FindAllPolygons(const Geometry& geom, PolygonList& polygons, int minLOD, int maxLOD){
-        unsigned int numChild = geom.getGeometriesCount();
-        for(unsigned int i=0; i<numChild; i++){
-            FindAllPolygons(geom.getGeometry(i), polygons, minLOD, maxLOD);
-        }
-
-        if(geom.getLOD() < minLOD || geom.getLOD() > maxLOD) return;
-
-        unsigned int numPoly = geom.getPolygonsCount();
-        for(unsigned int i=0; i<numPoly; i++){
-            polygons.push_back(geom.getPolygon(i).get());
-        }
-    }
-
-    /**
-     * cityObj に含まれるポリゴンをすべて検索し、polygonsリストに追加します。
-     * 子の CityObject は検索しません。
-     * 子の Geometry は再帰的に検索します。
-     */
-    PolygonList FindAllPolygons(const CityObject& cityObj, int minLOD, int maxLOD){
-        auto polygons = PolygonList();
-        unsigned int numGeom = cityObj.getGeometriesCount();
-        for(unsigned int i=0; i<numGeom; i++){
-            FindAllPolygons(cityObj.getGeometry(i), polygons, minLOD, maxLOD);
-        }
-        return std::move(polygons);
-    }
 }
 
 GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) {
@@ -167,9 +118,9 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
     for(const auto& [gridId, primaryObjs] : gridIdToObjsMap){
         for(auto& primaryObj : primaryObjs){
             int primaryID = primaryObj.getPrimaryImportID();
-            auto atomicObjs = childCityObjects(*primaryObj.getCityObject());
+            auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj.getCityObject());
             int secondaryID = 0;
-            for(auto atomicObj : *atomicObjs){
+            for(auto atomicObj : atomicObjs){
                 auto atomicObjWithID = CityObjectWithImportID{atomicObj, primaryID, secondaryID};
                 gridIdToObjsMap.at(gridId).push_back(atomicObjWithID);
                 secondaryID++;
@@ -188,7 +139,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
-            auto polygons = FindAllPolygons(*cityObj.getCityObject(), options.minLOD, options.maxLOD);
+            auto polygons = GeometryUtils::findAllPolygons(*cityObj.getCityObject(), options.minLOD, options.maxLOD);
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。
@@ -202,18 +153,6 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         gridMeshes.push_back(std::move(gridMesh));
     }
 
-    // 座標を変換します。
-    for(auto& mesh : gridMeshes){
-        auto numVert = mesh.getVertices().size();
-        for(int i=0; i<numVert; i++){
-            auto pos = mesh.getVertices().at(i);
-            polar_to_plane_cartesian().convert(pos);
-            // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
-            pos = ObjWriter::convertPosition(pos, options.referencePoint, options.meshAxes, options.unitScale);
-            mesh.getVertices().at(i) = pos;
-        }
-
-    }
 
     return gridMeshes;
 }
