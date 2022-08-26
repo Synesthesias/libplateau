@@ -12,18 +12,17 @@ Node::Node(std::string name) :
 Node::Node(std::string name, Mesh &&mesh):
     name_(std::move(name)),
     childNodes_(),
-    mesh_(mesh) // TODO 本当はmoveにしたい？
+    mesh_(std::forward<Mesh>(mesh))
     {}
 
-Node::Node(std::string name, std::optional<Mesh> optionalMesh):
+Node::Node(std::string name, std::optional<Mesh> &&optionalMesh):
     name_(std::move(name)),
     childNodes_(),
-    mesh_(std::move(optionalMesh))
+    mesh_(std::forward<std::optional<Mesh>>(optionalMesh))
     {}
 
-void Node::addChildNode(const Node& node) {
-    // TODO 値の渡し方はこれで効率的か？
-    childNodes_.push_back(node);
+void Node::addChildNode(Node &&node) {
+    childNodes_.push_back(std::forward<Node>(node));
 }
 
 const std::string& Node::getName() const {

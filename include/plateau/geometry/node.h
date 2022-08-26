@@ -21,10 +21,10 @@ namespace plateau::geometry{
 //        Node();
         explicit Node(std::string name);
         Node(std::string name, Mesh &&mesh);
-        Node(std::string name, std::optional<Mesh> optionalMesh);
+        Node(std::string name, std::optional<Mesh> &&optionalMesh);
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();
-        void addChildNode(const Node& node);
+        void addChildNode(Node &&node);
         [[nodiscard]] size_t getChildCount() const;
 
         // TODO const版とそうでない版で2通りあるけど、まとめる方法がある気がする

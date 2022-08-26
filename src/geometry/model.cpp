@@ -6,8 +6,8 @@ using namespace plateau::geometry;
 Model::Model() :
         rootNodes_(){}
 
-void Model::addNode(const Node& node) { // TODO moveにしたほうが早いか？
-    rootNodes_.push_back(node);
+void Model::addNode(Node &&node) {
+    rootNodes_.push_back(std::forward<Node>(node));
 }
 
 size_t Model::getRootNodesCount() const {

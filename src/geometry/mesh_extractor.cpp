@@ -28,8 +28,8 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
             auto result = GridMerger::gridMerge(cityModel, options);
             int i = 0;
             for (auto &mesh: result) {
-                auto node = Node("grid" + std::to_string(i), std::move(mesh)); // TODO meshの渡し方、コピーになってるけど効率良い渡し方があるのでは？
-                rootNode.addChildNode(node); // TODO nodeの渡し方、コピーになってるけど効率良い渡し方があるのでは？
+                auto node = Node("grid" + std::to_string(i), std::move(mesh));
+                rootNode.addChildNode(std::move(node));
                 i++;
             }
         }
@@ -50,7 +50,7 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                     auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
                     mesh.mergePolygonsInCityObjects(atomicObjs, TVec2f{0,0}, TVec2f{0,0}, options);
                 }
-                rootNode.addChildNode(Node(primaryObj->getId(), mesh)); // TODO メッシュ、ノードの渡し方？
+                rootNode.addChildNode(Node(primaryObj->getId(), std::move(mesh)));
             }
         }
             break;
@@ -70,7 +70,7 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                     primaryMesh = Mesh(primaryObj->getId());
                     primaryMesh->mergePolygonsInCityObject(*primaryObj, options, TVec2f{0, 0}, TVec2f{0, 0});
                 }
-                auto primaryNode = Node(primaryObj->getId(), primaryMesh);
+                auto primaryNode = Node(primaryObj->getId(), std::move(primaryMesh));
                 // 最小地物ごとにノードを作成します。
                 auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
                 for(auto atomicObj : atomicObjs){
@@ -78,9 +78,9 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
                     auto atomicMesh = Mesh(atomicObj->getId());
                     atomicMesh.mergePolygonsInCityObject(*atomicObj, options, TVec2f{0, 0}, TVec2f{0, 0});
                     auto atomicNode = Node(atomicObj->getId(), std::move(atomicMesh));
-                    primaryNode.addChildNode(atomicNode); // TODO メッシュ、ノードの渡し方
+                    primaryNode.addChildNode(std::move(atomicNode));
                 }
-                rootNode.addChildNode(primaryNode);
+                rootNode.addChildNode(std::move(primaryNode));
             }
 
         }

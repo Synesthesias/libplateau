@@ -34,7 +34,7 @@ namespace{
         for(int i=0; i<gridNum; i++){
             gridIdToObjsMap.emplace(i, std::list<CityObjectWithImportID>());
         }
-        return std::move(gridIdToObjsMap);
+        return gridIdToObjsMap;
     }
 
     const citygml::Polygon* FindFirstPolygon(const Geometry& geometry){
@@ -101,7 +101,7 @@ namespace{
             gridIdToObjsMap.at(gridId).push_back(cityObjWithImportID);
             primaryImportID++;
         }
-        return std::move(gridIdToObjsMap);
+        return gridIdToObjsMap;
     }
 
 }
@@ -115,7 +115,9 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
-    for(const auto& [gridId, primaryObjs] : gridIdToObjsMap){
+    for(const auto& pair : gridIdToObjsMap){
+        int gridId = pair.first;
+        const std::list<CityObjectWithImportID>& primaryObjs = pair.second;
         for(auto& primaryObj : primaryObjs){
             int primaryID = primaryObj.getPrimaryImportID();
             auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj.getCityObject());
