@@ -15,6 +15,12 @@ Node::Node(std::string name, Mesh mesh):
     mesh_(mesh) // TODO 本当はmoveにしたい？
     {}
 
+Node::Node(std::string name, std::optional<Mesh> optionalMesh):
+    name_(std::move(name)),
+    childNodes_(),
+    mesh_(std::move(optionalMesh))
+    {}
+
 void Node::addChildNode(const Node& node) {
     // TODO 値の渡し方はこれで効率的か？
     childNodes_.push_back(node);

@@ -56,13 +56,22 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
             break;
         case MeshGranularity::PerAtomicFeatureObject:{
             // 次のような階層構造を作ります：
-            // rootNode -> 主要地物ごとのノード -> 主要地物の子に、その子の最小値物ごとのノード
+            // rootNode -> 主要地物ごとのノード -> 主要地物の子に、その子の最小地物ごとのノード
             auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
             for(auto primaryObj : primaryCityObjs){
-                // 主要地物のノードを作成
-                auto primaryMesh = Mesh(primaryObj->getId());
-                primaryMesh.mergePolygonsInCityObject(*primaryObj, options, TVec2f{0, 0}, TVec2f{0, 0});
+                // 主要地物のノードを作成します。
+                // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
+                // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。主要地物にもメッシュを含めるとダブるため含めません。
+                auto primaryMesh = std::optional<Mesh>(std::nullopt);
+                bool shouldContainPrimaryMesh =
+                        options.maxLOD < 2 ||
+                                static_cast<std::underlying_type<CityObject::CityObjectsType>::type>(primaryObj->getType() | CityObject::CityObjectsType::COT_Building) != 0;
+                if(shouldContainPrimaryMesh) {
+                    primaryMesh = Mesh(primaryObj->getId());
+                    primaryMesh->mergePolygonsInCityObject(*primaryObj, options, TVec2f{0, 0}, TVec2f{0, 0});
+                }
                 auto primaryNode = Node(primaryObj->getId(), primaryMesh);
+                // 最小地物ごとにノードを作成します。
                 auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
                 for(auto atomicObj : atomicObjs){
                     // 最小地物のノードを作成

@@ -21,6 +21,7 @@ namespace plateau::geometry{
 //        Node();
         explicit Node(std::string name);
         Node(std::string name, Mesh mesh);
+        Node(std::string name, std::optional<Mesh> optionalMesh);
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();
         void addChildNode(const Node& node);

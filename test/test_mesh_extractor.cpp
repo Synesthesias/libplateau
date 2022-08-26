@@ -18,7 +18,6 @@ protected:
     }
 
     // テストで使う共通パーツです。
-    MeshExtractor mesh_extractor_ = MeshExtractor();
     ParserParams params_;
     const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
     MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5, 1.0);;
@@ -28,7 +27,7 @@ protected:
 
 
 TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
-    auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
+    auto model = MeshExtractor::extract(*city_model_, mesh_extract_options_);
     auto& root_node = model->getRootNodeAt(0);
     std::string root_name = root_node.getName();
     ASSERT_EQ(root_name, "ModelRoot");
@@ -41,10 +40,10 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
 }
 
 TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
-    auto model = mesh_extractor_.extract(*city_model_, mesh_extract_options_);
+    auto model = MeshExtractor::extract(*city_model_, mesh_extract_options_);
     auto& root_node = model->getRootNodeAt(0);
     // 存在するテクスチャURLを検索します。
-    int num_child = root_node.getChildCount();
+    auto num_child = root_node.getChildCount();
     int found_texture_num = 0;
     for(int i=0; i < num_child; i++){
         auto child = root_node.getChildAt(i);
