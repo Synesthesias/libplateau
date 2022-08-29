@@ -164,7 +164,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
                 }
             }
             // グループに追加します。
-            unsigned groupID = gridID * GeometryUtils::MaxLODInSpecification + maxLODInObj;
+            unsigned groupID = gridID * (GeometryUtils::MaxLODInSpecification+1) + maxLODInObj;
             if(groupIDToObjsMap.find(groupID) == groupIDToObjsMap.end()){
                 groupIDToObjsMap[groupID] = std::list<CityObjectWithImportID>();
             }

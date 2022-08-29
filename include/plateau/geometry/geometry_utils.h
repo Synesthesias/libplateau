@@ -10,7 +10,7 @@
 namespace plateau::geometry{
     class GeometryUtils{
     public:
-        /// 仕様上存在しうる最大LODです。
+        /// 仕様上存在しうる最大LODです。 LODは0から始まるので、LODのパターン数は (この数 +1)です。
         static constexpr int MaxLODInSpecification = 3;
 
         /**

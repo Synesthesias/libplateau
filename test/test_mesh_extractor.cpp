@@ -36,7 +36,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
 
     const auto& first_model_node = root_node.getChildAt(0).getChildAt(0);
     auto& first_model_node_name = first_model_node.getName();
-    ASSERT_EQ(first_model_node_name, "group5");
+    ASSERT_EQ(first_model_node_name, "group6");
 
 
 }
@@ -132,7 +132,7 @@ void MeshExtractorTest::test_extract_from_c_wrapper(){
     plateau_mesh_extractor_extract(mesh_extractor, city_model_handle, mesh_extract_options_, &model);
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
-    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group5");
+    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group6");
     plateau_model_delete(model);
     plateau_mesh_extractor_delete(mesh_extractor);
 }
