@@ -106,7 +106,6 @@ namespace{
 
 }
 
-// TODO optionsを渡す必要性？
 GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
