@@ -20,7 +20,7 @@ protected:
 TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices){ // NOLINT
     auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_, 0);
     int num_mesh_with_vert = 0;
-    for(auto& mesh : result){
+    for(auto& [id, mesh] : result){
         if(!mesh.getVertices().empty()){
             num_mesh_with_vert++;
         }
@@ -30,7 +30,7 @@ TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices){ // NOLINT
 
 TEST_F(GridMergerTest, gridMerge_uv_size_matches_num_of_vertices){ // NOLINT
     auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_, 0);
-    for(auto& mesh : result){
+    for(auto& [id, mesh] : result){
         auto size_of_uv1 = mesh.getUV1().size();
         auto size_of_uv2 = mesh.getUV2().size();
         auto size_of_uv3 = mesh.getUV3().size();

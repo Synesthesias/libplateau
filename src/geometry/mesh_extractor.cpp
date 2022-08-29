@@ -33,11 +33,11 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
 
                 // 都市をグリッドに分け、グリッドごとにメッシュをマージします。
                 auto result = GridMerger::gridMerge(cityModel, options, lod);
-                int i = 0;
-                for (auto &mesh: result) {
-                    auto node = Node("grid" + std::to_string(i), std::move(mesh));
+                for (auto &pair: result) {
+                    unsigned groupID = pair.first;
+                    auto& mesh = pair.second;
+                    auto node = Node("group" + std::to_string(groupID), std::move(mesh));
                     lodNode.addChildNode(std::move(node));
-                    i++;
                 }
             }
                 break;

@@ -36,7 +36,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
 
     const auto& first_model_node = root_node.getChildAt(0).getChildAt(0);
     auto& first_model_node_name = first_model_node.getName();
-    ASSERT_EQ(first_model_node_name, "grid0");
+    ASSERT_EQ(first_model_node_name, "group5");
 
 
 }
@@ -91,12 +91,12 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_p
    ASSERT_EQ(lod0.getName(), "LOD0" );
    ASSERT_EQ(lod1.getName(), "LOD1");
    ASSERT_EQ(lod2.getName(), "LOD2");
-   auto lod0_grid2_num_vertices = lod0.getChildAt(2).getMesh().value().getVerticesConst().size();
-   auto lod1_grid2_num_vertices = lod1.getChildAt(2).getMesh().value().getVerticesConst().size();
-   auto lod2_grid2_num_vertices = lod2.getChildAt(2).getMesh().value().getVerticesConst().size();
-   ASSERT_GT(lod0_grid2_num_vertices, 0);
-   ASSERT_GT(lod1_grid2_num_vertices, 0);
-   ASSERT_GT(lod2_grid2_num_vertices, 0);
+   auto lod0_grid1_num_vertices = lod0.getChildAt(1).getMesh().value().getVerticesConst().size();
+   auto lod1_grid1_num_vertices = lod1.getChildAt(1).getMesh().value().getVerticesConst().size();
+   auto lod2_grid1_num_vertices = lod2.getChildAt(1).getMesh().value().getVerticesConst().size();
+   ASSERT_GT(lod0_grid1_num_vertices, 0);
+   ASSERT_GT(lod1_grid1_num_vertices, 0);
+   ASSERT_GT(lod2_grid1_num_vertices, 0);
 }
 
 TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex){ // NOLINT
@@ -132,7 +132,7 @@ void MeshExtractorTest::test_extract_from_c_wrapper(){
     plateau_mesh_extractor_extract(mesh_extractor, city_model_handle, mesh_extract_options_, &model);
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
-    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "grid0");
+    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group5");
     plateau_model_delete(model);
     plateau_mesh_extractor_delete(mesh_extractor);
 }

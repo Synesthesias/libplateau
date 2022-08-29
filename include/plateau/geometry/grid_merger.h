@@ -9,8 +9,10 @@ namespace plateau::geometry{
     /**
     * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
     */
-    using GridIdToObjsMap = std::map<int, std::list<CityObjectWithImportID>>;
-    using GridMergeResult = std::vector<Mesh>;
+    using GridIDToObjsMap = std::map<unsigned, std::list<CityObjectWithImportID>>;
+    using GroupIDToObjsMap = GridIDToObjsMap;
+    /// グループIDと、その結合後Meshのmapです。
+    using GridMergeResult = std::map<unsigned, Mesh>;
 
     /**
      * cityModel をグリッド状に分割し、各地物オブジェクトをグリッドに分類し、
@@ -25,7 +27,6 @@ namespace plateau::geometry{
          */
         [[nodiscard]] static GridMergeResult
         gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD);
-
 
     };
 }
