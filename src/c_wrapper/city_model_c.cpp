@@ -65,25 +65,11 @@ extern "C" {
                    static_cast<int>(handle->getCityModel().getAllCityObjectsOfType(type).size()),
                    ,citygml::CityObject::CityObjectsType type)
 
-                   // TODO
-//    DLL_PTR_FUNC(plateau_city_model_get_city_object_by_id,
-//                 CityModelHandle,
-//                 CityObject,
-//                 handle->getCityModel().getCityObjectsById(std::string(id_chars));
-//                 if(*out == nullptr) return APIResult::ErrorValueNotFound;,
-//                 ,const char* const id_chars)
-
-DLL_VALUE_FUNC(plateau_city_model_get_city_objects_by_id_count,
-               CityModelHandle,
-               int,
-               handle->getCityModel().getCityObjectsById(std::string(id_chars)).size(),
-               ,const char* const id_chars)
-
-DLL_PTR_FUNC(plateau_city_model_get_city_object_by_id,
-              CityModelHandle,
-              CityObject,
-              handle->getCityModel().getCityObjectsById(std::string(id_chars)).at(index),
-              ,const char* const id_chars
-              , int index)
+    DLL_PTR_FUNC(plateau_city_model_get_city_object_by_id,
+                 CityModelHandle,
+                 CityObject,
+                 handle->getCityModel().getCityObjectById(std::string(id_chars));
+                 if(*out == nullptr) return APIResult::ErrorValueNotFound;,
+                 ,const char* const id_chars)
 
 }

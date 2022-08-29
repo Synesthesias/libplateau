@@ -10,9 +10,6 @@
 namespace plateau::geometry{
     class GeometryUtils{
     public:
-        /// 仕様上存在しうる最大LODです。
-        static constexpr int MaxLODInSpecification = 3;
-
         /**
          * cityModel の中心点を返します。
          * ただし高さ方向の座標は 0 とし、東西南北の方向の座標のみ中心を指します。

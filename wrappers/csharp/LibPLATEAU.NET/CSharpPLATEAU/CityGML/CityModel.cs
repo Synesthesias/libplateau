@@ -77,29 +77,19 @@ namespace PLATEAU.CityGML
         }
 
         /// <summary>
-        /// idから <see cref="CityObject"/> のリストを返します。
-        /// 結果が複数になることもあります。
-        /// 例えば、同じ建物を表現するLODが複数ある場合、同じidを持つ建物がLODの数だけ存在します。
+        /// idから <see cref="CityObject"/> を返します。
+        /// 該当idのものがない場合は <see cref="KeyNotFoundException"/> を投げます。
         /// </summary>
-        public List<CityObject> GetCityObjectsById(string id)
+        public CityObject GetCityObjectById(string id)
         {
-            var result = NativeMethods.plateau_city_model_get_city_objects_by_id_count(
-                Handle, out int count, id);
+            var result = NativeMethods.plateau_city_model_get_city_object_by_id(
+                Handle, out IntPtr cityObjectPtr, id);
             if (result == APIResult.ErrorValueNotFound)
             {
                 throw new KeyNotFoundException($"id {id} is not found.");
             }
             DLLUtil.CheckDllError(result);
-            
-            var ret = new List<CityObject>();
-            for (int i = 0; i < count; i++)
-            {
-                var result2 = NativeMethods.plateau_city_model_get_city_object_by_id(
-                    Handle, out IntPtr cityObjectPtr, id, i);
-                DLLUtil.CheckDllError(result2);
-                ret.Add(new CityObject(cityObjectPtr));
-            }
-            return ret;
+            return new CityObject(cityObjectPtr);
         }
 
         

@@ -87,11 +87,10 @@ namespace PLATEAU.Test.GeometryModel
             // メッシュを含むノードを検索
             bool doMeshExist = false;
             Mesh foundMesh = null;
-            for (int i = 0; i < firstChild.ChildCount; i++)
+            for (int i = 0; i < rootNode.ChildCount; i++)
             {
-                var meshNode = firstChild.GetChildAt(i);
-                Console.WriteLine(meshNode.Name);
-                var mesh = meshNode.Mesh;
+                var child = rootNode.GetChildAt(i);
+                var mesh = child.Mesh;
                 if (mesh == null) continue;
                 if (mesh.VerticesCount > 0 && mesh.IndicesCount >= 3)
                 {
