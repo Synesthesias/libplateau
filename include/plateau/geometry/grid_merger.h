@@ -23,6 +23,9 @@ namespace plateau::geometry{
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合して返します。
          * static関数です。
          */
-        [[nodiscard]] static GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options);
+        [[nodiscard]] static GridMergeResult
+        gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD);
+
+
     };
 }

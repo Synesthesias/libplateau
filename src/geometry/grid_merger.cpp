@@ -106,7 +106,8 @@ namespace{
 
 }
 
-GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options) {
+// TODO optionsを渡す必要性？
+GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
@@ -141,7 +142,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         auto& objsInGrid = gridIdToObjsMap.at(i);
         // グリッド内の各オブジェクトのループ
         for(auto& cityObj : objsInGrid){
-            auto polygons = GeometryUtils::findAllPolygons(*cityObj.getCityObject(), options.minLOD, options.maxLOD);
+            auto polygons = GeometryUtils::findAllPolygons(*cityObj.getCityObject(), LOD);
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。

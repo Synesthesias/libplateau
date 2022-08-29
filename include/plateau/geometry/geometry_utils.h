@@ -5,7 +5,7 @@
 #include "citygml/polygon.h"
 #include "mesh.h"
 
-using namespace citygml;
+//using namespace citygml;
 
 namespace plateau::geometry{
     class GeometryUtils{
@@ -24,13 +24,13 @@ namespace plateau::geometry{
          * 子の CityObject は検索しません。
          * 子の Geometry は再帰的に検索します。
          */
-        static std::list<const citygml::Polygon*> findAllPolygons(const CityObject& cityObj, unsigned int minLOD, unsigned int maxLOD);
+        static std::list<const citygml::Polygon *> findAllPolygons(const CityObject &cityObj, unsigned LOD);
 
         /**
          * findAllPolygons のジオメトリを対象とする版です。
          * 結果は引数の polygons に格納します。
          */
-        static void findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned int minLOD, unsigned int maxLOD);
+        static void findAllPolygons(const Geometry &geom, std::list<const citygml::Polygon *> &polygons, unsigned LOD);
 
         /**
          * cityObj の子を再帰的に検索して返します。

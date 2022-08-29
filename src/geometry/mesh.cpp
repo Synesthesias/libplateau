@@ -60,19 +60,19 @@ void Mesh::merge(const Polygon &otherPoly, MeshExtractOptions options, const TVe
     }
 }
 
-void Mesh::mergePolygonsInCityObject(const CityObject &cityObject, const MeshExtractOptions &options,
-                                     const TVec2f &UV3Element,
-                                     const TVec2f &UV2Element) {
-    auto polygons = GeometryUtils::findAllPolygons(cityObject, options.minLOD, options.maxLOD);
+void Mesh::mergePolygonsInCityObject(const CityObject &cityObject, int LOD, const MeshExtractOptions &options,
+                                     const TVec2f &UV2Element, const TVec2f &UV3Element) {
+    auto polygons = GeometryUtils::findAllPolygons(cityObject, LOD);
     for(auto poly : polygons){
         this->merge(*poly, options, UV2Element, UV3Element);
     }
 }
 
-void Mesh::mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, const TVec2f &UV2Element, const TVec2f &UV3Element,
-                                      const MeshExtractOptions &options) {
+void
+Mesh::mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, int LOD, const TVec2f &UV3Element,
+                                 const MeshExtractOptions &options, const TVec2f &UV2Element) {
     for(auto obj : cityObjects){
-        mergePolygonsInCityObject(*obj, options, UV3Element, UV2Element);
+        mergePolygonsInCityObject(*obj, LOD, options, UV2Element, UV3Element);
     }
 }
 

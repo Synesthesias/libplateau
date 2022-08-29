@@ -20,7 +20,10 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT Model{
     public:
         Model();
+
+        /// 作った Node は move で渡すことを想定しています。メッシュまでコピーすると重いため。
         void addNode(Node &&node);
+
         [[nodiscard]] size_t getRootNodesCount() const;
         Node & getRootNodeAt(size_t index);
         [[nodiscard]] const Node& getRootNodeAt(size_t index) const;

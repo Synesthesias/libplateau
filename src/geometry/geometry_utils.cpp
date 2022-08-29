@@ -16,22 +16,22 @@ TVec3d GeometryUtils::getCenterPoint(const CityModel &cityModel) {
 }
 
 
-std::list<const citygml::Polygon*> GeometryUtils::findAllPolygons(const CityObject& cityObj, unsigned int minLOD, unsigned int maxLOD){
+std::list<const Polygon *> GeometryUtils::findAllPolygons(const CityObject &cityObj, unsigned LOD) {
     auto polygons = std::list<const citygml::Polygon*>();
     unsigned int numGeom = cityObj.getGeometriesCount();
     for(unsigned int i=0; i<numGeom; i++){
-        findAllPolygons(cityObj.getGeometry(i), polygons, minLOD, maxLOD);
+        findAllPolygons(cityObj.getGeometry(i), polygons, LOD);
     }
     return std::move(polygons);
 }
 
-void GeometryUtils::findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned int minLOD, unsigned int maxLOD){
+void GeometryUtils::findAllPolygons(const Geometry &geom, std::list<const citygml::Polygon *> &polygons, unsigned LOD) {
     unsigned int numChild = geom.getGeometriesCount();
     for(unsigned int i=0; i<numChild; i++){
-        findAllPolygons(geom.getGeometry(i), polygons, minLOD, maxLOD);
+        findAllPolygons(geom.getGeometry(i), polygons, LOD);
     }
 
-    if(geom.getLOD() < minLOD || geom.getLOD() > maxLOD) return;
+    if(geom.getLOD() != LOD) return;
 
     unsigned int numPoly = geom.getPolygonsCount();
     for(unsigned int i=0; i<numPoly; i++){

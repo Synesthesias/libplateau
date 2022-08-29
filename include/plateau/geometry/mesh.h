@@ -52,16 +52,15 @@ namespace plateau::geometry {
         /**
          * merge関数を CityObject の各 Polygon に対して実行します。
          */
-        void mergePolygonsInCityObject(const CityObject &cityObject, const MeshExtractOptions &options,
-                                       const TVec2f &UV3Element,
-                                       const TVec2f &UV2Element);
+        void mergePolygonsInCityObject(const CityObject &cityObject, int LOD, const MeshExtractOptions &options,
+                                       const TVec2f &UV2Element, const TVec2f &UV3Element);
 
         /**
          * merge関数を cityObjects の 各 CityObject の 各 Polygon に対して実行します。
          */
-        void mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, const TVec2f &UV2Element,
-                                        const TVec2f &UV3Element,
-                                        const MeshExtractOptions &options);
+        void
+        mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, int LOD, const TVec2f &UV3Element,
+                                   const MeshExtractOptions &options, const TVec2f &UV2Element);
 
     private:
         std::vector<TVec3d> vertices_;
