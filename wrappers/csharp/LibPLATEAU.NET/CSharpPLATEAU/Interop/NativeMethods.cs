@@ -204,11 +204,18 @@ namespace PLATEAU.Interop
             CityObjectType type,
             int count);
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_get_city_objects_by_id_count(
+            [In] IntPtr handle,
+            out int outCount,
+            [In] string id);
+
+        [DllImport(DllName)]
         internal static extern APIResult plateau_city_model_get_city_object_by_id(
             [In] IntPtr handle,
             out IntPtr cityObjectPtr,
-            [In] string id);
+            [In] string id,
+            int index);
 
 
         // ***************

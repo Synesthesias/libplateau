@@ -106,7 +106,7 @@ namespace{
 
 }
 
-// TODO optionsを渡す必要性？
+
 GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
@@ -130,6 +130,30 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
             }
         }
     }
+
+    // グリッドをさらに分割してグループにします。
+    // グループの分割基準:
+    // 今のLODをn、仕様上存在しうる最大LODをm として、各オブジェクトを次のグループに分けます。
+    // - 同じオブジェクトが (0, 1, 2, ..., m) の任意のLODに存在する
+    // - 同じオブジェクトが (0, 1, 2, ..., m-1) の任意のLODに存在し、mに存在しない
+    // - ...
+    // - 同じオブジェクトが (0, 1) の任意のLODに存在し、(2, 3, ..., m)の任意のLODに存在しない
+    // - 同じオブジェクトが (0) のLODに存在し、(1, 2, 3,  ..., m) の任意のLODに存在しない
+    // 今の仕様上、mは3なので、各グリッドは最大4つに分割されます。
+    // したがって、grid 0 と group 0 to 3 が対応します。 grid1 と group 4 to 7 が対応します。
+    // 一般化すると、 grid i と group (i*m) to (i*(m+1)-1)が対応します。
+    // 仕様上、あるオブジェクトのLOD i が存在すれば、同じオブジェクトの LOD 0 to i-1 が存在します。したがって、各オブジェクトは必ず上記グループのどれか1つに該当するはずです。
+    // そのようにグループ分けする利点は、
+    // 「高いLODを表示したいけど、低いLODにしか対応していない箇所が穴になってしまう」という状況で、穴をちょうど埋める範囲の低LODグループが存在することです。
+    // TODO
+//    auto groupToObjsMap = GroupIdToObjsMap();
+//    for(const auto& gridObjsPair : gridIdToObjsMap){
+//        auto gridID = gridObjsPair.first;
+//        const auto& gridObjs = gridObjsPair.second;
+//        for(const auto& obj : gridObjs){
+//            cityModel.getCityObjectsById()
+//        }
+//    }
 
 
     // グリッドごとにメッシュを結合します。

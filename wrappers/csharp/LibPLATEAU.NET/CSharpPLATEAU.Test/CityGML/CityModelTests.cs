@@ -63,17 +63,14 @@ namespace PLATEAU.Test.CityGML
         public void GetCityObjectFromId_Returns_CityObj_With_Same_ID()
         {
             const string id = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
-            var found = this.cityModel.GetCityObjectById(id);
-            Assert.AreEqual(id, found.ID);
+            var foundList = this.cityModel.GetCityObjectsById(id);
+            Assert.AreEqual(id, foundList[0].ID);
         }
 
         [TestMethod]
-        public void GetCityObjectFromId_Throws_Exception_When_Not_Found()
+        public void GetCityObjectFromId_Returns_0_Sized_List_When_Not_Found()
         {
-            Assert.ThrowsException<KeyNotFoundException>(() =>
-            {
-                this.cityModel.GetCityObjectById("存在しないID-ダミー012");
-            });
+            Assert.AreEqual(0, this.cityModel.GetCityObjectsById("dummy-存在しないID").Count);
         }
     }
 }
