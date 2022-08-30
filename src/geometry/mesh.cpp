@@ -110,8 +110,9 @@ void Mesh::addVerticesList(const std::vector<TVec3d> &otherVertices, const MeshE
         // otherPos は極座標系です。
         auto pos = otherPos;
         // デカルト座標系に直します。
+        // FIXME 変換部分だけ ObjWriterの機能を拝借していますが、本質的には ObjWriter である必要はないです。変換を別クラスに書き出した方が良いです。
+        // TODO 座標変換については、今後は自作せずライブラリを利用する方針になったのでライブラリ導入後にここを直します。
         polar_to_plane_cartesian().convert(pos);
-        // FIXME 変換部分だけ ObjWriterの機能を拝借しているけど、本質的には ObjWriter である必要はない。変換を別クラスに書き出した方が良い。
         // オプションに応じて座標系を変更します。
         pos = ObjWriter::convertPosition(pos, options.referencePoint, options.meshAxes, options.unitScale);
         vertices_.push_back(pos);
@@ -158,7 +159,7 @@ void Mesh::addUV3WithSameVal(const TVec2f &UV3Val, unsigned numAddingVertices){
 
 void Mesh::addSubMesh(const Polygon &otherPoly) {
     // テクスチャが異なる場合は追加します。
-    // TODO テクスチャありのポリゴン → なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
+    // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
     //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
     auto otherTexture = otherPoly.getTextureFor("rgbTexture");
     std::string otherTexturePath;

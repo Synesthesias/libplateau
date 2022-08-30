@@ -101,8 +101,9 @@ namespace plateau::geometry {
         void addUV3WithSameVal(const TVec2f &UV3Val, unsigned numAddingVertices);
 
         /**
-         * SubMesh を追加し、そのテクスチャパスには otherPoly のものを指定します。
+         * SubMesh を追加し、そのテクスチャパスには 引数 otherPoly のものを指定します。
          * 利用すべき状況 : 形状を追加したので、追加分を新しいテクスチャに設定したいという状況で利用できます。
+         * テクスチャがない時は テクスチャパスが空文字である SubMesh になります。
          *
          * ただし、直前の SubMesh のテクスチャとパスが同じであれば、
          * 代わりに extendLastSubMesh を実行します。
