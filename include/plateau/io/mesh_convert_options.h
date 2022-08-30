@@ -32,6 +32,16 @@ enum class MeshGranularity {
 };
 
 /**
+ * @enum MeshFileFormat
+ *
+ * 出力ファイルフォーマット
+ */
+enum class MeshFileFormat {
+    OBJ,
+    GLTF
+};
+
+/**
  * \brief 都市モデルからメッシュへの変換設定です。
  */
 struct MeshConvertOptions {
@@ -79,8 +89,14 @@ struct MeshConvertOptions {
      */
     float unit_scale;
 
+    /**
+     * \brief 出力ファイルフォーマットを指定します。
+     */
+    MeshFileFormat mesh_file_format;
+
     MeshConvertOptions() :
         mesh_axes(AxesConversion::WUN),
+        mesh_file_format(MeshFileFormat::OBJ),
         reference_point(),
         mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
         min_lod(0),
