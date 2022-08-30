@@ -22,12 +22,15 @@ namespace plateau::geometry{
 
         [[nodiscard]] size_t getStartIndex() const;
         [[nodiscard]] size_t getEndIndex() const;
+
+        /// テクスチャパスを取得します。 テクスチャがないときは空文字とします。
         [[nodiscard]] const std::string& getTexturePath() const;
+
         void setEndIndex(int endIndex);
 
     private:
         /**
-         * startIndex_, endIndex は、Meshの Indices リストの中のある範囲を表現します。
+         * startIndex_, endIndex_ は、Meshの Indices リストの中のある範囲を表現します。
          * 範囲は [start, end] (endを範囲に含む) です。
          */
         size_t startIndex_;

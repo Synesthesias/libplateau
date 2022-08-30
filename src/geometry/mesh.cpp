@@ -126,7 +126,7 @@ void Mesh::addIndicesList(const std::vector<unsigned>& otherIndices, unsigned pr
     for(unsigned int otherIndex : otherIndices){
         indices_.push_back((int)otherIndex);
     }
-    // 追加分のインデックスを新しい値にします。前の頂点の数だけインデックスの数値を大きくすれば良いです。
+    // 追加分のインデックスを新しい値にします。以前の頂点の数だけインデックスの数値を大きくすれば良いです。
     for(unsigned i=prevNumIndices; i<indices_.size(); i++){
         indices_.at(i) += (int)prevNumVertices;
     }
@@ -138,7 +138,7 @@ void Mesh::addUV1(const Polygon& otherPoly){
     for(const auto & vec : otherUV1){
         uv1_.push_back(vec);
     }
-    // otherUV1 の数が頂点数に足りなければ 0 で埋めます
+    // otherUV1 の数が頂点数に足りなければ 0 で埋めます。
     auto otherVerticesSize = otherPoly.getVertices().size();
     for(size_t i = otherUV1.size(); i < otherVerticesSize; i++){
         uv1_.emplace_back(0,0);

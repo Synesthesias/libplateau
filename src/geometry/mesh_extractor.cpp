@@ -24,7 +24,7 @@ void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
                                           const MeshExtractOptions &options) {
     if(options.maxLOD < options.minLOD) throw std::exception("Invalid LOD range.");
     outModel.addNode(Node(std::string("ModelRoot")));
-    auto& rootNode = outModel.getRootNodeAt(0);
+    auto& rootNode = outModel.getRootNodeAt(outModel.getRootNodesCount()-1);
     // rootNode の子に LODノード を作ります。
     for(unsigned lod = options.minLOD; lod <= options.maxLOD; lod++){
         auto lodNode = Node("LOD" + std::to_string(lod));
@@ -33,10 +33,11 @@ void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
         switch(options.meshGranularity) {
             case MeshGranularity::PerCityModelArea: {
                 // 次のような階層構造を作ります:
-                // rootNode -> LODノード -> グリッドごとのノード
+                // rootNode -> LODノード -> グループごとのノード
 
-                // 都市をグリッドに分け、グリッドごとにメッシュをマージします。
+                // 都市をグループに分け、グループごとにメッシュをマージします。
                 auto result = GridMerger::gridMerge(cityModel, options, lod);
+                // グループごとのノードを追加します。
                 for (auto &pair: result) {
                     unsigned groupID = pair.first;
                     auto& mesh = pair.second;
@@ -51,16 +52,17 @@ void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
 
                 auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
 
-                // 主要地物ごとにメッシュを結合
+                // 主要地物ごとにメッシュを結合します。
                 for(auto primaryObj : primaryCityObjs){
-                    // 主要地物の結合
+                    // 主要地物のメッシュを作ります。
                     auto mesh = Mesh(primaryObj->getId());
                     mesh.mergePolygonsInCityObject(*primaryObj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
                     if(lod >= 2){
-                        // 主要地物の子である最小値物の結合
+                        // 主要地物の子である各最小地物をメッシュに加えます。
                         auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
                         mesh.mergePolygonsInCityObjects(atomicObjs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
                     }
+                    // 主要地物ごとのノードを追加します。
                     lodNode.addChildNode(Node(primaryObj->getId(), std::move(mesh)));
                 }
             }
@@ -72,7 +74,8 @@ void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
                 for(auto primaryObj : primaryCityObjs){
                     // 主要地物のノードを作成します。
                     // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
-                    // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。よって主要地物にもメッシュを含めるとダブるため含めません。
+                    // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。
+                    // よって主要地物ノードにもメッシュを含めるとダブるため含めません。
                     auto primaryMesh = std::optional<Mesh>(std::nullopt);
                     bool shouldContainPrimaryMesh =
                             !(lod >= 2 &&

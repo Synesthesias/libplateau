@@ -13,7 +13,7 @@ namespace plateau::geometry{
      *
      * 詳しくは Model クラスのコメントをご覧ください。
      *
-     * Node::name_ はゲームエンジン側ではゲームオブジェクトの名前として解釈されることが想定され、
+     * Node::name_ はゲームエンジン側ではゲームオブジェクトの名前として解釈されることが想定されます。
      * Node::mesh_ はそのゲームオブジェクトの持つメッシュとして解釈されることが想定されます。
      */
     class LIBPLATEAU_EXPORT Node{

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.CityGML;
 using PLATEAU.GeometryModel;
 using PLATEAU.Interop;
 using PLATEAU.IO;
@@ -61,8 +58,8 @@ namespace PLATEAU.Test.GeometryModel
         public void Extract_Returns_Model_With_Nodes_With_Mesh()
         {
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var logger = new DllLogger();
-            logger.SetCallbacksToStdOut();
+            // var logger = new DllLogger();
+            // logger.SetCallbacksToStdOut();
             var options = new MeshExtractOptions
             {
                 ReferencePoint = cityModel.CenterPoint,

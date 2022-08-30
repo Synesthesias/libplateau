@@ -112,7 +112,6 @@ namespace{
 }
 
 GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD) {
-
     // cityModel に含まれる 主要地物 をグリッドに分類します。
     const auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
     const auto& cityEnvelope = cityModel.getEnvelope();
@@ -172,32 +171,27 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
         }
     }
 
-
-    // グリッドごとにメッシュを結合します。
+    // グループごとにメッシュを結合します。
     auto mergedMeshes = GridMergeResult();
-//    int gridNum = options.gridCountOfSide * options.gridCountOfSide;
-    // グリッドごとのループ
+    // グループごとのループ
     for(const auto& group : groupIDToObjsMap){
         auto groupID = group.first;
         const auto& groupObjs = group.second;
-        // グリッド内でマージするポリゴンの新規作成
+        // グループ内でマージする Mesh の新規作成
         auto groupMesh = Mesh("group" + std::to_string(groupID));
-        // グリッド内の各オブジェクトのループ
+        // グループ内の各オブジェクトのループ
         for(const auto& cityObj : groupObjs){
             auto polygons = GeometryUtils::findAllPolygons(*cityObj.getCityObject(), LOD);
             // オブジェクト内の各ポリゴンのループ
             for(const auto& poly : polygons){
                 // 各ポリゴンを結合していきます。
                 // importID をメッシュに残すためにuv2, uv3 を利用しています。UVなので2次元floatの値を取りますが、実際に伝えたい値はUVごとに1つのintです。
-                const auto uv2 = TVec2f((float)(cityObj.getPrimaryImportID()) + (float)0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるように
+                const auto uv2 = TVec2f((float)(cityObj.getPrimaryImportID()) + (float)0.25, 0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるためです。
                 const auto uv3 = TVec2f((float)(cityObj.getSecondaryImportID()) + (float)0.25, 0);
                 groupMesh.merge(*poly, options, uv2, uv3);
             }
         }
-
         mergedMeshes.emplace(groupID, std::move(groupMesh));
     }
-
-
     return mergedMeshes;
 }

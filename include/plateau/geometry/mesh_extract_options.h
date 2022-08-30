@@ -26,7 +26,7 @@ namespace plateau::geometry {
         bool exportAppearance;
         /**
          * グリッド分けする時の、1辺の分割数です。
-         * この数の2乗がグリッドの数になります。
+         * この数の2乗がグリッドの数となり、実際にはそれより細かくグループ分けされます。
          */
         int gridCountOfSide;
         float unitScale;

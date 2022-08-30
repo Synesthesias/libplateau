@@ -59,12 +59,12 @@ using dll_str_size_t = int;
 /// 例外が起きたとき、 APIResult::ErrorUnknown を返します。
 #define DLL_PTR_FUNC_WITH_INDEX_CHECK(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, INDEX_OUT_OF_RANGE_CONDITION, ...) \
      LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-            const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */                                        \
-            const RETURN_VALUE_TYPE** out, /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */       \
-            int index,                                                                                                               \
+            const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */  \
+            const RETURN_VALUE_TYPE** out, /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */  \
+            int index,  \
             __VA_ARGS__ \
             ){ \
-        API_TRY{                                                                                                           \
+        API_TRY{  \
             if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;                                                                                                               \
             *out = GETTER; /* アドレスを out に書き込みます。 */ \
             return APIResult::Success; \

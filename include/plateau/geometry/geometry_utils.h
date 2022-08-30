@@ -5,8 +5,6 @@
 #include "citygml/polygon.h"
 #include "mesh.h"
 
-//using namespace citygml;
-
 namespace plateau::geometry{
     class GeometryUtils{
     public:

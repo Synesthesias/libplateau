@@ -19,7 +19,7 @@ namespace plateau::geometry {
      * 詳しくは Model クラスのコメントをご覧ください。
      *
      * このメッシュ情報がどのように生成されるかというと、
-     * 空のMeshから Mesh::mergeWithTexture() 関数で citygml::Polygon を渡すことで Mesh に情報が追加され、
+     * 空のMeshから Mesh::merge(...) 関数で citygml::Polygon を渡すことで Mesh に情報が追加されます。
      * Polygon が複数あれば Polygonごとに複数回 Mergeが実行されることで複数個のSubMeshを含んだMeshが構築されるようになっています。
      *
      * 保持する頂点の座標系について、
@@ -29,7 +29,7 @@ namespace plateau::geometry {
     public:
        explicit Mesh(const std::string &id);
 
-       /// コピーを禁止します。メッシュは重いので。
+       /// コピーを禁止します。メッシュは重いためです。
        /// ムーブのみ許可します。
        Mesh(const Mesh& mesh) = delete;
        Mesh& operator=(const Mesh&) = delete;
@@ -56,13 +56,13 @@ namespace plateau::geometry {
         void merge(const Polygon &otherPoly, MeshExtractOptions options, const TVec2f &UV2Element, const TVec2f &UV3Element);
 
         /**
-         * merge関数を CityObject の各 Polygon に対して実行します。
+         * merge関数を 引数 cityObject の各 Polygon に対して実行します。
          */
         void mergePolygonsInCityObject(const CityObject &cityObject, int LOD, const MeshExtractOptions &options,
                                        const TVec2f &UV2Element, const TVec2f &UV3Element);
 
         /**
-         * merge関数を cityObjects の 各 CityObject の 各 Polygon に対して実行します。
+         * merge関数を 引数 cityObjects の 各 CityObject の 各 Polygon に対して実行します。
          */
         void
         mergePolygonsInCityObjects(const std::list<const CityObject *> &cityObjects, int LOD, const TVec2f &UV3Element,
@@ -85,7 +85,7 @@ namespace plateau::geometry {
 
         /**
          * merge関数 のテクスチャ無し版です。
-         * SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
+         * 生成される Mesh の SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
          */
         void mergeWithoutTexture(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element,
                                  const MeshExtractOptions &options);
@@ -93,7 +93,8 @@ namespace plateau::geometry {
         /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
         void mergeShape(const Polygon &otherPoly, const TVec2f &UV2Element, const TVec2f &UV3Element,
                         const MeshExtractOptions &options);
-        /// 頂点リストの末尾に追加します。
+
+        /// 頂点リストの末尾に追加します。極座標からデカルト座標への変換が行われます。
         void addVerticesList(const std::vector<TVec3d> &otherVertices, const MeshExtractOptions &options);
         void addIndicesList(const std::vector<unsigned>& otherIndices, unsigned prevNumVertices);
         void addUV1(const Polygon& otherPoly);
@@ -102,6 +103,7 @@ namespace plateau::geometry {
 
         /**
          * SubMesh を追加し、そのテクスチャパスには 引数 otherPoly のものを指定します。
+         * SubMeshの範囲は与えられたポリゴンの頂点数と同じです。
          * 利用すべき状況 : 形状を追加したので、追加分を新しいテクスチャに設定したいという状況で利用できます。
          * テクスチャがない時は テクスチャパスが空文字である SubMesh になります。
          *
