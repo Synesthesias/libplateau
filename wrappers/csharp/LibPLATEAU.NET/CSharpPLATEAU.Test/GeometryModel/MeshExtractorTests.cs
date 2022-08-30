@@ -57,59 +57,19 @@ namespace PLATEAU.Test.GeometryModel
         [TestMethod]
         public void Extract_Returns_Model_With_Nodes_With_Mesh()
         {
-            using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            // var logger = new DllLogger();
-            // logger.SetCallbacksToStdOut();
-            var options = new MeshExtractOptions
-            {
-                ReferencePoint = cityModel.CenterPoint,
-                MeshAxes = AxesConversion.WUN,
-                MeshGranularity = MeshGranularity.PerCityModelArea,
-                MinLOD = 2,
-                MaxLOD = 2,
-                ExportAppearance = true,
-                GridCountOfSide = 5,
-                UnitScale = 1f
-            };
-            
-            // TODO 下記でいろいろテストしているので分けた方が良い
-            var model = new Model();
-            MeshExtractor.Extract(ref model, cityModel, options);
-            Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
-            var rootNode = model.GetRootNodeAt(0);
-            Assert.IsFalse(string.IsNullOrEmpty(rootNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");
-            Assert.IsTrue(rootNode.ChildCount > 0, "ルートノードの子を取得できる");
-            var firstChild = rootNode.GetChildAt(0);
-            Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name), "子ノードの名前を取得できる");
-            // メッシュを含むノードを検索
-            bool doMeshExist = false;
-            Mesh foundMesh = null;
-            for (int i = 0; i < firstChild.ChildCount; i++)
-            {
-                var child = firstChild.GetChildAt(i);
-                var mesh = child.Mesh;
-                if (mesh == null) continue;
-                if (mesh.VerticesCount > 0 && mesh.IndicesCount >= 3)
-                {
-                    doMeshExist = true;
-                    foundMesh = mesh;
-                    break;
-                }
-            }
-            Assert.IsTrue(doMeshExist, "頂点と面が1つ以上あるメッシュが存在する");
-            Assert.IsTrue(foundMesh.GetVertexAt(0).IsNotZero(), "メッシュの頂点を取得できる");
-            Assert.IsTrue(foundMesh.GetIndiceAt(0) >= 0, "メッシュのIndicesリストの要素を取得できる");
-            Assert.IsNull(rootNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
-            Assert.IsTrue(foundMesh.SubMeshCount > 0, "メッシュにはサブメッシュが存在する");
-            var subMesh = foundMesh.GetSubMeshAt(0);
-            Assert.IsTrue(subMesh.StartIndex >= 0, "サブメッシュのStartIndexを取得できる");
-            Assert.IsTrue(subMesh.EndIndex >= 0, "サブメッシュのEndIndexを取得できる");
-            Assert.IsNotNull(subMesh.TexturePath, "サブメッシュのテクスチャパスを取得できる");
-
-            Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetVertexAt(999999999), "GetVertexAtで範囲外アクセスの時に例外が出る");
-            Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetSubMeshAt(999999999));
+            var model = TestGeometryUtil.ExtractModel();
+            var foundMesh = TestGeometryUtil.FirstMeshInModel(model);
+            Assert.IsNotNull(foundMesh, "頂点と面が1つ以上あるメッシュが存在する");
         }
-        
+
+        [TestMethod]
+        public void Mesh_Is_Null_When_Node_Has_No_Mesh()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var rootNode = model.GetRootNodeAt(0);
+            Assert.IsNull(rootNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
+        }
+
         // TODO　以下のコメントアウトしたテストを別の形に書き直す
         // private static Mesh[] LoadAndGridMerge()
         // {
@@ -130,6 +90,8 @@ namespace PLATEAU.Test.GeometryModel
         //         Assert.AreEqual(polygonToUvGetter(poly).Length, poly.VertexCount);
         //     }
         // }
+
+        
 
     }
 }
