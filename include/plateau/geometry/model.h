@@ -21,6 +21,13 @@ namespace plateau::geometry{
     public:
         Model();
 
+        /// コピーを禁止します。そうでないと街のすべてのノード、メッシュが芋ずる式にコピーされてパフォーマンスが壊滅します。
+        /// ムーブのみ許可します。
+        Model(const Model &model) = delete;
+        Model& operator=(const Model&) = delete;
+        Model(Model&& model) = default;
+        Model& operator=(Model&& model) = default;
+
         /// 作った Node は move で渡すことを想定しています。メッシュまでコピーすると重いため。
         void addNode(Node &&node);
 

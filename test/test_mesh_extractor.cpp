@@ -48,8 +48,8 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
     auto num_child = lod_node.getChildCount();
     int found_texture_num = 0;
     for(int i=0; i < num_child; i++){
-        auto child = lod_node.getChildAt(i);
-        auto mesh_opt = child.getMesh();
+        auto& child = lod_node.getChildAt(i);
+        auto& mesh_opt = child.getMesh();
         if(!mesh_opt.has_value()) continue;
         auto& sub_meshes = mesh_opt.value().getSubMeshes();
         if(sub_meshes.empty()) continue;
@@ -72,8 +72,8 @@ TEST_F(MeshExtractorTest, when_extract_atomic_building_then_primary_nodes_have_n
     MeshExtractOptions options = mesh_extract_options_;
     options.meshGranularity = MeshGranularity::PerAtomicFeatureObject;
     auto model = MeshExtractor::extract(*city_model_, options);
-    auto first_primary_node = model->getRootNodeAt(0).getChildAt(0).getChildAt(0);
-    auto first_atomic_node = first_primary_node.getChildAt(0);
+    auto& first_primary_node = model->getRootNodeAt(0).getChildAt(0).getChildAt(0);
+    auto& first_atomic_node = first_primary_node.getChildAt(0);
     ASSERT_FALSE(first_primary_node.getMesh().has_value());
     ASSERT_TRUE(first_atomic_node.getMesh().has_value());
 }
@@ -84,10 +84,10 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_p
    options.minLOD = 0;
    options.maxLOD = 2;
    auto model = MeshExtractor::extract(*city_model_, options);
-   auto root_node = model->getRootNodeAt(0);
-   auto lod0 = root_node.getChildAt(0);
-   auto lod1 = root_node.getChildAt(1);
-   auto lod2 = root_node.getChildAt(2);
+   auto& root_node = model->getRootNodeAt(0);
+   auto& lod0 = root_node.getChildAt(0);
+   auto& lod1 = root_node.getChildAt(1);
+   auto& lod2 = root_node.getChildAt(2);
    ASSERT_EQ(lod0.getName(), "LOD0" );
    ASSERT_EQ(lod1.getName(), "LOD1");
    ASSERT_EQ(lod2.getName(), "LOD2");
@@ -110,8 +110,8 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex){ // NOLI
         options.minLOD = 0;
         options.maxLOD = 2;
         auto model = MeshExtractor::extract(*city_model_, options);
-        auto root_node = model->getRootNodeAt(0);
-        for(int lod=options.minLOD; lod<=options.maxLOD; lod++){
+        auto& root_node = model->getRootNodeAt(0);
+        for(unsigned lod=options.minLOD; lod<=options.maxLOD; lod++){
             auto& lod_node = model->getRootNodeAt(0).getChildAt(lod);
             ASSERT_EQ(lod_node.getName(), "LOD"+ std::to_string(lod));
             ASSERT_TRUE(have_vertex_recursive(lod_node));

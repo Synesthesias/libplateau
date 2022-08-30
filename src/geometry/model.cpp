@@ -7,7 +7,7 @@ Model::Model() :
         rootNodes_(){}
 
 void Model::addNode(Node &&node) {
-    rootNodes_.push_back(std::forward<Node>(node));
+    rootNodes_.push_back(std::move(node));
 }
 
 size_t Model::getRootNodesCount() const {

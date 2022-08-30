@@ -29,6 +29,13 @@ namespace plateau::geometry {
     public:
        explicit Mesh(const std::string &id);
 
+       /// コピーを禁止します。メッシュは重いので。
+       /// ムーブのみ許可します。
+       Mesh(const Mesh& mesh) = delete;
+       Mesh& operator=(const Mesh&) = delete;
+       Mesh(Mesh&& mesh) = default;
+       Mesh& operator=(Mesh&& mesh) = default;
+
         // TODO const関数とconstでない関数で2つ同じ実装があるけど、まとめられそうな気がする
         [[nodiscard]] std::vector<TVec3d> & getVertices();
         [[nodiscard]] const std::vector<TVec3d>& getVerticesConst() const;

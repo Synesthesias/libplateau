@@ -20,9 +20,16 @@ namespace plateau::geometry{
     public:
         explicit Node(std::string name);
 
-        /// メッシュは move で渡すことを想定しています。コピーすると重いので。
+        /// メッシュは move で渡すことを想定しています。
         Node(std::string name, Mesh &&mesh);
         Node(std::string name, std::optional<Mesh> &&optionalMesh);
+
+        /// コピーを禁止します。そうでないとメッシュまでコピーされて重くなります。
+        /// ムーブのみ許可します。
+        Node(const Node& node) = delete;
+        Node& operator=(const Node& node) = delete;
+        Node(Node&& node) = default;
+        Node& operator=(Node&& node) = default;
 
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();

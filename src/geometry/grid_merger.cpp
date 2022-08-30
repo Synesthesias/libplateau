@@ -146,7 +146,7 @@ GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtr
     // 今の仕様上、mは3なので、各グリッドは最大4つに分割されます。
     // したがって、grid 0 と group 0 to 3 が対応します。 grid1 と group 4 to 7 が対応します。
     // 一般化すると、 grid i と group (i*m) to (i*(m+1)-1)が対応します。
-    // 仕様上、あるオブジェクトのLOD i が存在すれば、同じオブジェクトの LOD 0 to i-1 が存在します。したがって、各オブジェクトは必ず上記グループのどれか1つに該当するはずです。
+    // 仕様上、あるオブジェクトのLOD i が存在すれば、同じオブジェクトの LOD 0 to i-1 がすべて存在します。したがって、各オブジェクトは必ず上記グループのどれか1つに該当するはずです。
     // そのようにグループ分けする利点は、
     // 「高いLODを表示したいけど、低いLODにしか対応していない箇所が穴になってしまう」という状況で、穴をちょうど埋める範囲の低LODグループが存在することです。
     auto groupIDToObjsMap = GroupIDToObjsMap();
