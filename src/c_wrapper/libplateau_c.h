@@ -70,6 +70,27 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
+
+/// インデックスのチェックをしてから値をDLLの利用者に返す関数を作るマクロです。
+/// マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
+/// 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle を利用して値を得る式) の値を out に格納して APIResult::Success を返します。
+/// 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+#define DLL_VALUE_FUNC_WITH_INDEX_CHECK(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, INDEX_OUT_OF_RANGE_CONDITION, ...) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+            const HANDLE_TYPE* const handle, \
+            RETURN_VALUE_TYPE* const out, \
+            int index \
+            __VA_ARGS__ \
+            ){                                                                             \
+        API_TRY{                                                                           \
+            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;                                                                               \
+            *out = GETTER; \
+            return APIResult::Success; \
+        } \
+        API_CATCH                                                                          \
+        return APIResult::ErrorUnknown;                                                    \
+    }
+
 /// 文字列のアドレスと文字列長を渡す関数を生成するマクロです。
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
 #define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
@@ -238,6 +259,6 @@ namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
     // このenumを戻り値にすると良いです。
     enum APIResult {
-        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds
     };
 }
