@@ -33,14 +33,18 @@ std::optional<Mesh>& Node::getMesh(){
     return mesh_;
 }
 
+const std::optional<Mesh>& Node::getMesh() const{
+    return mesh_;
+}
+
 size_t Node::getChildCount() const {
     return childNodes_.size();
 }
 
-Node& Node::getChildAt(int index) {
+Node& Node::getChildAt(unsigned int index) {
     return childNodes_.at(index);
 }
 
-const Node& Node::getConstChildAt(int index) const{
+const Node& Node::getChildAt(unsigned int index) const{
     return childNodes_.at(index);
 }

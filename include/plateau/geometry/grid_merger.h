@@ -15,8 +15,9 @@ namespace plateau::geometry{
     using GridMergeResult = std::map<unsigned, Mesh>;
 
     /**
-     * cityModel をグリッド状に分割し、各地物オブジェクトをグリッドに分類し、
-     * グリッドごとにメッシュを結合します。
+     * cityModel をグリッド状に分割し、各地物オブジェクトをグリッドに分類します。
+     * グリッドをさらにグループ分けし、
+     * グループごとにメッシュを結合します。
      * 呼び出し元は MeshExtractor::extract 関数から必要な時に利用されます。
      */
     class LIBPLATEAU_EXPORT GridMerger{
@@ -25,8 +26,6 @@ namespace plateau::geometry{
          * cityModel の範囲をグリッド状に分割して、グリッド内のメッシュを結合して返します。
          * static関数です。
          */
-        [[nodiscard]] static GridMergeResult
-        gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD);
-
+        [[nodiscard]] static GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD);
     };
 }

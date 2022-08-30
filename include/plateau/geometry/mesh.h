@@ -36,9 +36,8 @@ namespace plateau::geometry {
        Mesh(Mesh&& mesh) = default;
        Mesh& operator=(Mesh&& mesh) = default;
 
-        // TODO const関数とconstでない関数で2つ同じ実装があるけど、まとめられそうな気がする
         [[nodiscard]] std::vector<TVec3d> & getVertices();
-        [[nodiscard]] const std::vector<TVec3d>& getVerticesConst() const;
+        [[nodiscard]] const std::vector<TVec3d>& getVertices() const;
 
         [[nodiscard]] const std::vector<int> & getIndices() const;
         void setUV2(const UV& uv2);

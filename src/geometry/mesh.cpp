@@ -20,7 +20,7 @@ std::vector<TVec3d>& Mesh::getVertices() {
     return vertices_;
 }
 
-const std::vector<TVec3d>& Mesh::getVerticesConst() const {
+const std::vector<TVec3d>& Mesh::getVertices() const {
     return vertices_;
 }
 

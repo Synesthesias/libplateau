@@ -8,13 +8,13 @@ extern "C"{
     DLL_VALUE_FUNC(plateau_mesh_get_vertices_count,
                    Mesh,
                    int,
-                   handle->getVerticesConst().size())
+                   handle->getVertices().size())
 
     // TODO indexのチェックをしたほうが安全
     DLL_VALUE_FUNC(plateau_mesh_get_vertex_at_index,
                    Mesh,
                    TVec3d,
-                   handle->getVerticesConst().at(index),
+                   handle->getVertices().at(index),
                    ,int index)
 
     DLL_VALUE_FUNC(plateau_mesh_get_indices_count,

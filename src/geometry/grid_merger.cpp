@@ -114,16 +114,16 @@ namespace{
 GridMergeResult GridMerger::gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD) {
 
     // cityModel に含まれる 主要地物 をグリッドに分類します。
-    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
-    auto& cityEnvelope = cityModel.getEnvelope();
+    const auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
+    const auto& cityEnvelope = cityModel.getEnvelope();
     auto gridIdToObjsMap = classifyCityObjsToGrid( primaryCityObjs, cityEnvelope, options.gridCountOfSide, options.gridCountOfSide);
 
     // 主要地物の子（最小地物）を親と同じグリッドに追加します。
     // 意図はグリッドの端で同じ建物が分断されないようにするためです。
     for(const auto& pair : gridIdToObjsMap){
         unsigned gridId = pair.first;
-        const std::list<CityObjectWithImportID>& primaryObjs = pair.second;
-        for(auto& primaryObj : primaryObjs){
+        const auto& primaryObjs = pair.second;
+        for(const auto& primaryObj : primaryObjs){
             int primaryID = primaryObj.getPrimaryImportID();
             auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj.getCityObject());
             int secondaryID = 0;

@@ -33,12 +33,13 @@ namespace plateau::geometry{
 
         [[nodiscard]] const std::string& getName() const;
         [[nodiscard]] std::optional<Mesh> & getMesh();
+        [[nodiscard]] const std::optional<Mesh>& getMesh() const;
+
         void addChildNode(Node &&node);
         [[nodiscard]] size_t getChildCount() const;
 
-        // TODO const版とそうでない版で2通りあるけど、まとめる方法がある気がする
-        [[nodiscard]] Node & getChildAt(int index);
-        [[nodiscard]] const Node &getConstChildAt(int index) const;
+        [[nodiscard]] Node & getChildAt(unsigned int index);
+        [[nodiscard]] const Node &getChildAt(unsigned int index) const;
     private:
         std::string name_;
         std::vector<Node> childNodes_;

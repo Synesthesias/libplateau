@@ -18,7 +18,7 @@ extern "C" {
     DLL_PTR_FUNC(plateau_node_get_child_at_index,
                 Node,
                 Node,
-                &handle->getConstChildAt(index),
+                &handle->getChildAt(index),
                 ,int index)
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_get_mesh(
