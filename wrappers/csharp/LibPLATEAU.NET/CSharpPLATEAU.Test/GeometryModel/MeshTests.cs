@@ -29,5 +29,19 @@ namespace PLATEAU.Test.GeometryModel
             Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetVertexAt(999999999), "GetVertexAtで範囲外アクセスの時に例外が出る");
             Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetSubMeshAt(999999999));
         }
+
+        [TestMethod]
+        public void Size_Of_UV_Equals_Num_Of_Vertices()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var foundMesh = TestGeometryUtil.FirstMeshInModel(model);
+            int numVert = foundMesh.VerticesCount;
+            int numUV1 = foundMesh.GetUv1().Length;
+            int numUV2 = foundMesh.GetUv2().Length;
+            int numUV3 = foundMesh.GetUv3().Length;
+            Assert.AreEqual(numVert, numUV1);
+            Assert.AreEqual(numVert, numUV2);
+            Assert.AreEqual(numVert, numUV3);
+        }
     }
 }
