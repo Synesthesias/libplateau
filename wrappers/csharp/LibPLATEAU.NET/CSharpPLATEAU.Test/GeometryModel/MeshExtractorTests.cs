@@ -63,7 +63,6 @@ namespace PLATEAU.Test.GeometryModel
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var logger = new DllLogger();
             logger.SetCallbacksToStdOut();
-            using var meshExtractor = new MeshExtractor();
             var options = new MeshExtractOptions
             {
                 ReferencePoint = cityModel.CenterPoint,
@@ -77,7 +76,8 @@ namespace PLATEAU.Test.GeometryModel
             };
             
             // TODO 下記でいろいろテストしているので分けた方が良い
-            var model = meshExtractor.Extract(cityModel, options);
+            var model = new Model();
+            MeshExtractor.Extract(ref model, cityModel, options);
             Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
             var rootNode = model.GetRootNodeAt(0);
             Assert.IsFalse(string.IsNullOrEmpty(rootNode.Name), "ルートノードの1つを取得でき、その名前を取得できる");

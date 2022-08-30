@@ -32,6 +32,7 @@ namespace plateau::geometry{
         void addNode(Node &&node);
 
         [[nodiscard]] size_t getRootNodesCount() const;
+
         Node & getRootNodeAt(size_t index);
         [[nodiscard]] const Node& getRootNodeAt(size_t index) const;
     private:

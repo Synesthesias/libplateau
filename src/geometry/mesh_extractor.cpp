@@ -10,17 +10,21 @@
 using namespace plateau::geometry;
 
 std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) {
-    auto modelPtr = extract_to_row_pointer(cityModel, options);
-    auto sharedModel = std::unique_ptr<Model>(modelPtr);
+    auto modelPtr = new Model();
+    extractToRawPointer(modelPtr,  cityModel, options);
+    auto sharedModel = std::shared_ptr<Model>(modelPtr);
     return sharedModel;
 }
 
-Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const MeshExtractOptions &options) {
-    if(options.maxLOD < options.minLOD) throw std::exception("Invalid LOD range.");
+void MeshExtractor::extractToRawPointer(Model *outModel, const CityModel &cityModel, const MeshExtractOptions &options) {
+    extractInner(*outModel, cityModel, options);
+}
 
-    auto model = new Model();
-    model->addNode(Node(std::string("ModelRoot")));
-    auto& rootNode = model->getRootNodeAt(0);
+void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
+                                          const MeshExtractOptions &options) {
+    if(options.maxLOD < options.minLOD) throw std::exception("Invalid LOD range.");
+    outModel.addNode(Node(std::string("ModelRoot")));
+    auto& rootNode = outModel.getRootNodeAt(0);
     // rootNode の子に LODノード を作ります。
     for(unsigned lod = options.minLOD; lod <= options.maxLOD; lod++){
         auto lodNode = Node("LOD" + std::to_string(lod));
@@ -98,8 +102,6 @@ Model *MeshExtractor::extract_to_row_pointer(const CityModel &cityModel, const M
 
         rootNode.addChildNode(std::move(lodNode));
     }
-
-    return model;
 }
 
 CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
@@ -107,3 +109,5 @@ CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObjec
     primaryImportID(primaryImportID),
     secondaryImportID(secondaryImportID) {
 }
+
+

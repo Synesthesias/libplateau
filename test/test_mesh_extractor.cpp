@@ -125,16 +125,13 @@ void MeshExtractorTest::test_extract_from_c_wrapper(){
 
     const CityModelHandle* city_model_handle;
     plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &city_model_handle, DllLogLevel::LL_WARNING, nullptr, nullptr, nullptr);
-    MeshExtractor* mesh_extractor;
-    plateau_mesh_extractor_new(&mesh_extractor);
 
-    Model* model;
-    plateau_mesh_extractor_extract(mesh_extractor, city_model_handle, mesh_extract_options_, &model);
+    Model* model = new Model();
+    plateau_mesh_extractor_extract(city_model_handle, mesh_extract_options_, model);
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group6");
     plateau_model_delete(model);
-    plateau_mesh_extractor_delete(mesh_extractor);
 }
 
 bool MeshExtractorTest::have_vertex_recursive(Node &node) {
