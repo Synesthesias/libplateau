@@ -25,7 +25,7 @@ namespace plateau::geometry {
         [[nodiscard]] static std::shared_ptr<Model> extract(const CityModel &cityModel, const MeshExtractOptions &options) ;
 
         /**
-         * extract関数について、戻り値がスマートポインタの代わりに生ポインタになった版です。
+         * extract関数について、戻り値がスマートポインタの代わりに、引数の生ポインタにデータを追加するようになった版です。
          * DLL利用者との間でModelをやりとりするには生ポインタである必要があるための措置です。
          * 別途 初期化されたばかりのModelのポインタを引数で受け取り、そのModelに対して結果を格納します。
          * 生ポインタのdeleteはDLLの利用者の責任です。
