@@ -32,7 +32,6 @@ extern "C"{
                    int,
                    handle->getSubMeshes().size())
 
-    // TODO indexの範囲チェックしたほうが安全かも
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_sub_mesh_at_index,
                  Mesh,
                  SubMesh,

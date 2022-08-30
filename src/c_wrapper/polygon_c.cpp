@@ -38,9 +38,9 @@ DLL_VALUE_FUNC(plateau_polygon_get_interior_ring_count,
             int,
             handle->interiorRings().size())
 
-DLL_PTR_FUNC(plateau_polygon_get_interior_ring,
+DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_polygon_get_interior_ring,
              Polygon,
              LinearRing,
              handle->interiorRings().at(index).get(),
-             ,int index)
+             index >= handle->interiorRings().size())
 }

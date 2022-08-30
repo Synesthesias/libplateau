@@ -32,15 +32,15 @@ extern "C" {
                    int,
                    handle->getChildCityObjectsCount())
 
-    DLL_PTR_FUNC(plateau_city_object_get_child_city_object,
+    DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_city_object_get_child_city_object,
                  CityObject,
                  CityObject,
                  &handle->getChildCityObject(index),
-                 ,int index)
+                 index >= handle->getChildCityObjectsCount())
 
-    DLL_PTR_FUNC(plateau_city_object_get_geometry,
+    DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_city_object_get_geometry,
                  CityObject,
                  Geometry,
                  &handle->getGeometry(index),
-                 ,int index)
+                 index >= handle->getGeometriesCount())
 }

@@ -23,17 +23,17 @@ DLL_VALUE_FUNC(plateau_geometry_get_polygons_count,
                int,
                handle->getPolygonsCount())
 
-DLL_PTR_FUNC(plateau_geometry_get_child_geometry,
+DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_geometry_get_child_geometry,
                Geometry,
                Geometry,
                &handle->getGeometry(index),
-               ,int index)
+               index >= handle->getGeometriesCount())
 
-DLL_PTR_FUNC(plateau_geometry_get_polygon,
+DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_geometry_get_polygon,
              Geometry,
              Polygon,
              handle->getPolygon(index).get(),
-             ,int index)
+             index >= handle->getPolygonsCount())
 
 DLL_VALUE_FUNC(plateau_geometry_get_lod,
              Geometry,

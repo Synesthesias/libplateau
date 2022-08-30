@@ -23,10 +23,9 @@ extern "C" {
                    int,
                    handle->getRootNodesCount())
 
-    // TODO 範囲外のindexが渡されたら APIResult で知らせる方が安全
-    DLL_PTR_FUNC(plateau_model_get_root_node_at_index,
+    DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_model_get_root_node_at_index,
                  Model,
                  Node,
                  &handle->getRootNodeAt(index),
-                 ,int index)
+                 index >= handle->getRootNodesCount())
 }
