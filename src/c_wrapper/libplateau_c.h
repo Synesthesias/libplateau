@@ -53,6 +53,27 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
+/// アドレスを DLL利用者に渡す関数を生成するマクロです。
+/// マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
+/// 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle を利用してアドレスを得る式) の値を out に格納して APIResult::Success を返します。
+/// 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+#define DLL_PTR_FUNC_WITH_INDEX_CHECK(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, INDEX_OUT_OF_RANGE_CONDITION, ...) \
+     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+            const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */                                        \
+            const RETURN_VALUE_TYPE** out, /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */       \
+            int index,                                                                                                               \
+            __VA_ARGS__ \
+            ){ \
+        API_TRY{                                                                                                           \
+            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;                                                                                                               \
+            *out = GETTER; /* アドレスを out に書き込みます。 */ \
+            return APIResult::Success; \
+        } \
+        API_CATCH \
+        return APIResult::ErrorUnknown; \
+    }
+
+
 /// 値を DLL利用者に渡す関数を生成するマクロです。
 /// HANDLE_TYPE* handle から値を取得して 引数 RETURN_VALUE_TYPE* out に書き込みます。
 /// DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
@@ -70,7 +91,6 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
-
 /// インデックスのチェックをしてから値をDLLの利用者に返す関数を作るマクロです。
 /// マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
 /// 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle を利用して値を得る式) の値を out に格納して APIResult::Success を返します。
@@ -81,14 +101,14 @@ using dll_str_size_t = int;
             RETURN_VALUE_TYPE* const out, \
             int index \
             __VA_ARGS__ \
-            ){                                                                             \
-        API_TRY{                                                                           \
-            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;                                                                               \
+            ){   \
+        API_TRY{  \
+            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;  \
             *out = GETTER; \
             return APIResult::Success; \
         } \
-        API_CATCH                                                                          \
-        return APIResult::ErrorUnknown;                                                    \
+        API_CATCH \
+        return APIResult::ErrorUnknown;  \
     }
 
 /// 文字列のアドレスと文字列長を渡す関数を生成するマクロです。

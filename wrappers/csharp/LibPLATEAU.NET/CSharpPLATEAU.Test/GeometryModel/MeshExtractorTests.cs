@@ -110,6 +110,7 @@ namespace PLATEAU.Test.GeometryModel
             Assert.IsNotNull(subMesh.TexturePath, "サブメッシュのテクスチャパスを取得できる");
 
             Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetVertexAt(999999999), "GetVertexAtで範囲外アクセスの時に例外が出る");
+            Assert.ThrowsException<IndexOutOfRangeException>(() => foundMesh.GetSubMeshAt(999999999));
         }
         
         // TODO　以下のコメントアウトしたテストを別の形に書き直す
