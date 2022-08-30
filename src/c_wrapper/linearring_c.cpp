@@ -12,9 +12,9 @@ DLL_VALUE_FUNC(plateau_linear_ring_get_vertex_count,
                int,
                handle->size())
 
-DLL_VALUE_FUNC(plateau_linear_ring_get_vertex,
+DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_linear_ring_get_vertex,
                LinearRing,
                TVec3d,
                handle->getVertices().at(index),
-               ,int index)
+               index >= handle->getVertices().size())
 }

@@ -11,22 +11,22 @@ DLL_VALUE_FUNC(plateau_polygon_get_vertex_count,
                int,
                handle->getVertices().size())
 
-DLL_VALUE_FUNC(plateau_polygon_get_vertex,
+DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_polygon_get_vertex,
                Polygon,
                TVec3d,
                handle->getVertices().at(index),
-               ,int index)
+               index >= handle->getVertices().size())
 
 DLL_VALUE_FUNC(plateau_polygon_get_indices_count,
               Polygon,
               int,
               handle->getIndices().size())
 
-DLL_VALUE_FUNC(plateau_polygon_get_index_of_indices,
+DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_polygon_get_index_of_indices,
                Polygon,
                int,
                handle->getIndices().at(index),
-               ,int index)
+               index >= handle->getIndices().size())
 
 DLL_PTR_FUNC(plateau_polygon_get_exterior_ring,
              Polygon,

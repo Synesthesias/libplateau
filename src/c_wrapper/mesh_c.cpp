@@ -10,31 +10,22 @@ extern "C"{
                    int,
                    handle->getVertices().size())
 
-    // TODO indexのチェックをしたほうが安全
-//    DLL_VALUE_FUNC(plateau_mesh_get_vertex_at_index,
-//                   Mesh,
-//                   TVec3d,
-//                   handle->getVertices().at(index),
-//                   ,int index)
-
-DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_vertex_at_index,
-                                Mesh,
-                                TVec3d,
-                                handle->getVertices().at(index),
-                                index >= handle->getVertices().size())
-
+    DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_vertex_at_index,
+                                    Mesh,
+                                    TVec3d,
+                                    handle->getVertices().at(index),
+                                    index >= handle->getVertices().size())
 
     DLL_VALUE_FUNC(plateau_mesh_get_indices_count,
                   Mesh,
                   int,
                   handle->getIndices().size())
 
-    // TODO indexのチェックをしたほうが安全
-    DLL_VALUE_FUNC(plateau_mesh_get_indice_at_index,
+    DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_indice_at_index,
                  Mesh,
                  int,
                  handle->getIndices().at(index),
-                 ,int index)
+                 index >= handle->getIndices().size())
 
     DLL_VALUE_FUNC(plateau_mesh_get_sub_mesh_count,
                    Mesh,
