@@ -106,5 +106,3 @@ std::shared_ptr<Model> MeshExtractor::extract(const CityModel &city_model, const
 void MeshExtractor::extract(Model &out_model, const CityModel &city_model, const MeshExtractOptions &options) {
     extractInner(out_model, city_model, options);
 }
-
-
