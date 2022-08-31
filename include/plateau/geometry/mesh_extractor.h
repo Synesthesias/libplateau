@@ -25,12 +25,12 @@ namespace plateau::geometry {
         static std::shared_ptr<Model> extract(const CityModel &cityModel, const MeshExtractOptions &options) ;
 
         /**
-         * extract関数について、戻り値がスマートポインタの代わりに、引数の生ポインタにデータを追加するようになった版です。
+         * extract関数について、戻り値がスマートポインタの代わりに、引数にデータを追加するようになった版です。
          * DLL利用者との間でModelをやりとりするには生ポインタである必要があるための措置です。
-         * 別途 初期化されたばかりのModelのポインタを引数で受け取り、そのModelに対して結果を格納します。
+         * 別途 初期化されたばかりのModelを引数で受け取り、そのModelに対して結果を格納します。
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
-        static void extractToRawPointer(Model* outModel, const CityModel &cityModel, const MeshExtractOptions &options) ;
+        static void extract(Model &outModel, const CityModel &cityModel, const MeshExtractOptions &options) ;
 
     private:
         static void extractInner(Model& outModel, const CityModel& cityModel, const MeshExtractOptions& options);

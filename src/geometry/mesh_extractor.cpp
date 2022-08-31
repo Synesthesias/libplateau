@@ -11,13 +11,13 @@ using namespace plateau::geometry;
 
 std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) {
     auto modelPtr = new Model();
-    extractToRawPointer(modelPtr,  cityModel, options);
+    extract(*modelPtr, cityModel, options);
     auto sharedModel = std::shared_ptr<Model>(modelPtr);
     return sharedModel;
 }
 
-void MeshExtractor::extractToRawPointer(Model *outModel, const CityModel &cityModel, const MeshExtractOptions &options) {
-    extractInner(*outModel, cityModel, options);
+void MeshExtractor::extract(Model &outModel, const CityModel &cityModel, const MeshExtractOptions &options) {
+    extractInner(outModel, cityModel, options);
 }
 
 void MeshExtractor::extractInner(Model &outModel, const CityModel &cityModel,
