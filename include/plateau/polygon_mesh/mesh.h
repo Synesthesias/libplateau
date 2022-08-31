@@ -10,7 +10,6 @@
 
 namespace plateau::polygonMesh {
     using UV = std::vector<TVec2f>;
-    class MeshMerger;
 
     /**
      * メッシュ情報です。
@@ -29,8 +28,6 @@ namespace plateau::polygonMesh {
     class LIBPLATEAU_EXPORT Mesh {
         // TODO できれば libcitygml に依存したくないですが、今は簡易的に libcitygml の TVec3d を使っています。
         //      今後は座標の集合の表現として独自の型を使うことになるかもしれません。
-
-        friend MeshMerger;
         
     public:
         explicit Mesh(const std::string& id);
@@ -50,14 +47,6 @@ namespace plateau::polygonMesh {
         const UV& getUV2() const;
         const UV& getUV3() const;
         const std::vector<SubMesh>& getSubMeshes() const;
-
-    private:
-        std::vector<TVec3d> vertices_;
-        std::vector<int> indices_;
-        UV uv1_;
-        UV uv2_;
-        UV uv3_;
-        std::vector<SubMesh> sub_meshes_;
 
         /// 頂点リストの末尾に追加します。極座標からデカルト座標への変換が行われます。
         void addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options);
@@ -84,6 +73,14 @@ namespace plateau::polygonMesh {
          * SubMeshがない場合は最初の1つをテクスチャなしで追加します。
          */
         void extendLastSubMesh();
+
+    private:
+        std::vector<TVec3d> vertices_;
+        std::vector<int> indices_;
+        UV uv1_;
+        UV uv2_;
+        UV uv3_;
+        std::vector<SubMesh> sub_meshes_;
     };
 }
 
