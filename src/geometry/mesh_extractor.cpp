@@ -1,5 +1,5 @@
 #include <plateau/geometry/mesh_extractor.h>
-#include <plateau/io/primary_city_object_types.h>
+#include <plateau/geometry/primary_city_object_types.h>
 #include "../io/polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
