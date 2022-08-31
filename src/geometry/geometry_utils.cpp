@@ -1,8 +1,19 @@
-#include <plateau/geometry/geometry_utils.h>
+#include "geometry_utils.h"
 #include "../io/polar_to_plane_cartesian.h"
 #include "plateau/geometry/mesh.h"
 
 using namespace plateau::geometry;
+
+namespace{
+    void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs){
+        childObjs.push_back(&cityObj);
+        unsigned int numChild = cityObj.getChildCityObjectsCount();
+        for(unsigned int i=0; i<numChild; i++){
+            auto& child = cityObj.getChildCityObject(i);
+            childCityObjectsRecursive(child, childObjs);
+        }
+    }
+}
 
 TVec3d GeometryUtils::getCenterPoint(const CityModel &cityModel) {
     auto& envelope = cityModel.getEnvelope();
@@ -47,16 +58,7 @@ std::list<const CityObject*> GeometryUtils::getChildCityObjectsRecursive(const C
     unsigned int numChild = cityObj.getChildCityObjectsCount();
     for(unsigned int i=0; i<numChild; i++){
         auto& child = cityObj.getChildCityObject(i);
-        GeometryUtils::childCityObjectsRecursive(child, children);
+        childCityObjectsRecursive(child, children);
     }
     return children;
-}
-
-void GeometryUtils::childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs){
-    childObjs.push_back(&cityObj);
-    unsigned int numChild = cityObj.getChildCityObjectsCount();
-    for(unsigned int i=0; i<numChild; i++){
-        auto& child = cityObj.getChildCityObject(i);
-        childCityObjectsRecursive(child, childObjs);
-    }
 }

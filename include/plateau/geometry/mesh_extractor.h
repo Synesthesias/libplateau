@@ -31,9 +31,6 @@ namespace plateau::geometry {
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
         static void extract(Model &outModel, const CityModel &cityModel, const MeshExtractOptions &options) ;
-
-    private:
-        static void extractInner(Model& outModel, const CityModel& cityModel, const MeshExtractOptions& options);
     };
 
     /**

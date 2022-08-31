@@ -3,7 +3,7 @@
 #include <list>
 #include "citygml/citymodel.h"
 #include "citygml/polygon.h"
-#include "mesh.h"
+#include <plateau/geometry/mesh.h>
 
 namespace plateau::geometry{
     class GeometryUtils{
@@ -36,9 +36,5 @@ namespace plateau::geometry{
          * ただし引数のcityObj自身は含めません。
          */
         static std::list<const CityObject*> getChildCityObjectsRecursive(const CityObject& cityObj);
-
-    private:
-
-        static void childCityObjectsRecursive(const CityObject& cityObj, std::list<const CityObject*>& childObjs);
     };
 }

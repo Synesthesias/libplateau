@@ -7,7 +7,7 @@
 #include "../src/c_wrapper/citygml_c.cpp"
 #include "../src/geometry/grid_merger.h"
 #include <plateau/geometry/mesh_extractor.h>
-#include <plateau/geometry/geometry_utils.h>
+#include "../src/geometry/geometry_utils.h"
 
 using namespace citygml;
 using namespace plateau::geometry;
