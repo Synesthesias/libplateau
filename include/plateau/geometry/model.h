@@ -31,10 +31,10 @@ namespace plateau::geometry{
         /// 作った Node は move で渡すことを想定しています。メッシュまでコピーすると重いためです。
         void addNode(Node &&node);
 
-        [[nodiscard]] size_t getRootNodesCount() const;
+        size_t getRootNodesCount() const;
 
         Node & getRootNodeAt(size_t index);
-        [[nodiscard]] const Node& getRootNodeAt(size_t index) const;
+        const Node& getRootNodeAt(size_t index) const;
     private:
         std::vector<Node> rootNodes_;
     };

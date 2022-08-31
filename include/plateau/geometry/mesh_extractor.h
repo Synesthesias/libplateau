@@ -22,7 +22,7 @@ namespace plateau::geometry {
          * CityModel から Modelを取り出します。
          * Model を new して shared_ptr で返します。
          */
-        [[nodiscard]] static std::shared_ptr<Model> extract(const CityModel &cityModel, const MeshExtractOptions &options) ;
+        static std::shared_ptr<Model> extract(const CityModel &cityModel, const MeshExtractOptions &options) ;
 
         /**
          * extract関数について、戻り値がスマートポインタの代わりに、引数の生ポインタにデータを追加するようになった版です。
@@ -45,11 +45,11 @@ namespace plateau::geometry {
     public:
         CityObjectWithImportID(const CityObject * cityObject, int primaryImportID, int secondaryImportID);
 
-        [[nodiscard]] const CityObject *getCityObject() const { return cityObject; }
+        const CityObject *getCityObject() const { return cityObject; }
 
-        [[nodiscard]] int getPrimaryImportID() const { return primaryImportID; }
+        int getPrimaryImportID() const { return primaryImportID; }
 
-        [[nodiscard]] int getSecondaryImportID() const { return secondaryImportID; }
+        int getSecondaryImportID() const { return secondaryImportID; }
 
     private:
         const CityObject *const cityObject;

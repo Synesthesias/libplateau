@@ -54,7 +54,7 @@ public:
      * \brief メッシュ変換オプションを取得します。
      * \return コピーされたメッシュ変換オプション
      */
-    [[nodiscard]] MeshConvertOptions getOptions() const;
+    MeshConvertOptions getOptions() const;
 
     /**
      * \brief メッシュ変換オプションを設定します。

@@ -36,15 +36,15 @@ namespace plateau::geometry {
        Mesh(Mesh&& mesh) = default;
        Mesh& operator=(Mesh&& mesh) = default;
 
-        [[nodiscard]] std::vector<TVec3d> & getVertices();
-        [[nodiscard]] const std::vector<TVec3d>& getVertices() const;
+        std::vector<TVec3d> & getVertices();
+        const std::vector<TVec3d>& getVertices() const;
 
-        [[nodiscard]] const std::vector<int> & getIndices() const;
+        const std::vector<int> & getIndices() const;
         void setUV2(const UV& uv2);
-        [[nodiscard]] const UV &getUV1() const;
-        [[nodiscard]] const UV &getUV2() const;
-        [[nodiscard]] const UV &getUV3() const;
-        [[nodiscard]] const std::vector<SubMesh>& getSubMeshes() const;
+        const UV &getUV1() const;
+        const UV &getUV2() const;
+        const UV &getUV3() const;
+        const std::vector<SubMesh>& getSubMeshes() const;
 
         /**
          * citygml::Polygon をマージします。

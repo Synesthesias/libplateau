@@ -20,11 +20,11 @@ namespace plateau::geometry{
          */
         static void addSubMesh(size_t startIndex, size_t endIndex, std::string texturePath, std::vector<SubMesh> &vector);
 
-        [[nodiscard]] size_t getStartIndex() const;
-        [[nodiscard]] size_t getEndIndex() const;
+        size_t getStartIndex() const;
+        size_t getEndIndex() const;
 
         /// テクスチャパスを取得します。 テクスチャがないときは空文字とします。
-        [[nodiscard]] const std::string& getTexturePath() const;
+        const std::string& getTexturePath() const;
 
         void setEndIndex(int endIndex);
 

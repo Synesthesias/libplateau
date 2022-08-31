@@ -128,6 +128,13 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
   githubサイトから手動で実行するには、 Actions → Workflows から Upload DLLs を選択 → Run workflow からブランチを選んで実行します。
   成果物を ```all-library``` という名前のzipでダウンロードできます。
 
+# コード規約
+- 変数名は snake_case , 関数名は lowerCamel
+- private static メソッドはヘッダファイルに書かず、.cppの無名名前空間に書く
+- 外に見せる必要の無いクラス (C#でいう internal クラス) のヘッダーファイルは include ではなく src に配置 
+- `[[nodiscard]]` は書かない
+
+
 # ライセンス
 - libplateau本体： 未定
 - xerces-c： Apacheライセンス , 要 著作権表示 , 要 改変したことの告知
