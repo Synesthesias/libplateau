@@ -3,16 +3,14 @@
 #include <libplateau_api.h>
 #include <citygml/citygmllogger.h>
 
-using namespace citygml;
-
-typedef CityGMLLogger::LOGLEVEL DllLogLevel;
+typedef citygml::CityGMLLogger::LOGLEVEL DllLogLevel;
 typedef void(* LogCallbackFuncPtr)(const char*);
 
 /**
  * @brief DLL内のログをDLLの利用者に渡すことを目的として CityGMLLogger を拡張したものです。
  * log()のコール時に、コールバックによってDLL利用者に文字列を渡します。
  */
-class LIBPLATEAU_EXPORT PlateauDllLogger : public CityGMLLogger {
+class LIBPLATEAU_EXPORT PlateauDllLogger : public citygml::CityGMLLogger {
 public:
     /// Error, Warn, Info それぞれのコールバックを指定し、
     /// どのログレベル以上を表示するかを指定します。

@@ -23,7 +23,7 @@ namespace plateau::geometry {
          * CityModel から Modelを取り出します。
          * Model を new して shared_ptr で返します。
          */
-        static std::shared_ptr<Model> extract(const CityModel& city_model, const MeshExtractOptions& options);
+        static std::shared_ptr<Model> extract(const citygml::CityModel& city_model, const MeshExtractOptions& options);
 
         /**
          * extract関数について、戻り値がスマートポインタの代わりに、引数にデータを追加するようになった版です。
@@ -31,6 +31,6 @@ namespace plateau::geometry {
          * 別途 初期化されたばかりのModelを引数で受け取り、そのModelに対して結果を格納します。
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
-        static void extract(Model& out_model, const CityModel& city_model, const MeshExtractOptions& options);
+        static void extract(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options);
     };
 }

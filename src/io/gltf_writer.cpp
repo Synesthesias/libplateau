@@ -19,6 +19,7 @@
 
 namespace fs = std::filesystem;
 namespace gltf = Microsoft::glTF;
+using namespace citygml;
 
 namespace {
     // The glTF SDK is decoupled from all file I/O by the IStreamWriter (and IStreamReader)

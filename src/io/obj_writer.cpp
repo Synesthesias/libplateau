@@ -15,6 +15,7 @@
 #include "polar_to_plane_cartesian.h"
 
 namespace fs = std::filesystem;
+using namespace citygml;
 
 namespace {
     void startMeshGroup(std::ofstream& obj_ofs, const std::string& name) {

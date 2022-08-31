@@ -10,6 +10,7 @@
 #include "gltf_writer.h"
 
 namespace fs = std::filesystem;
+using namespace citygml;
 
 void MeshConverter::convert(
         const std::string& destination_directory,

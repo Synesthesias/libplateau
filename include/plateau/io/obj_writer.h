@@ -34,14 +34,14 @@ private:
     void writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices);
     void writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices);
     void writeUVs(std::ofstream& ofs, const std::vector<TVec2f>& uvs);
-    void writeMaterialReference(std::ofstream& ofs, const std::shared_ptr<const Texture>& texture);
+    void writeMaterialReference(std::ofstream& ofs, const std::shared_ptr<const citygml::Texture>& texture);
 
     // MTL書き出し
     void writeMtl(const std::string& obj_file_path);
 
     MeshConvertOptions options_;
 
-    std::map<std::string, std::shared_ptr<const Texture>> required_materials_;
+    std::map<std::string, std::shared_ptr<const citygml::Texture>> required_materials_;
     unsigned v_offset_, uv_offset_;
 
     std::weak_ptr<PlateauDllLogger> dll_logger_;

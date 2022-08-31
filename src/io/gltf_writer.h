@@ -37,13 +37,13 @@ private:
     void writeVertices(const std::vector<TVec3d>& vertices, Microsoft::glTF::BufferBuilder& bufferBuilder);
     void writeIndices(const std::vector<unsigned int>& indices, Microsoft::glTF::BufferBuilder& bufferBuilder);
     void writeUVs(const std::vector<TVec2f>& uvs, Microsoft::glTF::BufferBuilder& bufferBuilder);
-    std::string writeMaterialReference(const std::shared_ptr<const Texture>& texture, Microsoft::glTF::Document& document);
+    std::string writeMaterialReference(const std::shared_ptr<const citygml::Texture>& texture, Microsoft::glTF::Document& document);
     void writeNode(Microsoft::glTF::Document& document);
     void writeMesh(Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
 
     MeshConvertOptions options_;
 
-    std::map<std::string, std::shared_ptr<const Texture>> required_materials_;
+    std::map<std::string, std::shared_ptr<const citygml::Texture>> required_materials_;
     unsigned int v_offset_, v_offset_total_;
 
     std::weak_ptr<PlateauDllLogger> dll_logger_;

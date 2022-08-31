@@ -20,6 +20,6 @@ namespace plateau::geometry {
         /**
          * city_model の範囲をグリッド状に分割して、グリッドをさらにグループに分け、各グループ内のメッシュを結合して返します。
          */
-        static GridMergeResult gridMerge(const CityModel& city_model, const MeshExtractOptions& options, unsigned lod);
+        static GridMergeResult gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod);
     };
 }
