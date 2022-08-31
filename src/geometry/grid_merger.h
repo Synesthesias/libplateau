@@ -6,11 +6,6 @@
 #include <plateau/geometry/mesh_extract_options.h>
 
 namespace plateau::geometry{
-    /**
-    * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
-    */
-    using GridIDToObjsMap = std::map<unsigned, std::list<CityObjectWithImportID>>;
-    using GroupIDToObjsMap = GridIDToObjsMap;
     /// グループIDと、その結合後Meshのmapです。
     using GridMergeResult = std::map<unsigned, Mesh>;
 

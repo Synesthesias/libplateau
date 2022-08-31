@@ -6,6 +6,41 @@
 
 using namespace plateau::geometry;
 
+
+/**
+ * インポートした各CityObject についてインポート番号を記憶するためのクラスです。
+ * ID情報をUV2に埋め込む時に利用します。
+ * TODO UV2からデータを取り出す機能は未実装です。
+ */
+class CityObjectWithImportID {
+public:
+    CityObjectWithImportID(const CityObject * cityObject, int primaryImportID, int secondaryImportID);
+
+    const CityObject *getCityObject() const { return cityObject; }
+
+    int getPrimaryImportID() const { return primaryImportID; }
+
+    int getSecondaryImportID() const { return secondaryImportID; }
+
+private:
+    const CityObject *const cityObject;
+    int primaryImportID;
+    int secondaryImportID;
+};
+
+CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
+        cityObject(cityObject),
+        primaryImportID(primaryImportID),
+        secondaryImportID(secondaryImportID) {
+}
+
+/**
+* グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
+*/
+using GridIDToObjsMap = std::map<unsigned, std::list<CityObjectWithImportID>>;
+using GroupIDToObjsMap = GridIDToObjsMap;
+
+
 namespace{
 
     /**

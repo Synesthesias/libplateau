@@ -107,10 +107,4 @@ void MeshExtractor::extract(Model &outModel, const CityModel &cityModel, const M
     extractInner(outModel, cityModel, options);
 }
 
-CityObjectWithImportID::CityObjectWithImportID(const CityObject *const cityObject, int primaryImportID, int secondaryImportID) :
-    cityObject(cityObject),
-    primaryImportID(primaryImportID),
-    secondaryImportID(secondaryImportID) {
-}
-
 
