@@ -27,7 +27,7 @@ namespace plateau::geometry{
         Model(Model&& model) = default;
         Model& operator=(Model&& model) = default;
 
-        /// 作った Node は move で渡すことを想定しています。メッシュまでコピーすると重いためです。
+        /// 作った Node は move で渡すことを想定しています。
         void addNode(Node &&node);
 
         size_t getRootNodeCount() const;
