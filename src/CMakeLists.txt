@@ -10,6 +10,6 @@ set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
 
 add_subdirectory(io)
-add_subdirectory(geometry)
+add_subdirectory(polygon_mesh)
 add_subdirectory(c_wrapper)
 target_link_libraries(plateau PUBLIC c_wrapper)

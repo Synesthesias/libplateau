@@ -5,7 +5,7 @@
 #include <plateau/geometry/mesh.h>
 #include <plateau/geometry/mesh_extract_options.h>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     /// グループIDと、その結合後Meshのmapです。
     using GridMergeResult = std::map<unsigned, Mesh>;
 

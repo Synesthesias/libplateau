@@ -5,12 +5,12 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
-#include "../src/geometry/grid_merger.h"
+#include "../src/polygon_mesh/grid_merger.h"
 #include <plateau/geometry/mesh_extractor.h>
-#include "../src/geometry/geometry_utils.h"
+#include "../src/polygon_mesh/polygon_mesh_utils.h"
 
 using namespace citygml;
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     class MeshExtractorTest : public ::testing::Test {
     protected:

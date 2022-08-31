@@ -1,7 +1,7 @@
 #include<plateau/geometry/sub_mesh.h>
 #include <utility>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     SubMesh::SubMesh(size_t start_index, size_t end_index, std::string texture_path) :
             start_index_(start_index),

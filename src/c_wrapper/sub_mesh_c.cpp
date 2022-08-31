@@ -1,7 +1,7 @@
 #include "libplateau_c.h"
 #include <plateau/geometry/sub_mesh.h>
 using namespace libplateau;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 extern "C"{
 
     DLL_VALUE_FUNC(plateau_sub_mesh_get_start_index,

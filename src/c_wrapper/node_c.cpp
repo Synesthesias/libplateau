@@ -2,7 +2,7 @@
 #include <plateau/geometry/node.h>
 #include <plateau/geometry/mesh.h>
 using namespace libplateau;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 extern "C" {
 
     DLL_STRING_PTR_FUNC(plateau_node_get_name,

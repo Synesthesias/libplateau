@@ -2,9 +2,9 @@
 #include <plateau/geometry/primary_city_object_types.h>
 #include "../io/polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
-#include "../src/geometry/geometry_utils.h"
+#include "../src/polygon_mesh/polygon_mesh_utils.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     using namespace citygml;
 /**
  * インポートした各CityObject についてインポート番号を記憶するためのクラスです。

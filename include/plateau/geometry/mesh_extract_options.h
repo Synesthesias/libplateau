@@ -3,7 +3,7 @@
 #include <plateau/io/mesh_convert_options.h>
 #include <citygml/vecs.hpp>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     struct MeshExtractOptions {
         MeshExtractOptions(TVec3d reference_point, AxesConversion mesh_axes, MeshGranularity mesh_granularity,

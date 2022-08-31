@@ -8,7 +8,7 @@
 #include <libplateau_api.h>
 #include <optional>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     using UV = std::vector<TVec2f>;
 
     /**

@@ -7,7 +7,7 @@
 #include "citygml/citymodel.h"
 #include "model.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     /**
      * CityModelからModel(メッシュ等)を構築します。

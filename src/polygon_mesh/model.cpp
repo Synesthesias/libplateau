@@ -1,7 +1,7 @@
 #include <plateau/geometry/node.h>
 #include "plateau/geometry/model.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     Model::Model() :
             root_nodes_() {}

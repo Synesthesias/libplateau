@@ -1,8 +1,8 @@
-#include "geometry_utils.h"
+#include "polygon_mesh_utils.h"
 #include "../io/polar_to_plane_cartesian.h"
 #include "plateau/geometry/mesh.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     using namespace citygml;
 
     namespace {

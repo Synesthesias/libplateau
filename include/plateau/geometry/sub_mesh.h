@@ -4,7 +4,7 @@
 #include <vector>
 #include <libplateau_api.h>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     /**
      * SubMesh は Mesh によって所有されます。
      * Mesh の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。

@@ -1,8 +1,8 @@
 #include "libplateau_c.h"
 #include "city_model_c.h"
-#include "../src/geometry/geometry_utils.h"
+#include "../src/polygon_mesh/polygon_mesh_utils.h"
 using namespace libplateau;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 
 extern "C" {
 

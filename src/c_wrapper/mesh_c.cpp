@@ -2,7 +2,7 @@
 #include "libplateau_c.h"
 using namespace citygml;
 using namespace libplateau;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 extern "C"{
 
     DLL_VALUE_FUNC(plateau_mesh_get_vertices_count,

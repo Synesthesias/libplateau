@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 #include "citygml/citygml.h"
-#include "../src/geometry/grid_merger.h"
+#include "../src/polygon_mesh/grid_merger.h"
 
 using namespace citygml;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 
 class GridMergerTest : public ::testing::Test {
 protected:

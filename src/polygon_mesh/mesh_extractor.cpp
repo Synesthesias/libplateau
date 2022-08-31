@@ -3,11 +3,11 @@
 #include "../io/polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
-#include "../src/geometry/grid_merger.h"
-#include "../src/geometry/geometry_utils.h"
+#include "../src/polygon_mesh/grid_merger.h"
+#include "../src/polygon_mesh/polygon_mesh_utils.h"
 #include <plateau/io/obj_writer.h>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     namespace {
         void extractInner(Model& out_model, const citygml::CityModel& city_model,
                           const MeshExtractOptions& options) {

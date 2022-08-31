@@ -6,7 +6,7 @@
 #include <optional>
 #include "mesh.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     /**
      * Model 以下の階層構造を構成するノードです。
      * Node は 0個以上の 子Node を持つため階層構造になります。

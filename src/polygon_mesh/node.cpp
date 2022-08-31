@@ -1,7 +1,7 @@
 #include <plateau/geometry/node.h>
 #include <utility>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     Node::Node(std::string name) :
             name_(std::move(name)),

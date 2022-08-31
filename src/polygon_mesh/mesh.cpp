@@ -2,11 +2,11 @@
 #include <memory>
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
-#include "../src/geometry/geometry_utils.h"
+#include "../src/polygon_mesh/polygon_mesh_utils.h"
 #include "../io/polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
     using namespace citygml;
 
     Mesh::Mesh(const std::string& id) :

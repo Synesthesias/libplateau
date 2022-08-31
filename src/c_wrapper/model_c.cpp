@@ -1,7 +1,7 @@
 #include "libplateau_c.h"
 #include <plateau/geometry/model.h>
 using namespace libplateau;
-using namespace plateau::geometry;
+using namespace plateau::polygonMesh;
 extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_model(

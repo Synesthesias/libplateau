@@ -4,7 +4,7 @@
 #include <plateau/geometry/node.h>
 #include <libplateau_api.h>
 
-namespace plateau::geometry {
+namespace plateau::polygonMesh {
 
     /**
      * Model は GMLファイルパーサーから読み取った3Dメッシュ情報を各ゲームエンジンに渡すための中間データ構造として設計されています。
