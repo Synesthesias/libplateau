@@ -19,7 +19,7 @@ namespace plateau::polygonMesh {
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
                                                const MeshExtractOptions& options, const TVec2f& uv_2_element,
                                                const TVec2f& uv_3_element) {
-        auto polygons = GeometryUtils::findAllPolygons(city_object, lod);
+        auto polygons = findAllPolygons(city_object, lod);
         for (auto poly: polygons) {
             merge(mesh, *poly, options, uv_2_element, uv_3_element);
         }
@@ -75,5 +75,29 @@ namespace plateau::polygonMesh {
 
     bool MeshMerger::isValidPolygon(const Polygon& other_poly) {
         return !(other_poly.getVertices().empty() || other_poly.getIndices().empty());
+    }
+
+    std::list<const Polygon*> MeshMerger::findAllPolygons(const CityObject& city_obj, unsigned lod) {
+        auto polygons = std::list<const citygml::Polygon*>();
+        unsigned int num_geom = city_obj.getGeometriesCount();
+        for (unsigned int i = 0; i < num_geom; i++) {
+            findAllPolygons(city_obj.getGeometry(i), polygons, lod);
+        }
+        return std::move(polygons);
+    }
+
+    void
+    MeshMerger::findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod) {
+        unsigned int num_child = geom.getGeometriesCount();
+        for (unsigned int i = 0; i < num_child; i++) {
+            findAllPolygons(geom.getGeometry(i), polygons, lod);
+        }
+
+        if (geom.getLOD() != lod) return;
+
+        unsigned int num_poly = geom.getPolygonsCount();
+        for (unsigned int i = 0; i < num_poly; i++) {
+            polygons.push_back(geom.getPolygon(i).get());
+        }
     }
 }

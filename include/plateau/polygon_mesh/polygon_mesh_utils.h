@@ -20,19 +20,6 @@ namespace plateau::polygonMesh {
         static TVec3d getCenterPoint(const citygml::CityModel& city_model);
 
         /**
-         * city_obj に含まれるポリゴンをすべて検索し、リストで返します。
-         * 子の CityObject は検索しません。
-         * 子の Geometry は再帰的に検索します。
-         */
-        static std::list<const citygml::Polygon*> findAllPolygons(const citygml::CityObject& city_obj, unsigned lod);
-
-        /**
-         * findAllPolygons のジオメトリを対象とする版です。
-         * 結果は引数の polygons に格納します。
-         */
-        static void findAllPolygons(const citygml::Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod);
-
-        /**
          * city_obj の子を再帰的に検索して返します。
          * ただし引数のcityObj自身は含めません。
          */

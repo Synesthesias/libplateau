@@ -26,31 +26,6 @@ namespace plateau::polygonMesh {
         return city_center;
     }
 
-
-    std::list<const Polygon*> GeometryUtils::findAllPolygons(const CityObject& city_obj, unsigned lod) {
-        auto polygons = std::list<const citygml::Polygon*>();
-        unsigned int num_geom = city_obj.getGeometriesCount();
-        for (unsigned int i = 0; i < num_geom; i++) {
-            findAllPolygons(city_obj.getGeometry(i), polygons, lod);
-        }
-        return std::move(polygons);
-    }
-
-    void
-    GeometryUtils::findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod) {
-        unsigned int num_child = geom.getGeometriesCount();
-        for (unsigned int i = 0; i < num_child; i++) {
-            findAllPolygons(geom.getGeometry(i), polygons, lod);
-        }
-
-        if (geom.getLOD() != lod) return;
-
-        unsigned int num_poly = geom.getPolygonsCount();
-        for (unsigned int i = 0; i < num_poly; i++) {
-            polygons.push_back(geom.getPolygon(i).get());
-        }
-    }
-
 /**
  * city_obj の子を再帰的に検索して返します。
  * ただし引数のcityObj自身は含めません。
