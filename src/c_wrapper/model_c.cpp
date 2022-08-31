@@ -4,14 +4,14 @@ using namespace libplateau;
 using namespace plateau::geometry;
 extern "C" {
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_model_new(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_model(
             Model** out_model_ptr
             ){
         *out_model_ptr = new Model();
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_model_delete(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_model(
             Model* model_ptr
             ){
         delete model_ptr;

@@ -11,7 +11,6 @@ TVec3d GeometryUtils::getCenterPoint(const CityModel &cityModel) {
     }
     auto cityCenter = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
     polar_to_plane_cartesian().convert(cityCenter);
-    cityCenter.z = 0.0;
     return cityCenter;
 }
 

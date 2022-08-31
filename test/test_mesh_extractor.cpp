@@ -131,7 +131,7 @@ void MeshExtractorTest::test_extract_from_c_wrapper() const{
 
     ASSERT_TRUE(model->getRootNodesCount() == 1);
     ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group6");
-    plateau_model_delete(model);
+    plateau_delete_model(model);
 }
 
 bool MeshExtractorTest::have_vertex_recursive(const Node &node) const {
