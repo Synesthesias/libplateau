@@ -1,4 +1,4 @@
-#include <plateau/io/polar_to_plane_cartesian.h>
+#include "polar_to_plane_cartesian.h"
 
 void polar_to_plane_cartesian::convert(TVec3d& position)
 {

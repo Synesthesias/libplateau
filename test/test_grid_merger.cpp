@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "plateau/geometry/grid_merger.h"
 #include "citygml/citygml.h"
+#include "../src/geometry/grid_merger.h"
 
 using namespace citygml;
 using namespace plateau::geometry;

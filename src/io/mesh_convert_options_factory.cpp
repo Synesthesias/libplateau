@@ -1,7 +1,7 @@
 #include <citygml/citymodel.h>
 #include <plateau/io/mesh_convert_options_factory.h>
 
-#include <plateau/io/polar_to_plane_cartesian.h>
+#include "polar_to_plane_cartesian.h"
 
 void MeshConvertOptionsFactory::setValidReferencePoint(MeshConvertOptions& options, const citygml::CityModel& city_model) {
     TVec3d lower_bound = city_model.getEnvelope().getLowerBound();

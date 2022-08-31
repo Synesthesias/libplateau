@@ -5,7 +5,7 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
-#include "plateau/geometry/grid_merger.h"
+#include "../src/geometry/grid_merger.h"
 #include <plateau/geometry/mesh_extractor.h>
 #include <plateau/geometry/geometry_utils.h>
 

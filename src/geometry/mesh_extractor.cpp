@@ -1,9 +1,9 @@
 #include <plateau/geometry/mesh_extractor.h>
 #include <plateau/io/primary_city_object_types.h>
-#include <plateau/io/polar_to_plane_cartesian.h>
+#include "../io/polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
-#include "plateau/geometry/grid_merger.h"
+#include "../src/geometry/grid_merger.h"
 #include "plateau/geometry/geometry_utils.h"
 #include <plateau/io/obj_writer.h>
 

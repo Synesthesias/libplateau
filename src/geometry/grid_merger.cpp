@@ -1,6 +1,6 @@
-#include <plateau/geometry/grid_merger.h>
+#include "grid_merger.h"
 #include "plateau/io/primary_city_object_types.h"
-#include "plateau/io/polar_to_plane_cartesian.h"
+#include "../io/polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
 #include "plateau/geometry/geometry_utils.h"
 

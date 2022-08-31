@@ -1,9 +1,9 @@
 
 #include <vector>
-#include "mesh.h"
 #include "citygml/citymodel.h"
-#include "mesh_extract_options.h"
-#include "mesh_extractor.h"
+#include <plateau/geometry/mesh_extractor.h>
+#include <plateau/geometry/mesh.h>
+#include <plateau/geometry/mesh_extract_options.h>
 
 namespace plateau::geometry{
     /**

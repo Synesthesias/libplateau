@@ -3,7 +3,7 @@
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
 #include "plateau/geometry/geometry_utils.h"
-#include "plateau/io/polar_to_plane_cartesian.h"
+#include "../io/polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
 
 using namespace plateau::geometry;

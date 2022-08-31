@@ -13,7 +13,7 @@
 #include <plateau/io/primary_city_object_types.h>
 
 #include "gltf_writer.h"
-#include <plateau/io/polar_to_plane_cartesian.h>
+#include "../io/polar_to_plane_cartesian.h"
 
 #include <cassert>
 

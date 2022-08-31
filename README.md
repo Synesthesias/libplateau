@@ -131,7 +131,7 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 # コード規約
 - 変数名は snake_case , 関数名は lowerCamel
 - private static メソッドはヘッダファイルに書かず、.cppの無名名前空間に書く
-- 外に見せる必要の無いクラス (C#でいう internal クラス) のヘッダーファイルは include ではなく src に配置 
+- 外に見せる必要の無いクラス (C#でいう internal クラス) のヘッダーファイルの配置ディレクトリは include ではなく src 
 - `[[nodiscard]]` は書かない
 
 
