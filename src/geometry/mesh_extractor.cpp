@@ -13,9 +13,7 @@ namespace{
     void extractInner(Model &outModel, const CityModel &cityModel,
                                      const MeshExtractOptions &options) {
         if(options.maxLOD < options.minLOD) throw std::exception("Invalid LOD range.");
-        outModel.addNode(Node(std::string("ModelRoot")));
-        auto& rootNode = outModel.getRootNodeAt(outModel.getRootNodesCount()-1);
-        // rootNode の子に LODノード を作ります。
+        // rootNode として LODノード を作ります。
         for(unsigned lod = options.minLOD; lod <= options.maxLOD; lod++){
             auto lodNode = Node("LOD" + std::to_string(lod));
 
@@ -23,7 +21,7 @@ namespace{
             switch(options.meshGranularity) {
                 case MeshGranularity::PerCityModelArea: {
                     // 次のような階層構造を作ります:
-                    // rootNode -> LODノード -> グループごとのノード
+                    // model -> LODノード -> グループごとのノード
 
                     // 都市をグループに分け、グループごとにメッシュをマージします。
                     auto result = GridMerger::gridMerge(cityModel, options, lod);
@@ -38,7 +36,7 @@ namespace{
                     break;
                 case MeshGranularity::PerPrimaryFeatureObject:{
                     // 次のような階層構造を作ります：
-                    // rootNode -> LODノード -> 主要地物ごとのノード
+                    // model -> LODノード -> 主要地物ごとのノード
 
                     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
 
@@ -59,7 +57,7 @@ namespace{
                     break;
                 case MeshGranularity::PerAtomicFeatureObject:{
                     // 次のような階層構造を作ります：
-                    // rootNode -> LODノード -> 主要地物ごとのノード -> その子の最小地物ごとのノード
+                    // model -> LODノード -> 主要地物ごとのノード -> その子の最小地物ごとのノード
                     auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
                     for(auto primaryObj : primaryCityObjs){
                         // 主要地物のノードを作成します。
@@ -93,7 +91,7 @@ namespace{
                     throw std::exception("Unknown enum type of options.meshGranularity .");
             }
 
-            rootNode.addChildNode(std::move(lodNode));
+            outModel.addNode(std::move(lodNode));
         }
     }
 }

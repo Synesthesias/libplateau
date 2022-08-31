@@ -39,9 +39,9 @@ namespace PLATEAU.Test.GeometryModel
             Assert.IsFalse(string.IsNullOrEmpty(firstChild.Name), "子ノードの名前を取得できる");
             // メッシュを含むノードを検索します。
             Mesh foundMesh = null;
-            for (int i = 0; i < firstChild.ChildCount; i++)
+            for (int i = 0; i < rootNode.ChildCount; i++)
             {
-                var child = firstChild.GetChildAt(i);
+                var child = rootNode.GetChildAt(i);
                 var mesh = child.Mesh;
                 if (mesh == null) continue;
                 if (mesh.VerticesCount > 0 && mesh.IndicesCount >= 3)

@@ -30,7 +30,7 @@ namespace plateau::geometry{
         /// 作った Node は move で渡すことを想定しています。メッシュまでコピーすると重いためです。
         void addNode(Node &&node);
 
-        size_t getRootNodesCount() const;
+        size_t getRootNodeCount() const;
 
         Node & getRootNodeAt(size_t index);
         const Node& getRootNodeAt(size_t index) const;

@@ -30,11 +30,11 @@ protected:
 
 TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
     auto model = MeshExtractor::extract(*city_model_, mesh_extract_options_);
-    const auto& root_node = model->getRootNodeAt(0);
-    const auto& root_name = root_node.getName();
-    ASSERT_EQ(root_name, "ModelRoot");
+    const auto& lod_node = model->getRootNodeAt(0);
+    const auto& lod_name = lod_node.getName();
+    ASSERT_EQ(lod_name, "LOD2");
 
-    const auto& first_model_node = root_node.getChildAt(0).getChildAt(0);
+    const auto& first_model_node = lod_node.getChildAt(0);
     const auto& first_model_node_name = first_model_node.getName();
     ASSERT_EQ(first_model_node_name, "group6");
 
@@ -43,7 +43,7 @@ TEST_F(MeshExtractorTest, extract_returns_model_with_child_with_name){ // NOLINT
 
 TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
     auto model = MeshExtractor::extract(*city_model_, mesh_extract_options_);
-    const auto& lod_node = model->getRootNodeAt(0).getChildAt(0);
+    const auto& lod_node = model->getRootNodeAt(0);
     // 存在するテクスチャURLを検索します。
     auto num_child = lod_node.getChildCount();
     int found_texture_num = 0;
@@ -72,7 +72,7 @@ TEST_F(MeshExtractorTest, when_extract_atomic_building_then_primary_nodes_have_n
     MeshExtractOptions options = mesh_extract_options_;
     options.meshGranularity = MeshGranularity::PerAtomicFeatureObject;
     auto model = MeshExtractor::extract(*city_model_, options);
-    const auto& first_primary_node = model->getRootNodeAt(0).getChildAt(0).getChildAt(0);
+    const auto& first_primary_node = model->getRootNodeAt(0).getChildAt(0);
     const auto& first_atomic_node = first_primary_node.getChildAt(0);
     ASSERT_FALSE(first_primary_node.getMesh().has_value());
     ASSERT_TRUE(first_atomic_node.getMesh().has_value());
@@ -84,10 +84,9 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_p
    options.minLOD = 0;
    options.maxLOD = 2;
    auto model = MeshExtractor::extract(*city_model_, options);
-   const auto& root_node = model->getRootNodeAt(0);
-   const auto& lod0 = root_node.getChildAt(0);
-   const auto& lod1 = root_node.getChildAt(1);
-   const auto& lod2 = root_node.getChildAt(2);
+   const auto& lod0 = model->getRootNodeAt(0);
+   const auto& lod1 = model->getRootNodeAt(1);
+   const auto& lod2 = model->getRootNodeAt(2);
    ASSERT_EQ(lod0.getName(), "LOD0" );
    ASSERT_EQ(lod1.getName(), "LOD1");
    ASSERT_EQ(lod2.getName(), "LOD2");
@@ -110,9 +109,8 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex){ // NOLI
         options.minLOD = 0;
         options.maxLOD = 2;
         auto model = MeshExtractor::extract(*city_model_, options);
-        const auto& root_node = model->getRootNodeAt(0);
         for(unsigned lod=options.minLOD; lod<=options.maxLOD; lod++){
-            const auto& lod_node = model->getRootNodeAt(0).getChildAt(lod);
+            const auto& lod_node = model->getRootNodeAt(lod);
             ASSERT_EQ(lod_node.getName(), "LOD"+ std::to_string(lod));
             ASSERT_TRUE(have_vertex_recursive(lod_node));
         }
@@ -129,8 +127,8 @@ void MeshExtractorTest::test_extract_from_c_wrapper() const{
     auto model = new Model();
     plateau_mesh_extractor_extract(city_model_handle, mesh_extract_options_, model);
 
-    ASSERT_TRUE(model->getRootNodesCount() == 1);
-    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getChildAt(0).getName(), "group6");
+    ASSERT_TRUE(model->getRootNodeCount() == 1);
+    ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "group6");
     plateau_delete_model(model);
 }
 

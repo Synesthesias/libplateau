@@ -21,11 +21,11 @@ extern "C" {
     DLL_VALUE_FUNC(plateau_model_get_root_nodes_count,
                    Model,
                    int,
-                   handle->getRootNodesCount())
+                   handle->getRootNodeCount())
 
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_model_get_root_node_at_index,
                  Model,
                  Node,
                  &handle->getRootNodeAt(index),
-                 index >= handle->getRootNodesCount())
+                 index >= handle->getRootNodeCount())
 }

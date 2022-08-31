@@ -10,7 +10,7 @@ void Model::addNode(Node &&node) {
     rootNodes_.push_back(std::move(node));
 }
 
-size_t Model::getRootNodesCount() const {
+size_t Model::getRootNodeCount() const {
     return rootNodes_.size();
 }
 
