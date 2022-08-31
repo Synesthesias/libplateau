@@ -6,4 +6,5 @@ target_sources(plateau PRIVATE
         "model.cpp"
         "grid_merger.cpp"
         "polygon_mesh_utils.cpp"
+        "mesh_merger.cpp"
 )

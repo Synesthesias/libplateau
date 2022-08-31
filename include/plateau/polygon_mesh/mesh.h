@@ -10,6 +10,7 @@
 
 namespace plateau::polygonMesh {
     using UV = std::vector<TVec2f>;
+    class MeshMerger;
 
     /**
      * メッシュ情報です。
@@ -26,6 +27,11 @@ namespace plateau::polygonMesh {
      * citygml::Polygon は極座標系ですが、merge() メソッド実行時にデカルト座標系に変換されて保持します。
      */
     class LIBPLATEAU_EXPORT Mesh {
+        // TODO できれば libcitygml に依存したくないですが、今は簡易的に libcitygml の TVec3d を使っています。
+        //      今後は座標の集合の表現として独自の型を使うことになるかもしれません。
+
+        friend MeshMerger;
+        
     public:
         explicit Mesh(const std::string& id);
 
@@ -45,30 +51,6 @@ namespace plateau::polygonMesh {
         const UV& getUV3() const;
         const std::vector<SubMesh>& getSubMeshes() const;
 
-        /**
-         * citygml::Polygon をマージします。
-         * 引数で与えられたポリゴンのうち、次の情報を自身に追加します。
-         * ・頂点リスト、インデックスリスト、UV1、テクスチャ。
-         * なおその他の情報のマージには未対応です。例えば LinearRing は考慮されません。
-         * options.export_appearance の値によって、 mergeWithTexture または mergeWithoutTexture を呼び出します。
-         */
-        void merge(const citygml::Polygon& other_poly, MeshExtractOptions options, const TVec2f& uv_2_element,
-                   const TVec2f& uv_3_element);
-
-        /**
-         * merge関数を 引数 city_object_ の各 Polygon に対して実行します。
-         */
-        void mergePolygonsInCityObject(const citygml::CityObject& city_object, int lod, const MeshExtractOptions& options,
-                                       const TVec2f& uv_2_element, const TVec2f& uv_3_element);
-
-        /**
-         * merge関数を 引数 city_objects の 各 CityObject の 各 Polygon に対して実行します。
-         */
-        void
-        mergePolygonsInCityObjects(const std::list<const citygml::CityObject*>& city_objects, int lod,
-                                   const TVec2f& uv_3_element,
-                                   const MeshExtractOptions& options, const TVec2f& uv_2_element);
-
     private:
         std::vector<TVec3d> vertices_;
         std::vector<int> indices_;
@@ -76,24 +58,6 @@ namespace plateau::polygonMesh {
         UV uv2_;
         UV uv3_;
         std::vector<SubMesh> sub_meshes_;
-
-        /**
-         * merge関数 のテクスチャあり版です。
-         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける SubMesh が追加されます。
-         */
-        void mergeWithTexture(const citygml::Polygon& other_poly, const MeshExtractOptions& options, const TVec2f& uv_2_element,
-                              const TVec2f& uv_3_element);
-
-        /**
-         * merge関数 のテクスチャ無し版です。
-         * 生成される Mesh の SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
-         */
-        void mergeWithoutTexture(const citygml::Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                                 const MeshExtractOptions& options);
-
-        /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
-        void mergeShape(const citygml::Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                        const MeshExtractOptions& options);
 
         /// 頂点リストの末尾に追加します。極座標からデカルト座標への変換が行われます。
         void addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options);
@@ -103,8 +67,8 @@ namespace plateau::polygonMesh {
         void addUV3WithSameVal(const TVec2f& uv_3_val, unsigned num_adding_vertices);
 
         /**
-         * SubMesh を追加し、そのテクスチャパスには 引数 other_poly のものを指定します。
-         * SubMeshの範囲は与えられたポリゴンの頂点数と同じです。
+         * SubMesh を追加し、そのテクスチャパスには 引数のものを指定します。
+         * SubMeshの indices の数を 引数で指定します。
          * 利用すべき状況 : 形状を追加したので、追加分を新しいテクスチャに設定したいという状況で利用できます。
          * テクスチャがない時は テクスチャパスが空文字である SubMesh になります。
          *
@@ -112,7 +76,7 @@ namespace plateau::polygonMesh {
          * 代わりに extendLastSubMesh を実行します。
          * なぜなら、同じテクスチャであればサブメッシュを分けるのは無意味で描画負荷を増やすだけと思われるためです。
          */
-        void addSubMesh(const citygml::Polygon& other_poly);
+        void addSubMesh(const std::string& texture_path, size_t sub_mesh_indices_size);
 
         /**
          * 直前の SubMesh の範囲を拡大し、範囲の終わりがindicesリストの最後を指すようにします。
@@ -120,6 +84,6 @@ namespace plateau::polygonMesh {
          * SubMeshがない場合は最初の1つをテクスチャなしで追加します。
          */
         void extendLastSubMesh();
-        static bool isValidPolygon(const citygml::Polygon& other_poly);
     };
 }
+

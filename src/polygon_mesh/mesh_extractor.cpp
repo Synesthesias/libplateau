@@ -4,6 +4,7 @@
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
 #include "../src/polygon_mesh/grid_merger.h"
+#include "mesh_merger.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/io/obj_writer.h>
 
@@ -44,11 +45,11 @@ namespace plateau::polygonMesh {
                         for (auto primary_obj: primary_city_objs) {
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
-                            mesh.mergePolygonsInCityObject(*primary_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
+                            MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
                             if (lod >= 2) {
                                 // 主要地物の子である各最小地物をメッシュに加えます。
                                 auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
-                                mesh.mergePolygonsInCityObjects(atomic_objs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
+                                MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
                             }
                             // 主要地物ごとのノードを追加します。
                             lod_node.addChildNode(Node(primary_obj->getId(), std::move(mesh)));
@@ -72,7 +73,7 @@ namespace plateau::polygonMesh {
                                       (citygml::CityObject::CityObjectsType) 0);
                             if (should_contain_primary_mesh) {
                                 primary_mesh = Mesh(primary_obj->getId());
-                                primary_mesh->mergePolygonsInCityObject(*primary_obj, lod, options, TVec2f{0, 0},
+                                MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options, TVec2f{0, 0},
                                                                         TVec2f{0, 0});
                             }
                             auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));
@@ -81,7 +82,7 @@ namespace plateau::polygonMesh {
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
                                 auto atomic_mesh = Mesh(atomic_obj->getId());
-                                atomic_mesh.mergePolygonsInCityObject(*atomic_obj, lod, options, TVec2f{0, 0},
+                                MeshMerger::mergePolygonsInCityObject(atomic_mesh, *atomic_obj, lod, options, TVec2f{0, 0},
                                                                       TVec2f{0, 0});
                                 auto atomic_node = Node(atomic_obj->getId(), std::move(atomic_mesh));
                                 primary_node.addChildNode(std::move(atomic_node));

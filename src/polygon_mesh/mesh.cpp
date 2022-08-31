@@ -52,62 +52,6 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
-    void Mesh::merge(const Polygon& other_poly, MeshExtractOptions options, const TVec2f& uv_2_element,
-                     const TVec2f& uv_3_element) {
-        if (!isValidPolygon(other_poly)) return;
-        if (options.export_appearance) {
-            mergeWithTexture(other_poly, options, uv_2_element, uv_3_element);
-        } else {
-            mergeWithoutTexture(other_poly, uv_2_element, uv_3_element, options);
-        }
-    }
-
-    void Mesh::mergePolygonsInCityObject(const CityObject& city_object, int lod, const MeshExtractOptions& options,
-                                         const TVec2f& uv_2_element, const TVec2f& uv_3_element) {
-        auto polygons = GeometryUtils::findAllPolygons(city_object, lod);
-        for (auto poly: polygons) {
-            this->merge(*poly, options, uv_2_element, uv_3_element);
-        }
-    }
-
-    void
-    Mesh::mergePolygonsInCityObjects(const std::list<const CityObject*>& city_objects, int lod,
-                                     const TVec2f& uv_3_element,
-                                     const MeshExtractOptions& options, const TVec2f& uv_2_element) {
-        for (auto obj: city_objects) {
-            mergePolygonsInCityObject(*obj, lod, options, uv_2_element, uv_3_element);
-        }
-    }
-
-    void
-    Mesh::mergeWithTexture(const Polygon& other_poly, const MeshExtractOptions& options, const TVec2f& uv_2_element,
-                           const TVec2f& uv_3_element) {
-        if (!isValidPolygon(other_poly)) return;
-        mergeShape(other_poly, uv_2_element, uv_3_element, options);
-        addSubMesh(other_poly);
-    }
-
-    void Mesh::mergeWithoutTexture(const Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                                   const MeshExtractOptions& options) {
-        if (!isValidPolygon(other_poly)) return;
-        mergeShape(other_poly, uv_2_element, uv_3_element, options);
-        extendLastSubMesh();
-
-    }
-
-    void Mesh::mergeShape(const Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                          const MeshExtractOptions& options) {
-        unsigned prev_num_vertices = vertices_.size();
-        auto& other_vertices = other_poly.getVertices();
-        auto& other_indices = other_poly.getIndices();
-
-        addVerticesList(other_vertices, options);
-        addIndicesList(other_indices, prev_num_vertices);
-        addUV1(other_poly);
-        addUV2WithSameVal(uv_2_element, other_vertices.size());
-        addUV3WithSameVal(uv_3_element, other_vertices.size());
-    }
-
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options) {
         // 各頂点を座標変換しながら追加します。
         for (const auto& other_pos: other_vertices) {
@@ -161,17 +105,10 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addSubMesh(const Polygon& other_poly) {
+    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_indices_size) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
-        auto other_texture = other_poly.getTextureFor("rgbTexture");
-        std::string other_texture_path;
-        if (other_texture == nullptr) {
-            other_texture_path = std::string("");
-        } else {
-            other_texture_path = other_texture->getUrl();
-        }
 
         // 前と同じテクスチャかどうか判定します。
         bool is_different_tex;
@@ -179,13 +116,13 @@ namespace plateau::polygonMesh {
             is_different_tex = true;
         } else {
             auto& last_texture_path = sub_meshes_.rbegin()->getTexturePath();
-            is_different_tex = other_texture_path != last_texture_path;
+            is_different_tex = texture_path != last_texture_path;
         }
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            unsigned prev_num_indices = indices_.size() - other_poly.getIndices().size();
-            SubMesh::addSubMesh(prev_num_indices, indices_.size() - 1, other_texture_path, sub_meshes_);
+            unsigned prev_num_indices = indices_.size() - sub_mesh_indices_size;
+            SubMesh::addSubMesh(prev_num_indices, indices_.size() - 1, texture_path, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
             extendLastSubMesh();
@@ -198,9 +135,5 @@ namespace plateau::polygonMesh {
         } else {
             sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex((int) indices_.size() - 1);
         }
-    }
-
-    bool Mesh::isValidPolygon(const Polygon& other_poly) {
-        return !(other_poly.getVertices().empty() || other_poly.getIndices().empty());
     }
 }
