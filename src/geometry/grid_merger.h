@@ -18,8 +18,8 @@ namespace plateau::geometry{
     class LIBPLATEAU_EXPORT GridMerger{
     public:
         /**
-         * cityModel の範囲をグリッド状に分割して、グリッドをさらにグループに分け、各グループ内のメッシュを結合して返します。
+         * city_model の範囲をグリッド状に分割して、グリッドをさらにグループに分け、各グループ内のメッシュを結合して返します。
          */
-        static GridMergeResult gridMerge(const CityModel &cityModel, const MeshExtractOptions &options, unsigned LOD);
+        static GridMergeResult gridMerge(const CityModel &city_model, const MeshExtractOptions &options, unsigned lod);
     };
 }

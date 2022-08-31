@@ -4,25 +4,25 @@
 using namespace plateau::geometry;
 
 Node::Node(std::string name) :
-    name_(std::move(name)),
-    childNodes_(),
-    mesh_(std::nullopt)
+        name_(std::move(name)),
+        child_nodes_(),
+        mesh_(std::nullopt)
     {}
 
 Node::Node(std::string name, Mesh &&mesh):
-    name_(std::move(name)),
-    childNodes_(),
-    mesh_(std::forward<Mesh>(mesh))
+        name_(std::move(name)),
+        child_nodes_(),
+        mesh_(std::forward<Mesh>(mesh))
     {}
 
-Node::Node(std::string name, std::optional<Mesh> &&optionalMesh):
-    name_(std::move(name)),
-    childNodes_(),
-    mesh_(std::forward<std::optional<Mesh>>(optionalMesh))
+Node::Node(std::string name, std::optional<Mesh> &&optional_mesh):
+        name_(std::move(name)),
+        child_nodes_(),
+        mesh_(std::forward<std::optional<Mesh>>(optional_mesh))
     {}
 
 void Node::addChildNode(Node &&node) {
-    childNodes_.push_back(std::forward<Node>(node));
+    child_nodes_.push_back(std::forward<Node>(node));
 }
 
 const std::string& Node::getName() const {
@@ -38,13 +38,13 @@ const std::optional<Mesh>& Node::getMesh() const{
 }
 
 size_t Node::getChildCount() const {
-    return childNodes_.size();
+    return child_nodes_.size();
 }
 
 Node& Node::getChildAt(unsigned int index) {
-    return childNodes_.at(index);
+    return child_nodes_.at(index);
 }
 
 const Node& Node::getChildAt(unsigned int index) const{
-    return childNodes_.at(index);
+    return child_nodes_.at(index);
 }

@@ -13,12 +13,12 @@ namespace plateau::geometry{
      */
     class LIBPLATEAU_EXPORT SubMesh{
     public:
-        SubMesh(size_t startIndex, size_t endIndex, std::string texturePath);
+        SubMesh(size_t start_index, size_t end_index, std::string texture_path);
 
         /**
          * 引数で与えられた SubMesh の vector に SubMesh を追加します。
          */
-        static void addSubMesh(size_t startIndex, size_t endIndex, std::string texturePath, std::vector<SubMesh> &vector);
+        static void addSubMesh(size_t start_index, size_t end_index, std::string texture_path, std::vector<SubMesh> &vector);
 
         size_t getStartIndex() const;
         size_t getEndIndex() const;
@@ -26,15 +26,15 @@ namespace plateau::geometry{
         /// テクスチャパスを取得します。 テクスチャがないときは空文字とします。
         const std::string& getTexturePath() const;
 
-        void setEndIndex(int endIndex);
+        void setEndIndex(int end_index);
 
     private:
         /**
-         * startIndex_, endIndex_ は、Meshの Indices リストの中のある範囲を表現します。
+         * start_index_, end_index_ は、Meshの Indices リストの中のある範囲を表現します。
          * 範囲は [start, end] (endを範囲に含む) です。
          */
-        size_t startIndex_;
-        size_t endIndex_;
-        std::string texturePath_;
+        size_t start_index_;
+        size_t end_index_;
+        std::string texture_path_;
     };
 }

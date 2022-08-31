@@ -35,7 +35,7 @@ namespace plateau::geometry{
         Node & getRootNodeAt(size_t index);
         const Node& getRootNodeAt(size_t index) const;
     private:
-        std::vector<Node> rootNodes_;
+        std::vector<Node> root_nodes_;
     };
 
 }

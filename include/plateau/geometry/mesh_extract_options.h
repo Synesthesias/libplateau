@@ -6,28 +6,28 @@
 namespace plateau::geometry {
 
     struct MeshExtractOptions {
-        MeshExtractOptions(TVec3d referencePoint, AxesConversion meshAxes, MeshGranularity meshGranularity, unsigned maxLod, unsigned minLod, bool exportAppearance, int gridCountOfSide, float unitScale):
-                referencePoint(referencePoint),
-                meshAxes(meshAxes),
-                meshGranularity(meshGranularity),
-                maxLOD(maxLod),
-                minLOD(minLod),
-                exportAppearance(exportAppearance),
-                gridCountOfSide(gridCountOfSide),
-                unitScale(unitScale){}
+        MeshExtractOptions(TVec3d reference_point, AxesConversion mesh_axes, MeshGranularity mesh_granularity, unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side, float unit_scale):
+                reference_point(reference_point),
+                mesh_axes(mesh_axes),
+                mesh_granularity(mesh_granularity),
+                max_lod(max_lod),
+                min_lod(min_lod),
+                export_appearance(export_appearance),
+                grid_count_of_side(grid_count_of_side),
+                unit_scale(unit_scale){}
 
     public:
-        TVec3d referencePoint;
-        AxesConversion meshAxes;
-        MeshGranularity meshGranularity;
-        unsigned maxLOD;
-        unsigned minLOD;
-        bool exportAppearance;
+        TVec3d reference_point;
+        AxesConversion mesh_axes;
+        MeshGranularity mesh_granularity;
+        unsigned max_lod;
+        unsigned min_lod;
+        bool export_appearance;
         /**
          * グリッド分けする時の、1辺の分割数です。
          * この数の2乗がグリッドの数となり、実際にはそれより細かくグループ分けされます。
          */
-        int gridCountOfSide;
-        float unitScale;
+        int grid_count_of_side;
+        float unit_scale;
     };
 }

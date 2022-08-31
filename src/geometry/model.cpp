@@ -4,20 +4,20 @@
 using namespace plateau::geometry;
 
 Model::Model() :
-        rootNodes_(){}
+        root_nodes_(){}
 
 void Model::addNode(Node &&node) {
-    rootNodes_.push_back(std::move(node));
+    root_nodes_.push_back(std::move(node));
 }
 
 size_t Model::getRootNodeCount() const {
-    return rootNodes_.size();
+    return root_nodes_.size();
 }
 
 Node& Model::getRootNodeAt(size_t index){
-    return rootNodes_.at(index);
+    return root_nodes_.at(index);
 }
 
 const Node &Model::getRootNodeAt(size_t index) const {
-    return rootNodes_.at(index);
+    return root_nodes_.at(index);
 }

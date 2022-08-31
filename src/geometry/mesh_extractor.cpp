@@ -10,27 +10,27 @@
 using namespace plateau::geometry;
 
 namespace{
-    void extractInner(Model &outModel, const CityModel &cityModel,
-                                     const MeshExtractOptions &options) {
-        if(options.maxLOD < options.minLOD) throw std::exception("Invalid LOD range.");
+    void extractInner(Model &out_model, const CityModel &city_model,
+                      const MeshExtractOptions &options) {
+        if(options.max_lod < options.min_lod) throw std::exception("Invalid LOD range.");
         // rootNode として LODノード を作ります。
-        for(unsigned lod = options.minLOD; lod <= options.maxLOD; lod++){
-            auto lodNode = Node("LOD" + std::to_string(lod));
+        for(unsigned lod = options.min_lod; lod <= options.max_lod; lod++){
+            auto lod_node = Node("LOD" + std::to_string(lod));
 
             // LODノードの下にメッシュ配置用ノードを作ります。
-            switch(options.meshGranularity) {
+            switch(options.mesh_granularity) {
                 case MeshGranularity::PerCityModelArea: {
                     // 次のような階層構造を作ります:
                     // model -> LODノード -> グループごとのノード
 
                     // 都市をグループに分け、グループごとにメッシュをマージします。
-                    auto result = GridMerger::gridMerge(cityModel, options, lod);
+                    auto result = GridMerger::gridMerge(city_model, options, lod);
                     // グループごとのノードを追加します。
                     for (auto &pair: result) {
-                        unsigned groupID = pair.first;
+                        unsigned group_id = pair.first;
                         auto& mesh = pair.second;
-                        auto node = Node("group" + std::to_string(groupID), std::move(mesh));
-                        lodNode.addChildNode(std::move(node));
+                        auto node = Node("group" + std::to_string(group_id), std::move(mesh));
+                        lod_node.addChildNode(std::move(node));
                     }
                 }
                     break;
@@ -38,73 +38,73 @@ namespace{
                     // 次のような階層構造を作ります：
                     // model -> LODノード -> 主要地物ごとのノード
 
-                    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
+                    auto& primary_city_objs = city_model.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
 
                     // 主要地物ごとにメッシュを結合します。
-                    for(auto primaryObj : primaryCityObjs){
+                    for(auto primary_obj : primary_city_objs){
                         // 主要地物のメッシュを作ります。
-                        auto mesh = Mesh(primaryObj->getId());
-                        mesh.mergePolygonsInCityObject(*primaryObj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
+                        auto mesh = Mesh(primary_obj->getId());
+                        mesh.mergePolygonsInCityObject(*primary_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
                         if(lod >= 2){
                             // 主要地物の子である各最小地物をメッシュに加えます。
-                            auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
-                            mesh.mergePolygonsInCityObjects(atomicObjs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
+                            auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
+                            mesh.mergePolygonsInCityObjects(atomic_objs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
                         }
                         // 主要地物ごとのノードを追加します。
-                        lodNode.addChildNode(Node(primaryObj->getId(), std::move(mesh)));
+                        lod_node.addChildNode(Node(primary_obj->getId(), std::move(mesh)));
                     }
                 }
                     break;
                 case MeshGranularity::PerAtomicFeatureObject:{
                     // 次のような階層構造を作ります：
                     // model -> LODノード -> 主要地物ごとのノード -> その子の最小地物ごとのノード
-                    auto& primaryCityObjs = cityModel.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
-                    for(auto primaryObj : primaryCityObjs){
+                    auto& primary_city_objs = city_model.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
+                    for(auto primary_obj : primary_city_objs){
                         // 主要地物のノードを作成します。
                         // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
                         // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。
                         // よって主要地物ノードにもメッシュを含めるとダブるため含めません。
-                        auto primaryMesh = std::optional<Mesh>(std::nullopt);
-                        bool shouldContainPrimaryMesh =
+                        auto primary_mesh = std::optional<Mesh>(std::nullopt);
+                        bool should_contain_primary_mesh =
                                 !(lod >= 2 &&
-                                  (primaryObj->getType() & CityObject::CityObjectsType::COT_Building) != (CityObject::CityObjectsType)0);
-                        if(shouldContainPrimaryMesh) {
-                            primaryMesh = Mesh(primaryObj->getId());
-                            primaryMesh->mergePolygonsInCityObject(*primaryObj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
+                                  (primary_obj->getType() & CityObject::CityObjectsType::COT_Building) != (CityObject::CityObjectsType)0);
+                        if(should_contain_primary_mesh) {
+                            primary_mesh = Mesh(primary_obj->getId());
+                            primary_mesh->mergePolygonsInCityObject(*primary_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
                         }
-                        auto primaryNode = Node(primaryObj->getId(), std::move(primaryMesh));
+                        auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));
                         // 最小地物ごとにノードを作成します。
-                        auto atomicObjs = GeometryUtils::getChildCityObjectsRecursive(*primaryObj);
-                        for(auto atomicObj : atomicObjs){
+                        auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
+                        for(auto atomic_obj : atomic_objs){
                             // 最小地物のノードを作成
-                            auto atomicMesh = Mesh(atomicObj->getId());
-                            atomicMesh.mergePolygonsInCityObject(*atomicObj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
-                            auto atomicNode = Node(atomicObj->getId(), std::move(atomicMesh));
-                            primaryNode.addChildNode(std::move(atomicNode));
+                            auto atomic_mesh = Mesh(atomic_obj->getId());
+                            atomic_mesh.mergePolygonsInCityObject(*atomic_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
+                            auto atomic_node = Node(atomic_obj->getId(), std::move(atomic_mesh));
+                            primary_node.addChildNode(std::move(atomic_node));
                         }
-                        lodNode.addChildNode(std::move(primaryNode));
+                        lod_node.addChildNode(std::move(primary_node));
                     }
 
                 }
                     break;
                 default:
-                    throw std::exception("Unknown enum type of options.meshGranularity .");
+                    throw std::exception("Unknown enum type of options.mesh_granularity .");
             }
 
-            outModel.addNode(std::move(lodNode));
+            out_model.addNode(std::move(lod_node));
         }
     }
 }
 
-std::shared_ptr<Model> MeshExtractor::extract(const CityModel &cityModel, const MeshExtractOptions &options) {
-    auto modelPtr = new Model();
-    extract(*modelPtr, cityModel, options);
-    auto sharedModel = std::shared_ptr<Model>(modelPtr);
-    return sharedModel;
+std::shared_ptr<Model> MeshExtractor::extract(const CityModel &city_model, const MeshExtractOptions &options) {
+    auto model_ptr = new Model();
+    extract(*model_ptr, city_model, options);
+    auto shared_model = std::shared_ptr<Model>(model_ptr);
+    return shared_model;
 }
 
-void MeshExtractor::extract(Model &outModel, const CityModel &cityModel, const MeshExtractOptions &options) {
-    extractInner(outModel, cityModel, options);
+void MeshExtractor::extract(Model &out_model, const CityModel &city_model, const MeshExtractOptions &options) {
+    extractInner(out_model, city_model, options);
 }
 
 

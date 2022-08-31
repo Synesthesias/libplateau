@@ -22,7 +22,7 @@ namespace plateau::geometry{
 
         /// メッシュは move で渡すことを想定しています。
         Node(std::string name, Mesh &&mesh);
-        Node(std::string name, std::optional<Mesh> &&optionalMesh);
+        Node(std::string name, std::optional<Mesh> &&optional_mesh);
 
         /// コピーを禁止します。
         Node(const Node& node) = delete;
@@ -41,7 +41,7 @@ namespace plateau::geometry{
         const Node &getChildAt(unsigned int index) const;
     private:
         std::string name_;
-        std::vector<Node> childNodes_;
+        std::vector<Node> child_nodes_;
         std::optional<Mesh> mesh_;
     };
 }

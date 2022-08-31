@@ -9,32 +9,32 @@ namespace plateau::geometry{
     class GeometryUtils{
     public:
         /// 仕様上存在しうる最大LODです。 LODは0から始まるので、LODのパターン数は (この数 +1)です。
-        static constexpr int MaxLODInSpecification = 3;
+        static constexpr int max_lod_in_specification_ = 3;
 
         /**
-         * cityModel の中心点を返します。
-         * また GMLファイルから cityModel の Envelope を読み取れない場合は、
+         * city_model の中心点を返します。
+         * また GMLファイルから city_model の Envelope を読み取れない場合は、
          * 中心点が分からないので原点座標を返します。
          */
-        static TVec3d getCenterPoint(const CityModel& cityModel);
+        static TVec3d getCenterPoint(const CityModel& city_model);
 
         /**
-         * cityObj に含まれるポリゴンをすべて検索し、リストで返します。
+         * city_obj に含まれるポリゴンをすべて検索し、リストで返します。
          * 子の CityObject は検索しません。
          * 子の Geometry は再帰的に検索します。
          */
-        static std::list<const citygml::Polygon *> findAllPolygons(const CityObject &cityObj, unsigned LOD);
+        static std::list<const citygml::Polygon *> findAllPolygons(const CityObject &city_obj, unsigned lod);
 
         /**
          * findAllPolygons のジオメトリを対象とする版です。
          * 結果は引数の polygons に格納します。
          */
-        static void findAllPolygons(const Geometry &geom, std::list<const citygml::Polygon *> &polygons, unsigned LOD);
+        static void findAllPolygons(const Geometry &geom, std::list<const citygml::Polygon *> &polygons, unsigned lod);
 
         /**
-         * cityObj の子を再帰的に検索して返します。
+         * city_obj の子を再帰的に検索して返します。
          * ただし引数のcityObj自身は含めません。
          */
-        static std::list<const CityObject*> getChildCityObjectsRecursive(const CityObject& cityObj);
+        static std::list<const CityObject*> getChildCityObjectsRecursive(const CityObject& city_obj);
     };
 }

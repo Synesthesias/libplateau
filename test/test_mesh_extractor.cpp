@@ -23,8 +23,8 @@ protected:
     const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
     const MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0,0,0), AxesConversion::WUN, MeshGranularity::PerCityModelArea, 2, 2, true, 5, 1.0);;
     const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
-    void test_extract_from_c_wrapper() const;
-    bool have_vertex_recursive(const Node &node) const;
+    void testExtractFromCWrapper() const;
+    bool haveVertexRecursive(const Node &node) const;
 };
 
 
@@ -54,8 +54,8 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
         const auto& sub_meshes = mesh_opt.value().getSubMeshes();
         if(sub_meshes.empty()) continue;
         for(auto& sub_mesh : sub_meshes){
-            const auto& texUrl = sub_mesh.getTexturePath();
-            if(texUrl.empty()) continue;
+            const auto& tex_url = sub_mesh.getTexturePath();
+            if(tex_url.empty()) continue;
             found_texture_num++;
         }
     }
@@ -64,13 +64,13 @@ TEST_F(MeshExtractorTest, extract_result_have_texture_url){ // NOLINT
 
 TEST_F(MeshExtractorTest, extract_can_exec_multiple_times){ // NOLINT
     for(int i=0; i<3; i++){
-        test_extract_from_c_wrapper();
+        testExtractFromCWrapper();
     }
 }
 
 TEST_F(MeshExtractorTest, when_extract_atomic_building_then_primary_nodes_have_no_mesh_and_atomic_nodes_have_mesh){ // NOLINT
     MeshExtractOptions options = mesh_extract_options_;
-    options.meshGranularity = MeshGranularity::PerAtomicFeatureObject;
+    options.mesh_granularity = MeshGranularity::PerAtomicFeatureObject;
     auto model = MeshExtractor::extract(*city_model_, options);
     const auto& first_primary_node = model->getRootNodeAt(0).getChildAt(0);
     const auto& first_atomic_node = first_primary_node.getChildAt(0);
@@ -80,9 +80,9 @@ TEST_F(MeshExtractorTest, when_extract_atomic_building_then_primary_nodes_have_n
 
 TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_per_city_model_area){ // NOLINT
    MeshExtractOptions options = mesh_extract_options_;
-   options.meshGranularity = MeshGranularity::PerCityModelArea;
-   options.minLOD = 0;
-   options.maxLOD = 2;
+   options.mesh_granularity = MeshGranularity::PerCityModelArea;
+   options.min_lod = 0;
+   options.max_lod = 2;
    auto model = MeshExtractor::extract(*city_model_, options);
    const auto& lod0 = model->getRootNodeAt(0);
    const auto& lod1 = model->getRootNodeAt(1);
@@ -103,23 +103,23 @@ TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex){ // NOLI
     // 各LODノード以下に頂点が存在することのテストです。
     // メッシュ粒度 と LOD の全ての組み合わせをテストしたいので2重forループを回します。
     for(const auto granularity : test_pattern_granularity){
-        std::cout << "testing meshGranularity = " << (int)granularity << std::endl;
+        std::cout << "testing mesh_granularity = " << (int)granularity << std::endl;
         MeshExtractOptions options = mesh_extract_options_;
-        options.meshGranularity = granularity;
-        options.minLOD = 0;
-        options.maxLOD = 2;
+        options.mesh_granularity = granularity;
+        options.min_lod = 0;
+        options.max_lod = 2;
         auto model = MeshExtractor::extract(*city_model_, options);
-        for(unsigned lod=options.minLOD; lod<=options.maxLOD; lod++){
+        for(unsigned lod=options.min_lod; lod <= options.max_lod; lod++){
             const auto& lod_node = model->getRootNodeAt(lod);
             ASSERT_EQ(lod_node.getName(), "LOD"+ std::to_string(lod));
-            ASSERT_TRUE(have_vertex_recursive(lod_node));
+            ASSERT_TRUE(haveVertexRecursive(lod_node));
         }
     }
 
 }
 
 
-void MeshExtractorTest::test_extract_from_c_wrapper() const{
+void MeshExtractorTest::testExtractFromCWrapper() const{
 
     const CityModelHandle* city_model_handle;
     plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &city_model_handle, DllLogLevel::LL_WARNING, nullptr, nullptr, nullptr);
@@ -132,14 +132,14 @@ void MeshExtractorTest::test_extract_from_c_wrapper() const{
     plateau_delete_model(model);
 }
 
-bool MeshExtractorTest::have_vertex_recursive(const Node &node) const {
+bool MeshExtractorTest::haveVertexRecursive(const Node &node) const {
     const auto& mesh = node.getMesh();
     if(mesh.has_value() && !(mesh.value().getVertices().empty())){
         return true;
     }
     auto num_child = node.getChildCount();
     for(int i=0; i<num_child; i++){
-        if(have_vertex_recursive(node.getChildAt(i))){
+        if(haveVertexRecursive(node.getChildAt(i))){
             return true;
         }
     }
