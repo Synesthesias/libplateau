@@ -15,19 +15,19 @@ public:
      */
     static citygml::CityObject::CityObjectsType getPrimaryTypeMask() {
         return ~(
-            // LOD3建築物の部品
-            citygml::CityObject::CityObjectsType::COT_Door |
-            citygml::CityObject::CityObjectsType::COT_Window |
-            // LOD2建築物の部品
-            citygml::CityObject::CityObjectsType::COT_WallSurface |
-            citygml::CityObject::CityObjectsType::COT_RoofSurface |
-            citygml::CityObject::CityObjectsType::COT_GroundSurface |
-            citygml::CityObject::CityObjectsType::COT_ClosureSurface |
-            citygml::CityObject::CityObjectsType::COT_OuterFloorSurface |
-            citygml::CityObject::CityObjectsType::COT_OuterCeilingSurface |
-            // LOD2,3交通
-            citygml::CityObject::CityObjectsType::COT_TransportationObject
-            );
+                // LOD3建築物の部品
+                citygml::CityObject::CityObjectsType::COT_Door |
+                citygml::CityObject::CityObjectsType::COT_Window |
+                // LOD2建築物の部品
+                citygml::CityObject::CityObjectsType::COT_WallSurface |
+                citygml::CityObject::CityObjectsType::COT_RoofSurface |
+                citygml::CityObject::CityObjectsType::COT_GroundSurface |
+                citygml::CityObject::CityObjectsType::COT_ClosureSurface |
+                citygml::CityObject::CityObjectsType::COT_OuterFloorSurface |
+                citygml::CityObject::CityObjectsType::COT_OuterCeilingSurface |
+                // LOD2,3交通
+                citygml::CityObject::CityObjectsType::COT_TransportationObject
+        );
     }
 
     /**

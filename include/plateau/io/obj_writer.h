@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <string>
 #include <fstream>
 
@@ -10,17 +11,18 @@
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
     ObjWriter() :
-        v_offset_(0), uv_offset_(0) {
+            v_offset_(0), uv_offset_(0) {
     }
 
     bool write(
-        const std::string& obj_file_path,
-        const std::string& gml_file_path,
-        const citygml::CityModel& city_model,
-        MeshConvertOptions options, unsigned lod,
-        std::shared_ptr<PlateauDllLogger> logger = nullptr);
+            const std::string& obj_file_path,
+            const std::string& gml_file_path,
+            const citygml::CityModel& city_model,
+            MeshConvertOptions options, unsigned lod,
+            std::shared_ptr<PlateauDllLogger> logger = nullptr);
 
-    static TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale);
+    static TVec3d
+    convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale);
 
 private:
     // OBJ書き出し

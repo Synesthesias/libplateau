@@ -4,21 +4,22 @@
 #include <vector>
 #include <libplateau_api.h>
 
-namespace plateau::geometry{
+namespace plateau::geometry {
     /**
      * SubMesh は Mesh によって所有されます。
      * Mesh の一部 (Indices リストの中のとある範囲)がとあるテクスチャであることを表現します。
      *
      * 詳しくは Model クラスのコメントをご覧ください。
      */
-    class LIBPLATEAU_EXPORT SubMesh{
+    class LIBPLATEAU_EXPORT SubMesh {
     public:
         SubMesh(size_t start_index, size_t end_index, std::string texture_path);
 
         /**
          * 引数で与えられた SubMesh の vector に SubMesh を追加します。
          */
-        static void addSubMesh(size_t start_index, size_t end_index, std::string texture_path, std::vector<SubMesh> &vector);
+        static void addSubMesh(size_t start_index, size_t end_index,
+                               std::string texture_path, std::vector<SubMesh>& vector);
 
         size_t getStartIndex() const;
         size_t getEndIndex() const;

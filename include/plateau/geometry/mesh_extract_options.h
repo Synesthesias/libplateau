@@ -6,7 +6,9 @@
 namespace plateau::geometry {
 
     struct MeshExtractOptions {
-        MeshExtractOptions(TVec3d reference_point, AxesConversion mesh_axes, MeshGranularity mesh_granularity, unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side, float unit_scale):
+        MeshExtractOptions(TVec3d reference_point, AxesConversion mesh_axes, MeshGranularity mesh_granularity,
+                           unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side,
+                           float unit_scale) :
                 reference_point(reference_point),
                 mesh_axes(mesh_axes),
                 mesh_granularity(mesh_granularity),
@@ -14,7 +16,7 @@ namespace plateau::geometry {
                 min_lod(min_lod),
                 export_appearance(export_appearance),
                 grid_count_of_side(grid_count_of_side),
-                unit_scale(unit_scale){}
+                unit_scale(unit_scale) {}
 
     public:
         TVec3d reference_point;

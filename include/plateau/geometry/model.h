@@ -1,8 +1,10 @@
 #pragma once
+
 #include <plateau/geometry/model.h>
 #include <plateau/geometry/node.h>
 #include <libplateau_api.h>
-namespace plateau::geometry{
+
+namespace plateau::geometry {
 
     /**
      * Model は GMLファイルパーサーから読み取った3Dメッシュ情報を各ゲームエンジンに渡すための中間データ構造として設計されています。
@@ -17,22 +19,22 @@ namespace plateau::geometry{
      * Node が所有する Mesh は、そのゲームオブジェクトが保持する3Dメッシュに対応します。
      * Mesh が所有する SubMesh は、そのメッシュのサブメッシュ（テクスチャパスを含む）に対応します。
      */
-    class LIBPLATEAU_EXPORT Model{
+    class LIBPLATEAU_EXPORT Model {
     public:
         Model();
 
         /// コピーを禁止します。
-        Model(const Model &model) = delete;
+        Model(const Model& model) = delete;
         Model& operator=(const Model&) = delete;
         Model(Model&& model) = default;
         Model& operator=(Model&& model) = default;
 
         /// 作った Node は move で渡すことを想定しています。
-        void addNode(Node &&node);
+        void addNode(Node&& node);
 
         size_t getRootNodeCount() const;
 
-        Node & getRootNodeAt(size_t index);
+        Node& getRootNodeAt(size_t index);
         const Node& getRootNodeAt(size_t index) const;
     private:
         std::vector<Node> root_nodes_;

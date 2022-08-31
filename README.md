@@ -135,6 +135,7 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 - `[[nodiscard]]` は書かない
 - ファイルの末尾は改行
 - 何かの個数を取得する関数名は `get(単数形)Count`
+- `*` `&` の位置は左寄せ (`SomeType *foobar` ではなく `SomeType* foobar`)
 
 # ライセンス
 - libplateau本体： 未定

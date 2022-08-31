@@ -9,14 +9,14 @@ extern "C" {
 DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_texture_theme_names,
                              AppearanceTarget,
                              handle->getAllTextureThemes(front).size(),
-                             const auto &str: handle->getAllTextureThemes(front),
+                             const auto& str: handle->getAllTextureThemes(front),
                              str,
                              ,bool front)
 
 DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_material_theme_names,
                              AppearanceTarget,
                              handle->getAllMaterialThemes(front).size(),
-                             const auto &str : handle->getAllMaterialThemes(front),
+                             const auto& str : handle->getAllMaterialThemes(front),
                              str,
                              ,bool front)
 

@@ -1,7 +1,6 @@
 #include "polar_to_plane_cartesian.h"
 
-void polar_to_plane_cartesian::convert(TVec3d& position)
-{
+void polar_to_plane_cartesian::convert(TVec3d& position) {
     double xyz[3];
     xyz[0] = position.x;
     xyz[1] = position.y;
@@ -18,11 +17,12 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
     int a = 6378137;
     double rf = 298.257222101, m0 = 0.9999, PI = 3.14159265358979323846;
     double s2r = 0, nsq = 0, e2n = 0, ra = 0;
-    double alp[5 + 1] = { 0,0,0,0,0,0 };
+    double alp[5 + 1] = {0, 0, 0, 0, 0, 0};
 
     // 平面直角座標の座標系原点の緯度を度単位で、経度を分単位で格納
-    int phi0[20] = { 0, 33, 33, 36, 33, 36, 36, 36, 36, 36, 40, 44, 44, 44, 26, 26, 26, 26, 20, 26 };
-    int lmbd0[20] = { 0, 7770, 7860, 7930, 8010, 8060, 8160, 8230, 8310, 8390, 8450, 8415, 8535, 8655, 8520, 7650, 7440, 7860, 8160, 9240 };
+    int phi0[20] = {0, 33, 33, 36, 33, 36, 36, 36, 36, 36, 40, 44, 44, 44, 26, 26, 26, 26, 20, 26};
+    int lmbd0[20] = {0, 7770, 7860, 7930, 8010, 8060, 8160, 8230, 8310, 8390, 8450, 8415, 8535, 8655, 8520, 7650, 7440,
+                     7860, 8160, 9240};
 
     s2r = PI / 648000;
     n_ = 0.5 / (rf - 0.5);
@@ -56,7 +56,7 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
     double eta = etap;
     double sgm = 1.0;
     double tau = 0.0;
-    for (int j = sizeof(alp) / sizeof(double); --j; ) {
+    for (int j = sizeof(alp) / sizeof(double); --j;) {
         double alsin = alp[j] * sin(2 * j * xip);
         double alcos = alp[j] * cos(2 * j * xip);
         xi += alsin * cosh(2 * j * etap);
@@ -75,7 +75,7 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
 double polar_to_plane_cartesian::Merid(double phi2) {
     int jt2 = 2 * jt_;
     double ep = 1.0;
-    double e[10 + 1] = { 0,0,0,0,0,0,0,0,0,0,0 };
+    double e[10 + 1] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     double n15 = 1.5 * n_;
 
     for (int k = 1; k <= jt_; k++) {

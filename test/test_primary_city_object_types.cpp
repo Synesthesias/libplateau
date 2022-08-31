@@ -28,8 +28,10 @@ TEST_F(PrimaryFeaturesTest, checkIfCityObjectIsPrimary) {
     ASSERT_TRUE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_Building));
     ASSERT_TRUE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_BuildingPart));
     ASSERT_TRUE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_Road));
-    ASSERT_TRUE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_Bridge | CityObject::CityObjectsType::COT_LandUse));
+    ASSERT_TRUE(PrimaryCityObjectTypes::isPrimary(
+            CityObject::CityObjectsType::COT_Bridge | CityObject::CityObjectsType::COT_LandUse));
 
     ASSERT_FALSE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_RoofSurface));
-    ASSERT_FALSE(PrimaryCityObjectTypes::isPrimary(CityObject::CityObjectsType::COT_Door | CityObject::CityObjectsType::COT_Window));
+    ASSERT_FALSE(PrimaryCityObjectTypes::isPrimary(
+            CityObject::CityObjectsType::COT_Door | CityObject::CityObjectsType::COT_Window));
 }

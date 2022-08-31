@@ -5,8 +5,8 @@
 #include "citygml/polygon.h"
 #include <plateau/geometry/mesh.h>
 
-namespace plateau::geometry{
-    class GeometryUtils{
+namespace plateau::geometry {
+    class GeometryUtils {
     public:
         /// 仕様上存在しうる最大LODです。 LODは0から始まるので、LODのパターン数は (この数 +1)です。
         static constexpr int max_lod_in_specification_ = 3;
@@ -23,13 +23,13 @@ namespace plateau::geometry{
          * 子の CityObject は検索しません。
          * 子の Geometry は再帰的に検索します。
          */
-        static std::list<const citygml::Polygon *> findAllPolygons(const CityObject &city_obj, unsigned lod);
+        static std::list<const citygml::Polygon*> findAllPolygons(const CityObject& city_obj, unsigned lod);
 
         /**
          * findAllPolygons のジオメトリを対象とする版です。
          * 結果は引数の polygons に格納します。
          */
-        static void findAllPolygons(const Geometry &geom, std::list<const citygml::Polygon *> &polygons, unsigned lod);
+        static void findAllPolygons(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod);
 
         /**
          * city_obj の子を再帰的に検索して返します。
