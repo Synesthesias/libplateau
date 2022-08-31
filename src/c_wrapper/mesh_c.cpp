@@ -1,4 +1,4 @@
-#include <plateau/geometry/mesh.h>
+#include <plateau/polygon_mesh/mesh.h>
 #include "libplateau_c.h"
 using namespace citygml;
 using namespace libplateau;

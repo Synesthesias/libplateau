@@ -2,8 +2,8 @@
 
 #include <libplateau_api.h>
 #include <memory>
-#include <plateau/geometry/mesh.h>
-#include <plateau/geometry/mesh_extract_options.h>
+#include <plateau/polygon_mesh/mesh.h>
+#include <plateau/polygon_mesh/mesh_extract_options.h>
 #include "citygml/citymodel.h"
 #include "model.h"
 

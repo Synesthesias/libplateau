@@ -1,10 +1,10 @@
-#include <plateau/geometry/mesh_extractor.h>
-#include <plateau/geometry/primary_city_object_types.h>
+#include <plateau/polygon_mesh/mesh_extractor.h>
+#include <plateau/polygon_mesh/primary_city_object_types.h>
 #include "../io/polar_to_plane_cartesian.h"
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
 #include "../src/polygon_mesh/grid_merger.h"
-#include "../src/polygon_mesh/polygon_mesh_utils.h"
+#include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/io/obj_writer.h>
 
 namespace plateau::polygonMesh {

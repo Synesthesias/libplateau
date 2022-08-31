@@ -3,7 +3,7 @@
 
 #include <citygml/citygml.h>
 
-#include <plateau/geometry/primary_city_object_types.h>
+#include <plateau/polygon_mesh/primary_city_object_types.h>
 
 #include "citygml/citymodel.h"
 

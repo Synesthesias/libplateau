@@ -1,4 +1,4 @@
-#include <plateau/geometry/node.h>
+#include <plateau/polygon_mesh/node.h>
 #include <utility>
 
 namespace plateau::polygonMesh {

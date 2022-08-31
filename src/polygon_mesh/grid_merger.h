@@ -1,9 +1,9 @@
 
 #include <vector>
 #include "citygml/citymodel.h"
-#include <plateau/geometry/mesh_extractor.h>
-#include <plateau/geometry/mesh.h>
-#include <plateau/geometry/mesh_extract_options.h>
+#include <plateau/polygon_mesh/mesh_extractor.h>
+#include <plateau/polygon_mesh/mesh.h>
+#include <plateau/polygon_mesh/mesh_extract_options.h>
 
 namespace plateau::polygonMesh {
     /// グループIDと、その結合後Meshのmapです。

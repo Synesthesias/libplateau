@@ -1,7 +1,7 @@
 #pragma once
 
-#include <plateau/geometry/model.h>
-#include <plateau/geometry/node.h>
+#include <plateau/polygon_mesh/model.h>
+#include <plateau/polygon_mesh/node.h>
 #include <libplateau_api.h>
 
 namespace plateau::polygonMesh {

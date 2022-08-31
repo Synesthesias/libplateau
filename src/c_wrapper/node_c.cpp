@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
-#include <plateau/geometry/node.h>
-#include <plateau/geometry/mesh.h>
+#include <plateau/polygon_mesh/node.h>
+#include <plateau/polygon_mesh/mesh.h>
 using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C" {

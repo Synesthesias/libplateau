@@ -9,7 +9,7 @@
 #include <citygml/polygon.h>
 #include <citygml/texture.h>
 
-#include <plateau/geometry/primary_city_object_types.h>
+#include <plateau/polygon_mesh/primary_city_object_types.h>
 
 #include <plateau/io/obj_writer.h>
 #include "polar_to_plane_cartesian.h"

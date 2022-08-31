@@ -1,4 +1,4 @@
-#include<plateau/geometry/sub_mesh.h>
+#include<plateau/polygon_mesh/sub_mesh.h>
 #include <utility>
 
 namespace plateau::polygonMesh {

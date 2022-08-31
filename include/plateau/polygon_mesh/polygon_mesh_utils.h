@@ -3,7 +3,7 @@
 #include <list>
 #include "citygml/citymodel.h"
 #include "citygml/polygon.h"
-#include <plateau/geometry/mesh.h>
+#include <plateau/polygon_mesh/mesh.h>
 
 namespace plateau::polygonMesh {
 

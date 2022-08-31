@@ -6,8 +6,8 @@
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
 #include "../src/polygon_mesh/grid_merger.h"
-#include <plateau/geometry/mesh_extractor.h>
-#include "../src/polygon_mesh/polygon_mesh_utils.h"
+#include <plateau/polygon_mesh/mesh_extractor.h>
+#include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 using namespace citygml;
 namespace plateau::polygonMesh {
