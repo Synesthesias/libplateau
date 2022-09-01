@@ -1,4 +1,5 @@
 #pragma once
+
 #include <citygml/vecs.hpp>
 
 class polar_to_plane_cartesian {

@@ -95,14 +95,14 @@ struct MeshConvertOptions {
     MeshFileFormat mesh_file_format;
 
     MeshConvertOptions() :
-        mesh_axes(AxesConversion::WUN),
-        mesh_file_format(MeshFileFormat::OBJ),
-        reference_point(),
-        mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
-        min_lod(0),
-        max_lod(3),
-        export_lower_lod(true),
-        export_appearance(true),
-        unit_scale(1) {
+            mesh_axes(AxesConversion::WUN),
+            mesh_file_format(MeshFileFormat::OBJ),
+            reference_point(),
+            mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
+            min_lod(0),
+            max_lod(3),
+            export_lower_lod(true),
+            export_appearance(true),
+            unit_scale(1) {
     }
 };

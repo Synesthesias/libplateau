@@ -6,17 +6,18 @@
 
 #include <plateau/io/mesh_converter.h>
 
-#include "obj_writer.h"
+#include <plateau/io/obj_writer.h>
 #include "gltf_writer.h"
 
 namespace fs = std::filesystem;
+using namespace citygml;
 
 void MeshConverter::convert(
-    const std::string& destination_directory,
-    const std::string& gml_file_path,
-    std::vector<std::string>& converted_files,
-    std::shared_ptr<const citygml::CityModel> city_model,
-    std::shared_ptr<PlateauDllLogger> logger
+        const std::string& destination_directory,
+        const std::string& gml_file_path,
+        std::vector<std::string>& converted_files,
+        std::shared_ptr<const citygml::CityModel> city_model,
+        std::shared_ptr<PlateauDllLogger> logger
 ) const {
     if (city_model == nullptr) {
         ParserParams params;
@@ -37,7 +38,8 @@ void MeshConverter::convert(
     }
     bool result;
     for (unsigned lod = options_.min_lod; lod <= options_.max_lod; lod++) {
-        const auto out_file_path = fs::path(destination).append("LOD" + std::to_string(lod) + "_" + base_file_name).make_preferred().string();
+        const auto out_file_path = fs::path(destination).append(
+                "LOD" + std::to_string(lod) + "_" + base_file_name).make_preferred().string();
         if (options_.mesh_file_format == MeshFileFormat::OBJ) {
             result = ObjWriter().write(out_file_path, gml_file_path, *city_model, options_, lod, logger);
         } else {
@@ -50,10 +52,10 @@ void MeshConverter::convert(
 }
 
 void MeshConverter::convert(
-    const std::string& destination_directory,
-    const std::string& gml_file_path,
-    std::shared_ptr<const citygml::CityModel> city_model,
-    std::shared_ptr<PlateauDllLogger> logger
+        const std::string& destination_directory,
+        const std::string& gml_file_path,
+        std::shared_ptr<const citygml::CityModel> city_model,
+        std::shared_ptr<PlateauDllLogger> logger
 ) const {
     std::vector<std::string> converted_files;
     convert(destination_directory, gml_file_path, converted_files, city_model, logger);

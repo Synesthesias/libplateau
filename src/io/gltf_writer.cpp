@@ -10,15 +10,16 @@
 #include <citygml/polygon.h>
 #include <citygml/texture.h>
 
-#include <plateau/io/primary_city_object_types.h>
+#include <plateau/polygon_mesh/primary_city_object_types.h>
 
 #include "gltf_writer.h"
-#include "polar_to_plane_cartesian.h"
+#include "../io/polar_to_plane_cartesian.h"
 
 #include <cassert>
 
 namespace fs = std::filesystem;
 namespace gltf = Microsoft::glTF;
+using namespace citygml;
 
 namespace {
     // The glTF SDK is decoupled from all file I/O by the IStreamWriter (and IStreamReader)

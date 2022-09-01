@@ -11,9 +11,9 @@ DLL_VALUE_FUNC(plateau_texture_target_definition_get_texture_coordinates_count,
                int,
                handle->getTextureCoordinatesCount())
 
-DLL_PTR_FUNC(plateau_texture_target_definition_get_texture_coordinates,
+DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_texture_target_definition_get_texture_coordinates,
              TextureTargetDefinition,
              TextureCoordinates,
              handle->getTextureCoordinates(index).get(),
-             ,int index)
+             index >= handle->getTextureCoordinatesCount())
 }

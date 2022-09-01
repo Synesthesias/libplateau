@@ -8,7 +8,7 @@
 
 namespace {
     void removeFiles(const std::vector<std::string>& files) {
-        for (const auto& file : files) {
+        for (const auto& file: files) {
             std::filesystem::remove(file);
         }
     }
@@ -29,9 +29,9 @@ protected:
 
         basename_ = std::filesystem::path(gml_path_).filename().replace_extension().string();
         expected_outputs_ = {
-        std::filesystem::path(output_directory_).append("LOD0_" + basename_).string(),
-        std::filesystem::path(output_directory_).append("LOD1_" + basename_).string(),
-        std::filesystem::path(output_directory_).append("LOD2_" + basename_).string(),
+                std::filesystem::path(output_directory_).append("LOD0_" + basename_).string(),
+                std::filesystem::path(output_directory_).append("LOD1_" + basename_).string(),
+                std::filesystem::path(output_directory_).append("LOD2_" + basename_).string(),
         };
 
         removeFiles(getExpectedObjFiles());
@@ -40,7 +40,7 @@ protected:
 
     std::vector<std::string> getExpectedObjFiles() const {
         std::vector<std::string> files;
-        for (const auto& output : expected_outputs_) {
+        for (const auto& output: expected_outputs_) {
             files.push_back(output + ".obj");
         }
         return files;
@@ -48,7 +48,7 @@ protected:
 
     std::vector<std::string> getExpectedMtlFiles() const {
         std::vector<std::string> files;
-        for (const auto& output : expected_outputs_) {
+        for (const auto& output: expected_outputs_) {
             files.push_back(output + ".mtl");
         }
         return files;
@@ -65,10 +65,10 @@ protected:
 TEST_F(MeshConverterTest, OutputsObjAndMtl) {
     converter_.convert(output_directory_, gml_path_);
 
-    for (const auto& output : getExpectedObjFiles()) {
+    for (const auto& output: getExpectedObjFiles()) {
         assertFileExists(output);
     }
-    for (const auto& output : getExpectedMtlFiles()) {
+    for (const auto& output: getExpectedMtlFiles()) {
         assertFileExists(output);
     }
 }
@@ -77,11 +77,11 @@ TEST_F(MeshConverterTest, CanGetConvertedFiles) {
     std::vector<std::string> converted_files;
     converter_.convert(output_directory_, gml_path_, converted_files);
 
-    for (const auto& output : getExpectedObjFiles()) {
+    for (const auto& output: getExpectedObjFiles()) {
         const auto expected = std::filesystem::path(output).make_preferred().string();
         const auto it = std::find(converted_files.cbegin(), converted_files.cend(), expected);
         const auto found_string = it != converted_files.cend()
-            ? *it : "";
+                                  ? *it : "";
         ASSERT_EQ(expected, found_string);
         if (it != converted_files.cend()) {
             converted_files.erase(it);

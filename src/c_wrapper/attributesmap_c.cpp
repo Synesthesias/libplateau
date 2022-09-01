@@ -18,7 +18,7 @@ extern "C" {
     /// key に対応するものがない場合は APIResult::ErrorValueNotFound を返します。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_get_attribute_value(
             const AttributesMap *const attributes_map,
-            const char *const key_char,
+            const char* const key_char,
             const AttributeValue** const out_attribute_value_ptr
     ) {
         API_TRY {
@@ -66,7 +66,7 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string(
             const AttributesMap* const handle,
-            char *const out_str_ptr
+            char* const out_str_ptr
             ){
         API_TRY{
             std::stringstream ss;

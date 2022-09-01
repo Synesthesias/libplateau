@@ -17,11 +17,11 @@ public:
         : city_model_(std::move(city_model)) {
     }
 
-    [[nodiscard]] const citygml::CityModel& getCityModel() const {
+    const citygml::CityModel& getCityModel() const {
         return *city_model_;
     }
 
-    [[nodiscard]] std::shared_ptr<const citygml::CityModel> getCityModelPtr() const {
+    std::shared_ptr<const citygml::CityModel> getCityModelPtr() const {
         return city_model_;
     }
 

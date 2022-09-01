@@ -1,9 +1,7 @@
 #include <exception>
 #include <iostream>
-
 #include <citygml/citygml.h>
 #include <plateau_dll_logger.h>
-
 #include "libplateau_c.h"
 #include "city_model_c.h"
 

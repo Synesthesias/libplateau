@@ -10,8 +10,9 @@ using namespace citygml;
 extern "C" {
     // CityModelHandleの生成はplateau_load_citygmlから行われます。
 
-    // TODO CityModel::getCityObjectsOfType のラッパーも作っておくと便利かもしれません
-
+    // 注意 : P/Invoke を使って DLLの利用者から CityModel のアドレスを受け取るとき、
+    // Native側で cityModelHandle->getCityModelPtr() を介さないと
+    // 正しいアドレスになりません。
 
     LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_city_model(
         const CityModelHandle* city_model_handle

@@ -4,4 +4,5 @@ target_sources(plateau PRIVATE
     "mesh_converter.cpp"
     "mesh_convert_options_factory.cpp"
     "polar_to_plane_cartesian.cpp"
-    "plateau_dll_logger.cpp")
+    "plateau_dll_logger.cpp"
+    )

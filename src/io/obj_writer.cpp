@@ -4,18 +4,18 @@
 #include <iomanip>
 #include <filesystem>
 
-#include <citygml/citygml.h>
 #include <citygml/citymodel.h>
 #include <citygml/geometry.h>
 #include <citygml/polygon.h>
 #include <citygml/texture.h>
 
-#include <plateau/io/primary_city_object_types.h>
+#include <plateau/polygon_mesh/primary_city_object_types.h>
 
-#include "obj_writer.h"
+#include <plateau/io/obj_writer.h>
 #include "polar_to_plane_cartesian.h"
 
 namespace fs = std::filesystem;
+using namespace citygml;
 
 namespace {
     void startMeshGroup(std::ofstream& obj_ofs, const std::string& name) {
@@ -72,34 +72,28 @@ namespace {
         create_directory(dst_path.parent_path());
 
         constexpr auto copy_options =
-            fs::copy_options::skip_existing;
+                fs::copy_options::skip_existing;
         copy(src_path, dst_path, copy_options);
     }
 
     TVec3d convertAxes(const TVec3d& position, const AxesConversion axes) {
         TVec3d converted_position = position;
         switch (axes) {
-        case AxesConversion::ENU:
-            return converted_position;
-        case AxesConversion::WUN:
-            converted_position.x = -position.x;
-            converted_position.y = position.z;
-            converted_position.z = position.y;
-            return converted_position;
-        case AxesConversion::NWU:
-            converted_position.x = position.y;
-            converted_position.y = -position.x;
-            converted_position.z = position.z;
-            return converted_position;
-        default:
-            throw std::out_of_range("Invalid argument");
+            case AxesConversion::ENU:
+                return converted_position;
+            case AxesConversion::WUN:
+                converted_position.x = -position.x;
+                converted_position.y = position.z;
+                converted_position.z = position.y;
+                return converted_position;
+            case AxesConversion::NWU:
+                converted_position.x = position.y;
+                converted_position.y = -position.x;
+                converted_position.z = position.z;
+                return converted_position;
+            default:
+                throw std::out_of_range("Invalid argument");
         }
-    }
-
-    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale) {
-        const auto referenced_position = position - reference_point;
-        const auto scaled_position = referenced_position / unit_scale;
-        return convertAxes(scaled_position, axes);
     }
 
     unsigned getMaxLOD(const citygml::CityObject& object) {
@@ -120,14 +114,17 @@ namespace {
     }
 }
 
-bool ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path, const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod, std::shared_ptr<PlateauDllLogger> logger) {
+bool ObjWriter::write(const std::string& obj_file_path, const std::string& gml_file_path,
+                      const citygml::CityModel& city_model, MeshConvertOptions options, unsigned lod,
+                      std::shared_ptr<PlateauDllLogger> logger) {
     // 内部保持するロガー用意。引数指定されていない場合は関数スコープ
     const auto& local_logger = logger == nullptr
-        ? std::make_shared<PlateauDllLogger>()
-        : logger;
+                               ? std::make_shared<PlateauDllLogger>()
+                               : logger;
     dll_logger_ = local_logger;
 
-    dll_logger_.lock()->log(DllLogLevel::LL_INFO, "Start conversion.\ngml path = " + gml_file_path + "\nobj path = " + obj_file_path);
+    dll_logger_.lock()->log(DllLogLevel::LL_INFO,
+                            "Start conversion.\ngml path = " + gml_file_path + "\nobj path = " + obj_file_path);
 
     // 内部状態初期化
     options_ = options;
@@ -146,7 +143,7 @@ bool ObjWriter::write(const std::string& obj_file_path, const std::string& gml_f
 
     if (options_.export_appearance) {
         // テクスチャファイルコピー
-        for (const auto& [_, texture] : required_materials_) {
+        for (const auto& [_, texture]: required_materials_) {
             const auto& texture_url = texture->getUrl();
             copyTexture(gml_file_path, obj_file_path, texture_url);
         }
@@ -175,7 +172,7 @@ void ObjWriter::writeObj(const std::string& obj_file_path, const citygml::CityMo
         startMeshGroup(ofs, fs::u8path(obj_file_path).filename().replace_extension().string());
     }
 
-    for (const auto& root_object : city_model.getRootCityObjects()) {
+    for (const auto& root_object: city_model.getRootCityObjects()) {
         writeCityObjectRecursive(ofs, *root_object, lod);
     }
 }
@@ -207,29 +204,29 @@ void ObjWriter::writeCityObject(std::ofstream& ofs, const citygml::CityObject& t
     auto should_write = false;
     auto should_start_new_group = false;
     switch (options_.mesh_granularity) {
-    case MeshGranularity::PerCityModelArea:
-        should_write = true;
-        should_start_new_group = false;
-        break;
-    case MeshGranularity::PerPrimaryFeatureObject:
-        should_write = is_primary;
-        should_start_new_group = is_primary;
-        break;
-    case MeshGranularity::PerAtomicFeatureObject:
-        if (lod <= 1) {
-            // LOD1以下は階層構造を持たないため常に書き出し&分解
+        case MeshGranularity::PerCityModelArea:
             should_write = true;
-            should_start_new_group = true;
-        } else {
-            // 建築物のLOD2,3については別オブジェクトにも２重にジオメトリが存在するため除外
-            should_write =
-                target_object.getType() != CityObject::CityObjectsType::COT_Building &&
-                target_object.getType() != CityObject::CityObjectsType::COT_BuildingPart &&
-                target_object.getType() != CityObject::CityObjectsType::COT_BuildingInstallation;
+            should_start_new_group = false;
+            break;
+        case MeshGranularity::PerPrimaryFeatureObject:
+            should_write = is_primary;
+            should_start_new_group = is_primary;
+            break;
+        case MeshGranularity::PerAtomicFeatureObject:
+            if (lod <= 1) {
+                // LOD1以下は階層構造を持たないため常に書き出し&分解
+                should_write = true;
+                should_start_new_group = true;
+            } else {
+                // 建築物のLOD2,3については別オブジェクトにも２重にジオメトリが存在するため除外
+                should_write =
+                        target_object.getType() != CityObject::CityObjectsType::COT_Building &&
+                        target_object.getType() != CityObject::CityObjectsType::COT_BuildingPart &&
+                        target_object.getType() != CityObject::CityObjectsType::COT_BuildingInstallation;
 
-            // TODO: 建築物については冗長な空のグループができるため削除必要
-            should_start_new_group = true;
-        }
+                // TODO: 建築物については冗長な空のグループができるため削除必要
+                should_start_new_group = true;
+            }
     }
 
     if (!should_write) {
@@ -279,7 +276,7 @@ void ObjWriter::writeGeometry(std::ofstream& ofs, const citygml::Geometry& targe
 }
 
 void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
-    for (TVec3d vertex : vertices) {
+    for (TVec3d vertex: vertices) {
         polar_to_plane_cartesian().convert(vertex);
         vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
         ofs << generateVertex(vertex);
@@ -287,7 +284,7 @@ void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& ver
 }
 
 void ObjWriter::writeUVs(std::ofstream& ofs, const std::vector<TVec2f>& uvs) {
-    for (const auto& uv : uvs) {
+    for (const auto& uv: uvs) {
         ofs << "vt " << uv.x << " " << uv.y << std::endl;
     }
 }
@@ -317,8 +314,8 @@ void ObjWriter::writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigne
         }
 
         ofs << generateFaceWithUV(
-            face[0], face[1], face[2],
-            uv_face[0], uv_face[1], uv_face[2]);
+                face[0], face[1], face[2],
+                uv_face[0], uv_face[1], uv_face[2]);
     }
 }
 
@@ -348,8 +345,15 @@ void ObjWriter::writeMtl(const std::string& obj_file_path) {
     }
 
     mtl_ofs << generateDefaultMtl();
-    for (auto& [material_name, texture] : required_materials_) {
+    for (auto& [material_name, texture]: required_materials_) {
         const auto& texture_url = texture->getUrl();
         mtl_ofs << generateMtl(material_name, texture_url);
     }
+}
+
+TVec3d ObjWriter::convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes,
+                                  float unit_scale) {
+    const auto referenced_position = position - reference_point;
+    const auto scaled_position = referenced_position / unit_scale;
+    return convertAxes(scaled_position, axes);
 }

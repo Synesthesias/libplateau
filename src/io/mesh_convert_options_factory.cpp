@@ -3,7 +3,8 @@
 
 #include "polar_to_plane_cartesian.h"
 
-void MeshConvertOptionsFactory::setValidReferencePoint(MeshConvertOptions& options, const citygml::CityModel& city_model) {
+void MeshConvertOptionsFactory::setValidReferencePoint(MeshConvertOptions& options,
+                                                       const citygml::CityModel& city_model) {
     TVec3d lower_bound = city_model.getEnvelope().getLowerBound();
     TVec3d upper_bound = city_model.getEnvelope().getUpperBound();
 

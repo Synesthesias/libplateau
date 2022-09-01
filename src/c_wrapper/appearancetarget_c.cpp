@@ -9,14 +9,14 @@ extern "C" {
 DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_texture_theme_names,
                              AppearanceTarget,
                              handle->getAllTextureThemes(front).size(),
-                             const auto &str: handle->getAllTextureThemes(front),
+                             const auto& str: handle->getAllTextureThemes(front),
                              str,
                              ,bool front)
 
 DLL_STRING_VALUE_ARRAY_FUNC3(plateau_appearance_target_get_all_material_theme_names,
                              AppearanceTarget,
                              handle->getAllMaterialThemes(front).size(),
-                             const auto &str : handle->getAllMaterialThemes(front),
+                             const auto& str : handle->getAllMaterialThemes(front),
                              str,
                              ,bool front)
 
@@ -25,11 +25,11 @@ DLL_VALUE_FUNC(plateau_appearance_target_get_texture_target_definitions_count,
                int,
                handle->getTextureTargetDefinitions().size())
 
-DLL_PTR_FUNC(plateau_appearance_target_get_texture_target_definition_by_index,
+DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_appearance_target_get_texture_target_definition_by_index,
              AppearanceTarget,
              TextureTargetDefinition,
              handle->getTextureTargetDefinitions().at(index),
-             ,int index)
+             index >= handle->getTextureTargetDefinitions().size())
 
 DLL_PTR_FUNC(plateau_appearance_target_get_material_target_definition_by_theme_name,
              AppearanceTarget,

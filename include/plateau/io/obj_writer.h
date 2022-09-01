@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <string>
 #include <fstream>
 
@@ -10,15 +11,18 @@
 class LIBPLATEAU_EXPORT ObjWriter {
 public:
     ObjWriter() :
-        v_offset_(0), uv_offset_(0) {
+            v_offset_(0), uv_offset_(0) {
     }
 
     bool write(
-        const std::string& obj_file_path,
-        const std::string& gml_file_path,
-        const citygml::CityModel& city_model,
-        MeshConvertOptions options, unsigned lod,
-        std::shared_ptr<PlateauDllLogger> logger = nullptr);
+            const std::string& obj_file_path,
+            const std::string& gml_file_path,
+            const citygml::CityModel& city_model,
+            MeshConvertOptions options, unsigned lod,
+            std::shared_ptr<PlateauDllLogger> logger = nullptr);
+
+    static TVec3d
+    convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale);
 
 private:
     // OBJ書き出し
@@ -30,14 +34,14 @@ private:
     void writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices);
     void writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices);
     void writeUVs(std::ofstream& ofs, const std::vector<TVec2f>& uvs);
-    void writeMaterialReference(std::ofstream& ofs, const std::shared_ptr<const Texture>& texture);
+    void writeMaterialReference(std::ofstream& ofs, const std::shared_ptr<const citygml::Texture>& texture);
 
     // MTL書き出し
     void writeMtl(const std::string& obj_file_path);
 
     MeshConvertOptions options_;
 
-    std::map<std::string, std::shared_ptr<const Texture>> required_materials_;
+    std::map<std::string, std::shared_ptr<const citygml::Texture>> required_materials_;
     unsigned v_offset_, uv_offset_;
 
     std::weak_ptr<PlateauDllLogger> dll_logger_;
