@@ -4,6 +4,7 @@
 #include <plateau/polygon_mesh/mesh_extract_options.h>
 #include <citygml/polygon.h>
 #include <citygml/cityobject.h>
+#include <list>
 
 namespace plateau::polygonMesh {
 
