@@ -1,5 +1,6 @@
 #include<plateau/polygon_mesh/sub_mesh.h>
 #include <utility>
+#include <stdexcept>
 
 namespace plateau::polygonMesh {
 
@@ -10,7 +11,7 @@ namespace plateau::polygonMesh {
 
     void
     SubMesh::addSubMesh(size_t start_index, size_t end_index, std::string texture_path, std::vector<SubMesh>& vector) {
-        if (end_index <= start_index) throw std::exception("addSubMesh : Index is invalid.");
+        if (end_index <= start_index) throw std::logic_error("addSubMesh : Index is invalid.");
         vector.emplace_back(start_index, end_index, std::move(texture_path));
     }
 

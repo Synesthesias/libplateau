@@ -12,7 +12,7 @@ namespace plateau::polygonMesh {
     namespace {
         void extractInner(Model& out_model, const citygml::CityModel& city_model,
                           const MeshExtractOptions& options) {
-            if (options.max_lod < options.min_lod) throw std::exception("Invalid LOD range.");
+            if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
             // rootNode として LODノード を作ります。
             for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
                 auto lod_node = Node("LOD" + std::to_string(lod));
@@ -93,7 +93,7 @@ namespace plateau::polygonMesh {
                     }
                         break;
                     default:
-                        throw std::exception("Unknown enum type of options.mesh_granularity .");
+                        throw std::logic_error("Unknown enum type of options.mesh_granularity .");
                 }
 
                 out_model.addNode(std::move(lod_node));

@@ -31,7 +31,7 @@ namespace plateau::polygonMesh {
 
     void Mesh::setUV2(const UV& uv2) {
         if (uv2.size() != vertices_.size()) {
-            throw std::exception("Size of uv2 does not match num of vertices.");
+            throw std::logic_error("Size of uv2 does not match num of vertices.");
         }
         uv2_ = uv2;
     }
