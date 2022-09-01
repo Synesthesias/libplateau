@@ -29,16 +29,18 @@ catch (...) {\
 /// 文字列のサイズをDLLでやりとりする時の型を決めます。
 using dll_str_size_t = int;
 
-/// アドレスをDLL利用者に渡す関数を生成するマクロです。
-/// HANDLE_TYPE* handle から RETURN_VALUE_TYPEのアドレスを取得して引数 out に書き込みます。
-/// マクロの引数は 1番目に関数名,
-/// 2番目に対象クラス名,
-/// 3番目に渡したいアドレスの実体型名,
-/// 4番目に 対象クラス* handle から RETURN_VALUE_TYPE* を取得する処理,
-/// 5番目以降は省略可能で、追加で必要な引数をカンマから記載したものです。
-/// 関数の引数は 1番目が HANDLE_TYPE のハンドル(アドレス),
-/// 2番目が 出力用の渡すべきアドレスの参照 となります。
-/// 戻り値は API_Result です。
+/**
+ * アドレスをDLL利用者に渡す関数を生成するマクロです。
+ * HANDLE_TYPE* handle から RETURN_VALUE_TYPEのアドレスを取得して引数 out に書き込みます。
+ * マクロの引数は 1番目に関数名,
+ * 2番目に対象クラス名,
+ * 3番目に渡したいアドレスの実体型名,
+ * 4番目に 対象クラス* handle から RETURN_VALUE_TYPE* を取得する処理,
+ * 5番目以降は省略可能で、追加で必要な引数をカンマから記載したものです。
+ * 関数の引数は 1番目が HANDLE_TYPE のハンドル(アドレス),
+ * 2番目が 出力用の渡すべきアドレスの参照 となります。
+ * 戻り値は API_Result です。
+ */
 #define DLL_PTR_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */ \
@@ -53,10 +55,13 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
-/// アドレスを DLL利用者に渡す関数を生成するマクロです。
-/// マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
-/// 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle と int index を利用してアドレスを得る式) の値を out に格納して APIResult::Success を返します。
-/// 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+
+/**
+ * アドレスを DLL利用者に渡す関数を生成するマクロです。
+ * クロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
+ * 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle と int index を利用してアドレスを得る式) の値を out に格納して APIResult::Success を返します。
+ * 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+ */
 #define DLL_PTR_FUNC_WITH_INDEX_CHECK(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, INDEX_OUT_OF_RANGE_CONDITION, ...) \
      LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */  \
@@ -73,10 +78,11 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
-
-/// 値を DLL利用者に渡す関数を生成するマクロです。
-/// HANDLE_TYPE* handle から値を取得して 引数 RETURN_VALUE_TYPE* out に書き込みます。
-/// DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
+/**
+ * 値を DLL利用者に渡す関数を生成するマクロです。
+ * HANDLE_TYPE* handle から値を取得して 引数 RETURN_VALUE_TYPE* out に書き込みます。
+ * DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
+ */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle, \
@@ -91,10 +97,13 @@ using dll_str_size_t = int;
         return APIResult::ErrorUnknown; \
     }
 
-/// インデックスのチェックをしてから値をDLLの利用者に返す関数を作るマクロです。
-/// マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
-/// 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle と int index を利用して値を得る式) の値を out に格納して APIResult::Success を返します。
-/// 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+
+/**
+ * インデックスのチェックをしてから値をDLLの利用者に返す関数を作るマクロです。
+ * マクロ引数 INDEX_OUT_OF_RANGE_CONDITION (int index を利用してboolを返す式)が真のとき、 APIResult::ErrorIndexOutOfBounds を返します。
+ * 偽のとき、例外がなければ GETTER (HANDLE_TYPE *handle と int index を利用して値を得る式) の値を out に格納して APIResult::Success を返します。
+ * 例外が起きたとき、 APIResult::ErrorUnknown を返します。
+ */
 #define DLL_VALUE_FUNC_WITH_INDEX_CHECK(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, INDEX_OUT_OF_RANGE_CONDITION, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle, \
