@@ -7,7 +7,6 @@
 #include "mesh_merger.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/io/obj_writer.h>
-#include <stdexcept>
 
 namespace plateau::polygonMesh {
     namespace {
