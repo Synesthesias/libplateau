@@ -66,11 +66,11 @@ using dll_str_size_t = int;
      LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */  \
             const RETURN_VALUE_TYPE** out, /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */  \
-            int index,  \
+            int index  \
             __VA_ARGS__ \
             ){ \
         API_TRY{  \
-            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;                                                                                                               \
+            if((INDEX_OUT_OF_RANGE_CONDITION)) return APIResult::ErrorIndexOutOfBounds;  \
             *out = GETTER; /* アドレスを out に書き込みます。 */ \
             return APIResult::Success; \
         } \
