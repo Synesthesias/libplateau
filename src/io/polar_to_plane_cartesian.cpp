@@ -1,4 +1,5 @@
 #include "polar_to_plane_cartesian.h"
+#include <cmath>
 
 void polar_to_plane_cartesian::convert(TVec3d& position) {
     double xyz[3];
