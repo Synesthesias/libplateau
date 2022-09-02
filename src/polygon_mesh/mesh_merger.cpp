@@ -15,18 +15,19 @@ namespace plateau::polygonMesh {
         }
 
         /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
-        void mergeShape(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
-                        const TVec2f& uv_3_element,
-                        const MeshExtractOptions& options) {
+        /// 座標変換を伴います。
+        void mergeShapeWithConvert(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
+                                   const TVec2f& uv_3_element,
+                                   const MeshExtractOptions& options) {
             unsigned prev_num_vertices = mesh.getVertices().size();
             // 極座標を受け取ります。
-            auto& vertices_lat_lon = other_poly.getVertices();
-            auto& other_indices = other_poly.getIndices();
+            const auto& vertices_lat_lon = other_poly.getVertices();
+            const auto& other_indices = other_poly.getIndices();
 
             // 極座標から平面直角座標へ変換します。
             // TODO 下のenumキャストをなくす。
             //  TODO GeoReferenceを毎回生成するのは効率が悪い
-            auto geo_reference = GeoReference(options.reference_point, options.unit_scale, (CoordinateSystem)options.mesh_axes);
+            const auto geo_reference = GeoReference(options.reference_point, options.unit_scale, (CoordinateSystem)options.mesh_axes);
             auto vertices_xyz = std::vector<TVec3d>();
             vertices_xyz.reserve(vertices_lat_lon.size());
             for(const auto& lat_lon : vertices_lat_lon){
@@ -48,7 +49,7 @@ namespace plateau::polygonMesh {
         void mergeWithTexture(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& options,
                               const TVec2f& uv_2_element, const TVec2f& uv_3_element) {
             if (!isValidPolygon(other_poly)) return;
-            mergeShape(mesh, other_poly, uv_2_element, uv_3_element, options);
+            mergeShapeWithConvert(mesh, other_poly, uv_2_element, uv_3_element, options);
 
             const auto& texture = other_poly.getTextureFor("rgbTexture");
             std::string texture_path;
@@ -68,7 +69,7 @@ namespace plateau::polygonMesh {
         void mergeWithoutTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
                                  const TVec2f& uv_3_element, const MeshExtractOptions& options) {
             if (!isValidPolygon(other_poly)) return;
-            mergeShape(mesh, other_poly, uv_2_element, uv_3_element, options);
+            mergeShapeWithConvert(mesh, other_poly, uv_2_element, uv_3_element, options);
             mesh.extendLastSubMesh();
 
         }

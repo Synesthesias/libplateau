@@ -12,16 +12,16 @@ namespace plateau::geometry{
      */
     class GeoReference{
     public:
-        GeoReference(TVec3d reference_point, float unit_scale, CoordinateSystem coordinate_system,
+        GeoReference(const TVec3d& reference_point, float unit_scale, CoordinateSystem coordinate_system,
                      int zone_id  = default_zone_id_);
-        TVec3d project(GeoCoordinate point);
+        TVec3d project(const GeoCoordinate& point) const;
 
         // TODO 未実装
         // GeoCoordinate unproject(TVec3d point);
 
         void setReferencePoint(TVec3d point);
-        TVec3d getReferencePoint();
-        int getZoneID();
+        TVec3d getReferencePoint() const;
+        int getZoneID() const;
         void setZoneID(int value);
 
     private:
