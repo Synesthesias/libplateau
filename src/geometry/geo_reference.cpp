@@ -16,10 +16,20 @@ namespace plateau::geometry{
     }
 
     TVec3d GeoReference::project(const double lat_lon[3]) const {
-        double point[3] = {lat_lon[0], lat_lon[1], lat_lon[2]};
+        TVec3d point = {lat_lon[0], lat_lon[1], lat_lon[2]};
         polar_to_plane_cartesian().convert(point);
-        // TODO ObjWriterへの依存はやめる
-        return ObjWriter::convertPosition(point, reference_point_, coordinate_system_, unit_scale_);
+        point = (point - reference_point_) / unit_scale_;
+
+        switch (coordinate_system_) {
+            case CoordinateSystem::ENU:
+                return point;
+            case CoordinateSystem::WUN:
+                return {-point.x, point.z, point.y};
+            case CoordinateSystem::NWU:
+                return {point.y, -point.x, point.z};
+            default:
+                throw std::out_of_range("Invalid argument");
+        }
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {
