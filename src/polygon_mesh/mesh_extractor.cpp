@@ -13,6 +13,10 @@ namespace plateau::polygonMesh {
         void extractInner(Model& out_model, const citygml::CityModel& city_model,
                           const MeshExtractOptions& options) {
             if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
+
+            bool do_export_appearance = options.export_appearance;
+            const auto geo_reference = GeoReference(options.reference_point, options.unit_scale, options.mesh_axes);
+
             // rootNode として LODノード を作ります。
             for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
                 auto lod_node = Node("LOD" + std::to_string(lod));
@@ -24,7 +28,7 @@ namespace plateau::polygonMesh {
                         // model -> LODノード -> グループごとのノード
 
                         // 都市をグループに分け、グループごとにメッシュをマージします。
-                        auto result = GridMerger::gridMerge(city_model, options, lod);
+                        auto result = GridMerger::gridMerge(city_model, options, lod, geo_reference);
                         // グループごとのノードを追加します。
                         for (auto& pair: result) {
                             unsigned group_id = pair.first;
@@ -45,11 +49,15 @@ namespace plateau::polygonMesh {
                         for (auto primary_obj: primary_city_objs) {
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
-                            MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, TVec2f{0, 0}, TVec2f{0, 0});
+                            MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, do_export_appearance, geo_reference,
+                                                                  TVec2f{0, 0},
+                                                                  TVec2f{0, 0});
                             if (lod >= 2) {
                                 // 主要地物の子である各最小地物をメッシュに加えます。
                                 auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
-                                MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, TVec2f{0, 0}, options, TVec2f{0, 0});
+                                MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, do_export_appearance, geo_reference,
+                                                                       TVec2f{0, 0},
+                                                                       TVec2f{0, 0});
                             }
                             // 主要地物ごとのノードを追加します。
                             lod_node.addChildNode(Node(primary_obj->getId(), std::move(mesh)));
@@ -73,8 +81,10 @@ namespace plateau::polygonMesh {
                                       (citygml::CityObject::CityObjectsType) 0);
                             if (should_contain_primary_mesh) {
                                 primary_mesh = Mesh(primary_obj->getId());
-                                MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options, TVec2f{0, 0},
-                                                                        TVec2f{0, 0});
+                                MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, do_export_appearance,
+                                                                      geo_reference,
+                                                                      TVec2f{0, 0},
+                                                                      TVec2f{0, 0});
                             }
                             auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));
                             // 最小地物ごとにノードを作成します。
@@ -82,7 +92,9 @@ namespace plateau::polygonMesh {
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
                                 auto atomic_mesh = Mesh(atomic_obj->getId());
-                                MeshMerger::mergePolygonsInCityObject(atomic_mesh, *atomic_obj, lod, options, TVec2f{0, 0},
+                                MeshMerger::mergePolygonsInCityObject(atomic_mesh, *atomic_obj, lod, do_export_appearance,
+                                                                      geo_reference,
+                                                                      TVec2f{0, 0},
                                                                       TVec2f{0, 0});
                                 auto atomic_node = Node(atomic_obj->getId(), std::move(atomic_mesh));
                                 primary_node.addChildNode(std::move(atomic_node));

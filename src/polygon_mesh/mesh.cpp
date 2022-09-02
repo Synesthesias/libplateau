@@ -52,7 +52,7 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
-    void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options) {
+    void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices) {
         // 各頂点を追加します。
         for (const auto& other_pos: other_vertices) {
             vertices_.push_back(other_pos);

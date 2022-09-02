@@ -1,6 +1,7 @@
 
 #include <vector>
 #include "citygml/citymodel.h"
+#include "plateau/geometry/geo_reference.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
@@ -20,6 +21,8 @@ namespace plateau::polygonMesh {
         /**
          * city_model の範囲をグリッド状に分割して、グリッドをさらにグループに分け、各グループ内のメッシュを結合して返します。
          */
-        static GridMergeResult gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod);
+        static GridMergeResult
+        gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
+                  const plateau::geometry::GeoReference& geo_reference);
     };
 }

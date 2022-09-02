@@ -11,11 +11,15 @@ namespace plateau::geometry{
         zone_id_(zone_id){}
 
     TVec3d GeoReference::project(const GeoCoordinate& point) const {
-        auto lat_lon = TVec3d(point.latitude, point.longitude, point.height);
-        polar_to_plane_cartesian().convert(lat_lon);
+        double lat_lon[3] = {point.latitude, point.longitude, point.height};
+        return project(lat_lon);
+    }
+
+    TVec3d GeoReference::project(const double lat_lon[3]) const {
+        double point[3] = {lat_lon[0], lat_lon[1], lat_lon[2]};
+        polar_to_plane_cartesian().convert(point);
         // TODO ObjWriterへの依存はやめる
-        auto xyz = ObjWriter::convertPosition(lat_lon, reference_point_, coordinate_system_, unit_scale_);
-        return xyz;
+        return ObjWriter::convertPosition(point, reference_point_, coordinate_system_, unit_scale_);
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {
