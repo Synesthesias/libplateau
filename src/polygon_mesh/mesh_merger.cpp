@@ -27,7 +27,7 @@ namespace plateau::polygonMesh {
             // 極座標から平面直角座標へ変換します。
             // TODO 下のenumキャストをなくす。
             //  TODO GeoReferenceを毎回生成するのは効率が悪い
-            const auto geo_reference = GeoReference(options.reference_point, options.unit_scale, (CoordinateSystem)options.mesh_axes);
+            const auto geo_reference = GeoReference(options.reference_point, options.unit_scale, options.mesh_axes);
             auto vertices_xyz = std::vector<TVec3d>();
             vertices_xyz.reserve(vertices_lat_lon.size());
             for(const auto& lat_lon : vertices_lat_lon){

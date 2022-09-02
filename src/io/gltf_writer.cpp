@@ -68,17 +68,17 @@ namespace {
         copy(src_path, dst_path, copy_options);
     }
 
-    TVec3d convertAxes(const TVec3d& position, const AxesConversion axes) {
+    TVec3d convertAxes(const TVec3d& position, const CoordinateSystem axes) {
         TVec3d converted_position = position;
         switch (axes) {
-        case AxesConversion::ENU:
+        case CoordinateSystem::ENU:
             return converted_position;
-        case AxesConversion::WUN:
+        case CoordinateSystem::WUN:
             converted_position.x = -position.x;
             converted_position.y = position.z;
             converted_position.z = position.y;
             return converted_position;
-        case AxesConversion::NWU:
+        case CoordinateSystem::NWU:
             converted_position.x = position.y;
             converted_position.y = -position.x;
             converted_position.z = position.z;
@@ -88,7 +88,7 @@ namespace {
         }
     }
 
-    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const AxesConversion axes, float unit_scale) {
+    TVec3d convertPosition(const TVec3d& position, const TVec3d& reference_point, const CoordinateSystem axes, float unit_scale) {
         const auto referenced_position = position - reference_point;
         const auto scaled_position = referenced_position / unit_scale;
         return convertAxes(scaled_position, axes);

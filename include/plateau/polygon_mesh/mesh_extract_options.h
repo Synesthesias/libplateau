@@ -6,7 +6,7 @@
 namespace plateau::polygonMesh {
 
     struct MeshExtractOptions {
-        MeshExtractOptions(TVec3d reference_point, AxesConversion mesh_axes, MeshGranularity mesh_granularity,
+        MeshExtractOptions(TVec3d reference_point, CoordinateSystem mesh_axes, MeshGranularity mesh_granularity,
                            unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side,
                            float unit_scale) :
                 reference_point(reference_point),
@@ -20,7 +20,7 @@ namespace plateau::polygonMesh {
 
     public:
         TVec3d reference_point;
-        AxesConversion mesh_axes;
+        CoordinateSystem mesh_axes;
         MeshGranularity mesh_granularity;
         unsigned max_lod;
         unsigned min_lod;

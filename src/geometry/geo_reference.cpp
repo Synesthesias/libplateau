@@ -14,7 +14,7 @@ namespace plateau::geometry{
         auto lat_lon = TVec3d(point.latitude, point.longitude, point.height);
         polar_to_plane_cartesian().convert(lat_lon);
         // TODO ObjWriterへの依存はやめる
-        auto xyz = ObjWriter::convertPosition(lat_lon, reference_point_, (AxesConversion)coordinate_system_, unit_scale_);
+        auto xyz = ObjWriter::convertPosition(lat_lon, reference_point_, coordinate_system_, unit_scale_);
         return xyz;
     }
 

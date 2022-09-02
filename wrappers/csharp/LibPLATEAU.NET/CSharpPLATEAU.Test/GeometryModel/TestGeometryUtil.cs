@@ -14,7 +14,7 @@ namespace PLATEAU.Test.GeometryModel
             var options = new MeshExtractOptions
             {
                 ReferencePoint = cityModel.CenterPoint,
-                MeshAxes = AxesConversion.WUN,
+                MeshAxes = CoordinateSystem.WUN,
                 MeshGranularity = MeshGranularity.PerCityModelArea,
                 MinLOD = 2,
                 MaxLOD = 2,
