@@ -45,4 +45,9 @@ namespace plateau::geometry{
         //! Unreal Engineでの座標系
         NWU
     };
+
+    struct Extent{
+        GeoCoordinate min;
+        GeoCoordinate max;
+    };
 }
