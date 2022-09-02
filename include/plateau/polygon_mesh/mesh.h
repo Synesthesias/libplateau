@@ -48,7 +48,7 @@ namespace plateau::polygonMesh {
         const UV& getUV3() const;
         const std::vector<SubMesh>& getSubMeshes() const;
 
-        /// 頂点リストの末尾に追加します。極座標からデカルト座標への変換が行われます。
+        /// 頂点リストの末尾に追加します。
         void addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options);
         void addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices);
         void addUV1(const citygml::Polygon& other_poly);

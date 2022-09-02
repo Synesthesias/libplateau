@@ -53,17 +53,9 @@ namespace plateau::polygonMesh {
     }
 
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices, const MeshExtractOptions& options) {
-        // 各頂点を座標変換しながら追加します。
+        // 各頂点を追加します。
         for (const auto& other_pos: other_vertices) {
-            // other_pos は極座標系です。
-            auto pos = other_pos;
-            // デカルト座標系に直します。
-            // FIXME 変換部分だけ ObjWriterの機能を拝借していますが、本質的には ObjWriter である必要はないです。変換を別クラスに書き出した方が良いです。
-            // TODO 座標変換については、今後は自作せずライブラリを利用する方針になったのでライブラリ導入後にここを直します。
-            polar_to_plane_cartesian().convert(pos);
-            // オプションに応じて座標系を変更します。
-            pos = ObjWriter::convertPosition(pos, options.reference_point, options.mesh_axes, options.unit_scale);
-            vertices_.push_back(pos);
+            vertices_.push_back(other_pos);
         }
     }
 

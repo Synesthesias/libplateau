@@ -1,9 +1,12 @@
 #include "mesh_merger.h"
 #include "plateau/polygon_mesh/polygon_mesh_utils.h"
 #include "citygml/texture.h"
+#include <plateau/geometry/geo_coordinate.h>
+#include <plateau/geometry/geo_reference.h>
 
 namespace plateau::polygonMesh {
     using namespace citygml;
+    using namespace plateau::geometry;
 
     namespace {
 
@@ -16,14 +19,26 @@ namespace plateau::polygonMesh {
                         const TVec2f& uv_3_element,
                         const MeshExtractOptions& options) {
             unsigned prev_num_vertices = mesh.getVertices().size();
-            auto& other_vertices = other_poly.getVertices();
+            // 極座標を受け取ります。
+            auto& vertices_lat_lon = other_poly.getVertices();
             auto& other_indices = other_poly.getIndices();
 
-            mesh.addVerticesList(other_vertices, options);
+            // 極座標から平面直角座標へ変換します。
+            // TODO 下のenumキャストをなくす。
+            //  TODO GeoReferenceを毎回生成するのは効率が悪い
+            auto geo_reference = GeoReference(options.reference_point, options.unit_scale, (CoordinateSystem)options.mesh_axes);
+            auto vertices_xyz = std::vector<TVec3d>();
+            vertices_xyz.reserve(vertices_lat_lon.size());
+            for(const auto& lat_lon : vertices_lat_lon){
+                auto xyz = geo_reference.project(GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z));
+                vertices_xyz.push_back(xyz);
+            }
+
+            mesh.addVerticesList(vertices_xyz, options);
             mesh.addIndicesList(other_indices, prev_num_vertices);
             mesh.addUV1(other_poly);
-            mesh.addUV2WithSameVal(uv_2_element, other_vertices.size());
-            mesh.addUV3WithSameVal(uv_3_element, other_vertices.size());
+            mesh.addUV2WithSameVal(uv_2_element, vertices_xyz.size());
+            mesh.addUV3WithSameVal(uv_3_element, vertices_xyz.size());
         }
 
         /**

@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO あとで消す　geometry::CoordinateSystem に移動のため
 /**
  * @enum AxesConversion
  *
