@@ -327,6 +327,7 @@ void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsig
 }
 
 void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
+    auto geo_reference = GeoReference();
     for (unsigned int i = 0; i < target_geometry.getPolygonsCount(); i++) {
         const auto polygon = target_geometry.getPolygon(i);
         const auto& indices = polygon->getIndices();
@@ -352,7 +353,7 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
         writeIndices(indices, bufferBuilder);
 
         const auto& vertices = polygon->getVertices();
-        writeVertices(vertices, bufferBuilder);
+        writeVertices(vertices, bufferBuilder, geo_reference);
 
         v_offset_ += vertices.size();
     }
@@ -363,9 +364,10 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
     }
 }
 
-void GltfWriter::writeVertices(const std::vector<TVec3d>& vertices, gltf::BufferBuilder& bufferBuilder) {
+void GltfWriter::writeVertices(const std::vector<TVec3d>& vertices, gltf::BufferBuilder& bufferBuilder,
+                               const GeoReference& geo_reference) {
     for (TVec3d vertex : vertices) {
-        polar_to_plane_cartesian().convert(vertex, 9);
+        geo_reference.project(vertex);
         vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
         positions_.push_back((float)vertex.x);
         positions_.push_back((float)vertex.y);
