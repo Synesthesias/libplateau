@@ -23,8 +23,7 @@ namespace plateau::polygonMesh {
             return TVec3d{0, 0, 0};
         }
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        auto geo_reference = GeoReference();
-        return geo_reference.project(city_center);;
+        return GeoReference().project(city_center);;
     }
 
 /**

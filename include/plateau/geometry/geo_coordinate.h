@@ -1,6 +1,6 @@
 #pragma once
 
-namespace plateau::geometry{
+namespace plateau::geometry {
 
     /**
      * 緯度・経度・高さ による位置表現です。
@@ -15,17 +15,16 @@ namespace plateau::geometry{
      * TODO
      * EPSGコードの判別と、それによって処理を変える機能は未実装です。
      */
-    struct GeoCoordinate{
+    struct GeoCoordinate {
     public:
         double latitude;
         double longitude;
         double height;
 
-        GeoCoordinate(double lat, double lon, double height_arg){
-            latitude = lat;
-            longitude = lon;
-            height = height_arg;
-        }
+        GeoCoordinate(double lat, double lon, double height) :
+                latitude(lat),
+                longitude(lon),
+                height(height) {}
     };
 
 
@@ -46,7 +45,7 @@ namespace plateau::geometry{
         NWU
     };
 
-    struct Extent{
+    struct Extent {
         GeoCoordinate min;
         GeoCoordinate max;
     };

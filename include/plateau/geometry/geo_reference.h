@@ -1,9 +1,10 @@
 #pragma once
+
 #include <citygml/vecs.hpp>
 #include "geo_coordinate.h"
 #include <libplateau_api.h>
 
-namespace plateau::geometry{
+namespace plateau::geometry {
 
     /**
      * 座標変換の基準を保持し、座標変換します。
@@ -11,16 +12,17 @@ namespace plateau::geometry{
      * zoneID についてはこちらを参照してください :
      * https://www.gsi.go.jp/sokuchikijun/jpc.html
      */
-    class LIBPLATEAU_EXPORT GeoReference{
+    class LIBPLATEAU_EXPORT GeoReference {
     public:
-        GeoReference(const TVec3d& reference_point = TVec3d(0,0, 0) , float unit_scale = 1.0, CoordinateSystem coordinate_system = CoordinateSystem::ENU,
-                     int zone_id  = default_zone_id_);
+        explicit GeoReference(const TVec3d& reference_point = TVec3d(0, 0, 0), float unit_scale = 1.0,
+                              CoordinateSystem coordinate_system = CoordinateSystem::ENU,
+                              int zone_id = default_zone_id_);
 
         /**
          * 緯度・経度・高さで表現される座標を平面直角座標系に変換します。
          */
         TVec3d project(const GeoCoordinate& point) const;
-        TVec3d project(const double lat_lon[3]) const;
+        TVec3d project(const TVec3d& lat_lon) const;
 
         // TODO 未実装
         // GeoCoordinate unproject(TVec3d point);
