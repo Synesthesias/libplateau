@@ -13,7 +13,7 @@ namespace plateau::geometry{
      */
     class LIBPLATEAU_EXPORT GeoReference{
     public:
-        GeoReference(const TVec3d& reference_point, float unit_scale, CoordinateSystem coordinate_system,
+        GeoReference(const TVec3d& reference_point = TVec3d(0,0, 0) , float unit_scale = 1.0, CoordinateSystem coordinate_system = CoordinateSystem::ENU,
                      int zone_id  = default_zone_id_);
 
         /**

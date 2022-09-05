@@ -277,7 +277,7 @@ void ObjWriter::writeGeometry(std::ofstream& ofs, const citygml::Geometry& targe
 
 void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
     for (TVec3d vertex: vertices) {
-        polar_to_plane_cartesian().convert(vertex);
+        polar_to_plane_cartesian().convert(vertex, 9);
         vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
         ofs << generateVertex(vertex);
     }

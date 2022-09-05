@@ -365,7 +365,7 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
 
 void GltfWriter::writeVertices(const std::vector<TVec3d>& vertices, gltf::BufferBuilder& bufferBuilder) {
     for (TVec3d vertex : vertices) {
-        polar_to_plane_cartesian().convert(vertex);
+        polar_to_plane_cartesian().convert(vertex, 9);
         vertex = convertPosition(vertex, options_.reference_point, options_.mesh_axes, options_.unit_scale);
         positions_.push_back((float)vertex.x);
         positions_.push_back((float)vertex.y);

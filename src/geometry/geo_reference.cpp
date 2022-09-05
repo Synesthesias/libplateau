@@ -17,7 +17,7 @@ namespace plateau::geometry{
 
     TVec3d GeoReference::project(const double lat_lon[3]) const {
         TVec3d point = {lat_lon[0], lat_lon[1], lat_lon[2]};
-        polar_to_plane_cartesian().convert(point);
+        polar_to_plane_cartesian().convert(point, zone_id_);
         point = (point - reference_point_) / unit_scale_;
 
         switch (coordinate_system_) {
