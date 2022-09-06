@@ -13,6 +13,8 @@
 #include <GLTFSDK/GLBResourceWriter.h>
 #include <GLTFSDK/IStreamWriter.h>
 #include <GLTFSDK/Serialize.h>
+#include "GLTFSDK/BufferBuilder.h"
+#include "plateau/geometry/geo_reference.h"
 
 class LIBPLATEAU_EXPORT GltfWriter {
 public:
@@ -34,7 +36,8 @@ private:
     void writeCityObjectRecursive(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
     void writeCityObject(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
     void writeGeometry(const citygml::Geometry& target_geometry, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
-    void writeVertices(const std::vector<TVec3d>& vertices, Microsoft::glTF::BufferBuilder& bufferBuilder);
+    void writeVertices(const std::vector<TVec3d>& vertices, Microsoft::glTF::BufferBuilder& bufferBuilder,
+                       const GeoReference& geo_reference);
     void writeIndices(const std::vector<unsigned int>& indices, Microsoft::glTF::BufferBuilder& bufferBuilder);
     void writeUVs(const std::vector<TVec2f>& uvs, Microsoft::glTF::BufferBuilder& bufferBuilder);
     std::string writeMaterialReference(const std::shared_ptr<const citygml::Texture>& texture, Microsoft::glTF::Document& document);

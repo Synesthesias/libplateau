@@ -1,19 +1,25 @@
 #include "polar_to_plane_cartesian.h"
 #include <cmath>
 
-void polar_to_plane_cartesian::convert(TVec3d& position) {
+void polar_to_plane_cartesian::convert(TVec3d& position, int cartesian_coordinate_system_id) {
     double xyz[3];
     xyz[0] = position.x;
     xyz[1] = position.y;
     xyz[2] = position.z;
-    convert(xyz);
+    convert(xyz, cartesian_coordinate_system_id);
     position.x = xyz[0];
     position.y = xyz[1];
     position.z = xyz[2];
 }
 
-
-void polar_to_plane_cartesian::convert(double xyz[]) {
+/**
+ * 極座標系を平面直角座標系に変換します。
+ * 引数の cartesian_coordinate_system_id は、次のサイトに記載された平面直角座標系の番号です。
+ * https://www.gsi.go.jp/sokuchikijun/jpc.html
+ * 関東地方の場合は 9 が最適になります。
+ * この番号を正しく設定することで座標変換の歪みが少なくなりますが、誤っていてもぱっと見では歪みは分からない程度です。
+ */
+void polar_to_plane_cartesian::convert(double xyz[], int cartesian_coordinate_system_id) {
     //平面直角座標変換の計算方法は https://www.gsi.go.jp/common/000061216.pdf
     int a = 6378137;
     double rf = 298.257222101, m0 = 0.9999, PI = 3.14159265358979323846;
@@ -39,14 +45,12 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
     alp[3] = (61.0 / 240 + (-103.0 / 140 + 15061.0 / 26880 * n_) * n_) * n_ * nsq;
     alp[4] = (49561.0 / 161280 - 179.0 / 168 * n_) * nsq * nsq;
     alp[5] = 34729.0 / 80640 * n_ * nsq * nsq;
-
-    int num = 9;//座標系番号を9に設定　https://www.gsi.go.jp/sokuchikijun/jpc.html
     double phirad = xyz[0] * PI / 180; //緯度を十進法度単位（ラジアン）に直す
     double lmbdsec = xyz[1] * 3600; //経度を秒単位（deg）に直す
 
     double sphi = sin(phirad);
     double nphi = (1 - n_) / (1 + n_) * tan(phirad);
-    double dlmbd = (lmbdsec - lmbd0[num] * 60) * s2r;
+    double dlmbd = (lmbdsec - lmbd0[cartesian_coordinate_system_id] * 60) * s2r;
     double sdlmbd = sin(dlmbd);
     double cdlmbd = cos(dlmbd);
     double tchi = sinh(std::atanh(sphi) - e2n * std::atanh(e2n * sphi));
@@ -65,7 +69,7 @@ void polar_to_plane_cartesian::convert(double xyz[]) {
         sgm += 2 * j * alcos * cosh(2 * j * etap);
         tau += 2 * j * alsin * sinh(2 * j * etap);
     }
-    double x = ra * xi - m0 * Merid(2 * phi0[num] * 3600 * s2r);
+    double x = ra * xi - m0 * Merid(2 * phi0[cartesian_coordinate_system_id] * 3600 * s2r);
     double y = ra * eta;
 
     xyz[0] = y;

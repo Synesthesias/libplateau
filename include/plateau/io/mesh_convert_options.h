@@ -1,21 +1,8 @@
 #pragma once
 
-/**
- * @enum AxesConversion
- *
- * 各列挙子について、3つのアルファベットはXYZ軸がどの方角、方向になるかを表しています。<br/>
- * N,S,E,Wはそれぞれ北,南,東,西<br/>
- * U,Dはそれぞれ上,下<br/>
- * に対応します。<br/>
- */
-enum class AxesConversion {
-    //! PLATEAUでの座標系
-    ENU,
-    //! Unityでの座標系
-    WUN,
-    //! Unreal Engineでの座標系
-    NWU
-};
+#include <plateau/geometry/geo_coordinate.h>
+
+using namespace plateau::geometry;
 
 /**
  * @enum MeshGranularity
@@ -48,7 +35,7 @@ struct MeshConvertOptions {
     /**
      * \brief 出力後のメッシュの座標系を指定します。
      */
-    AxesConversion mesh_axes;
+    CoordinateSystem mesh_axes;
 
     /**
      * \brief 変換時の基準点を指定します。
@@ -95,7 +82,7 @@ struct MeshConvertOptions {
     MeshFileFormat mesh_file_format;
 
     MeshConvertOptions() :
-            mesh_axes(AxesConversion::WUN),
+            mesh_axes(CoordinateSystem::WUN),
             mesh_file_format(MeshFileFormat::OBJ),
             reference_point(),
             mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),

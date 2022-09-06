@@ -4,8 +4,8 @@
 
 class polar_to_plane_cartesian {
 public:
-    void convert(double xyz[]);
-    void convert(TVec3d& position);
+    void convert(double xyz[], int cartesian_coordinate_system_id);
+    void convert(TVec3d& position, int cartesian_coordinate_system_id);
 private:
     double Merid(double phi2);
 

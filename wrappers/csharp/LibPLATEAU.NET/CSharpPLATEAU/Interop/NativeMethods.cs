@@ -75,7 +75,7 @@ namespace PLATEAU.Interop
     [StructLayout(LayoutKind.Sequential)]
     internal struct MeshConvertOptionsData
     {
-        public AxesConversion MeshAxes;
+        public CoordinateSystem MeshAxes;
         public PlateauVector3d ReferencePoint;
         public MeshGranularity MeshGranularity;
         public uint MinLOD;
@@ -89,14 +89,29 @@ namespace PLATEAU.Interop
     public struct MeshExtractOptions
     {
         public PlateauVector3d ReferencePoint;
-        public AxesConversion MeshAxes;
+        public CoordinateSystem MeshAxes;
         public MeshGranularity MeshGranularity;
         public uint MaxLOD;
         public uint MinLOD;
         [MarshalAs(UnmanagedType.U1)] public bool ExportAppearance;
         public int GridCountOfSide;
         public float UnitScale;
-    } 
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct GeoCoordinate
+    {
+        public double Latitude;
+        public double Longitude;
+        public double Height;
+
+        public GeoCoordinate(double lat, double lon, double height)
+        {
+            this.Latitude = lat;
+            this.Longitude = lon;
+            this.Height = height;
+        }
+    }
 
     public enum APIResult
     {
@@ -821,5 +836,26 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_geometry_utils_get_center_point(
             [In] IntPtr cityModelPtr,
             out PlateauVector3d outCenterPoint);
+        
+        // ***************
+        //  geo_reference_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_geo_reference(
+            out IntPtr outGeoReferencePtr,
+            PlateauVector3d referencePoint,
+            float unitScale,
+            CoordinateSystem coordinateSystem,
+            int zoneId);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_geo_reference(
+            [In] IntPtr geoReferencePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_project(
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outXyz,
+            GeoCoordinate latLon);
     }
 }

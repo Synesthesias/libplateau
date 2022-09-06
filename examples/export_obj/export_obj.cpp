@@ -60,7 +60,7 @@ int main() {
         params.optimize = true;
         MeshConverter converter;
         MeshConvertOptions options;
-        options.mesh_axes = AxesConversion::WUN;
+        options.mesh_axes = CoordinateSystem::WUN;
         bool first_gml = true;
         options.mesh_granularity = MeshGranularity::PerPrimaryFeatureObject;
 
