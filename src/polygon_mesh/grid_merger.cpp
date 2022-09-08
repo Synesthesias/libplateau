@@ -74,72 +74,21 @@ namespace plateau::polygonMesh {
             return grid_id_to_objs_map;
         }
 
-        const citygml::Polygon* findFirstPolygon(const Geometry& geometry, unsigned lod) {
-            if (geometry.getLOD() != lod) return nullptr;
-            // 子の Polygon について再帰
-            unsigned int num_poly = geometry.getPolygonsCount();
-            for (unsigned int i = 0; i < num_poly; i++) {
-                auto poly = geometry.getPolygon(i);
-                if (!poly->getVertices().empty()) return poly.get();
-            }
-            // 子の Geometry について再帰
-            unsigned int num_geom = geometry.getGeometriesCount();
-            for (unsigned int i = 0; i < num_geom; i++) {
-                auto found = findFirstPolygon(geometry.getGeometry(i), lod);
-                if (found) return found;
-            }
-            return nullptr;
-        }
-
-        /**
-         * cityObjのポリゴンであり、頂点数が1以上であるものを検索します。
-         * 最初に見つかったポリゴンを返します。なければ nullptr を返します。
-         */
-        const citygml::Polygon* findFirstPolygon(const CityObject* city_obj, unsigned lod) {
-            // 子の CityObject について再帰
-            unsigned int num_obj = city_obj->getChildCityObjectsCount();
-            for (unsigned int i = 0; i < num_obj; i++) {
-                auto found = findFirstPolygon(&city_obj->getChildCityObject(i), lod);
-                if (found) return found;
-            }
-            // 子の Geometry について再帰
-            unsigned int num_geom = city_obj->getGeometriesCount();
-            for (unsigned int i = 0; i < num_geom; i++) {
-                auto found = findFirstPolygon(city_obj->getGeometry(i), lod);
-                if (found) return found;
-            }
-            return nullptr;
-        }
-
-        /**
-         * cityObjの位置を表現するにふさわしい1点の座標を返します。
-         */
-        TVec3d cityObjPos(const CityObject& city_obj) {
-            auto& envelope = city_obj.getEnvelope();
-            if (envelope.validBounds()) {
-                // city_obj の envelope 情報がGMLファイル中に記載されていれば、その中心を返します。
-                // しかし、CityObjectごとに記載されているケースは少ないです。
-                return (envelope.getLowerBound() + envelope.getUpperBound()) * 0.5;
-            } else {
-                // envelope がなければ、ポリゴンを検索して見つかった最初の頂点の位置を返します。
-                auto poly = findFirstPolygon(&city_obj, 0);
-                if (poly) {
-                    return poly->getVertices().at(0);
-                }
-            }
-            return TVec3d{-999, -999, -999};
-        }
 
         /**
          * city_objs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
          * また ImportID を割り振ります。
+         * extentの範囲外のものは除外します。
          */
         GridIDToObjsMap classifyCityObjsToGrid(const ConstCityObjects& city_objs, const Envelope& city_envelope,
-                                               int grid_num_x, int grid_num_y) {
+                                               int grid_num_x, int grid_num_y, const Extent& extent) {
             auto grid_id_to_objs_map = initGridIdToObjsMap(grid_num_x, grid_num_y);
             int primary_import_id = 0;
             for (auto co: city_objs) {
-                int grid_id = getGridId(city_envelope, cityObjPos(*co), grid_num_x, grid_num_y);
+                // 範囲外ならスキップします。
+                if(!extent.contains(PolygonMeshUtils::cityObjPos(*co))) continue;
+
+                int grid_id = getGridId(city_envelope, PolygonMeshUtils::cityObjPos(*co), grid_num_x, grid_num_y);
                 auto city_obj_with_import_id = CityObjectWithImportID(co, primary_import_id, -1);
                 grid_id_to_objs_map.at(grid_id).push_back(city_obj_with_import_id);
                 primary_import_id++;
@@ -157,7 +106,7 @@ namespace plateau::polygonMesh {
                 PrimaryCityObjectTypes::getPrimaryTypeMask());
         const auto& city_envelope = city_model.getEnvelope();
         auto grid_id_to_objs_map = classifyCityObjsToGrid(primary_city_objs, city_envelope, options.grid_count_of_side,
-                                                          options.grid_count_of_side);
+                                                          options.grid_count_of_side, options.extent);
 
         // 主要地物の子（最小地物）を親と同じグリッドに追加します。
         // 意図はグリッドの端で同じ建物が分断されないようにするためです。
@@ -166,7 +115,7 @@ namespace plateau::polygonMesh {
             const auto& primary_objs = pair.second;
             for (const auto& primary_obj: primary_objs) {
                 int primary_id = primary_obj.getPrimaryImportID();
-                auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj.getCityObject());
+                auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj.getCityObject());
                 int secondary_id = 0;
                 for (auto atomic_obj: atomic_objs) {
                     auto atomic_obj_with_id = CityObjectWithImportID{atomic_obj, primary_id, secondary_id};
@@ -196,17 +145,17 @@ namespace plateau::polygonMesh {
             const auto& grid_objs = grid_objs_pair.second;
             for (const auto& obj: grid_objs) {
                 // この CityObj について、最大でどのLODまで存在するか確認します。
-                unsigned max_lod_in_obj = GeometryUtils::max_lod_in_specification_;
-                for (unsigned check_lod = lod + 1; check_lod <= GeometryUtils::max_lod_in_specification_; ++check_lod) {
+                unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
+                for (unsigned check_lod = lod + 1; check_lod <= PolygonMeshUtils::max_lod_in_specification_; ++check_lod) {
                     bool polygon_in_lod_exists =
-                            (check_lod == lod) || (findFirstPolygon(obj.getCityObject(), check_lod) != nullptr);
+                            (check_lod == lod) || (PolygonMeshUtils::findFirstPolygon(obj.getCityObject(), check_lod) != nullptr);
                     if (!polygon_in_lod_exists) {
                         max_lod_in_obj = check_lod - 1;
                         break;
                     }
                 }
                 // グループに追加します。
-                unsigned group_id = grid_id * (GeometryUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;
+                unsigned group_id = grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;
                 if (group_id_to_objs_map.find(group_id) == group_id_to_objs_map.end()) {
                     group_id_to_objs_map[group_id] = std::list<CityObjectWithImportID>();
                 }

@@ -47,6 +47,8 @@ namespace plateau::polygonMesh {
 
                         // 主要地物ごとにメッシュを結合します。
                         for (auto primary_obj: primary_city_objs) {
+                            // 範囲外ならスキップします。
+                            if(!options.extent.contains(PolygonMeshUtils::cityObjPos(*primary_obj))) continue;
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
                             MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, do_export_appearance, geo_reference,
@@ -54,7 +56,7 @@ namespace plateau::polygonMesh {
                                                                   TVec2f{0, 0});
                             if (lod >= 2) {
                                 // 主要地物の子である各最小地物をメッシュに加えます。
-                                auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
+                                auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj);
                                 MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, do_export_appearance, geo_reference,
                                                                        TVec2f{0, 0},
                                                                        TVec2f{0, 0});
@@ -70,6 +72,8 @@ namespace plateau::polygonMesh {
                         auto& primary_city_objs = city_model.getAllCityObjectsOfType(
                                 PrimaryCityObjectTypes::getPrimaryTypeMask());
                         for (auto primary_obj: primary_city_objs) {
+                            // 範囲外ならスキップします。
+                            if(!options.extent.contains(PolygonMeshUtils::cityObjPos(*primary_obj))) continue;
                             // 主要地物のノードを作成します。
                             // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
                             // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。
@@ -88,7 +92,7 @@ namespace plateau::polygonMesh {
                             }
                             auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));
                             // 最小地物ごとにノードを作成します。
-                            auto atomic_objs = GeometryUtils::getChildCityObjectsRecursive(*primary_obj);
+                            auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj);
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
                                 auto atomic_mesh = Mesh(atomic_obj->getId());

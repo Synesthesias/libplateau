@@ -24,8 +24,12 @@ namespace plateau::polygonMesh {
         const MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0, 0, 0), CoordinateSystem::WUN,
                                                                             MeshGranularity::PerCityModelArea, 2, 2,
                                                                             true,
-                                                                            5, 1.0);;
+                                                                            5, 1.0,
+                                                                            Extent(GeoCoordinate(-90, -180, -999), GeoCoordinate(90, 180, 999)));
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
+        const std::vector<MeshGranularity> test_pattern_granularity_ = {MeshGranularity::PerCityModelArea,
+                                                                       MeshGranularity::PerPrimaryFeatureObject,
+                                                                       MeshGranularity::PerAtomicFeatureObject};
         void testExtractFromCWrapper() const;
         bool haveVertexRecursive(const Node& node) const;
     };
@@ -103,12 +107,10 @@ namespace plateau::polygonMesh {
     }
 
     TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex) { // NOLINT
-        const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
-                                                                       MeshGranularity::PerPrimaryFeatureObject,
-                                                                       MeshGranularity::PerAtomicFeatureObject};
+
         // 各LODノード以下に頂点が存在することのテストです。
         // メッシュ粒度 と LOD の全ての組み合わせをテストしたいので2重forループを回します。
-        for (const auto granularity: test_pattern_granularity) {
+        for (const auto granularity: test_pattern_granularity_) {
             std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
             MeshExtractOptions options = mesh_extract_options_;
             options.mesh_granularity = granularity;
@@ -121,7 +123,17 @@ namespace plateau::polygonMesh {
                 ASSERT_TRUE(haveVertexRecursive(lod_node));
             }
         }
+    }
 
+
+    TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero){ // NOLINT
+        for(const auto granularity : test_pattern_granularity_){
+            auto options = mesh_extract_options_;
+            options.extent = Extent(GeoCoordinate(0,0,0), GeoCoordinate(0,0,0));
+            options.mesh_granularity = granularity;
+            auto model = MeshExtractor::extract(*city_model_, options);
+            ASSERT_FALSE(haveVertexRecursive(model->getRootNodeAt(0)));
+        }
     }
 
 

@@ -48,5 +48,23 @@ namespace plateau::geometry {
     struct Extent {
         GeoCoordinate min;
         GeoCoordinate max;
+
+        Extent(GeoCoordinate min, GeoCoordinate max) :
+                min(min),
+                max(max) {}
+
+        bool contains(GeoCoordinate point) const {
+            return
+                    min.latitude <= point.latitude &&
+                    max.latitude >= point.latitude &&
+                    min.longitude <= point.longitude &&
+                    max.longitude >= point.longitude &&
+                    min.height <= point.height &&
+                    max.height >= point.height;
+        }
+
+        bool contains(TVec3d point) const{
+            return contains(GeoCoordinate(point.x, point.y, point.z));
+        }
     };
 }
