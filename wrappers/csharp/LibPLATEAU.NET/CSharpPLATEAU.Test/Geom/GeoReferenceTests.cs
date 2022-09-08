@@ -52,5 +52,17 @@ namespace PLATEAU.Test.Geom
             Assert.IsTrue(Math.Abs(xyz.Z) < 0.0001);
             Assert.IsTrue(Math.Abs(xyz.Y) < 0.0001);
         }
+
+        [TestMethod]
+        public void Temp_Test_For_Unproject()
+        {
+            using var geoReference = new GeoReference(
+                new PlateauVector3d(0, 0, 0),
+                1f, CoordinateSystem.WUN, 9
+            );
+            var lat_lon = geoReference.Unproject(new PlateauVector3d(-8221.9609, -41667.536, 0));
+            Assert.IsTrue(Math.Abs(lat_lon.Latitude - 35.62439457074015) < 0.00000001);//およそ1mmの誤差以内か
+            Assert.IsTrue(Math.Abs(lat_lon.Longitude - 139.74256342432295) < 0.00000001);//およそ1mmの誤差以内か
+        }
     }
 }
