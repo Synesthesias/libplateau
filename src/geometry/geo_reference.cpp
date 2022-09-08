@@ -1,5 +1,5 @@
 #include <plateau/geometry/geo_reference.h>
-#include <plateau/geometry/polar_to_plane_cartesian.h>
+#include "polar_to_plane_cartesian.h"
 #include "plateau/io/obj_writer.h"
 
 namespace plateau::geometry {
