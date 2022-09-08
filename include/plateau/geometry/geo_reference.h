@@ -24,8 +24,7 @@ namespace plateau::geometry {
         TVec3d project(const GeoCoordinate& point) const;
         TVec3d project(const TVec3d& lat_lon) const;
 
-        // TODO 未実装
-        // GeoCoordinate unproject(TVec3d point);
+        GeoCoordinate unproject(const TVec3d& point) const;
 
         void setReferencePoint(TVec3d point);
         TVec3d getReferencePoint() const;

@@ -1,5 +1,5 @@
 #include <plateau/geometry/geo_reference.h>
-#include "../io/polar_to_plane_cartesian.h"
+#include <plateau/geometry/polar_to_plane_cartesian.h>
 #include "plateau/io/obj_writer.h"
 
 namespace plateau::geometry {
@@ -17,7 +17,7 @@ namespace plateau::geometry {
 
     TVec3d GeoReference::project(const TVec3d& lat_lon) const {
         TVec3d point = lat_lon;
-        polar_to_plane_cartesian().convert(point, zone_id_);
+        PolarToPlaneCartesian().project(point, zone_id_);
         point = (point - reference_point_) / unit_scale_;
 
         switch (coordinate_system_) {
@@ -46,5 +46,11 @@ namespace plateau::geometry {
 
     void GeoReference::setZoneID(int value) {
         zone_id_ = value;
+    }
+
+    GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
+        TVec3d lat_lon = point;
+        PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
+        return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
     }
 }
