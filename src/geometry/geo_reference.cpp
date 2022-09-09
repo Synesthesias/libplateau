@@ -49,7 +49,27 @@ namespace plateau::geometry {
     }
 
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
-        TVec3d lat_lon = point;
+        TVec3d lat_lon;
+        switch (coordinate_system_) {
+        case CoordinateSystem::ENU:
+            lat_lon = point;
+            break;
+        case CoordinateSystem::WUN:
+            lat_lon.x = -point.x;
+            lat_lon.y = point.z;
+            lat_lon.z = point.y;
+            break;
+        case CoordinateSystem::NWU:
+            lat_lon.x = -point.y;
+            lat_lon.y = point.x;
+            lat_lon.z = point.z;
+            break;
+        default:
+            throw std::out_of_range("Invalid argument");
+        }
+
+        lat_lon = lat_lon * unit_scale_ + reference_point_;
+
         PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
         return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
     }
