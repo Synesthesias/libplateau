@@ -43,12 +43,15 @@ namespace plateau::polygonMesh {
             return (envelope.getLowerBound() + envelope.getUpperBound()) * 0.5;
         } else {
             // envelope がなければ、ポリゴンを検索して見つかった最初の頂点の位置を返します。
-            auto poly = findFirstPolygon(&city_obj, 0);
-            if (poly) {
-                return poly->getVertices().at(0);
+            for (int lod = 0; lod <= max_lod_in_specification_; lod++) {
+                auto poly = findFirstPolygon(&city_obj, lod);
+                if (poly) {
+                    return poly->getVertices().at(0);
+                }
             }
         }
-        return TVec3d{-999, -999, -999};
+        // 位置が不明
+        throw std::invalid_argument("Could not find position of CityObject.");
     }
 
     TVec3d PolygonMeshUtils::getCenterPoint(const CityModel& city_model) {

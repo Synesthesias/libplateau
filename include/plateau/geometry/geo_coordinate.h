@@ -1,5 +1,9 @@
 #pragma once
 
+#include "citygml/vecs.hpp"
+#include "citygml/cityobject.h"
+
+
 namespace plateau::geometry {
 
     /**
@@ -56,18 +60,13 @@ namespace plateau::geometry {
                 min(min),
                 max(max) {}
 
-        bool contains(GeoCoordinate point) const {
-            return
-                    min.latitude <= point.latitude &&
-                    max.latitude >= point.latitude &&
-                    min.longitude <= point.longitude &&
-                    max.longitude >= point.longitude &&
-                    min.height <= point.height &&
-                    max.height >= point.height;
-        }
+        bool contains(GeoCoordinate point) const;
+        bool contains(TVec3d point) const;
 
-        bool contains(TVec3d point) const{
-            return contains(GeoCoordinate(point.x, point.y, point.z));
-        }
+        /**
+         * 引数 city_obj の位置を推定し、その位置が Extent の範囲内に含まれるかどうかを返します。
+         * city_obj の位置が不明の場合は false を返します。
+         */
+        bool contains(const citygml::CityObject& city_obj) const;
     };
 }

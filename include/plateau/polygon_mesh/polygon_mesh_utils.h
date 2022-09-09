@@ -28,6 +28,9 @@ namespace plateau::polygonMesh {
 
         /**
          * cityObjの位置を表現するにふさわしい1点の座標を返します。
+         * 注意 :
+         * 位置が分からない場合、例外 std::invalid_argument を投げます。
+         * ポリゴンがない CityObject の場合は位置不明になるので例外への対応をお願いします。
          */
         static TVec3d cityObjPos(const citygml::CityObject& city_obj);
 

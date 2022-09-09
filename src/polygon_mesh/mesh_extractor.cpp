@@ -48,7 +48,7 @@ namespace plateau::polygonMesh {
                         // 主要地物ごとにメッシュを結合します。
                         for (auto primary_obj: primary_city_objs) {
                             // 範囲外ならスキップします。
-                            if(!options.extent.contains(PolygonMeshUtils::cityObjPos(*primary_obj))) continue;
+                            if(!options.extent.contains(*primary_obj)) continue;
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
                             MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, do_export_appearance, geo_reference,
@@ -73,7 +73,7 @@ namespace plateau::polygonMesh {
                                 PrimaryCityObjectTypes::getPrimaryTypeMask());
                         for (auto primary_obj: primary_city_objs) {
                             // 範囲外ならスキップします。
-                            if(!options.extent.contains(PolygonMeshUtils::cityObjPos(*primary_obj))) continue;
+                            if(!options.extent.contains(*primary_obj)) continue;
                             // 主要地物のノードを作成します。
                             // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
                             // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。
