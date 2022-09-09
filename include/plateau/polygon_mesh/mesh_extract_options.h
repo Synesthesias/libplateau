@@ -8,7 +8,7 @@ namespace plateau::polygonMesh {
     struct MeshExtractOptions {
         MeshExtractOptions(TVec3d reference_point, CoordinateSystem mesh_axes, MeshGranularity mesh_granularity,
                            unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side,
-                           float unit_scale) :
+                           float unit_scale, Extent extent) :
                 reference_point(reference_point),
                 mesh_axes(mesh_axes),
                 mesh_granularity(mesh_granularity),
@@ -16,7 +16,8 @@ namespace plateau::polygonMesh {
                 min_lod(min_lod),
                 export_appearance(export_appearance),
                 grid_count_of_side(grid_count_of_side),
-                unit_scale(unit_scale) {}
+                unit_scale(unit_scale),
+                extent(extent){}
 
     public:
         TVec3d reference_point;
@@ -31,5 +32,6 @@ namespace plateau::polygonMesh {
          */
         int grid_count_of_side;
         float unit_scale;
+        Extent extent;
     };
 }

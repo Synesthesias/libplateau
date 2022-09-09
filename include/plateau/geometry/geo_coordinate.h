@@ -1,5 +1,9 @@
 #pragma once
 
+#include "citygml/vecs.hpp"
+#include "citygml/cityobject.h"
+
+
 namespace plateau::geometry {
 
     /**
@@ -45,8 +49,24 @@ namespace plateau::geometry {
         NWU
     };
 
+    /**
+     * 緯度・経度・高さの最小・最大で表現される範囲です。
+     */
     struct Extent {
         GeoCoordinate min;
         GeoCoordinate max;
+
+        Extent(GeoCoordinate min, GeoCoordinate max) :
+                min(min),
+                max(max) {}
+
+        bool contains(GeoCoordinate point) const;
+        bool contains(TVec3d point) const;
+
+        /**
+         * 引数 city_obj の位置を推定し、その位置が Extent の範囲内に含まれるかどうかを返します。
+         * city_obj の位置が不明の場合は false を返します。
+         */
+        bool contains(const citygml::CityObject& city_obj) const;
     };
 }
