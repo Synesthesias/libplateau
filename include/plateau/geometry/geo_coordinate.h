@@ -45,6 +45,9 @@ namespace plateau::geometry {
         NWU
     };
 
+    /**
+     * 緯度・経度・高さの最小・最大で表現される範囲です。
+     */
     struct Extent {
         GeoCoordinate min;
         GeoCoordinate max;

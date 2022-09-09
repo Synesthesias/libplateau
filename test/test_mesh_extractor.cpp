@@ -25,13 +25,18 @@ namespace plateau::polygonMesh {
                                                                             MeshGranularity::PerCityModelArea, 2, 2,
                                                                             true,
                                                                             5, 1.0,
-                                                                            Extent(GeoCoordinate(-90, -180, -999), GeoCoordinate(90, 180, 999)));
+                                                                            Extent(GeoCoordinate(-90, -180, -999),
+                                                                                   GeoCoordinate(90, 180, 999)));
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
-        const std::vector<MeshGranularity> test_pattern_granularity_ = {MeshGranularity::PerCityModelArea,
-                                                                       MeshGranularity::PerPrimaryFeatureObject,
-                                                                       MeshGranularity::PerAtomicFeatureObject};
         void testExtractFromCWrapper() const;
         bool haveVertexRecursive(const Node& node) const;
+
+        /**
+         * MeshGranularity と LOD の全組み合わせをテストします。
+         * @param check_func
+         * 各組み合わせでのチェック内容を渡します。 引数にLODノード, LOD番号 をとる関数オブジェクトです。
+         */
+        void foreachMeshGranularityAndLOD(MeshExtractOptions options, std::function<void(Node&, int)> check_func);
     };
 
 
@@ -108,32 +113,25 @@ namespace plateau::polygonMesh {
 
     TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_with_vertex) { // NOLINT
 
-        // 各LODノード以下に頂点が存在することのテストです。
-        // メッシュ粒度 と LOD の全ての組み合わせをテストしたいので2重forループを回します。
-        for (const auto granularity: test_pattern_granularity_) {
-            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
-            MeshExtractOptions options = mesh_extract_options_;
-            options.mesh_granularity = granularity;
-            options.min_lod = 0;
-            options.max_lod = 2;
-            auto model = MeshExtractor::extract(*city_model_, options);
-            for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
-                const auto& lod_node = model->getRootNodeAt(lod);
-                ASSERT_EQ(lod_node.getName(), "LOD" + std::to_string(lod));
-                ASSERT_TRUE(haveVertexRecursive(lod_node));
-            }
-        }
+        foreachMeshGranularityAndLOD(
+                mesh_extract_options_,
+                [this](Node& lod_node, int lod_num) {
+                    ASSERT_EQ(lod_node.getName(), "LOD" + std::to_string(lod_num));
+                    ASSERT_TRUE(haveVertexRecursive(lod_node));
+                }
+        );
     }
 
 
-    TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero){ // NOLINT
-        for(const auto granularity : test_pattern_granularity_){
-            auto options = mesh_extract_options_;
-            options.extent = Extent(GeoCoordinate(0,0,0), GeoCoordinate(0,0,0));
-            options.mesh_granularity = granularity;
-            auto model = MeshExtractor::extract(*city_model_, options);
-            ASSERT_FALSE(haveVertexRecursive(model->getRootNodeAt(0)));
-        }
+    TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero) { // NOLINT
+        auto options = mesh_extract_options_;
+        options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
+        foreachMeshGranularityAndLOD(
+                options,
+                [this](Node& node, int lod_num) {
+                    ASSERT_FALSE(haveVertexRecursive(node));
+                }
+        );
     }
 
 
@@ -163,5 +161,23 @@ namespace plateau::polygonMesh {
             }
         }
         return false;
+    }
+
+    void MeshExtractorTest::foreachMeshGranularityAndLOD(MeshExtractOptions options,
+                                                         std::function<void(Node&, int)> check_func) {
+        const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
+                                                                       MeshGranularity::PerPrimaryFeatureObject,
+                                                                       MeshGranularity::PerAtomicFeatureObject};
+        for (const auto granularity: test_pattern_granularity) {
+            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
+            options.mesh_granularity = granularity;
+            options.min_lod = 0;
+            options.max_lod = 2;
+            auto model = MeshExtractor::extract(*city_model_, options);
+            for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
+                auto& lod_node = model->getRootNodeAt(lod);
+                check_func(lod_node, lod);
+            }
+        }
     }
 }
