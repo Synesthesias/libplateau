@@ -33,4 +33,10 @@ DLL_VALUE_FUNC(plateau_geo_reference_project,
                TVec3d,
                handle->project(lat_lon),
                , GeoCoordinate lat_lon)
+
+    DLL_VALUE_FUNC(plateau_geo_reference_unproject,
+               GeoReference,
+               GeoCoordinate,
+               handle->unproject(point),
+               , TVec3d point)
 }

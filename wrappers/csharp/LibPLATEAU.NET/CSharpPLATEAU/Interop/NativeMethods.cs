@@ -874,5 +874,11 @@ namespace PLATEAU.Interop
             [In] IntPtr geoReferencePtr,
             out PlateauVector3d outXyz,
             GeoCoordinate latLon);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_geo_reference_unproject(
+            [In] IntPtr geoReferencePtr,
+            out GeoCoordinate outLatlon,
+            PlateauVector3d point);
     }
 }
