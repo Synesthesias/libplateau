@@ -20,15 +20,16 @@ namespace PLATEAU.Test.GeometryModel
                 MaxLOD = 2,
                 ExportAppearance = true,
                 GridCountOfSide = 5,
-                UnitScale = 1f
+                UnitScale = 1f,
+                Extent = new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
             };
-            
+
             var model = new Model();
             MeshExtractor.Extract(ref model, cityModel, options);
             return model;
         }
 
-        
+
         public static Mesh FirstMeshInModel(Model model)
         {
             Assert.IsTrue(model.RootNodesCount > 0, "モデル内にルートノードが存在する");
