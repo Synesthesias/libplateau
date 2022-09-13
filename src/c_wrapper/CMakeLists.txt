@@ -31,7 +31,9 @@ add_library(c_wrapper OBJECT
   "model_c.cpp"
   "node_c.cpp"
   "geometry_utils_c.cpp"
-  "geo_reference_c.cpp")
+  "geo_reference_c.cpp"
+  "udx_file_collection_c.cpp"
+  "mesh_code_c.cpp" "gml_file_info_c.cpp")
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")

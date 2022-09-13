@@ -20,15 +20,17 @@ namespace plateau::geometry {
      * EPSGコードの判別と、それによって処理を変える機能は未実装です。
      */
     struct GeoCoordinate {
-    public:
         double latitude;
         double longitude;
         double height;
 
+        GeoCoordinate() = default;
+
         GeoCoordinate(double lat, double lon, double height) :
-                latitude(lat),
-                longitude(lon),
-                height(height) {}
+            latitude(lat),
+            longitude(lon),
+            height(height) {
+        }
     };
 
 
@@ -56,9 +58,10 @@ namespace plateau::geometry {
         GeoCoordinate min;
         GeoCoordinate max;
 
-        Extent(GeoCoordinate min, GeoCoordinate max) :
-                min(min),
-                max(max) {}
+        Extent(const GeoCoordinate& min, const GeoCoordinate& max) {
+            this->min = min;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+            this->max = max;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+        }
 
         bool contains(GeoCoordinate point) const;
         bool contains(TVec3d point) const;
