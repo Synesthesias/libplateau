@@ -45,10 +45,11 @@ namespace plateau::geometry {
     enum class CoordinateSystem {
         //! PLATEAUでの座標系
         ENU,
-        //! Unityでの座標系
         WUN,
         //! Unreal Engineでの座標系
-        NWU
+        NWU,
+        //! Unityでの座標系
+        EUN
     };
 
     /**

@@ -18,18 +18,24 @@ namespace plateau::geometry {
     TVec3d GeoReference::project(const TVec3d& lat_lon) const {
         TVec3d point = lat_lon;
         PolarToPlaneCartesian().project(point, zone_id_);
-        point = (point - reference_point_) / unit_scale_;
-
+        TVec3 converted_point = point;
         switch (coordinate_system_) {
             case CoordinateSystem::ENU:
-                return point;
+                break; // 変換なし
             case CoordinateSystem::WUN:
-                return {-point.x, point.z, point.y};
+                converted_point = {-point.x, point.z, point.y};
+                break;
+            case CoordinateSystem::EUN:
+                converted_point = {point.x, point.z, point.y};
+                break;
             case CoordinateSystem::NWU:
-                return {point.y, -point.x, point.z};
+                converted_point = {point.y, -point.x, point.z};
+                break;
             default:
                 throw std::out_of_range("Invalid argument");
         }
+        converted_point = (converted_point - reference_point_) / unit_scale_;
+        return converted_point;
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {
@@ -49,26 +55,30 @@ namespace plateau::geometry {
     }
 
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
+        TVec3d before_convert_lat_lon = point * unit_scale_ + reference_point_;
         TVec3d lat_lon;
         switch (coordinate_system_) {
         case CoordinateSystem::ENU:
-            lat_lon = point;
+            lat_lon = before_convert_lat_lon;
             break;
         case CoordinateSystem::WUN:
-            lat_lon.x = -point.x;
-            lat_lon.y = point.z;
-            lat_lon.z = point.y;
+            lat_lon.x = -before_convert_lat_lon.x;
+            lat_lon.y = before_convert_lat_lon.z;
+            lat_lon.z = before_convert_lat_lon.y;
             break;
         case CoordinateSystem::NWU:
-            lat_lon.x = -point.y;
-            lat_lon.y = point.x;
-            lat_lon.z = point.z;
+            lat_lon.x = -before_convert_lat_lon.y;
+            lat_lon.y = before_convert_lat_lon.x;
+            lat_lon.z = before_convert_lat_lon.z;
+            break;
+        case CoordinateSystem::EUN:
+            lat_lon.x = before_convert_lat_lon.x;
+            lat_lon.y = before_convert_lat_lon.z;
+            lat_lon.z = before_convert_lat_lon.y;
             break;
         default:
             throw std::out_of_range("Invalid argument");
         }
-
-        lat_lon = lat_lon * unit_scale_ + reference_point_;
 
         PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
         return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
