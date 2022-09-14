@@ -3,6 +3,7 @@
 
 #include <plateau/udx/udx_file_collection.h>
 #include <fstream>
+#include <queue>
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
@@ -33,15 +34,74 @@ namespace plateau::udx {
         return result;
     }
 
-    void UdxFileCollection::find(const std::string& source, UdxFileCollection& collection) {
-        collection.udx_path_ = fs::u8path(source).append(u"udx").u8string();
-        for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
-            auto& gml_files = collection.files_[UdxSubFolder(entry.path().filename().string()).getPackage()];
-            for (const auto& gml_entry : fs::recursive_directory_iterator(entry.path())) {
-                if (gml_entry.path().extension() == ".gml") {
-                    const auto gml_path = fs::u8path(gml_entry.path().string()).make_preferred().u8string();
-                    gml_files.emplace_back(gml_path);
+    namespace{
+        /**
+         * 指定パスを起点に、幅優先探索(BFS)でGMLファイルを検索します。
+         * 検索の高速化のため、GMLファイルの配置場所の深さはすべて同じであるという前提に立ち、
+         * 最初のGMLファイルが見つかった地点でこれ以上深いフォルダの探索は中止します。
+         * @param dir_path  検索の起点となるパスです。
+         * @return GMLファイルのパスの vector です。
+         */
+        std::vector<std::string> findGmlBFS(const std::string& dir_path){
+            auto found = std::vector<std::string>();
+            auto queue = std::queue<std::string>();
+            queue.push(dir_path);
+            bool push_more_dir = true;
+            std::cout << "start findGmlBFS" << std::endl;
+            while(!queue.empty()){
+                auto next_dir = queue.front();
+                queue.pop();
+                // ファイルから検索します。
+                for(const auto& entry : fs::directory_iterator(next_dir)){
+                    if(entry.is_directory()) continue;
+                    std::cout << "searching file " << entry.path().string() << std::endl;
+                    auto path = entry.path();
+                    if(path.extension() == ".gml"){
+                        found.push_back(path.string());
+                        // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
+                        // 同じ深さにあるフォルダはすでにキューに入っているので、「深さは同じだけどフォルダが違う」という状況は検索対象に含まれます。
+                        push_more_dir = false;
+                    }
                 }
+                // 次に探索すべきディレクトリをキューに入れます。
+                if(!push_more_dir) continue;
+                for(const auto& entry : fs::directory_iterator(next_dir)){
+                    std::cout << "searching dir " << entry.path().string() << std::endl;
+                    if(!entry.is_directory()) continue;
+                    queue.push(entry.path().string());
+                }
+            }
+            return found;
+        }
+    }
+
+    void UdxFileCollection::find(const std::string& source, UdxFileCollection& collection) {
+        collection.udx_path_ = fs::u8path(source).append(u"udx").make_preferred().u8string();
+        for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
+//            auto& gml_files = collection.files_[UdxSubFolder(entry.path().filename().string()).getPackage()];
+//            auto recursive_iter = fs::recursive_directory_iterator(entry.path());
+//            for (const auto& gml_entry : recursive_iter) {
+//                if(recursive_iter.depth() > gml_found_depth){
+//                    std::cout << "popped" << std::endl;
+//                    recursive_iter.pop();
+//                }
+//                std::cout << "searching " << gml_entry.path() << "  depth " << recursive_iter.depth() <<  std::endl;
+//                if (gml_entry.path().extension() == ".gml") {
+//                    gml_found_depth = recursive_iter.depth();
+//                    const auto gml_path = fs::u8path(gml_entry.path().string()).make_preferred().u8string();
+//                    gml_files.emplace_back(gml_path);
+//                }
+//            }
+            auto package = UdxSubFolder(entry.path().filename().string()).getPackage();
+            auto& file_map = collection.files_;
+            if(file_map.count(package) == 0){
+                file_map.emplace(package, std::vector<GmlFileInfo>());
+            }
+            auto& gml_files = collection.files_.at(package);
+            auto found_gml_paths = findGmlBFS(entry.path().string());
+            for(const auto& path : found_gml_paths){
+                std::cout << path << std::endl;
+                gml_files.emplace_back(path);
             }
         }
     }
