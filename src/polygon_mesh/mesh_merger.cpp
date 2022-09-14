@@ -3,6 +3,8 @@
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>
 
+#include <filesystem>
+
 namespace plateau::polygonMesh {
     using namespace citygml;
     using namespace plateau::geometry;
@@ -43,7 +45,7 @@ namespace plateau::polygonMesh {
          */
         void
         mergeWithTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                         const GeoReference& geo_reference) {
+                         const GeoReference& geo_reference, const std::string& gml_path ) {
             if (!isValidPolygon(other_poly)) return;
             mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
 
@@ -53,6 +55,15 @@ namespace plateau::polygonMesh {
                 texture_path = std::string("");
             } else {
                 texture_path = texture->getUrl();
+                std::filesystem::path tpath = std::filesystem::u8path(texture_path);
+                if (tpath.is_relative()) {
+                    std::filesystem::path a_path = gml_path;
+                    a_path = a_path.parent_path();
+                    a_path /= tpath;
+                    auto abs_path = std::filesystem::absolute(a_path);
+
+                    texture_path = abs_path.u8string();
+                }
             }
             size_t indices_size = other_poly.getIndices().size();
             mesh.addSubMesh(texture_path, indices_size);
@@ -93,10 +104,10 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::merge(Mesh& mesh, const Polygon& other_poly, bool do_export_appearance,
                            const GeoReference& geo_reference, const TVec2f& uv_2_element,
-                           const TVec2f& uv_3_element) {
+                           const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
         if (do_export_appearance) {
-            mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
+            mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, gml_path);
         } else {
             mergeWithoutTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
         }
@@ -104,19 +115,19 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
                                                bool do_export_appearance, const GeoReference& geo_reference,
-                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element) {
+                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
         auto polygons = findAllPolygons(city_object, lod);
         for (auto poly: polygons) {
-            MeshMerger::merge(mesh, *poly, do_export_appearance, geo_reference, uv_2_element, uv_3_element);
+            MeshMerger::merge(mesh, *poly, do_export_appearance, geo_reference, uv_2_element, uv_3_element, gml_path);
         }
     }
 
     void MeshMerger::mergePolygonsInCityObjects(Mesh& mesh, const std::list<const CityObject*>& city_objects,
                                                 unsigned int lod,
                                                 bool do_export_appearance, const GeoReference& geo_reference,
-                                                const TVec2f& uv_3_element, const TVec2f& uv_2_element) {
+                                                const TVec2f& uv_3_element, const TVec2f& uv_2_element, const std::string& gml_path) {
         for (auto obj: city_objects) {
-            mergePolygonsInCityObject(mesh, *obj, lod, do_export_appearance, geo_reference, uv_2_element, uv_3_element);
+            mergePolygonsInCityObject(mesh, *obj, lod, do_export_appearance, geo_reference, uv_2_element, uv_3_element, gml_path);
         }
     }
 
