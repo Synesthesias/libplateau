@@ -2,6 +2,7 @@
 #include <utility>
 
 #include <plateau/udx/udx_file_collection.h>
+#include <fstream>
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
@@ -74,14 +75,18 @@ namespace plateau::udx {
         return result;
     }
 
-    const std::string& UdxFileCollection::getGmlFile(PredefinedCityModelPackage package, int index) {
+    const std::string& UdxFileCollection::getGmlFilePath(PredefinedCityModelPackage package, int index) {
+        return getGmlFileInfo(package, index).getPath();
+    }
+
+    const GmlFileInfo& UdxFileCollection::getGmlFileInfo(PredefinedCityModelPackage package, int index){
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
         if (index >= files_[package].size())
             throw std::out_of_range("Index out of range");
 
-        return files_[package][index].getPath();
+        return files_[package][index];
     }
 
     int UdxFileCollection::getGmlFileCount(PredefinedCityModelPackage package) {
@@ -102,6 +107,27 @@ namespace plateau::udx {
         return result;
     }
 
+    namespace{
+        std::vector<fs::path> searchAllImagePathsInGML(fs::path gml_path){
+            std::ifstream ifs(gml_path.u8string());
+            if(!ifs){
+                throw std::runtime_error("searchAllImagePathsInGML : Could not open file " + gml_path.u8string());
+            }
+            auto found_paths = std::vector<fs::path>();
+            std::string line;
+            while(std::getline(ifs, line)){
+                auto found_pos = line.find("<app:imageURI>");
+                if(found_pos == std::string::npos) continue;
+                auto begin_pos = found_pos + strlen("<app:imageURI>");
+                auto end_pos = line.find("</app:imageURI>");
+                if(end_pos == std::string::npos) end_pos = line.size();
+                auto url = line.substr(begin_pos, (end_pos - begin_pos));
+                found_paths.push_back(fs::u8path(url));
+            }
+            return found_paths;
+        }
+    }
+
 
     std::string UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
         const auto root_folder_name = fs::u8path(udx_path_).parent_path().filename().string();
@@ -111,7 +137,13 @@ namespace plateau::udx {
         gml_destination_path.append(getRelativePath(gml_file.getPath()));
         fs::create_directories(gml_destination_path.parent_path());
         fs::copy(gml_file.getPath(), gml_destination_path, fs::copy_options::skip_existing);
-        // TODO: テクスチャ、codelists追加
+        // TODO: 蜿悶▲縺ｦ縺上ｋ縺ｹ縺皇odelists,texture繧暖ml繝輔ぃ繧､繝ｫ縺九ｉ隱ｭ縺ｿ蜿悶ｋ
+        auto image_paths = searchAllImagePathsInGML(gml_file.getPath());
+        // TODO 莉ｮ
+        std::cout << "found image path count : " << image_paths.size() << std::endl;
+        for(const auto& path : image_paths){
+            std::cout << path.u8string() << std::endl;
+        }
         //fs::path app_destination_path(destination_udx_path);
         //app_destination_path.append(getRelativePath(gml_file_path));
         //if (fs::exists(file.getAppearanceDirectoryPath()))

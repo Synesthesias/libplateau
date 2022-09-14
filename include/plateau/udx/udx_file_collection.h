@@ -115,7 +115,8 @@ namespace plateau::udx {
          * \param package 都市モデルパッケージ
          * \param gml_files 取得結果の格納先
          */
-        const std::string& getGmlFile(PredefinedCityModelPackage package, int index);
+        const std::string& getGmlFilePath(PredefinedCityModelPackage package, int index);
+        const GmlFileInfo& getGmlFileInfo(PredefinedCityModelPackage package, int index);
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。

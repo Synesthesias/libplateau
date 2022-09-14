@@ -55,6 +55,14 @@ TEST_F(UdxTest, getAllMeshCodes) {
     ASSERT_EQ(mesh_codes.size(), 4);
 }
 
+TEST_F(UdxTest, fetch){
+    auto test_destination = std::filesystem::path("../temp_test_dir").make_preferred().string();
+    fs::remove_all(test_destination);
+    udx_file_collection_.fetch(test_destination,
+                               udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
+    // TODO ã“ã“ã«ASSERTã‚’æ›¸ã
+}
+
 //TEST_F(UdxTest, getAllSubFolders) {
 //    const auto sub_folders = udx_file_collection_.getSubFolders();
 //    std::vector<std::string> sub_folder_names;
@@ -95,30 +103,30 @@ TEST_F(UdxTest, getAllMeshCodes) {
 //(
 //    std::wstring oWString
 //) {
-//    // wstring ¨ SJIS
+//    // wstring ï¿½ï¿½ SJIS
 //    int iBufferSize = WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str()
 //        , -1, (char*)NULL, 0, NULL, NULL);
 //
-//    // ƒoƒbƒtƒ@‚Ìæ“¾
+//    // ï¿½oï¿½bï¿½tï¿½@ï¿½Ìæ“¾
 //    CHAR* cpMultiByte = new CHAR[iBufferSize];
 //
-//    // wstring ¨ SJIS
+//    // wstring ï¿½ï¿½ SJIS
 //    WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str(), -1, cpMultiByte
 //        , iBufferSize, NULL, NULL);
 //
-//    // string‚Ì¶¬
+//    // stringï¿½Ìï¿½ï¿½ï¿½
 //    std::string oRet(cpMultiByte, cpMultiByte + iBufferSize - 1);
 //
-//    // ƒoƒbƒtƒ@‚Ì”jŠü
+//    // ï¿½oï¿½bï¿½tï¿½@ï¿½Ì”jï¿½ï¿½
 //    delete[] cpMultiByte;
 //
-//    // •ÏŠ·Œ‹‰Ê‚ğ•Ô‚·
+//    // ï¿½ÏŠï¿½ï¿½ï¿½ï¿½Ê‚ï¿½Ô‚ï¿½
 //    return(oRet);
 //}
 //
 //TEST_F(UdxTest, copyToFolderWithMultiByteName) {
-//    // UTF8‚Ìstring‚ğ‰Šú‰»‚·‚é‚½‚ß‚Ìugly hack
-//    const auto destination = fs::path("ƒeƒXƒg").u8string();
+//    // UTF8ï¿½ï¿½stringï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ß‚ï¿½ugly hack
+//    const auto destination = fs::path("ï¿½eï¿½Xï¿½g").u8string();
 //
 //    std::cout << destination;
 //    const auto result = udx_file_collection_.copyFiles(destination, UdxSubFolder("brid"));
