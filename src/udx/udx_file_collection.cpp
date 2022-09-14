@@ -151,23 +151,49 @@ namespace plateau::udx {
     }
 
     namespace{
-        std::vector<fs::path> searchAllImagePathsInGML(fs::path gml_path){
-            std::ifstream ifs(gml_path.u8string());
+        /**
+         * 引数文字列 str のうち、引数 begin_tag と end_tag で囲まれた文字列をすべて検索し set で返します。
+         * end_tag は begin_tag が登場する箇所より後が検索対象となります。
+         * begin_tag に対応する end_tag がない場合、strの末尾までが対象となります。
+         * 検索結果のうち同じ文字列は1つにまとめられます。
+         */
+        std::set<std::string> searchAllStringsBetween(const std::string& begin_tag, const std::string& end_tag, const std::string& str){
+            std::set<std::string> found;
+            unsigned long long search_pos = 0;
+            while((search_pos = str.find(begin_tag, search_pos)) != std::string::npos){
+                auto begin_pos = search_pos + begin_tag.size();
+                auto end_pos = str.find(end_tag, begin_pos);
+                if(end_pos == std::string::npos) end_pos = str.size();
+                auto found_string = str.substr(begin_pos, (end_pos - begin_pos));
+                found.insert(found_string);
+                search_pos = end_pos + end_tag.size();
+            }
+            return found;
+        }
+
+        /**
+         * 上の searchAllStringsBetween 関数について、探索対象が文字列の代わりにファイルになった版です。
+         */
+        std::set<std::string> searchAllStringsBetweenTagInFile(const std::string& begin_tag, const std::string& end_tag, const fs::path& file_path){
+            std::ifstream ifs(file_path.u8string());
             if(!ifs){
-                throw std::runtime_error("searchAllImagePathsInGML : Could not open file " + gml_path.u8string());
+                throw std::runtime_error("searchAllStringsBetweenTagInFile : Could not open file " + file_path.u8string());
             }
-            auto found_paths = std::vector<fs::path>();
-            std::string line;
-            while(std::getline(ifs, line)){
-                auto found_pos = line.find("<app:imageURI>");
-                if(found_pos == std::string::npos) continue;
-                auto begin_pos = found_pos + strlen("<app:imageURI>");
-                auto end_pos = line.find("</app:imageURI>");
-                if(end_pos == std::string::npos) end_pos = line.size();
-                auto url = line.substr(begin_pos, (end_pos - begin_pos));
-                found_paths.push_back(fs::u8path(url));
-            }
-            return found_paths;
+            std::stringstream buffer;
+            buffer << ifs.rdbuf();
+            auto file_content = buffer.str();
+            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content);
+            return founds;
+        }
+
+        std::set<std::string> searchAllImagePathsInGML(const fs::path& gml_path){
+            auto found_url_strings = searchAllStringsBetweenTagInFile("<app:imageURI>", "</app:imageURI>", gml_path);
+            return found_url_strings;
+        }
+
+        std::set<std::string> searchAllCodelistPathsInGml(const fs::path& gml_path){
+            auto found_strings = searchAllStringsBetweenTagInFile("codeSpace=\"", "\"", gml_path);
+            return found_strings;
         }
     }
 
@@ -182,11 +208,14 @@ namespace plateau::udx {
         fs::copy(gml_file.getPath(), gml_destination_path, fs::copy_options::skip_existing);
         // TODO: 取ってくるべきcodelists,textureをgmlファイルから読み取る
         auto image_paths = searchAllImagePathsInGML(gml_file.getPath());
+        auto codelist_paths = searchAllCodelistPathsInGml(gml_file.getPath());
         // TODO 仮
-//        std::cout << "found image path count : " << image_paths.size() << std::endl;
-//        for(const auto& path : image_paths){
-//            std::cout << path.u8string() << std::endl;
-//        }
+        for (const auto& path : image_paths){
+            std::cout << path << std::endl;
+        }
+        for (const auto& path : codelist_paths){
+            std::cout << path << std::endl;
+        }
 
         //fs::path app_destination_path(destination_udx_path);
         //app_destination_path.append(getRelativePath(gml_file_path));
