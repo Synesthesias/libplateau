@@ -206,10 +206,9 @@ namespace plateau::udx {
         gml_destination_path.append(getRelativePath(gml_file.getPath()));
         fs::create_directories(gml_destination_path.parent_path());
         fs::copy(gml_file.getPath(), gml_destination_path, fs::copy_options::skip_existing);
-        // TODO: 取ってくるべきcodelists,textureをgmlファイルから読み取る
         auto image_paths = searchAllImagePathsInGML(gml_file.getPath());
         auto codelist_paths = searchAllCodelistPathsInGml(gml_file.getPath());
-        // TODO 仮
+        // TODO 仮、今はURLを表示するだけです
         for (const auto& path : image_paths){
             std::cout << path << std::endl;
         }
