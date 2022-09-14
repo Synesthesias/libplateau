@@ -55,7 +55,6 @@ namespace plateau::udx {
                 // ファイルから検索します。
                 for(const auto& entry : fs::directory_iterator(next_dir)){
                     if(entry.is_directory()) continue;
-                    std::cout << "searching " << entry.path().string() << std::endl;
                     const auto& path = entry.path();
                     if(path.extension() == ".gml"){
                         result.emplace_back(path.string());
