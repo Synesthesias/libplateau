@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <set>
 
 #include <libplateau_api.h>
 #include <plateau/udx/gml_file_info.h>
@@ -134,7 +135,7 @@ namespace plateau::udx {
         /**
          * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。
          */
-        std::vector<MeshCode>& getMeshCodes();
+        std::set<MeshCode>& getMeshCodes();
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
@@ -142,6 +143,6 @@ namespace plateau::udx {
     private:
         std::string udx_path_;
         std::map<PredefinedCityModelPackage, std::vector<GmlFileInfo>> files_;
-        std::vector<MeshCode> mesh_codes_;
+        std::set<MeshCode> mesh_codes_;
     };
 }

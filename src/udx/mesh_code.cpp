@@ -38,7 +38,7 @@ namespace plateau::udx {
         if (code.size() == 8) {
             return 3;
         }
-        // 2ŸƒƒbƒVƒ…A3ŸƒƒbƒVƒ…ˆÈŠO‚ÍƒTƒ|[ƒg‘ÎÛŠO
+        // 2ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½A3ï¿½ï¿½ï¿½ï¿½ï¿½bï¿½Vï¿½ï¿½ï¿½ÈŠOï¿½ÍƒTï¿½|ï¿½[ï¿½gï¿½ÎÛŠO
         throw std::runtime_error("Invalid string for regional mesh code");
     }
 
@@ -127,6 +127,14 @@ namespace plateau::udx {
 
     bool MeshCode::operator==(const MeshCode& other) const {
         return get() == other.get();
+    }
+
+    bool MeshCode::operator<(MeshCode& other) const{
+        return std::stoi(get()) < std::stoi(other.get());
+    }
+
+    bool MeshCode::operator<(const MeshCode& other) const{
+        return std::stoi(get()) < std::stoi(other.get());
     }
 
     void MeshCode::nextCol(MeshCode& mesh_code) {

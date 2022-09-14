@@ -21,6 +21,10 @@ namespace plateau::udx {
 
         bool operator==(const MeshCode& other) const;
 
+        //! setに入れるために演算子オーバーロードします。
+        bool operator<(MeshCode& other) const;
+        bool operator<(const MeshCode& other) const;
+
     private:
         int first_row_;
         int first_col_;

@@ -4,6 +4,7 @@
 #include <plateau/udx/udx_file_collection.h>
 #include <fstream>
 #include <queue>
+#include <set>
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
@@ -207,15 +208,13 @@ namespace plateau::udx {
         return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).string();
     }
 
-    std::vector<MeshCode>& UdxFileCollection::getMeshCodes() {
+    std::set<MeshCode>& UdxFileCollection::getMeshCodes() {
         if (!mesh_codes_.empty())
             return mesh_codes_;
 
         for (const auto& [_, files] : files_) {
             for (const auto& file : files) {
-                if (std::find(mesh_codes_.cbegin(), mesh_codes_.cend(), file.getMeshCode()) == mesh_codes_.cend()) {
-                    mesh_codes_.push_back(file.getMeshCode());
-                }
+                mesh_codes_.insert(file.getMeshCode());
             }
         }
         return mesh_codes_;
