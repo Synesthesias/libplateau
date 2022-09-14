@@ -83,6 +83,11 @@ namespace {
             converted_position.y = -position.x;
             converted_position.z = position.z;
             return converted_position;
+        case CoordinateSystem::EUN:
+            converted_position.x = position.x;
+            converted_position.y = position.z;
+            converted_position.z = position.y;
+            return converted_position;
         default:
             throw std::out_of_range("Invalid argument");
         }
