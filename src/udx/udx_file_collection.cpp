@@ -181,7 +181,7 @@ namespace plateau::udx {
                 auto search_start =
                         str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
                 auto search_end = std::min(str.end(), str_begin + (long long) hint_matched_pos + (long long)hint.size() + search_range_after_hint);
-                // 正規表現でヒットしたら、その結果を返します。
+                // 正規表現でヒットしたら、その結果を引数 matched に格納して返します。
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if(found) return true;
                 // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
