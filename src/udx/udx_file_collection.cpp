@@ -149,6 +149,7 @@ namespace plateau::udx {
         return result;
     }
 
+    // fetch で使う無名関数
     namespace{
         /**
          * 引数文字列 str のうち、引数 begin_tag と end_tag で囲まれた文字列をすべて検索し set で返します。
@@ -190,11 +191,32 @@ namespace plateau::udx {
             return found_url_strings;
         }
 
-        std::set<std::string> searchAllCodelistPathsInGml(const fs::path& gml_path){
+        std::set<std::string> searchAllCodelistPathsInGML(const fs::path& gml_path){
             auto found_strings = searchAllStringsBetweenTagInFile("codeSpace=\"", "\"", gml_path);
             return found_strings;
         }
-    }
+
+        /**
+         * 引数の set の中身を相対パスと解釈し、 setの各要素をコピーします。
+         * 相対パスの基準は コピー元は 引数 src_base_path、 コピー先は dest_base_path になります。
+         * コピー先に同名のフォルダが存在する場合はコピーしません。
+         * コピー元が実在しない場合はコピーしません。
+         */
+        void copySet(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path){
+            for(const auto& path : path_set){
+                auto src = src_base_path;
+                auto dest = dest_base_path;
+                src.append(path).make_preferred();
+                dest.append(path).make_preferred();
+                if(!fs::exists(src)){
+                    std::cout << "file not exist : " << src.string() << std::endl;
+                    continue;
+                }
+                fs::create_directories(dest.parent_path());
+                fs::copy(src, dest, fs::copy_options::skip_existing);
+            }
+        }
+    } // fetch で使う無名関数
 
 
     std::string UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
@@ -204,10 +226,11 @@ namespace plateau::udx {
         fs::path gml_destination_path(destination_udx_path);
         gml_destination_path.append(getRelativePath(gml_file.getPath()));
         fs::create_directories(gml_destination_path.parent_path());
-        fs::copy(gml_file.getPath(), gml_destination_path, fs::copy_options::skip_existing);
+        const auto& gml_file_path = gml_file.getPath();
+        fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
         auto image_paths = searchAllImagePathsInGML(gml_file.getPath());
-        auto codelist_paths = searchAllCodelistPathsInGml(gml_file.getPath());
-        // TODO 仮、今はURLを表示するだけです
+        auto codelist_paths = searchAllCodelistPathsInGML(gml_file.getPath());
+        // TODO 仮の表示
         for (const auto& path : image_paths){
             std::cout << path << std::endl;
         }
@@ -215,14 +238,10 @@ namespace plateau::udx {
             std::cout << path << std::endl;
         }
 
-        //fs::path app_destination_path(destination_udx_path);
-        //app_destination_path.append(getRelativePath(gml_file_path));
-        //if (fs::exists(file.getAppearanceDirectoryPath()))
-        //    fs::copy(file.getAppearanceDirectoryPath(), app_destination_path, fs::copy_options::recursive | fs::copy_options::update_existing);
-            //    const auto root_folder_name = fs::u8path(udx_path_).parent_path().filename().u8string();
-    //    const auto source_path = fs::u8path(udx_path_).parent_path().append(u8"codelists");
-    //    const auto destination_path = fs::u8path(destination_root_path).append(root_folder_name).append(u8"codelists").u8string();
-    //    fs::copy(source_path, destination_path, fs::copy_options::recursive | fs::copy_options::skip_existing);
+        auto gml_dir_path = fs::path(gml_file_path).parent_path();
+        auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
+        copySet(image_paths, gml_dir_path, app_destination_path);
+        copySet(codelist_paths, gml_dir_path, app_destination_path);
 
         return gml_destination_path.u8string();
     }

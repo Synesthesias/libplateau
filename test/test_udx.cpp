@@ -61,7 +61,7 @@ TEST_F(UdxTest, fetch){
     udx_file_collection_.fetch(test_destination,
                                udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
     // TODO ここにASSERTを書く
-    fs::remove_all(test_destination);
+//    fs::remove_all(test_destination);
 }
 
 //TEST_F(UdxTest, getAllSubFolders) {
