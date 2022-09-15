@@ -152,18 +152,25 @@ namespace plateau::udx {
 
     // fetch で使う無名関数
     namespace{
-        using StrIterT = decltype(std::string("a").begin());
         using ConstStrIterT = decltype(std::string("a").cbegin());
 
-        bool regexSearchWithHint(const std::string& str, ConstStrIterT& search_pos, std::smatch& matched, const std::regex& regex, const std::string& hint, unsigned search_range_before_hint, unsigned search_range_after_hint){
-            auto hint_matched_pos = str.find(hint, search_pos - str.cbegin());
-            if (hint_matched_pos == std::string::npos) return false;
-            auto begin_tag_search_start = str.cbegin() + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
-            auto begin_tag_search_end = std::min(str.end(), begin_tag_search_start + search_range_before_hint + search_range_after_hint);
-            bool begin_tag_found = std::regex_search(begin_tag_search_start, begin_tag_search_end, matched, regex);
-            if (!begin_tag_found) return false;
-            search_pos = matched[0].second;
-            return true;
+        bool regexSearchWithHint(const std::string& str, ConstStrIterT search_pos, std::smatch& matched,
+                                 const std::regex& regex, const std::string& hint,
+                                 unsigned search_range_before_hint, unsigned search_range_after_hint
+        ) {
+            const auto str_begin = str.cbegin();
+            while(search_pos != str.cend()){
+                auto hint_matched_pos = str.find(hint, search_pos - str_begin);
+                if (hint_matched_pos == std::string::npos) return false;
+                auto search_start =
+                        str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
+                auto search_end = std::min(str.end(), str_begin + (long long) hint_matched_pos + (long long)hint.size() + search_range_after_hint);
+                bool found = std::regex_search(search_start, search_end, matched, regex);
+                if(found) return true;
+                // ヒントにはヒットしたけど正規表現にヒットしなかったケース // TODO 要テスト
+                search_pos = str_begin + hint_matched_pos + hint.size();
+            }
+
         }
 
         /**
@@ -172,73 +179,63 @@ namespace plateau::udx {
          * begin_tag_regex に対応する end_tag_regex がない場合、strの末尾までが対象となります。
          * 検索結果のうち同じ文字列は1つにまとめられます。
          */
-        std::set<std::string> searchAllStringsBetween(const std::regex& begin_tag_regex, const std::regex& end_tag_regex, const std::string& str, const std::string& begin_tag_hint, const std::string& end_tag_hint, unsigned search_range_before_hint, unsigned search_range_after_hint){
+        std::set<std::string> searchAllStringsBetween(
+                const std::regex& begin_tag_regex, const std::regex& end_tag_regex,
+                const std::string& str,
+                const std::string& begin_tag_hint, const std::string& end_tag_hint,
+                unsigned search_range_before_hint, unsigned search_range_after_hint
+        ) {
             std::set<std::string> found;
             std::smatch begin_tag_matched;
+            std::smatch end_tag_matched;
             auto begin_tag_search_iter = str.begin();
-            while(true){ // TODO
-                if(!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint, search_range_before_hint, search_range_after_hint)){
+            while (true) {
+                if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
+                                         search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
-//                auto hint_matched = str.find(begin_tag_hint, std::distance(str.begin(), begin_tag_search_start));
-//                if(hint_matched == std::string::npos) break;
-//                begin_tag_search_start = str.begin() + std::max((long long)0, (long long)hint_matched - 10);
-//                bool is_found = std::regex_search(begin_tag_search_start, str.end(), begin_tag_matched, begin_tag_regex);
-//                if(!is_found) break;
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
-                std::smatch end_tag_matched;
-                const ConstStrIterT between_str_end;
-                auto end_tag_iter = next_of_begin_tag;
-                if(regexSearchWithHint(str, end_tag_iter, end_tag_matched, end_tag_regex, end_tag_hint, search_range_before_hint, search_range_after_hint)){
+                if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
+                                        search_range_before_hint, search_range_after_hint)) {
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
-                }else{
+                } else {
                     found.insert(std::string(next_of_begin_tag, str.end()));
+                    break;
                 }
-//                decltype(end_tag_matched[0].first) end_tag_iter;
-//                if(s(next_of_begin_tag, str.end(), end_tag_matched, end_tag_regex, end_tag_)){
-//                    end_tag_iter = end_tag_matched[0].first;
-//                }else{
-//                    end_tag_iter = str.end();
-//                }
-//                found.insert(std::string(next_of_begin_tag, end_tag_iter));
                 const auto next_of_end_tag = end_tag_matched[0].second;
                 begin_tag_search_iter = next_of_end_tag;
             }
             return found;
         }
 
-        /**
-         * 上の searchAllStringsBetween 関数について、探索対象が文字列の代わりにファイルになった版です。
-         */
-        std::set<std::string> searchAllStringsBetweenTagInFile(const std::regex& begin_tag, const std::regex& end_tag, const fs::path& file_path, const std::string& begin_tag_hint, const std::string& end_tag_hint, unsigned search_range_before_int, unsigned search_range_after_int){
+        std::string loadFile(const fs::path& file_path){
             std::ifstream ifs(file_path.u8string());
-            if(!ifs){
-                throw std::runtime_error("searchAllStringsBetweenTagInFile : Could not open file " + file_path.u8string());
+            if (!ifs) {
+                throw std::runtime_error(
+                        "loadFile : Could not open file " + file_path.u8string());
             }
             std::stringstream buffer;
             buffer << ifs.rdbuf();
-            auto file_content = buffer.str();
-            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, end_tag_hint, search_range_before_int, search_range_after_int);
-            return founds;
+            return buffer.str();
         }
 
-        std::set<std::string> searchAllImagePathsInGML(const fs::path& gml_path){
+        std::set<std::string> searchAllImagePathsInGML(const std::string& file_content){
             // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に空白文字があっても良いものとします。
             auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)");
             // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に空白文字があっても良いものとします。
             auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)");
             const auto tag_hint = std::string("app:imageURI");
-            auto found_url_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, tag_hint, tag_hint, 20, 20);
+            auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
             return found_url_strings;
         }
 
-        std::set<std::string> searchAllCodelistPathsInGML(const fs::path& gml_path){
+        std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content){
             // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に空白文字があっても良いものとします。
             auto begin_tag = std::regex(R"(codeSpace\s*=\s*["']\s*)");
             // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。前後に空白があっても良いものとします。
             auto end_tag = std::regex(R"(\s*")");
             const auto begin_tag_hint = "codeSpace";
-            auto found_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint, "\"", 20, 20);
+            auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
             return found_strings;
         }
 
@@ -274,8 +271,9 @@ namespace plateau::udx {
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = gml_file.getPath();
         fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
-        auto image_paths = searchAllImagePathsInGML(gml_file.getPath());
-        auto codelist_paths = searchAllCodelistPathsInGML(gml_file.getPath());
+        const auto& gml_content = loadFile(gml_file.getPath());
+        auto image_paths = searchAllImagePathsInGML(gml_content);
+        auto codelist_paths = searchAllCodelistPathsInGML(gml_content);
 
         for(const auto& path : image_paths){
             std::cout << path << std::endl;
