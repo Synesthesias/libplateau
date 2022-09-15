@@ -154,20 +154,37 @@ namespace plateau::udx {
     namespace{
         using ConstStrIterT = decltype(std::string("a").cbegin());
 
+        /**
+         * @brief 正規表現で検索しますが、ヒントを与えることで検索を高速化します。
+         *        ヒントとは何かについては、 関数 searchAllStringsBetween のコメントを参照してください。
+         * @param str 検索対象の文字列です。
+         * @param search_pos 検索の開始位置です。
+         * @param matched 検索結果はここに格納されます。
+         * @param regex 検索する正規表現です。
+         * @param hint ヒント文字列です。正規表現が検索ヒットするとき、ヒント文字列が必ず検索ヒットし、
+         *             かつそのヒント文字列の周囲の指定バイト数にその正規表現ヒット文字列が含まれることが条件となります。
+         * @param search_range_before_hint ヒント文字列の前の何バイト目から正規表現による検索を始めるかです。
+         * @param search_range_after_hint ヒント文字列の後の何バイト目まで正規表現による検索対象にするかです。
+         * @return ヒットしたらtrue, なければ false を返します。
+         */
         bool regexSearchWithHint(const std::string& str, ConstStrIterT search_pos, std::smatch& matched,
                                  const std::regex& regex, const std::string& hint,
                                  unsigned search_range_before_hint, unsigned search_range_after_hint
         ) {
             const auto str_begin = str.cbegin();
             while(search_pos != str.cend()){
+                // ヒントで検索します。
                 auto hint_matched_pos = str.find(hint, search_pos - str_begin);
+                // ヒントで検索ヒットしなければ、正規表現でも検索ヒットしません。そのようなヒントが渡されていることが前提です。
                 if (hint_matched_pos == std::string::npos) return false;
+                // ヒントが検索ヒットしたので、その周囲の指定数のバイト範囲を正規表現の検索範囲にします。
                 auto search_start =
                         str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
                 auto search_end = std::min(str.end(), str_begin + (long long) hint_matched_pos + (long long)hint.size() + search_range_after_hint);
+                // 正規表現でヒットしたら、その結果を返します。
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if(found) return true;
-                // ヒントにはヒットしたけど正規表現にヒットしなかったケース
+                // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
                 search_pos = std::min(str.cend(), str_begin + hint_matched_pos + hint.size());
             }
 
@@ -178,6 +195,17 @@ namespace plateau::udx {
          * end_tag_regex は begin_tag_regex が登場する箇所より後が検索対象となります。
          * begin_tag_regex に対応する end_tag_regex がない場合、strの末尾までが対象となります。
          * 検索結果のうち同じ文字列は1つにまとめられます。
+         *
+         * ヒントについて:
+         * 検索の高速化のために引数でヒント文字列を与える必要があります。
+         * 例えば40MBのGMLファイルに対して愚直に正規表現で検索すると1分30秒程度の時間がかかります。
+         * 引数でヒントを与えることで、正規表現の検索範囲が狭まり 4秒程度に短縮できました。
+         * ヒント文字列とは、正規表現が検索ヒットするとき、その場所でヒント文字列も必ずヒットする、という条件を満たす文字列です。
+         * 例えば、文字列 <start_tag> を検索したいが、<括弧> の前後に半角スペースが入っているケースも検索したいという場合、
+         * 検索正規表現は < *start_tag *> であり、ヒント文字列は start_tag となります。
+         * このとき、まず正規表現検索よりも高速な通常文字列検索で start_tag が検索されます。
+         * そして見つかった位置から前後に指定バイト数の幅をとった範囲を正規表現で検索します。
+         * その範囲は引数 search_range_before_hint, search_range_after_hint で指定します。この値は少ないほうが速くなります。
          */
         std::set<std::string> searchAllStringsBetween(
                 const std::regex& begin_tag_regex, const std::regex& end_tag_regex,
@@ -226,20 +254,20 @@ namespace plateau::udx {
         auto regex_options = std::regex::optimize | std::regex::nosubs;
 
         std::set<std::string> searchAllImagePathsInGML(const std::string& file_content){
-            // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に空白文字があっても良いものとします。
-            static const auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)", regex_options);
-            // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に空白文字があっても良いものとします。
-            static const auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)", regex_options);
+            // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
+            static const auto begin_tag = std::regex(R"(< *app:imageURI *> *)", regex_options);
+            // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
+            static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
             static auto tag_hint = std::string("app:imageURI");
             auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
             return found_url_strings;
         }
 
         std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content){
-            // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に空白文字があっても良いものとします。
-            static const auto begin_tag = std::regex(R"(codeSpace\s*=\s*["']\s*)", regex_options);
-            // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。前後に空白があっても良いものとします。
-            static const auto end_tag = std::regex(R"(\s*")", regex_options);
+            // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に半角スペースがあっても良いものとします。
+            static const auto begin_tag = std::regex(R"(codeSpace *= *" *)", regex_options);
+            // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。
+            static const auto end_tag = std::regex(R"(")", regex_options);
             static const auto begin_tag_hint = "codeSpace";
             auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
             return found_strings;
