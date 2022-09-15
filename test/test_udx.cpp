@@ -64,18 +64,19 @@ namespace{
     }
 }
 
-TEST_F(UdxTest, fetch){
-    auto test_destination = std::filesystem::path("../temp_test_dir").make_preferred().string();
-    fs::remove_all(test_destination);
-    udx_file_collection_.fetch(test_destination,
+TEST_F(UdxTest, fetch_generates_files){
+    // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
+    auto temp_test_dir = std::filesystem::path("../temp_test_dir").make_preferred().string();
+    fs::remove_all(temp_test_dir);
+    udx_file_collection_.fetch(temp_test_dir,
                                udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
     // gmlファイルがコピー先に存在します。
-    auto bldg_dir = fs::path(test_destination).append("data/udx/bldg");
+    auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
     ASSERT_TRUE(fs::exists(gml_path));
 
     // codelistsファイルがコピー先に存在します。
-    auto codelists_dir = fs::path(test_destination).append("data/codelists");
+    auto codelists_dir = fs::path(temp_test_dir).append("data/codelists");
     std::vector<std::string> codelists = {
             "Common_districtsAndZonesType.xml",
             "Common_prefecture.xml",
@@ -102,7 +103,7 @@ TEST_F(UdxTest, fetch){
     };
     checkFilesExist(images, image_dir);
 
-//    fs::remove_all(test_destination);
+    fs::remove_all(temp_test_dir);
 }
 
 //TEST_F(UdxTest, getAllSubFolders) {
