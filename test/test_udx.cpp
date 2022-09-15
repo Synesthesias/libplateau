@@ -55,12 +55,53 @@ TEST_F(UdxTest, getAllMeshCodes) {
     ASSERT_EQ(mesh_codes.size(), 4);
 }
 
+namespace{
+    void checkFilesExist(const std::vector<std::string>& file_relative_paths, const fs::path& base_path){
+        for(const auto& relative_path : file_relative_paths){
+            auto path = fs::path(base_path).append(relative_path).make_preferred();
+            ASSERT_TRUE(fs::exists(path));
+        }
+    }
+}
+
 TEST_F(UdxTest, fetch){
     auto test_destination = std::filesystem::path("../temp_test_dir").make_preferred().string();
     fs::remove_all(test_destination);
     udx_file_collection_.fetch(test_destination,
                                udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
-    // TODO ここにASSERTを書く
+    // gmlファイルがコピー先に存在します。
+    auto bldg_dir = fs::path(test_destination).append("data/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
+    ASSERT_TRUE(fs::exists(gml_path));
+
+    // codelistsファイルがコピー先に存在します。
+    auto codelists_dir = fs::path(test_destination).append("data/codelists");
+    std::vector<std::string> codelists = {
+            "Common_districtsAndZonesType.xml",
+            "Common_prefecture.xml",
+            "Common_localPublicAuthorities.xml",
+            "extendedAttribute_key.xml",
+            "extendedAttribute_key2.xml",
+            "extendedAttribute_key106.xml",
+            "Common_prefecture.xml"
+    };
+    checkFilesExist(codelists, codelists_dir);
+
+    // 画像ファイルがコピー先に存在します。
+    auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
+    std::vector<std::string> images = {
+            "hnap0876.tif",
+            "hnap0878.tif",
+            "hnap0285.tif",
+            "hnap0276.tif",
+            "hnap0275.tif",
+            "hnap0034.tif",
+            "hnap0286.tif",
+            "hnap0279.tif"
+
+    };
+    checkFilesExist(images, image_dir);
+
 //    fs::remove_all(test_destination);
 }
 
