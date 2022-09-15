@@ -167,8 +167,8 @@ namespace plateau::udx {
                 auto search_end = std::min(str.end(), str_begin + (long long) hint_matched_pos + (long long)hint.size() + search_range_after_hint);
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if(found) return true;
-                // ヒントにはヒットしたけど正規表現にヒットしなかったケース // TODO 要テスト
-                search_pos = str_begin + hint_matched_pos + hint.size();
+                // ヒントにはヒットしたけど正規表現にヒットしなかったケース
+                search_pos = std::min(str.cend(), str_begin + hint_matched_pos + hint.size());
             }
 
         }
@@ -190,19 +190,23 @@ namespace plateau::udx {
             std::smatch end_tag_matched;
             auto begin_tag_search_iter = str.begin();
             while (true) {
+                // 開始タグを検索します。
                 if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
                                          search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
+                // 終了タグを検索します。
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
                                         search_range_before_hint, search_range_after_hint)) {
+                    // 開始タグと終了タグに挟まれた文字列を結果として格納します。
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 } else {
                     found.insert(std::string(next_of_begin_tag, str.end()));
                     break;
                 }
                 const auto next_of_end_tag = end_tag_matched[0].second;
+                // イテレーターを進めます。
                 begin_tag_search_iter = next_of_end_tag;
             }
             return found;
@@ -214,27 +218,29 @@ namespace plateau::udx {
                 throw std::runtime_error(
                         "loadFile : Could not open file " + file_path.u8string());
             }
-            std::stringstream buffer;
+            std::ostringstream buffer;
             buffer << ifs.rdbuf();
             return buffer.str();
         }
 
+        auto regex_options = std::regex::optimize | std::regex::nosubs;
+
         std::set<std::string> searchAllImagePathsInGML(const std::string& file_content){
             // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に空白文字があっても良いものとします。
-            auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)");
+            static const auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)", regex_options);
             // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に空白文字があっても良いものとします。
-            auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)");
-            const auto tag_hint = std::string("app:imageURI");
+            static const auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)", regex_options);
+            static auto tag_hint = std::string("app:imageURI");
             auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
             return found_url_strings;
         }
 
         std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content){
             // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に空白文字があっても良いものとします。
-            auto begin_tag = std::regex(R"(codeSpace\s*=\s*["']\s*)");
+            static const auto begin_tag = std::regex(R"(codeSpace\s*=\s*["']\s*)", regex_options);
             // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。前後に空白があっても良いものとします。
-            auto end_tag = std::regex(R"(\s*")");
-            const auto begin_tag_hint = "codeSpace";
+            static const auto end_tag = std::regex(R"(\s*")", regex_options);
+            static const auto begin_tag_hint = "codeSpace";
             auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
             return found_strings;
         }
@@ -271,7 +277,9 @@ namespace plateau::udx {
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = gml_file.getPath();
         fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
-        const auto& gml_content = loadFile(gml_file.getPath());
+
+        // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
+        const auto gml_content = loadFile(gml_file.getPath());
         auto image_paths = searchAllImagePathsInGML(gml_content);
         auto codelist_paths = searchAllCodelistPathsInGML(gml_content);
 
@@ -282,6 +290,7 @@ namespace plateau::udx {
             std::cout << path << std::endl;
         }
 
+        // テクスチャとコードリストファイルをコピーします。
         auto gml_dir_path = fs::path(gml_file_path).parent_path();
         auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
         copyFiles(image_paths, gml_dir_path, app_destination_path);
