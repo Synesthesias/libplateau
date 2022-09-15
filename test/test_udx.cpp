@@ -73,7 +73,8 @@ TEST_F(UdxTest, fetch_generates_files){
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
 //    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
-    auto gml_path = fs::path(bldg_dir).append("53392583_bldg_6697_op2.gml").make_preferred();
+    auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
+    std::cout << gml_path << std::endl;
     ASSERT_TRUE(fs::exists(gml_path));
 
     // codelistsファイルがコピー先に存在します。
@@ -104,7 +105,7 @@ TEST_F(UdxTest, fetch_generates_files){
     };
     checkFilesExist(images, image_dir);
 
-    fs::remove_all(temp_test_dir);
+//    fs::remove_all(temp_test_dir);
 }
 
 //TEST_F(UdxTest, getAllSubFolders) {

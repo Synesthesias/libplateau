@@ -152,33 +152,57 @@ namespace plateau::udx {
 
     // fetch で使う無名関数
     namespace{
+        using StrIterT = decltype(std::string("a").begin());
+        using ConstStrIterT = decltype(std::string("a").cbegin());
+
+        bool regexSearchWithHint(const std::string& str, ConstStrIterT& search_pos, std::smatch& matched, const std::regex& regex, const std::string& hint, unsigned search_range_before_hint, unsigned search_range_after_hint){
+            auto hint_matched_pos = str.find(hint, search_pos - str.cbegin());
+            if (hint_matched_pos == std::string::npos) return false;
+            auto begin_tag_search_start = str.cbegin() + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
+            auto begin_tag_search_end = std::min(str.end(), begin_tag_search_start + search_range_before_hint + search_range_after_hint);
+            bool begin_tag_found = std::regex_search(begin_tag_search_start, begin_tag_search_end, matched, regex);
+            if (!begin_tag_found) return false;
+            search_pos = matched[0].second;
+            return true;
+        }
+
         /**
-         * 引数文字列 str のうち、引数 begin_tag と end_tag で囲まれた文字列をすべて検索し set で返します。
-         * end_tag は begin_tag が登場する箇所より後が検索対象となります。
-         * begin_tag に対応する end_tag がない場合、strの末尾までが対象となります。
+         * 引数文字列 str のうち、引数 begin_tag_regex と end_tag_regex で囲まれた文字列をすべて検索し set で返します。
+         * end_tag_regex は begin_tag_regex が登場する箇所より後が検索対象となります。
+         * begin_tag_regex に対応する end_tag_regex がない場合、strの末尾までが対象となります。
          * 検索結果のうち同じ文字列は1つにまとめられます。
          */
-        std::set<std::string> searchAllStringsBetween(const std::regex& begin_tag, const std::regex& end_tag, const std::string& str, const std::string& begin_tag_hint){
+        std::set<std::string> searchAllStringsBetween(const std::regex& begin_tag_regex, const std::regex& end_tag_regex, const std::string& str, const std::string& begin_tag_hint, const std::string& end_tag_hint, unsigned search_range_before_hint, unsigned search_range_after_hint){
             std::set<std::string> found;
             std::smatch begin_tag_matched;
-            auto search_start_for_begin_tag = str.begin();
+            auto begin_tag_search_iter = str.begin();
             while(true){ // TODO
-                auto hint_matched = str.find(begin_tag_hint, search_start_for_begin_tag - str.begin());
-                if(hint_matched == std::string::npos) break;
-                search_start_for_begin_tag = str.begin() + std::max((long long)0, (long long)hint_matched - 10);
-                bool is_found = std::regex_search(search_start_for_begin_tag, str.end(), begin_tag_matched, begin_tag);
-                if(!is_found) break;
+                if(!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint, search_range_before_hint, search_range_after_hint)){
+                    break;
+                }
+//                auto hint_matched = str.find(begin_tag_hint, std::distance(str.begin(), begin_tag_search_start));
+//                if(hint_matched == std::string::npos) break;
+//                begin_tag_search_start = str.begin() + std::max((long long)0, (long long)hint_matched - 10);
+//                bool is_found = std::regex_search(begin_tag_search_start, str.end(), begin_tag_matched, begin_tag_regex);
+//                if(!is_found) break;
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 std::smatch end_tag_matched;
-                decltype(end_tag_matched[0].first) end_tag_iter;
-                if(std::regex_search(next_of_begin_tag, str.end(), end_tag_matched, end_tag)){
-                    end_tag_iter = end_tag_matched[0].first;
+                const ConstStrIterT between_str_end;
+                auto end_tag_iter = next_of_begin_tag;
+                if(regexSearchWithHint(str, end_tag_iter, end_tag_matched, end_tag_regex, end_tag_hint, search_range_before_hint, search_range_after_hint)){
+                    found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 }else{
-                    end_tag_iter = str.end();
+                    found.insert(std::string(next_of_begin_tag, str.end()));
                 }
+//                decltype(end_tag_matched[0].first) end_tag_iter;
+//                if(s(next_of_begin_tag, str.end(), end_tag_matched, end_tag_regex, end_tag_)){
+//                    end_tag_iter = end_tag_matched[0].first;
+//                }else{
+//                    end_tag_iter = str.end();
+//                }
+//                found.insert(std::string(next_of_begin_tag, end_tag_iter));
                 const auto next_of_end_tag = end_tag_matched[0].second;
-                search_start_for_begin_tag = next_of_end_tag;
-                found.insert(std::string(next_of_begin_tag, end_tag_iter));
+                begin_tag_search_iter = next_of_end_tag;
             }
             return found;
         }
@@ -186,7 +210,7 @@ namespace plateau::udx {
         /**
          * 上の searchAllStringsBetween 関数について、探索対象が文字列の代わりにファイルになった版です。
          */
-        std::set<std::string> searchAllStringsBetweenTagInFile(const std::regex& begin_tag, const std::regex& end_tag, const fs::path& file_path, const std::string& begin_tag_hint){
+        std::set<std::string> searchAllStringsBetweenTagInFile(const std::regex& begin_tag, const std::regex& end_tag, const fs::path& file_path, const std::string& begin_tag_hint, const std::string& end_tag_hint, unsigned search_range_before_int, unsigned search_range_after_int){
             std::ifstream ifs(file_path.u8string());
             if(!ifs){
                 throw std::runtime_error("searchAllStringsBetweenTagInFile : Could not open file " + file_path.u8string());
@@ -194,7 +218,7 @@ namespace plateau::udx {
             std::stringstream buffer;
             buffer << ifs.rdbuf();
             auto file_content = buffer.str();
-            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint);
+            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, end_tag_hint, search_range_before_int, search_range_after_int);
             return founds;
         }
 
@@ -203,8 +227,8 @@ namespace plateau::udx {
             auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)");
             // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に空白文字があっても良いものとします。
             auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)");
-            const auto begin_tag_hint = std::string("app:imageURI");
-            auto found_url_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint);
+            const auto tag_hint = std::string("app:imageURI");
+            auto found_url_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, tag_hint, tag_hint, 20, 20);
             return found_url_strings;
         }
 
@@ -214,7 +238,7 @@ namespace plateau::udx {
             // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。前後に空白があっても良いものとします。
             auto end_tag = std::regex(R"(\s*")");
             const auto begin_tag_hint = "codeSpace";
-            auto found_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint);
+            auto found_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint, "\"", 20, 20);
             return found_strings;
         }
 
@@ -224,7 +248,7 @@ namespace plateau::udx {
          * コピー先に同名のフォルダが存在する場合はコピーしません。
          * コピー元が実在しない場合はコピーしません。
          */
-        void copySet(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path){
+        void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path){
             for(const auto& path : path_set){
                 auto src = src_base_path;
                 auto dest = dest_base_path;
@@ -262,8 +286,8 @@ namespace plateau::udx {
 
         auto gml_dir_path = fs::path(gml_file_path).parent_path();
         auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
-        copySet(image_paths, gml_dir_path, app_destination_path);
-        copySet(codelist_paths, gml_dir_path, app_destination_path);
+        copyFiles(image_paths, gml_dir_path, app_destination_path);
+        copyFiles(codelist_paths, gml_dir_path, app_destination_path);
 
         return gml_destination_path.u8string();
     }
