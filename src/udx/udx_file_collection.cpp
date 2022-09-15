@@ -158,27 +158,16 @@ namespace plateau::udx {
          * begin_tag に対応する end_tag がない場合、strの末尾までが対象となります。
          * 検索結果のうち同じ文字列は1つにまとめられます。
          */
-        std::set<std::string> searchAllStringsBetween(const std::regex& begin_tag, const std::regex& end_tag, const std::string& str){
+        std::set<std::string> searchAllStringsBetween(const std::regex& begin_tag, const std::regex& end_tag, const std::string& str, const std::string& begin_tag_hint){
             std::set<std::string> found;
-//            unsigned long long search_pos = 0;
-//            while((search_pos = str.find(begin_tag, search_pos)) != std::string::npos){
-//                auto begin_pos = search_pos + begin_tag.size();
-//                auto end_pos = str.find(end_tag, begin_pos);
-//                if(end_pos == std::string::npos) end_pos = str.size();
-//                auto found_string = str.substr(begin_pos, (end_pos - begin_pos));
-//                found.insert(found_string);
-//                search_pos = end_pos + end_tag.size();
-//            }
             std::smatch begin_tag_matched;
-//            for (
-//                    auto search_iter = str.begin();
-//                    std::regex_search(search_iter, str.end(), match_result, begin_tag);
-//                    search_iter = match_result[0].second
-//                    ){
-//
-//            }
             auto search_start_for_begin_tag = str.begin();
-            while(std::regex_search(search_start_for_begin_tag, str.end(), begin_tag_matched, begin_tag)){
+            while(true){ // TODO
+                auto hint_matched = str.find(begin_tag_hint, search_start_for_begin_tag - str.begin());
+                if(hint_matched == std::string::npos) break;
+                search_start_for_begin_tag = str.begin() + std::max((long long)0, (long long)hint_matched - 10);
+                bool is_found = std::regex_search(search_start_for_begin_tag, str.end(), begin_tag_matched, begin_tag);
+                if(!is_found) break;
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 std::smatch end_tag_matched;
                 decltype(end_tag_matched[0].first) end_tag_iter;
@@ -197,7 +186,7 @@ namespace plateau::udx {
         /**
          * 上の searchAllStringsBetween 関数について、探索対象が文字列の代わりにファイルになった版です。
          */
-        std::set<std::string> searchAllStringsBetweenTagInFile(const std::regex& begin_tag, const std::regex& end_tag, const fs::path& file_path){
+        std::set<std::string> searchAllStringsBetweenTagInFile(const std::regex& begin_tag, const std::regex& end_tag, const fs::path& file_path, const std::string& begin_tag_hint){
             std::ifstream ifs(file_path.u8string());
             if(!ifs){
                 throw std::runtime_error("searchAllStringsBetweenTagInFile : Could not open file " + file_path.u8string());
@@ -205,7 +194,7 @@ namespace plateau::udx {
             std::stringstream buffer;
             buffer << ifs.rdbuf();
             auto file_content = buffer.str();
-            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content);
+            auto founds = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint);
             return founds;
         }
 
@@ -214,16 +203,18 @@ namespace plateau::udx {
             auto begin_tag = std::regex(R"(<\s*app:imageURI\s*>\s*)");
             // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に空白文字があっても良いものとします。
             auto end_tag = std::regex(R"(<\s*/\s*app:imageURI\s*>)");
-            auto found_url_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path);
+            const auto begin_tag_hint = std::string("app:imageURI");
+            auto found_url_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint);
             return found_url_strings;
         }
 
         std::set<std::string> searchAllCodelistPathsInGML(const fs::path& gml_path){
             // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に空白文字があっても良いものとします。
-            auto begin_tag = std::regex(R"(codeSpace\s*=\s*"\s*)");
+            auto begin_tag = std::regex(R"(codeSpace\s*=\s*["']\s*)");
             // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。前後に空白があっても良いものとします。
             auto end_tag = std::regex(R"(\s*")");
-            auto found_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path);
+            const auto begin_tag_hint = "codeSpace";
+            auto found_strings = searchAllStringsBetweenTagInFile(begin_tag, end_tag, gml_path, begin_tag_hint);
             return found_strings;
         }
 
