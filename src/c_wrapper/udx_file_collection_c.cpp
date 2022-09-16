@@ -29,8 +29,11 @@ extern "C" {
         UdxFileCollection* handle, MeshCode* mesh_codes, int count) {
         API_TRY{
             const auto& result = handle->getMeshCodes();
-            for (int i = 0; i < count; ++i) {
-                mesh_codes[i] = result[i];
+            int i=0;
+            for (const auto& mesh_code : result){
+                mesh_codes[i] = mesh_code;
+                ++i;
+                if (i >= count) break;
             }
             return APIResult::Success;
         }
@@ -71,7 +74,7 @@ extern "C" {
 
     DLL_STRING_PTR_FUNC(plateau_udx_file_collection_get_gml_file,
                         UdxFileCollection,
-                        handle->getGmlFile(package, index),
+                        handle->getGmlFilePath(package, index),
                         ,PredefinedCityModelPackage package
                         ,int index)
 

@@ -55,6 +55,59 @@ TEST_F(UdxTest, getAllMeshCodes) {
     ASSERT_EQ(mesh_codes.size(), 4);
 }
 
+namespace{
+    void checkFilesExist(const std::vector<std::string>& file_relative_paths, const fs::path& base_path){
+        for(const auto& relative_path : file_relative_paths){
+            auto path = fs::path(base_path).append(relative_path).make_preferred();
+            ASSERT_TRUE(fs::exists(path));
+        }
+    }
+}
+
+TEST_F(UdxTest, fetch_generates_files){
+    // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
+    auto temp_test_dir = std::filesystem::path("../temp_test_dir").make_preferred().string();
+    fs::remove_all(temp_test_dir);
+    udx_file_collection_.fetch(temp_test_dir,
+                               udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
+    // gmlファイルがコピー先に存在します。
+    auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
+//    auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
+    std::cout << gml_path << std::endl;
+    ASSERT_TRUE(fs::exists(gml_path));
+
+    // codelistsファイルがコピー先に存在します。
+    auto codelists_dir = fs::path(temp_test_dir).append("data/codelists");
+    std::vector<std::string> codelists = {
+            "Common_districtsAndZonesType.xml",
+            "Common_prefecture.xml",
+            "Common_localPublicAuthorities.xml",
+            "extendedAttribute_key.xml",
+            "extendedAttribute_key2.xml",
+            "extendedAttribute_key106.xml",
+            "Common_prefecture.xml"
+    };
+    checkFilesExist(codelists, codelists_dir);
+
+    // 画像ファイルがコピー先に存在します。
+    auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
+    std::vector<std::string> images = {
+            "hnap0876.tif",
+            "hnap0878.tif",
+            "hnap0285.tif",
+            "hnap0276.tif",
+            "hnap0275.tif",
+            "hnap0034.tif",
+            "hnap0286.tif",
+            "hnap0279.tif"
+
+    };
+    checkFilesExist(images, image_dir);
+
+    fs::remove_all(temp_test_dir);
+}
+
 //TEST_F(UdxTest, getAllSubFolders) {
 //    const auto sub_folders = udx_file_collection_.getSubFolders();
 //    std::vector<std::string> sub_folder_names;
@@ -95,30 +148,30 @@ TEST_F(UdxTest, getAllMeshCodes) {
 //(
 //    std::wstring oWString
 //) {
-//    // wstring �� SJIS
+//    // wstring → SJIS
 //    int iBufferSize = WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str()
 //        , -1, (char*)NULL, 0, NULL, NULL);
 //
-//    // �o�b�t�@�̎擾
+//    // バッファの取得
 //    CHAR* cpMultiByte = new CHAR[iBufferSize];
 //
-//    // wstring �� SJIS
+//    // wstring → SJIS
 //    WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str(), -1, cpMultiByte
 //        , iBufferSize, NULL, NULL);
 //
-//    // string�̐���
+//    // stringの生成
 //    std::string oRet(cpMultiByte, cpMultiByte + iBufferSize - 1);
 //
-//    // �o�b�t�@�̔j��
+//    // バッファの破棄
 //    delete[] cpMultiByte;
 //
-//    // �ϊ����ʂ�Ԃ�
+//    // 変換結果を返す
 //    return(oRet);
 //}
 //
 //TEST_F(UdxTest, copyToFolderWithMultiByteName) {
-//    // UTF8��string�����������邽�߂�ugly hack
-//    const auto destination = fs::path("�e�X�g").u8string();
+//    // UTF8のstringを初期化するためのugly hack
+//    const auto destination = fs::path("テスト").u8string();
 //
 //    std::cout << destination;
 //    const auto result = udx_file_collection_.copyFiles(destination, UdxSubFolder("brid"));
