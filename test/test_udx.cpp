@@ -148,29 +148,29 @@ TEST_F(UdxTest, fetch_generates_files){
 //(
 //    std::wstring oWString
 //) {
-//    // wstring �� SJIS
+//    // wstring → SJIS
 //    int iBufferSize = WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str()
 //        , -1, (char*)NULL, 0, NULL, NULL);
 //
-//    // �o�b�t�@�̎擾
+//    // バッファの取得
 //    CHAR* cpMultiByte = new CHAR[iBufferSize];
 //
-//    // wstring �� SJIS
+//    // wstring → SJIS
 //    WideCharToMultiByte(CP_OEMCP, 0, oWString.c_str(), -1, cpMultiByte
 //        , iBufferSize, NULL, NULL);
 //
-//    // string�̐���
+//    // stringの生成
 //    std::string oRet(cpMultiByte, cpMultiByte + iBufferSize - 1);
 //
-//    // �o�b�t�@�̔j��
+//    // バッファの破棄
 //    delete[] cpMultiByte;
 //
-//    // �ϊ����ʂ�Ԃ�
+//    // 変換結果を返す
 //    return(oRet);
 //}
 //
 //TEST_F(UdxTest, copyToFolderWithMultiByteName) {
-//    // UTF8��string�����������邽�߂�ugly hack
+//    // UTF8のstringを初期化するためのugly hack
 //    const auto destination = fs::path("�e�X�g").u8string();
 //
 //    std::cout << destination;
