@@ -532,7 +532,7 @@
 			</bldg:address>
 			<uro:buildingDetails>
 				<uro:BuildingDetails>
-					<uro:districtsAndZonesType codeSpace = " ../../codelists/Common_districtsAndZonesType.xml " >11</uro:districtsAndZonesType>
+					<uro:districtsAndZonesType codeSpace = "../../codelists/Common_districtsAndZonesType.xml" >11</uro:districtsAndZonesType>
 					<uro:prefecture codeSpace="../../codelists/Common_prefecture.xml">13</uro:prefecture>
 					<uro:city codeSpace="../../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
 				</uro:BuildingDetails>
@@ -546,7 +546,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -911,7 +911,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -1168,7 +1168,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -7356,7 +7356,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -9028,7 +9028,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -9384,7 +9384,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -10986,7 +10986,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace= " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace= "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -11308,7 +11308,7 @@
 			<uro:extendedAttribute>
 				<uro:KeyValuePair>
 					<uro:key codeSpace="../../codelists/extendedAttribute_key.xml">106</uro:key>
-					<uro:codeValue codeSpace = " ../../codelists/extendedAttribute_key106.xml ">20</uro:codeValue>
+					<uro:codeValue codeSpace = "../../codelists/extendedAttribute_key106.xml">20</uro:codeValue>
 				</uro:KeyValuePair>
 			</uro:extendedAttribute>
 		</bldg:Building>
@@ -11318,7 +11318,7 @@
 			<app:theme>rgbTexture</app:theme>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					< app:imageURI > 53392642_bldg_6697_appearance/hnap0876.tif < / app:imageURI >
+					< app:imageURI >53392642_bldg_6697_appearance/hnap0876.tif< / app:imageURI >
 					<app:mimeType>image/tif</app:mimeType>
 					<app:target uri="#poly_HNAP0876_p2401_3">
 						<app:TexCoordList>

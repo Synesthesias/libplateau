@@ -255,7 +255,7 @@ namespace plateau::udx {
 
         std::set<std::string> searchAllImagePathsInGML(const std::string& file_content){
             // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
-            static const auto begin_tag = std::regex(R"(< *app:imageURI *> *)", regex_options);
+            static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
             // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
             static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
             static auto tag_hint = std::string("app:imageURI");
@@ -265,7 +265,7 @@ namespace plateau::udx {
 
         std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content){
             // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に半角スペースがあっても良いものとします。
-            static const auto begin_tag = std::regex(R"(codeSpace *= *" *)", regex_options);
+            static const auto begin_tag = std::regex(R"(codeSpace *= *")", regex_options);
             // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。
             static const auto end_tag = std::regex(R"(")", regex_options);
             static const auto begin_tag_hint = "codeSpace";
