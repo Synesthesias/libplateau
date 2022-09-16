@@ -1,4 +1,4 @@
-﻿#include <filesystem>
+#include <filesystem>
 #include <gtest/gtest.h>
 
 #include <windows.h>
@@ -171,7 +171,7 @@ TEST_F(UdxTest, fetch_generates_files){
 //
 //TEST_F(UdxTest, copyToFolderWithMultiByteName) {
 //    // UTF8のstringを初期化するためのugly hack
-//    const auto destination = fs::path("�e�X�g").u8string();
+//    const auto destination = fs::path("テスト").u8string();
 //
 //    std::cout << destination;
 //    const auto result = udx_file_collection_.copyFiles(destination, UdxSubFolder("brid"));

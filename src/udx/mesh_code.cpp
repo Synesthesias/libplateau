@@ -1,4 +1,4 @@
-﻿#include <iomanip>
+#include <iomanip>
 #include <stdexcept>
 #include <sstream>
 
