@@ -1,4 +1,4 @@
-#include <iomanip>
+﻿#include <iomanip>
 #include <stdexcept>
 #include <sstream>
 
@@ -38,7 +38,7 @@ namespace plateau::udx {
         if (code.size() == 8) {
             return 3;
         }
-        // 2�����b�V���A3�����b�V���ȊO�̓T�|�[�g�ΏۊO
+        // 2次メッシュ、3次メッシュ以外はサポート対象外
         throw std::runtime_error("Invalid string for regional mesh code");
     }
 

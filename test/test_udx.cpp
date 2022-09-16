@@ -1,4 +1,4 @@
-#include <filesystem>
+﻿#include <filesystem>
 #include <gtest/gtest.h>
 
 #include <windows.h>
@@ -105,7 +105,7 @@ TEST_F(UdxTest, fetch_generates_files){
     };
     checkFilesExist(images, image_dir);
 
-//    fs::remove_all(temp_test_dir);
+    fs::remove_all(temp_test_dir);
 }
 
 //TEST_F(UdxTest, getAllSubFolders) {
