@@ -1,7 +1,6 @@
 #include "grid_merger.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include "../io/polar_to_plane_cartesian.h"
-#include "plateau/io/obj_writer.h"
+#include "plateau/mesh_writer/obj_writer.h"
 #include "mesh_merger.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 

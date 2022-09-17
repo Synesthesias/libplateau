@@ -1,10 +1,25 @@
 #pragma once
 
-#include <plateau/io/mesh_convert_options.h>
+#include <plateau/geometry/geo_coordinate.h>
 #include <citygml/vecs.hpp>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
+using namespace plateau::geometry;
+
 namespace plateau::polygonMesh {
+    /**
+    * @enum MeshGranularity
+    *
+    * メッシュの結合単位
+    */
+    enum class MeshGranularity {
+        //! 最小地物単位(LOD2, LOD3の各部品)
+        PerAtomicFeatureObject,
+        //! 主要地物単位(建築物、道路等)
+        PerPrimaryFeatureObject,
+        //! 都市モデル地域単位(GMLファイル内のすべてを結合)
+        PerCityModelArea
+    };
 
     struct MeshExtractOptions {
         /// 設定をデフォルト値にするコンストラクタです。
