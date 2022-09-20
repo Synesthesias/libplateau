@@ -47,6 +47,30 @@ namespace PLATEAU.Test.Udx
         }
 
         [TestMethod]
+        public void Fetch_Copies_Relative_Files()
+        {
+            var collection = UdxFileCollection.Find("data");
+            var testDir = Directory.CreateDirectory("temp_test_dir");
+            var gmlArray = collection.GetGmlFiles(PredefinedCityModelPackage.Building);
+            foreach (var gml in gmlArray)
+            {
+                collection.Fetch(testDir.FullName, GmlFileInfo.Create(gml));
+            }
+
+            var shouldExists = new[]
+            {
+                "udx/bldg/53392642_bldg_6697_op2.gml",
+                "udx/bldg/53392642_bldg_6697_appearance/hnap0034.tif",
+                "codelists/Common_prefecture.xml"
+            };
+            foreach (var filePath in shouldExists)
+            {
+                Assert.IsTrue(File.Exists( "temp_test_dir/data/" + filePath));
+            }
+            Directory.Delete(testDir.FullName, true);
+        }
+
+        [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid()
         {
             var collection = UdxFileCollection.Find("data");

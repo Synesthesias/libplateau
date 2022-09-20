@@ -12,7 +12,6 @@ namespace PLATEAU.Test.Udx
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
             var info = GmlFileInfo.Create(path);
             Assert.AreEqual(path, info.Path);
-
         }
     }
 }
