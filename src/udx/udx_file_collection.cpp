@@ -110,8 +110,10 @@ namespace plateau::udx {
         }
     }
 
-    void UdxFileCollection::filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes,
-                                                 UdxFileCollection& collection) const {
+    void UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
+                                              UdxFileCollection& collection) const {
+        // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
+        collection.setUdxPath(udx_path_);
         // 検索用に、引数の mesh_codes を文字列のセットにします。
         auto mesh_codes_str_set = std::set<std::string>();
         for (const auto& mesh_code: mesh_codes) {
@@ -130,7 +132,7 @@ namespace plateau::udx {
     std::shared_ptr<UdxFileCollection>
     UdxFileCollection::filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes) const {
         auto result = std::make_shared<UdxFileCollection>();
-        filter_by_mesh_codes(mesh_codes, *result);
+        filterByMeshCodes(mesh_codes, *result);
         return result;
     }
 
@@ -357,7 +359,7 @@ namespace plateau::udx {
     }
 
     std::string UdxFileCollection::getRelativePath(const std::string& path) const {
-        return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).string();
+        return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
     std::set<MeshCode>& UdxFileCollection::getMeshCodes() {
@@ -377,5 +379,9 @@ namespace plateau::udx {
             files_.emplace(sub_folder, std::vector<GmlFileInfo>());
         }
         files_.at(sub_folder).push_back(gml_file_info);
+    }
+
+    void UdxFileCollection::setUdxPath(std::string udx_path) {
+        udx_path_ = std::move(udx_path);
     }
 }

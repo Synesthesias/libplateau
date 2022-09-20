@@ -71,7 +71,7 @@ extern "C" {
             auto mesh_codes = std::vector<MeshCode>();
             for(int i=0; i<mesh_codes_count; i++){
                 mesh_codes.push_back(mesh_code_array[i]);
-                handle->filter_by_mesh_codes(mesh_codes, *out_collection);
+                handle->filterByMeshCodes(mesh_codes, *out_collection);
             }
             return APIResult::Success;
         }API_CATCH;

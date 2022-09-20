@@ -71,6 +71,7 @@ namespace plateau::udx {
      */
     class LIBPLATEAU_EXPORT UdxFileCollection {
     public:
+
         /**
          * \brief source内に含まれる3D都市モデルデータを全て取得します。
          * \param source 3D都市モデルデータ製品のルートフォルダ(udx, codelists等のフォルダを含むフォルダ)へのパス
@@ -111,10 +112,10 @@ namespace plateau::udx {
          * \param mesh_codes 欲しい地域IDのvector
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
-        void filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes, UdxFileCollection& collection) const;
+        void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, UdxFileCollection& collection) const;
 
         /**
-         * \brief 上の filter_by_mesh_codes 関数について、shared_ptr で返す版です。
+         * \brief 上の filterByMeshCodes 関数について、shared_ptr で返す版です。
          */
         std::shared_ptr<UdxFileCollection> filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes) const;
         
@@ -153,6 +154,7 @@ namespace plateau::udx {
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
         void addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info);
+        void setUdxPath(std::string udx_path);
 
     private:
         std::string udx_path_;

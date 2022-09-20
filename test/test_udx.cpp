@@ -66,10 +66,11 @@ namespace{
 
 TEST_F(UdxTest, fetch_generates_files){
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
-    auto temp_test_dir = std::filesystem::path("../temp_test_dir").make_preferred().string();
+    auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
-    udx_file_collection_.fetch(temp_test_dir,
-                               udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0));
+//    const auto& test_gml_info = udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
+    const auto& test_gml_info = GmlFileInfo("../data/udx/bldg/53392642_bldg_6697_op2.gml");
+    udx_file_collection_.fetch(temp_test_dir, test_gml_info);
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
@@ -108,7 +109,7 @@ TEST_F(UdxTest, fetch_generates_files){
     fs::remove_all(temp_test_dir);
 }
 
-namespace { // テスト filter_by_mesh_codes で使う無名名前空間の関数です。
+namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。
     bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
                                                      const UdxFileCollection& udx_file_collection,
                                                      const PredefinedCityModelPackage sub_folder) {
@@ -123,7 +124,7 @@ namespace { // テスト filter_by_mesh_codes で使う無名名前空間の関�
         }
         return contains_mesh_code;
     }
-} // テスト filter_by_mesh_codes で使う無名名前空間の関数です。
+} // テスト filterByMeshCodes で使う無名名前空間の関数です。
 
 TEST_F(UdxTest, filter_by_mesh_codes) {
     ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", udx_file_collection_,
