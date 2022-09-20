@@ -62,10 +62,10 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_filter_by_mesh_codes(
-            UdxFileCollection *handle,
-            MeshCode* mesh_code_array,
+            const UdxFileCollection* const handle,
+            const MeshCode* const mesh_code_array,
             int mesh_codes_count,
-            UdxFileCollection* out_collection
+            UdxFileCollection* const out_collection
             ){
         API_TRY{
             auto mesh_codes = std::vector<MeshCode>();
@@ -73,6 +73,19 @@ extern "C" {
                 mesh_codes.push_back(mesh_code_array[i]);
                 handle->filter_by_mesh_codes(mesh_codes, *out_collection);
             }
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_fetch(
+            UdxFileCollection* handle,
+            char* destination_root_path_chars,
+            const GmlFileInfo* const gml_file_info
+            ){
+        API_TRY{
+            auto destination_root_path = std::string(destination_root_path_chars);
+            handle->fetch(destination_root_path, *gml_file_info);
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;

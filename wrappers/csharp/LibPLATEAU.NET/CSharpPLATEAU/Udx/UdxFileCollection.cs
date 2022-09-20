@@ -82,13 +82,21 @@ namespace PLATEAU.Udx
             return result;
         }
 
-        public UdxFileCollection FilterByMeshCodes(MeshCode[] meshCodes)
+        public UdxFileCollection FilterByMeshCodes(MeshCode[] meshCodeArray)
         {
             var result = new UdxFileCollection();
             var apiResult = NativeMethods.plateau_udx_file_collection_filter_by_mesh_codes(
-                this.handle, meshCodes, meshCodes.Length, result.handle);
+                this.handle, meshCodeArray, meshCodeArray.Length, result.handle);
             DLLUtil.CheckDllError(apiResult);
             return result;
+        }
+
+        public void Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
+        {
+            var apiResult = NativeMethods.plateau_udx_file_collection_fetch(
+                this.handle, destinationRootPath, gmlFileInfo.Handle 
+            );
+            DLLUtil.CheckDllError(apiResult);
         }
 
         public string[] GetGmlFiles(PredefinedCityModelPackage package)
