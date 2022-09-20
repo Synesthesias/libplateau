@@ -103,11 +103,35 @@ namespace plateau::udx {
             for (const auto& file : files) {
                 for (const auto& mesh_code : mesh_codes) {
                     if (mesh_code.isWithin(file.getMeshCode())) {
-                        collection.files_[sub_folder].push_back(file);
+                        collection.addFile(sub_folder, file);
                     }
                 }
             }
         }
+    }
+
+    void UdxFileCollection::filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes,
+                                                 UdxFileCollection& collection) const {
+        // 検索用に、引数の mesh_codes を文字列のセットにします。
+        auto mesh_codes_str_set = std::set<std::string>();
+        for (const auto& mesh_code: mesh_codes) {
+            mesh_codes_str_set.insert(mesh_code.get());
+        }
+        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        for (const auto& [sub_folder, files]: files_) {
+            for (const auto& file: files) {
+                if (mesh_codes_str_set.find(file.getMeshCode().get()) != mesh_codes_str_set.end()) {
+                    collection.addFile(sub_folder, file);
+                }
+            }
+        }
+    }
+
+    std::shared_ptr<UdxFileCollection>
+    UdxFileCollection::filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes) const {
+        auto result = std::make_shared<UdxFileCollection>();
+        filter_by_mesh_codes(mesh_codes, *result);
+        return result;
     }
 
     PredefinedCityModelPackage UdxFileCollection::getPackages() {
@@ -140,10 +164,11 @@ namespace plateau::udx {
     }
 
     std::shared_ptr<std::vector<std::string>> UdxFileCollection::getGmlFiles(PredefinedCityModelPackage package) {
-        if (files_.find(package) == files_.end())
-            throw std::out_of_range("Key not found");
-
         const auto result = std::make_shared<std::vector<std::string>>();
+
+        if (files_.find(package) == files_.end())
+            return result;
+
         for (const auto file : files_[package]) {
             result->push_back(file.getPath());
         }
@@ -345,5 +370,12 @@ namespace plateau::udx {
             }
         }
         return mesh_codes_;
+    }
+
+    void UdxFileCollection::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {
+        if(files_.count(sub_folder) <= 0){
+            files_.emplace(sub_folder, std::vector<GmlFileInfo>());
+        }
+        files_.at(sub_folder).push_back(gml_file_info);
     }
 }

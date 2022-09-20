@@ -108,6 +108,30 @@ TEST_F(UdxTest, fetch_generates_files){
     fs::remove_all(temp_test_dir);
 }
 
+namespace { // テスト filter_by_mesh_codes で使う無名名前空間の関数です。
+    bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
+                                                     const UdxFileCollection& udx_file_collection,
+                                                     const PredefinedCityModelPackage sub_folder) {
+        auto mesh_code = std::vector<MeshCode>{MeshCode(mesh_code_str)};
+        auto filtered_collection = udx_file_collection.filter_by_mesh_codes(mesh_code);
+        auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
+        bool contains_mesh_code = false;
+        for (const auto& building_gml: *gml_vector) {
+            if (building_gml.find(mesh_code[0].get()) != std::string::npos) {
+                contains_mesh_code = true;
+            }
+        }
+        return contains_mesh_code;
+    }
+} // テスト filter_by_mesh_codes で使う無名名前空間の関数です。
+
+TEST_F(UdxTest, filter_by_mesh_codes) {
+    ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", udx_file_collection_,
+                                                            PredefinedCityModelPackage::Building));
+    ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", udx_file_collection_,
+                                                             PredefinedCityModelPackage::Building));
+}
+
 //TEST_F(UdxTest, getAllSubFolders) {
 //    const auto sub_folders = udx_file_collection_.getSubFolders();
 //    std::vector<std::string> sub_folder_names;
