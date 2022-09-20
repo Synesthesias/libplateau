@@ -912,6 +912,14 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_udx_file_collection_filter(
             [In] IntPtr handle, [In] Extent extent, [In, Out] IntPtr out_handle);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_filter_by_mesh_codes(
+            [In] IntPtr handle,
+            [In] MeshCode[] meshCodes,
+            int meshCodeCount,
+            IntPtr collectionPtrForResult
+        );
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_udx_file_collection_get_packages(

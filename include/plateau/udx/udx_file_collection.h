@@ -133,6 +133,7 @@ namespace plateau::udx {
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。
+         *        なければ空のvectorを返します。
          * \param package 都市モデルパッケージ
          * \param gml_files 取得結果の格納先
          */

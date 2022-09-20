@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Interop;
 using PLATEAU.Udx;
@@ -43,6 +44,33 @@ namespace PLATEAU.Test.Udx
         {
             var collection = UdxFileCollection.Find("data");
             Assert.AreEqual(Path.GetFullPath("data\\udx\\bldg\\53391540_bldg_6697_op.gml"), Path.GetFullPath(collection.GetGmlFiles(PredefinedCityModelPackage.Building)[0]));
+        }
+
+        [TestMethod]
+        public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid()
+        {
+            var collection = UdxFileCollection.Find("data");
+            string validMeshCode = "53392642";
+            string invalidMeshCode = "99999999";
+            Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(collection, validMeshCode));
+            Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(collection, invalidMeshCode));
+
+        }
+
+        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(UdxFileCollection collection, string meshCode)
+        {
+            var filtered = collection.FilterByMeshCodes(new []{ MeshCode.Parse(meshCode)});
+            var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
+            bool contains = false;
+            foreach (var gml in filteredGMLArray)
+            {
+                if(gml.Contains(meshCode))
+                {
+                    contains = true;
+                }
+            }
+
+            return contains;
         }
     }
 }
