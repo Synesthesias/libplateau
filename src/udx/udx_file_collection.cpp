@@ -130,7 +130,7 @@ namespace plateau::udx {
     }
 
     std::shared_ptr<UdxFileCollection>
-    UdxFileCollection::filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes) const {
+    UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
         auto result = std::make_shared<UdxFileCollection>();
         filterByMeshCodes(mesh_codes, *result);
         return result;

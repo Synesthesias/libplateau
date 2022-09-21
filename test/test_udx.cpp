@@ -114,7 +114,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
                                                      const UdxFileCollection& udx_file_collection,
                                                      const PredefinedCityModelPackage sub_folder) {
         auto mesh_code = std::vector<MeshCode>{MeshCode(mesh_code_str)};
-        auto filtered_collection = udx_file_collection.filter_by_mesh_codes(mesh_code);
+        auto filtered_collection = udx_file_collection.filterByMeshCodes(mesh_code);
         auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
         bool contains_mesh_code = false;
         for (const auto& building_gml: *gml_vector) {

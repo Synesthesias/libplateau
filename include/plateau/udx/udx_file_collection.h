@@ -117,7 +117,7 @@ namespace plateau::udx {
         /**
          * \brief 上の filterByMeshCodes 関数について、shared_ptr で返す版です。
          */
-        std::shared_ptr<UdxFileCollection> filter_by_mesh_codes(const std::vector<MeshCode>& mesh_codes) const;
+        std::shared_ptr<UdxFileCollection> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const;
         
         /**
          * \brief 存在する都市モデルパッケージをマスクとして取得します。
@@ -153,12 +153,12 @@ namespace plateau::udx {
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
-        void addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info);
-        void setUdxPath(std::string udx_path);
 
     private:
         std::string udx_path_;
         std::map<PredefinedCityModelPackage, std::vector<GmlFileInfo>> files_;
         std::set<MeshCode> mesh_codes_;
+        void addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info);
+        void setUdxPath(std::string udx_path);
     };
 }
