@@ -61,6 +61,36 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_filter_by_mesh_codes(
+            const UdxFileCollection* const handle,
+            const MeshCode* const mesh_code_array,
+            int mesh_codes_count,
+            UdxFileCollection* const out_collection
+            ){
+        API_TRY{
+            auto mesh_codes = std::vector<MeshCode>();
+            for(int i=0; i<mesh_codes_count; i++){
+                mesh_codes.push_back(mesh_code_array[i]);
+                handle->filterByMeshCodes(mesh_codes, *out_collection);
+            }
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_fetch(
+            UdxFileCollection* handle,
+            char* destination_root_path_chars,
+            const GmlFileInfo* const gml_file_info
+            ){
+        API_TRY{
+            auto destination_root_path = std::string(destination_root_path_chars);
+            handle->fetch(destination_root_path, *gml_file_info);
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
     DLL_VALUE_FUNC(plateau_udx_file_collection_get_packages,
                UdxFileCollection,
                PredefinedCityModelPackage,

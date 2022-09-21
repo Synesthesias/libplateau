@@ -71,6 +71,7 @@ namespace plateau::udx {
      */
     class LIBPLATEAU_EXPORT UdxFileCollection {
     public:
+
         /**
          * \brief source内に含まれる3D都市モデルデータを全て取得します。
          * \param source 3D都市モデルデータ製品のルートフォルダ(udx, codelists等のフォルダを含むフォルダ)へのパス
@@ -105,6 +106,18 @@ namespace plateau::udx {
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
         void filter(geometry::Extent extent, UdxFileCollection& collection);
+
+        /**
+         * \brief メッシュコードで都市モデルデータをフィルタリングします。
+         * \param mesh_codes 欲しい地域IDのvector
+         * \param collection フィルタリングされた都市モデルデータの格納先
+         */
+        void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, UdxFileCollection& collection) const;
+
+        /**
+         * \brief 上の filterByMeshCodes 関数について、shared_ptr で返す版です。
+         */
+        std::shared_ptr<UdxFileCollection> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const;
         
         /**
          * \brief 存在する都市モデルパッケージをマスクとして取得します。
@@ -121,6 +134,7 @@ namespace plateau::udx {
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。
+         *        なければ空のvectorを返します。
          * \param package 都市モデルパッケージ
          * \param gml_files 取得結果の格納先
          */
@@ -144,5 +158,7 @@ namespace plateau::udx {
         std::string udx_path_;
         std::map<PredefinedCityModelPackage, std::vector<GmlFileInfo>> files_;
         std::set<MeshCode> mesh_codes_;
+        void addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info);
+        void setUdxPath(std::string udx_path);
     };
 }
