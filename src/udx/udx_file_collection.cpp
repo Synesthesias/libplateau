@@ -79,6 +79,7 @@ namespace plateau::udx {
         collection.udx_path_ = fs::u8path(source).append(u"udx").make_preferred().u8string();
         // udxフォルダ内の各フォルダについて
         for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
+            if(!entry.is_directory()) continue;
             const auto package = UdxSubFolder(entry.path().filename().string()).getPackage();
             auto& file_map = collection.files_;
             if(file_map.count(package) == 0){

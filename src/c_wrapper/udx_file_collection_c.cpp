@@ -1,9 +1,11 @@
 #include "libplateau_c.h"
 
 #include <plateau/udx/udx_file_collection.h>
+#include <filesystem>
 
 using namespace libplateau;
 using namespace plateau::udx;
+namespace fs = std::filesystem;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_udx_file_collection(
@@ -42,13 +44,16 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_find(
-        const char* source, UdxFileCollection* out_collection) {
-        API_TRY{
-            UdxFileCollection::find(source, *out_collection);
+        const char* source_char, UdxFileCollection* out_collection) {
+        try {
+            auto source_str = std::string(source_char);
+            UdxFileCollection::find(source_str, *out_collection);
             return APIResult::Success;
+        } catch(fs::filesystem_error& e) {
+            return APIResult::ErrorFileSystem;
+        } catch (...) {
+            return APIResult::ErrorUnknown;
         }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_filter(
