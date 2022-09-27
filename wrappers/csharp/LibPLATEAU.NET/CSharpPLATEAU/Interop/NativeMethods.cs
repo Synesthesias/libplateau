@@ -98,6 +98,46 @@ namespace PLATEAU.Interop
         public int GridCountOfSide;
         public float UnitScale;
         public Extent Extent;
+
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
+            MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
+            float unitScale, Extent extent)
+        {
+            this.ReferencePoint = referencePoint;
+            this.MeshAxes = meshAxes;
+            this.MeshGranularity = meshGranularity;
+            this.MaxLOD = maxLOD;
+            this.MinLOD = minLOD;
+            this.ExportAppearance = exportAppearance;
+            this.GridCountOfSide = gridCountOfSide;
+            this.UnitScale = unitScale;
+            this.Extent = extent;
+        }
+
+        /// <summary>
+        /// 設定の値が正常なら true, 異常な点があれば false を返します。
+        /// </summary>
+        public bool Validate()
+        {
+            if (this.MinLOD > this.MaxLOD)
+            {
+                Console.WriteLine($"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.");
+                return false;
+            }
+
+            if (this.GridCountOfSide <= 0)
+            {
+                Console.WriteLine($"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.");
+                return false;
+            }
+
+            if (Math.Abs(this.UnitScale) < 0.00000001)
+            {
+                Console.WriteLine($"Validate failed : {nameof(this.UnitScale)} is too small.");
+            }
+
+            return true;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
