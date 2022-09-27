@@ -48,7 +48,6 @@ namespace plateau::udx {
          * @return GMLファイルのパスの vector です。
          */
         void findGMLsBFS(const std::string& dir_path, std::vector<GmlFileInfo>& result){
-            std::cout << "searching " << dir_path << std::endl;
             auto queue = std::queue<std::string>();
             queue.push(dir_path);
             bool push_more_dir = true;
@@ -61,7 +60,7 @@ namespace plateau::udx {
                     const auto& path = entry.path();
                     if(path.extension() == ".gml"){
                         result.emplace_back(path.string());
-                        std::cout << "found : " << next_dir << ", " << path.string() << std::endl;
+                        // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
                         // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
                         // 同じ深さにあるフォルダはすでにキューに入っているので、「深さは同じだけどフォルダが違う」という状況は検索対象に含まれます。
                         push_more_dir = false;
