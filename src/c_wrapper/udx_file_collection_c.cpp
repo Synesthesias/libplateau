@@ -5,6 +5,7 @@
 
 using namespace libplateau;
 using namespace plateau::udx;
+using namespace plateau::geometry;
 namespace fs = std::filesystem;
 
 extern "C" {
@@ -112,6 +113,12 @@ extern "C" {
                         handle->getGmlFilePath(package, index),
                         ,PredefinedCityModelPackage package
                         ,int index)
+
+    DLL_VALUE_FUNC(plateau_udx_file_collection_center_point,
+                   UdxFileCollection,
+                   TVec3d,
+                   handle->centerPoint(*geo_reference),
+                   ,GeoReference* geo_reference)
 
     //LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_get_gml_file(
     //    UdxFileCollection* handle, PredefinedCityModelPackage package, int index, char* path, int* count) {

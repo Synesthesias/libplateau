@@ -952,6 +952,12 @@ namespace PLATEAU.Interop
             [In] PredefinedCityModelPackage package,
             [In] int index);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_center_point(
+            [In] IntPtr handle,
+            out PlateauVector3d outCenterPoint,
+            [In] IntPtr geoReferencePtr);
+
 
         // ***************
         //  gml_file_info_c.cpp

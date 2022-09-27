@@ -2,7 +2,9 @@
 using System.IO;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Geom;
 using PLATEAU.Interop;
+using PLATEAU.IO;
 using PLATEAU.Udx;
 
 namespace PLATEAU.Test.Udx
@@ -79,6 +81,31 @@ namespace PLATEAU.Test.Udx
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(collection, validMeshCode));
             Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(collection, invalidMeshCode));
 
+        }
+
+        [TestMethod]
+        public void CalcCenterPoint_Returns_Position_Of_Test_Data()
+        {
+            var collection = UdxFileCollection.Find("data");
+            foreach (var meshCode in collection.MeshCodes)
+            {
+                var extent = meshCode.Extent;
+                var min = extent.Min;
+                var max = extent.Max;
+                Console.WriteLine($"{min.Latitude}, {min.Longitude}, {min.Height}");
+            }
+
+            PlateauVector3d center;
+            using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
+            {
+                center = collection.CalcCenterPoint(geoRef);
+            }
+            Console.WriteLine(center);
+            // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。
+            // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
+            // https://www.gsi.go.jp/sokuchikijun/jpc.html
+            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 1000, "南に51km");
+            Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
 
         private static bool DoResultOfFilterByMeshCodesContainsMeshCode(UdxFileCollection collection, string meshCode)

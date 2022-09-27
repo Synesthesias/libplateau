@@ -2,6 +2,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
+using PLATEAU.Geom;
+using PLATEAU.IO;
 
 namespace PLATEAU.Udx
 {
@@ -136,6 +138,14 @@ namespace PLATEAU.Udx
             }
 
             return gmlFiles;
+        }
+
+        public PlateauVector3d CalcCenterPoint(GeoReference geoReference)
+        {
+            var apiResult = NativeMethods.plateau_udx_file_collection_center_point(
+                this.handle, out var centerPoint, geoReference.Handle);
+            DLLUtil.CheckDllError(apiResult);
+            return centerPoint;
         }
     }
 }

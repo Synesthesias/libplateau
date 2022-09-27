@@ -27,4 +27,13 @@ namespace plateau::geometry {
             return false;
         }
     }
+
+    GeoCoordinate Extent::centerPoint() const {
+        auto ret = GeoCoordinate(
+                (min.latitude + max.latitude) * 0.5,
+                (min.longitude + max.longitude) * 0.5,
+                (min.height + max.height) * 0.5
+                );
+        return ret;
+    }
 }

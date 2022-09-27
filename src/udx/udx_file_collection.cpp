@@ -6,6 +6,7 @@
 #include <queue>
 #include <set>
 #include <regex>
+#include "plateau/geometry/geo_reference.h"
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
@@ -357,6 +358,23 @@ namespace plateau::udx {
 
     std::string UdxFileCollection::getU8RelativePath(const std::string& path) const {
         return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).u8string();
+    }
+
+    TVec3d UdxFileCollection::centerPoint(const geometry::GeoReference& geo_reference) {
+        const auto& mesh_codes = getMeshCodes();
+        double lat_sum = 0;
+        double lon_sum = 0;
+        double height_sum = 0;
+        for(const auto& mesh_code : mesh_codes){
+            const auto& center = mesh_code.getExtent().centerPoint();
+            lat_sum += center.latitude;
+            lon_sum += center.longitude;
+            height_sum += center.height;
+        }
+        auto num = (double)mesh_codes.size();
+        geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
+        auto euclid_average = geo_reference.project(geo_average);
+        return euclid_average;
     }
 
     std::string UdxFileCollection::getRelativePath(const std::string& path) const {
