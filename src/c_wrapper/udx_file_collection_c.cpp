@@ -117,7 +117,7 @@ extern "C" {
     DLL_VALUE_FUNC(plateau_udx_file_collection_center_point,
                    UdxFileCollection,
                    TVec3d,
-                   handle->centerPoint(*geo_reference),
+                   handle->calculateCenterPoint(*geo_reference),
                    ,GeoReference* geo_reference)
 
     //LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_get_gml_file(

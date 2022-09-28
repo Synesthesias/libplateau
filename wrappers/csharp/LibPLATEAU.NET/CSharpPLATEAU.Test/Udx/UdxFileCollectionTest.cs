@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Geom;
+using PLATEAU.Geometry;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 using PLATEAU.Udx;

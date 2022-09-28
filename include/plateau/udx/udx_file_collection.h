@@ -158,7 +158,7 @@ namespace plateau::udx {
         /**
          * 各メッシュコードの中心地点の平均を求め、直交座標系で返します。
          */
-        TVec3d centerPoint(const plateau::geometry::GeoReference& geo_reference);
+        TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference);
 
     private:
         std::string udx_path_;

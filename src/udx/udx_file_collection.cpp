@@ -61,7 +61,6 @@ namespace plateau::udx {
                     if(path.extension() == ".gml"){
                         result.emplace_back(path.string());
                         // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
-                        // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
                         // 同じ深さにあるフォルダはすでにキューに入っているので、「深さは同じだけどフォルダが違う」という状況は検索対象に含まれます。
                         push_more_dir = false;
                     }
@@ -360,7 +359,7 @@ namespace plateau::udx {
         return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).u8string();
     }
 
-    TVec3d UdxFileCollection::centerPoint(const geometry::GeoReference& geo_reference) {
+    TVec3d UdxFileCollection::calculateCenterPoint(const geometry::GeoReference& geo_reference) {
         const auto& mesh_codes = getMeshCodes();
         double lat_sum = 0;
         double lon_sum = 0;

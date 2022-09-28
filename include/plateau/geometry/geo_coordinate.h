@@ -52,22 +52,6 @@ namespace plateau::geometry {
         EUN
     };
 
-    class CoordinateSystemInfo{
-    public:
-        /**
-         * PLATEAUからメッシュを読み込んで座標軸を変換をするとき、このままだとメッシュが裏返ることがあります（座標軸が反転したりするので）。
-         * 裏返りを補正する必要があるかどうかを bool で返します。
-         */
-        static bool shouldInvertIndicesOnMeshConvert(CoordinateSystem sys){
-            switch(sys){
-                case CoordinateSystem::ENU:
-                case CoordinateSystem::WUN:
-                case CoordinateSystem::NWU: return false;
-                case CoordinateSystem::EUN: return true;
-                default: throw std::runtime_error("Unknown coordinate system.");
-            }
-        }
-    };
 
     /**
      * 緯度・経度・高さの最小・最大で表現される範囲です。

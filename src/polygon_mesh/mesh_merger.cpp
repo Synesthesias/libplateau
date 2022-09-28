@@ -92,11 +92,27 @@ namespace plateau::polygonMesh {
 
     }
 
+    namespace{ // merge で使う無名名前空間関数です。
+        /**
+         * PLATEAUからメッシュを読み込んで座標軸を変換をするとき、このままだとメッシュが裏返ることがあります（座標軸が反転したりするので）。
+         * 裏返りを補正する必要があるかどうかを bool で返します。
+         */
+        bool shouldInvertIndicesOnMeshConvert(CoordinateSystem sys){
+            switch(sys){
+                case CoordinateSystem::ENU:
+                case CoordinateSystem::WUN:
+                case CoordinateSystem::NWU: return false;
+                case CoordinateSystem::EUN: return true;
+                default: throw std::runtime_error("Unknown coordinate system.");
+            }
+        }
+    } // merge で使う無名名前空間関数
+
     void MeshMerger::merge(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                            const GeoReference& geo_reference, const TVec2f& uv_2_element,
                            const TVec2f& uv_3_element) {
         if (!isValidPolygon(other_poly)) return;
-        bool invert_mesh_front_back = CoordinateSystemInfo::shouldInvertIndicesOnMeshConvert(mesh_extract_options.mesh_axes);
+        bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_extract_options.mesh_axes);
         if (mesh_extract_options.export_appearance) {
             mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back);
         } else {
