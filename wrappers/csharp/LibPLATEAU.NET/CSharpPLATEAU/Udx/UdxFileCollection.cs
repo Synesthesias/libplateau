@@ -2,7 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
-using PLATEAU.Geometry;
+using PLATEAU.Geometries;
 using PLATEAU.IO;
 
 namespace PLATEAU.Udx

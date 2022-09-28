@@ -107,7 +107,7 @@ namespace PLATEAU.CityGML
                 var centerPoint = DLLUtil.GetNativeValue<PlateauVector3d>(
                     Handle,
                     NativeMethods.plateau_geometry_utils_get_center_point);
-                return calculateCenterPoint;
+                return centerPoint;
             }
         }
 
