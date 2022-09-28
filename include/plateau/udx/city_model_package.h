@@ -38,6 +38,9 @@ namespace plateau::udx {
         return static_cast<PredefinedCityModelPackage>(static_cast<uint32_t>(lhs) & static_cast<uint32_t>(rhs));
     }
 
+    /**
+     * \brief パッケージ種別ごとのインポート設定です。
+     */
     class CityModelPackageInfo {
     public:
         CityModelPackageInfo(bool has_appearance, int min_lod, int max_lod)

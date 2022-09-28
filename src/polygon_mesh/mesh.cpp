@@ -59,8 +59,13 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices) {
+    void Mesh::addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices,
+                              bool invert_mesh_front_back) {
         auto prev_num_indices = indices_.size();
+
+        if(other_indices.size() % 3 != 0){
+            throw std::runtime_error("size of other_indices must be multiple of 3.");
+        }
 
         // インデックスリストの末尾に追加します。
         for (unsigned int other_index: other_indices) {
@@ -69,6 +74,21 @@ namespace plateau::polygonMesh {
         // 追加分のインデックスを新しい値にします。以前の頂点の数だけインデックスの数値を大きくすれば良いです。
         for (unsigned i = prev_num_indices; i < indices_.size(); i++) {
             indices_.at(i) += (int) prev_num_vertices;
+        }
+
+        // メッシュを裏返すべきとき、次の方法で裏返します:
+        // indices を 3つごとに分け、三角形グループとします。
+        // 各三角形グループ内の順番を反転させます。
+        if(invert_mesh_front_back){
+            auto triangle_count = other_indices.size() / 3;
+            for(int tri = 0; tri < triangle_count; tri++){
+                auto vert1ID = prev_num_indices + 3 * tri;
+                auto vert3ID = vert1ID + 2;
+                auto vert1 = indices_.at(vert1ID);
+                auto vert3 = indices_.at(vert3ID);
+                indices_.at(vert1ID) = vert3;
+                indices_.at(vert3ID) = vert1;
+            }
         }
     }
 

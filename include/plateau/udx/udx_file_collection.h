@@ -11,6 +11,7 @@
 #include <plateau/udx/city_model_package.h>
 #include <plateau/udx/mesh_code.h>
 #include <plateau/geometry/geo_coordinate.h>
+#include "plateau/geometry/geo_reference.h"
 
 namespace plateau::udx {
     /**
@@ -153,6 +154,11 @@ namespace plateau::udx {
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
+
+        /**
+         * 各メッシュコードの中心地点の平均を求め、直交座標系で返します。
+         */
+        TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference);
 
     private:
         std::string udx_path_;

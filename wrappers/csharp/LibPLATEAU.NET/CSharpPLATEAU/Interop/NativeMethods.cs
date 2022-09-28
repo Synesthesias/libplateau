@@ -98,6 +98,49 @@ namespace PLATEAU.Interop
         public int GridCountOfSide;
         public float UnitScale;
         public Extent Extent;
+
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
+            MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
+            float unitScale, Extent extent)
+        {
+            this.ReferencePoint = referencePoint;
+            this.MeshAxes = meshAxes;
+            this.MeshGranularity = meshGranularity;
+            this.MaxLOD = maxLOD;
+            this.MinLOD = minLOD;
+            this.ExportAppearance = exportAppearance;
+            this.GridCountOfSide = gridCountOfSide;
+            this.UnitScale = unitScale;
+            this.Extent = extent;
+        }
+
+        /// <summary>
+        /// 設定の値が正常なら true, 異常な点があれば false を返します。
+        /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
+        /// </summary>
+        public bool Validate(out string failureMessage)
+        {
+            failureMessage = "";
+            if (this.MinLOD > this.MaxLOD)
+            {
+                failureMessage = $"Validate failed : {nameof(this.MinLOD)} should not greater than {nameof(this.MaxLOD)}.";
+                return false;
+            }
+
+            if (this.GridCountOfSide <= 0)
+            {
+                failureMessage = $"Validate failed : {nameof(this.GridCountOfSide)} should be positive number.";
+                return false;
+            }
+
+            if (Math.Abs(this.UnitScale) < 0.00000001)
+            {
+                failureMessage = $"Validate failed : {nameof(this.UnitScale)} is too small.";
+                return false;
+            }
+
+            return true;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -137,7 +180,8 @@ namespace PLATEAU.Interop
         ErrorUnknown,
         ErrorValueNotFound,
         ErrorLoadingCityGml,
-        ErrorIndexOutOfBounds
+        ErrorIndexOutOfBounds,
+        ErrorFileSystem
     }
 
     public enum DllLogLevel
@@ -951,6 +995,12 @@ namespace PLATEAU.Interop
             [In] PredefinedCityModelPackage package,
             [In] int index);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_file_collection_center_point(
+            [In] IntPtr handle,
+            out PlateauVector3d outCenterPoint,
+            [In] IntPtr geoReferencePtr);
+
 
         // ***************
         //  gml_file_info_c.cpp
@@ -969,5 +1019,39 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+            
+        // ***************
+        //  city_model_package_info_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_city_model_package_info(
+            out IntPtr outPackageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] bool hasAppearance, int minLOD, int maxLOD);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_city_model_package_info(
+            [In] IntPtr packageInfoPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_has_appearance(
+            [In] IntPtr packageInfoPtr,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_min_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMinLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_max_lod(
+            [In] IntPtr packageInfoPtr,
+            out int outMaxLOD);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_city_model_package_info_get_predefined(
+            PredefinedCityModelPackage package,
+            [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
+            out int outMinLOD, out int outMaxLOD);
     }
 }

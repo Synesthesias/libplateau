@@ -50,7 +50,8 @@ namespace plateau::polygonMesh {
 
         /// 頂点リストの末尾に追加します。
         void addVerticesList(const std::vector<TVec3d>& other_vertices);
-        void addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices);
+        void addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices,
+                            bool invert_mesh_front_back);
         void addUV1(const citygml::Polygon& other_poly);
         void addUV2WithSameVal(const TVec2f& uv_2_val, unsigned num_adding_vertices);
         void addUV3WithSameVal(const TVec2f& uv_3_val, unsigned num_adding_vertices);

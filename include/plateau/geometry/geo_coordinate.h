@@ -52,6 +52,7 @@ namespace plateau::geometry {
         EUN
     };
 
+
     /**
      * 緯度・経度・高さの最小・最大で表現される範囲です。
      */
@@ -72,5 +73,10 @@ namespace plateau::geometry {
          * city_obj の位置が不明の場合は false を返します。
          */
         bool contains(const citygml::CityObject& city_obj) const;
+
+        /**
+         * min と max の中点を GeoCoordinate で返します。
+         */
+        GeoCoordinate centerPoint() const;
     };
 }

@@ -23,7 +23,7 @@ namespace plateau::polygonMesh {
          * なおその他の情報のマージには未対応です。例えば LinearRing は考慮されません。
          * options.export_appearance の値によって、 mergeWithTexture または mergeWithoutTexture を呼び出します。
          */
-        static void merge(Mesh& mesh, const citygml::Polygon& other_poly, bool do_export_appearance,
+        static void merge(Mesh& mesh, const citygml::Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                           const GeoReference& geo_reference, const TVec2f& uv_2_element,
                           const TVec2f& uv_3_element);
 
@@ -31,7 +31,7 @@ namespace plateau::polygonMesh {
          * merge関数を 引数 city_object_ の各 Polygon に対して実行します。
          */
         static void mergePolygonsInCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
-                                              bool do_export_appearance, const GeoReference& geo_reference,
+                                              const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element);
 
         /**
@@ -39,7 +39,7 @@ namespace plateau::polygonMesh {
          */
         static void
         mergePolygonsInCityObjects(Mesh& mesh, const std::list<const citygml::CityObject*>& city_objects, unsigned int lod,
-                                   bool do_export_appearance, const GeoReference& geo_reference,
+                                   const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                    const TVec2f& uv_3_element, const TVec2f& uv_2_element);
 
         /**

@@ -1,9 +1,12 @@
 #include "libplateau_c.h"
 
 #include <plateau/udx/udx_file_collection.h>
+#include <filesystem>
 
 using namespace libplateau;
 using namespace plateau::udx;
+using namespace plateau::geometry;
+namespace fs = std::filesystem;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_udx_file_collection(
@@ -42,13 +45,16 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_find(
-        const char* source, UdxFileCollection* out_collection) {
-        API_TRY{
-            UdxFileCollection::find(source, *out_collection);
+        const char* source_char, UdxFileCollection* out_collection) {
+        try {
+            auto source_str = std::string(source_char);
+            UdxFileCollection::find(source_str, *out_collection);
             return APIResult::Success;
+        } catch(fs::filesystem_error& e) {
+            return APIResult::ErrorFileSystem;
+        } catch (...) {
+            return APIResult::ErrorUnknown;
         }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_filter(
@@ -71,8 +77,8 @@ extern "C" {
             auto mesh_codes = std::vector<MeshCode>();
             for(int i=0; i<mesh_codes_count; i++){
                 mesh_codes.push_back(mesh_code_array[i]);
-                handle->filterByMeshCodes(mesh_codes, *out_collection);
             }
+            handle->filterByMeshCodes(mesh_codes, *out_collection);
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;
@@ -107,6 +113,12 @@ extern "C" {
                         handle->getGmlFilePath(package, index),
                         ,PredefinedCityModelPackage package
                         ,int index)
+
+    DLL_VALUE_FUNC(plateau_udx_file_collection_center_point,
+                   UdxFileCollection,
+                   TVec3d,
+                   handle->calculateCenterPoint(*geo_reference),
+                   ,GeoReference* geo_reference)
 
     //LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_get_gml_file(
     //    UdxFileCollection* handle, PredefinedCityModelPackage package, int index, char* path, int* count) {
