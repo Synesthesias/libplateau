@@ -193,7 +193,7 @@ bool GltfWriter::write(const std::string& gltf_file_path, const std::string& gml
     material.metallicRoughness.roughnessFactor = 1.0f;
     default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
 
-    writeGltf(gltf_file_path, city_model, lod, document, bufferBuilder);
+    writeGltf(gltf_file_path, city_model, lod, document, bufferBuilder, options.coordinate_zone_id);
 
     // for last node
     if (!indices_.empty()) {
@@ -245,7 +245,8 @@ bool GltfWriter::write(const std::string& gltf_file_path, const std::string& gml
     return true;
 }
 
-void GltfWriter::writeGltf(const std::string& gltf_file_path, const citygml::CityModel& city_model, unsigned lod, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
+void GltfWriter::writeGltf(const std::string& gltf_file_path, const citygml::CityModel& city_model, unsigned lod,
+                           gltf::Document& document, gltf::BufferBuilder& bufferBuilder, int coordinate_zone_id) {
     
     // エリア単位の場合拡張子無しファイル名がメッシュ名になります。
     if (options_.mesh_granularity == MeshGranularity::PerCityModelArea) {
@@ -253,20 +254,23 @@ void GltfWriter::writeGltf(const std::string& gltf_file_path, const citygml::Cit
     }
 
     for (const auto& root_object : city_model.getRootCityObjects()) {
-        writeCityObjectRecursive(*root_object, lod, document, bufferBuilder);
+        writeCityObjectRecursive(*root_object, lod, document, bufferBuilder, coordinate_zone_id);
     }
 }
 
-void GltfWriter::writeCityObjectRecursive(const citygml::CityObject& target_object, unsigned lod, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
-    writeCityObject(target_object, lod, document, bufferBuilder);
+void
+GltfWriter::writeCityObjectRecursive(const citygml::CityObject& target_object, unsigned lod, gltf::Document& document,
+                                     gltf::BufferBuilder& bufferBuilder, int coordinate_zone_id) {
+    writeCityObject(target_object, lod, document, bufferBuilder, coordinate_zone_id);
 
     for (unsigned i = 0; i < target_object.getChildCityObjectsCount(); i++) {
         const auto& child = target_object.getChildCityObject(i);
-        writeCityObjectRecursive(child, lod, document, bufferBuilder);
+        writeCityObjectRecursive(child, lod, document, bufferBuilder, coordinate_zone_id);
     }
 }
 
-void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsigned lod, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
+void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsigned lod, gltf::Document& document,
+                                 gltf::BufferBuilder& bufferBuilder, int coordinate_zone_id) {
     // 最大LODのみ出力する場合は最大LOD以外のジオメトリをスキップ
     const auto max_lod = std::min(options_.max_lod, getMaxLOD(target_object));
     const auto is_lower_lod = lod != max_lod;
@@ -327,12 +331,13 @@ void GltfWriter::writeCityObject(const citygml::CityObject& target_object, unsig
     for (unsigned i = 0; i < target_object.getGeometriesCount(); i++) {
         const auto target_lod = target_object.getGeometry(i).getLOD();
         if (target_lod == lod)
-            writeGeometry(target_object.getGeometry(i), document, bufferBuilder);
+            writeGeometry(target_object.getGeometry(i), document, bufferBuilder, coordinate_zone_id);
     }
 }
 
-void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::Document& document, gltf::BufferBuilder& bufferBuilder) {
-    auto geo_reference = GeoReference();
+void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::Document& document,
+                               gltf::BufferBuilder& bufferBuilder, int coordinate_zone_id) {
+    auto geo_reference = GeoReference(coordinate_zone_id);
     for (unsigned int i = 0; i < target_geometry.getPolygonsCount(); i++) {
         const auto polygon = target_geometry.getPolygon(i);
         const auto& indices = polygon->getIndices();
@@ -365,7 +370,7 @@ void GltfWriter::writeGeometry(const citygml::Geometry& target_geometry, gltf::D
 
     for (unsigned int i = 0; i < target_geometry.getGeometriesCount(); i++) {
         const auto& child_geometry = target_geometry.getGeometry(i);
-        writeGeometry(child_geometry, document, bufferBuilder);
+        writeGeometry(child_geometry, document, bufferBuilder, coordinate_zone_id);
     }
 }
 
