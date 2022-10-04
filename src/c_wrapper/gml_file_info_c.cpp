@@ -25,4 +25,8 @@ extern "C" {
     DLL_STRING_PTR_FUNC(plateau_gml_file_info_get_path,
                         GmlFileInfo,
                         handle->getPath())
+
+    DLL_STRING_PTR_FUNC(plateau_gml_file_info_get_feature_type_str,
+                        GmlFileInfo,
+                        handle->getFeatureType())
 }
