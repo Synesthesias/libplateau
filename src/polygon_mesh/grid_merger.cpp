@@ -181,7 +181,7 @@ namespace plateau::polygonMesh {
                     const auto uv_2 = TVec2f((float) (city_obj.getPrimaryImportID()) + (float) 0.25,
                                              0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるためです。
                     const auto uv_3 = TVec2f((float) (city_obj.getSecondaryImportID()) + (float) 0.25, 0);
-                    MeshMerger::merge(group_mesh, *poly, options, geo_reference, uv_2, uv_3);
+                    MeshMerger::merge(group_mesh, *poly, options, geo_reference, uv_2, uv_3, city_model.getGmlPath());
                 }
             }
             merged_meshes.emplace(group_id, std::move(group_mesh));
