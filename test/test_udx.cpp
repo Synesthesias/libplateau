@@ -1,9 +1,6 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 
-#include <windows.h>
-#include <tchar.h>
-
 #include <citygml/citygml.h>
 
 #include <plateau/udx/udx_file_collection.h>
@@ -43,16 +40,16 @@ protected:
 };
 
 TEST_F(UdxTest, getAllGmls) {
-    const std::vector expected_dem_files =
-    { std::filesystem::path("../data/udx/dem/533925_dem_6697_op.gml").make_preferred().string() };
+    const std::vector expected_bldg_files =
+    { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
     std::vector<std::string> actual_files;
 
-    checkVectors(expected_dem_files, *udx_file_collection_.getGmlFiles(PredefinedCityModelPackage::Relief));
+    checkVectors(expected_bldg_files, *udx_file_collection_.getGmlFiles(PredefinedCityModelPackage::Building));
 }
 
 TEST_F(UdxTest, getAllMeshCodes) {
     const auto mesh_codes = udx_file_collection_.getMeshCodes();
-    ASSERT_EQ(mesh_codes.size(), 4);
+    ASSERT_EQ(mesh_codes.size(), 1);
 }
 
 namespace{

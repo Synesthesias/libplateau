@@ -9,6 +9,7 @@ extern "C" {
 DLL_VALUE_FUNC(plateau_geometry_utils_get_center_point,
                CityModelHandle,
                TVec3d,
-               PolygonMeshUtils::getCenterPoint(*handle->getCityModelPtr()))
+               PolygonMeshUtils::getCenterPoint(*handle->getCityModelPtr(), coordinate_zone_id),
+               ,int coordinate_zone_id)
 
 }

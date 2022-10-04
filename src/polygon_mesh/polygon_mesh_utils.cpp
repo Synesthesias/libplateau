@@ -54,13 +54,13 @@ namespace plateau::polygonMesh {
         throw std::invalid_argument("Could not find position of CityObject.");
     }
 
-    TVec3d PolygonMeshUtils::getCenterPoint(const CityModel& city_model) {
+    TVec3d PolygonMeshUtils::getCenterPoint(const CityModel& city_model, int coordinate_zone_id) {
         auto& envelope = city_model.getEnvelope();
         if (!envelope.validBounds()) {
             return TVec3d{0, 0, 0};
         }
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        return GeoReference().project(city_center);
+        return GeoReference(coordinate_zone_id).project(city_center);
     }
 
     /**

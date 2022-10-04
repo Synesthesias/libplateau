@@ -24,7 +24,7 @@ namespace plateau::polygonMesh {
         const MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0, 0, 0), CoordinateSystem::WUN,
                                                                             MeshGranularity::PerCityModelArea, 2, 2,
                                                                             true,
-                                                                            5, 1.0,
+                                                                            5, 1.0, 9,
                                                                             Extent(GeoCoordinate(-90, -180, -999),
                                                                                    GeoCoordinate(90, 180, 999)));
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);

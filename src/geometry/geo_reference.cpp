@@ -3,12 +3,12 @@
 #include "plateau/io/obj_writer.h"
 
 namespace plateau::geometry {
-    GeoReference::GeoReference(const TVec3d& reference_point, float unit_scale, CoordinateSystem coordinate_system,
-                               int zone_id) :
+    GeoReference::GeoReference(int coordinate_zone_id, const TVec3d& reference_point, float unit_scale,
+                               CoordinateSystem coordinate_system) :
             reference_point_(reference_point),
             coordinate_system_(coordinate_system),
             unit_scale_(unit_scale),
-            zone_id_(zone_id) {}
+            zone_id_(coordinate_zone_id) {}
 
     TVec3d GeoReference::project(const GeoCoordinate& point) const {
         double lat_lon[3] = {point.latitude, point.longitude, point.height};
