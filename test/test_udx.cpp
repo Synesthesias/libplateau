@@ -1,9 +1,6 @@
 #include <filesystem>
 #include <gtest/gtest.h>
 
-#include <windows.h>
-#include <tchar.h>
-
 #include <citygml/citygml.h>
 
 #include <plateau/udx/udx_file_collection.h>
