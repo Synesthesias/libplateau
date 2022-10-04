@@ -12,7 +12,7 @@ extern "C" {
             int zone_id
             ) {
         API_TRY {
-            *out_geo_reference = new GeoReference(reference_point, unit_scale, coordinate_system, zone_id);
+            *out_geo_reference = new GeoReference(zone_id, reference_point, unit_scale, coordinate_system);
             return APIResult::Success;
         } API_CATCH
         return APIResult::ErrorUnknown;

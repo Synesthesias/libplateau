@@ -24,7 +24,9 @@ add_executable(plateau_test
     "test_mesh_converter.cpp"
     "test_primary_city_object_types.cpp"
     "test_mesh_extractor.cpp"
-    "test_grid_merger.cpp")
+    "test_grid_merger.cpp"
+    "test_mesh_code.cpp"
+    "test_udx.cpp")
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 

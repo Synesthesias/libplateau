@@ -15,6 +15,7 @@
 #include <GLTFSDK/Serialize.h>
 #include "GLTFSDK/BufferBuilder.h"
 #include "plateau/geometry/geo_reference.h"
+#include "GLTFSDK/Document.h"
 
 class LIBPLATEAU_EXPORT GltfWriter {
 public:
@@ -32,10 +33,14 @@ public:
 
 private:
     // Gltf書き出し
-    void writeGltf(const std::string& gltf_file_path, const citygml::CityModel& city_model, unsigned lod, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
-    void writeCityObjectRecursive(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
-    void writeCityObject(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
-    void writeGeometry(const citygml::Geometry& target_geometry, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
+    void writeGltf(const std::string& gltf_file_path, const citygml::CityModel& city_model, unsigned lod,
+                   Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder, int coordinate_zone_id);
+    void writeCityObjectRecursive(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document,
+                                  Microsoft::glTF::BufferBuilder& bufferBuilder, int coordinate_zone_id);
+    void writeCityObject(const citygml::CityObject& target_object, unsigned lod, Microsoft::glTF::Document& document,
+                         Microsoft::glTF::BufferBuilder& bufferBuilder, int coordinate_zone_id);
+    void writeGeometry(const citygml::Geometry& target_geometry, Microsoft::glTF::Document& document,
+                       Microsoft::glTF::BufferBuilder& bufferBuilder, int coordinate_zone_id);
     void writeVertices(const std::vector<TVec3d>& vertices, Microsoft::glTF::BufferBuilder& bufferBuilder,
                        const GeoReference& geo_reference);
     void writeIndices(const std::vector<unsigned int>& indices, Microsoft::glTF::BufferBuilder& bufferBuilder);

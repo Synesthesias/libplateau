@@ -20,15 +20,17 @@ namespace plateau::geometry {
      * EPSGコードの判別と、それによって処理を変える機能は未実装です。
      */
     struct GeoCoordinate {
-    public:
         double latitude;
         double longitude;
         double height;
 
+        GeoCoordinate() = default;
+
         GeoCoordinate(double lat, double lon, double height) :
-                latitude(lat),
-                longitude(lon),
-                height(height) {}
+            latitude(lat),
+            longitude(lon),
+            height(height) {
+        }
     };
 
 
@@ -43,11 +45,13 @@ namespace plateau::geometry {
     enum class CoordinateSystem {
         //! PLATEAUでの座標系
         ENU,
-        //! Unityでの座標系
         WUN,
         //! Unreal Engineでの座標系
-        NWU
+        NWU,
+        //! Unityでの座標系
+        EUN
     };
+
 
     /**
      * 緯度・経度・高さの最小・最大で表現される範囲です。
@@ -56,9 +60,10 @@ namespace plateau::geometry {
         GeoCoordinate min;
         GeoCoordinate max;
 
-        Extent(GeoCoordinate min, GeoCoordinate max) :
-                min(min),
-                max(max) {}
+        Extent(const GeoCoordinate& min, const GeoCoordinate& max) {
+            this->min = min;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+            this->max = max;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+        }
 
         bool contains(GeoCoordinate point) const;
         bool contains(TVec3d point) const;
@@ -68,5 +73,10 @@ namespace plateau::geometry {
          * city_obj の位置が不明の場合は false を返します。
          */
         bool contains(const citygml::CityObject& city_obj) const;
+
+        /**
+         * min と max の中点を GeoCoordinate で返します。
+         */
+        GeoCoordinate centerPoint() const;
     };
 }

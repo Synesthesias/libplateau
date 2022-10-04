@@ -15,14 +15,15 @@ namespace PLATEAU.IO
         /// PLATEAUでの座標系
         /// </summary>
         ENU,
-        /// <summary>
-        /// Unityでの座標系
-        /// </summary>
         WUN,
         /// <summary>
         /// Unreal Engineでの座標系
         /// </summary>
-        NWU
+        NWU,
+        /// <summary>
+        /// Unityでの座標系
+        /// </summary>
+        EUN
     }
 
     /// <summary>
@@ -122,6 +123,16 @@ namespace PLATEAU.IO
         {
             get => this.data.UnitScale;
             set => this.data.UnitScale = value;
+        }
+
+        /// <summary>
+        /// 日本における平面直角座標系の基準点の番号です。
+        /// <seealso href="https://www.gsi.go.jp/sokuchikijun/jpc.html">国土地理院のサイト</seealso> を参照してください。
+        /// </summary>
+        public int CoordinateZoneID
+        {
+            get => this.data.CoordinateZoneID;
+            set => this.data.CoordinateZoneID = value;
         }
 
         internal MeshConvertOptionsData Data => this.data;

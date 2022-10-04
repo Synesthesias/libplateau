@@ -9,7 +9,7 @@ void MeshConvertOptionsFactory::setValidReferencePoint(MeshConvertOptions& optio
     TVec3d lower_bound = city_model.getEnvelope().getLowerBound();
     TVec3d upper_bound = city_model.getEnvelope().getUpperBound();
 
-    auto geo_reference = GeoReference();
+    auto geo_reference = GeoReference(options.coordinate_zone_id);
     lower_bound = geo_reference.project(lower_bound);
     upper_bound = geo_reference.project(upper_bound);
 

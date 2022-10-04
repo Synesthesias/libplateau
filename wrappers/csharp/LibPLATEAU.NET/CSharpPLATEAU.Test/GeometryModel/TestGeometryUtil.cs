@@ -11,18 +11,19 @@ namespace PLATEAU.Test.GeometryModel
         public static Model ExtractModel()
         {
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var options = new MeshExtractOptions
-            {
-                ReferencePoint = cityModel.CenterPoint,
-                MeshAxes = CoordinateSystem.WUN,
-                MeshGranularity = MeshGranularity.PerCityModelArea,
-                MinLOD = 2,
-                MaxLOD = 2,
-                ExportAppearance = true,
-                GridCountOfSide = 5,
-                UnitScale = 1f,
-                Extent = new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
-            };
+            int coordinateZoneID = 9;
+            var options = new MeshExtractOptions(
+                cityModel.GetCenterPoint(coordinateZoneID),
+                CoordinateSystem.WUN,
+                MeshGranularity.PerCityModelArea,
+                maxLOD: 2,
+                minLOD: 2,
+                exportAppearance: true,
+                gridCountOfSide: 5,
+                unitScale: 1f,
+                coordinateZoneID,
+                new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
+            );
 
             var model = new Model();
             MeshExtractor.Extract(ref model, cityModel, options);

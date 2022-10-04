@@ -18,7 +18,8 @@ namespace plateau::polygonMesh {
         /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
         /// 座標変換を伴います。
         void mergeShapeWithConvertCoords(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
-                                         const TVec2f& uv_3_element, const GeoReference& geo_reference) {
+                                         const TVec2f& uv_3_element, const GeoReference& geo_reference,
+                                         bool invert_mesh_front_back) {
             unsigned prev_num_vertices = mesh.getVertices().size();
             // 極座標を受け取ります。
             const auto& vertices_lat_lon = other_poly.getVertices();
@@ -33,7 +34,7 @@ namespace plateau::polygonMesh {
             }
 
             mesh.addVerticesList(vertices_xyz);
-            mesh.addIndicesList(other_indices, prev_num_vertices);
+            mesh.addIndicesList(other_indices, prev_num_vertices, invert_mesh_front_back);
             mesh.addUV1(other_poly);
             mesh.addUV2WithSameVal(uv_2_element, vertices_xyz.size());
             mesh.addUV3WithSameVal(uv_3_element, vertices_xyz.size());
@@ -45,15 +46,16 @@ namespace plateau::polygonMesh {
          */
         void
         mergeWithTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                         const GeoReference& geo_reference, const std::string& gml_path ) {
+                         const GeoReference& geo_reference, bool invert_mesh_front_back, const std::string& gml_path) {
             if (!isValidPolygon(other_poly)) return;
-            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
+            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back);
 
             const auto& texture = other_poly.getTextureFor("rgbTexture");
             std::string texture_path;
             if (texture == nullptr) {
                 texture_path = std::string("");
             } else {
+                // テクスチャパスを相対から絶対に変換
                 texture_path = texture->getUrl();
                 std::filesystem::path tpath = std::filesystem::u8path(texture_path);
                 if (tpath.is_relative()) {
@@ -75,9 +77,9 @@ namespace plateau::polygonMesh {
          */
         void mergeWithoutTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
                                  const TVec2f& uv_3_element,
-                                 const GeoReference& geo_reference) {
+                                 const GeoReference& geo_reference, bool invert_mesh_front_back) {
             if (!isValidPolygon(other_poly)) return;
-            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
+            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back);
             mesh.extendLastSubMesh();
 
         }
@@ -102,32 +104,49 @@ namespace plateau::polygonMesh {
 
     }
 
-    void MeshMerger::merge(Mesh& mesh, const Polygon& other_poly, bool do_export_appearance,
+    namespace{ // merge で使う無名名前空間関数です。
+        /**
+         * PLATEAUからメッシュを読み込んで座標軸を変換をするとき、このままだとメッシュが裏返ることがあります（座標軸が反転したりするので）。
+         * 裏返りを補正する必要があるかどうかを bool で返します。
+         */
+        bool shouldInvertIndicesOnMeshConvert(CoordinateSystem sys){
+            switch(sys){
+                case CoordinateSystem::ENU:
+                case CoordinateSystem::WUN:
+                case CoordinateSystem::NWU: return false;
+                case CoordinateSystem::EUN: return true;
+                default: throw std::runtime_error("Unknown coordinate system.");
+            }
+        }
+    } // merge で使う無名名前空間関数
+
+    void MeshMerger::merge(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                            const GeoReference& geo_reference, const TVec2f& uv_2_element,
                            const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
-        if (do_export_appearance) {
-            mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, gml_path);
+        bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_extract_options.mesh_axes);
+        if (mesh_extract_options.export_appearance) {
+            mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back, gml_path);
         } else {
-            mergeWithoutTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference);
+            mergeWithoutTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back);
         }
     }
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                               bool do_export_appearance, const GeoReference& geo_reference,
+                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                                const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
         auto polygons = findAllPolygons(city_object, lod);
         for (auto poly: polygons) {
-            MeshMerger::merge(mesh, *poly, do_export_appearance, geo_reference, uv_2_element, uv_3_element, gml_path);
+            MeshMerger::merge(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
         }
     }
 
     void MeshMerger::mergePolygonsInCityObjects(Mesh& mesh, const std::list<const CityObject*>& city_objects,
                                                 unsigned int lod,
-                                                bool do_export_appearance, const GeoReference& geo_reference,
+                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                                 const TVec2f& uv_3_element, const TVec2f& uv_2_element, const std::string& gml_path) {
         for (auto obj: city_objects) {
-            mergePolygonsInCityObject(mesh, *obj, lod, do_export_appearance, geo_reference, uv_2_element, uv_3_element, gml_path);
+            mergePolygonsInCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
         }
     }
 

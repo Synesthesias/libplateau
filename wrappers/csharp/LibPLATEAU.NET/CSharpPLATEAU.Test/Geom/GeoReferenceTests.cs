@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Geom;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.IO;
 
@@ -92,6 +93,7 @@ namespace PLATEAU.Test.Geom
             CheckProjectUnproject(new PlateauVector3d(0, 0, 0), 1f, CoordinateSystem.ENU, 9);
             CheckProjectUnproject(new PlateauVector3d(10, 10, 10), 2f, CoordinateSystem.WUN, 9);
             CheckProjectUnproject(new PlateauVector3d(100, 100, 100), 3f, CoordinateSystem.NWU, 9);
+            CheckProjectUnproject(new PlateauVector3d(-100, -100, -100), 4f, CoordinateSystem.EUN, 9);
         }
 
         private static void CheckProjectUnproject(PlateauVector3d reference_point, float unit_scale, CoordinateSystem coordinate_system, int zone_id)
@@ -101,6 +103,7 @@ namespace PLATEAU.Test.Geom
             var longitude = 139.74256342432295;
             var xyz = geoReference.Project(new GeoCoordinate(latitude, longitude, 0.0));
             var lat_lon = geoReference.Unproject(xyz);
+            Console.WriteLine($"lat diff = {lat_lon.Latitude - latitude}, lon diff = {lat_lon.Longitude - longitude}");
             Assert.IsTrue(Math.Abs(lat_lon.Latitude - latitude) < 0.00000001);//およそ1mm相当の誤差以内か
             Assert.IsTrue(Math.Abs(lat_lon.Longitude - longitude) < 0.00000001);//およそ1mm相当の誤差以内か
         }

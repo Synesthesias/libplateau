@@ -85,7 +85,7 @@ using dll_str_size_t = int;
  */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-            const HANDLE_TYPE* const handle, \
+            HANDLE_TYPE* const handle, \
             RETURN_VALUE_TYPE* const out\
             __VA_ARGS__ \
             ){ \
@@ -122,11 +122,12 @@ using dll_str_size_t = int;
 
 /// 文字列のアドレスと文字列長を渡す関数を生成するマクロです。
 /// マクロ引数の3番目は TARGET_TYPE* handle から string を取得する処理です。
-#define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
+#define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-        const TARGET_TYPE* const handle,/* C#では "[In] IntPtr handle" に対応します。 */ \
+        TARGET_TYPE* const handle,/* C#では "[In] IntPtr handle" に対応します。 */ \
         const char** const out_chars_ptr, /* C#では "out IntPtr strPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
         dll_str_size_t* out_str_length /* C#では "out int strLength" に対応します。*/\
+        __VA_ARGS__ \
     ){ \
         API_TRY{\
             auto& str = (STRING_GETTER); \
@@ -288,6 +289,6 @@ namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
     // このenumを戻り値にすると良いです。
     enum APIResult {
-        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds, ErrorFileSystem
     };
 }
