@@ -16,11 +16,11 @@ namespace PLATEAU.Test.GeometryModel
                 cityModel.GetCenterPoint(coordinateZoneID),
                 CoordinateSystem.WUN,
                 MeshGranularity.PerCityModelArea,
-                2,
-                2,
-                true,
-                5,
-                1f,
+                maxLOD: 2,
+                minLOD: 2,
+                exportAppearance: true,
+                gridCountOfSide: 5,
+                unitScale: 1f,
                 coordinateZoneID,
                 new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
             );

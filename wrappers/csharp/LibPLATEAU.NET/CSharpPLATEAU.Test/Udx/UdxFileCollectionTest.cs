@@ -16,7 +16,7 @@ namespace PLATEAU.Test.Udx
         public void Can_Get_All_Mesh_Codes()
         {
             var collection = UdxFileCollection.Find("data");
-            Assert.AreEqual(4, collection.MeshCodes.Count);
+            Assert.AreEqual(1, collection.MeshCodes.Count);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace PLATEAU.Test.Udx
         public void Get_Gml_Files_Returns_All_Files()
         {
             var collection = UdxFileCollection.Find("data");
-            Assert.AreEqual(Path.GetFullPath("data\\udx\\bldg\\53391540_bldg_6697_op.gml"), Path.GetFullPath(collection.GetGmlFiles(PredefinedCityModelPackage.Building)[0]));
+            Assert.AreEqual(Path.GetFullPath("data\\udx\\bldg\\53392642_bldg_6697_op2.gml"), Path.GetFullPath(collection.GetGmlFiles(PredefinedCityModelPackage.Building)[0]));
         }
 
         [TestMethod]
