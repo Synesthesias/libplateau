@@ -120,6 +120,15 @@ extern "C" {
                    handle->calculateCenterPoint(*geo_reference),
                    ,GeoReference* geo_reference)
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_sub_folder_dir_name_to_package(
+        const char* const dir_name, PredefinedCityModelPackage* const out_package){
+        API_TRY{
+            *out_package = UdxSubFolder::dirNameToPackage(dir_name);
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
     //LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_get_gml_file(
     //    UdxFileCollection* handle, PredefinedCityModelPackage package, int index, char* path, int* count) {
     //    API_TRY{

@@ -49,6 +49,7 @@ namespace plateau::udx {
         inline static const std::string ifld = "ifld";
 
         PredefinedCityModelPackage getPackage() const;
+        static PredefinedCityModelPackage dirNameToPackage(const std::string& str);
         CityModelPackageInfo getPackageInfo() const;
 
         const std::string& getName() const {

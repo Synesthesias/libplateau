@@ -12,18 +12,22 @@ namespace plateau::udx {
     namespace fs = std::filesystem;
 
     PredefinedCityModelPackage UdxSubFolder::getPackage() const {
-        if (name_ == bldg) return PredefinedCityModelPackage::Building;
-        if (name_ == tran) return PredefinedCityModelPackage::Road;
-        if (name_ == urf) return PredefinedCityModelPackage::UrbanPlanningDecision;
-        if (name_ == luse) return PredefinedCityModelPackage::LandUse;
-        if (name_ == frn) return PredefinedCityModelPackage::CityFurniture;
-        if (name_ == veg) return PredefinedCityModelPackage::Vegetation;
-        if (name_ == dem) return PredefinedCityModelPackage::Relief;
-        if (name_ == fld) return PredefinedCityModelPackage::DisasterRisk;
-        if (name_ == tnm) return PredefinedCityModelPackage::DisasterRisk;
-        if (name_ == lsld) return PredefinedCityModelPackage::DisasterRisk;
-        if (name_ == htd) return PredefinedCityModelPackage::DisasterRisk;
-        if (name_ == ifld) return PredefinedCityModelPackage::DisasterRisk;
+        return dirNameToPackage(name_);
+    }
+
+    PredefinedCityModelPackage UdxSubFolder::dirNameToPackage(const std::string& dir_name){
+        if (dir_name == bldg) return PredefinedCityModelPackage::Building;
+        if (dir_name == tran) return PredefinedCityModelPackage::Road;
+        if (dir_name == urf) return PredefinedCityModelPackage::UrbanPlanningDecision;
+        if (dir_name == luse) return PredefinedCityModelPackage::LandUse;
+        if (dir_name == frn) return PredefinedCityModelPackage::CityFurniture;
+        if (dir_name == veg) return PredefinedCityModelPackage::Vegetation;
+        if (dir_name == dem) return PredefinedCityModelPackage::Relief;
+        if (dir_name == fld) return PredefinedCityModelPackage::DisasterRisk;
+        if (dir_name == tnm) return PredefinedCityModelPackage::DisasterRisk;
+        if (dir_name == lsld) return PredefinedCityModelPackage::DisasterRisk;
+        if (dir_name == htd) return PredefinedCityModelPackage::DisasterRisk;
+        if (dir_name == ifld) return PredefinedCityModelPackage::DisasterRisk;
         return PredefinedCityModelPackage::Unknown;
     }
 
