@@ -31,6 +31,6 @@ TEST_F(VectorTileTest, VectorTileTest) {
         i++;
     }
 
-    ASSERT_EQ(vectorTiles->size(), 65536);
+    ASSERT_EQ(vectorTiles->size(), 120);
 }
 
