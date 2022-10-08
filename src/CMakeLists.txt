@@ -4,7 +4,7 @@ add_compile_definitions(LIBPLATEAU_BUILD)
 add_library(plateau SHARED "")
 
 target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK)
-target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}")
+target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}")
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
@@ -12,6 +12,7 @@ set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 add_subdirectory(io)
 add_subdirectory(polygon_mesh)
 add_subdirectory(geometry)
+add_subdirectory(basemap)
 add_subdirectory(c_wrapper)
 add_subdirectory(udx)
 target_link_libraries(plateau PUBLIC c_wrapper)

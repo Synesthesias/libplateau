@@ -90,6 +90,10 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
+# cpp-httplib
+add_subdirectory("3rdparty/cpp-httplib")
+set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
+
 # libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
