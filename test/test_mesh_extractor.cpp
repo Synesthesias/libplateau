@@ -24,7 +24,7 @@ namespace plateau::polygonMesh {
         const MeshExtractOptions mesh_extract_options_ = MeshExtractOptions(TVec3d(0, 0, 0), CoordinateSystem::WUN,
                                                                             MeshGranularity::PerCityModelArea, 2, 2,
                                                                             true,
-                                                                            5, 1.0, 9,
+                                                                            5, 1.0, 9, true, false,
                                                                             Extent(GeoCoordinate(-90, -180, -999),
                                                                                    GeoCoordinate(90, 180, 999)));
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
@@ -123,13 +123,41 @@ namespace plateau::polygonMesh {
     }
 
 
-    TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero) { // NOLINT
+    TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_obj) { // NOLINT
         auto options = mesh_extract_options_;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
         foreachMeshGranularityAndLOD(
                 options,
                 [this](Node& node, int lod_num) {
                     ASSERT_FALSE(haveVertexRecursive(node));
+                }
+        );
+    }
+
+    TEST_F(MeshExtractorTest,
+           no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_polygons) { // NOLINT
+        auto options = mesh_extract_options_;
+        options.exclude_city_obj_if_first_vertex_is_outside_extent = false;
+        options.exclude_triangles_outside_extent = true;
+        options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
+        foreachMeshGranularityAndLOD(
+                options,
+                [this](Node& node, int lod_num) {
+                    ASSERT_FALSE(haveVertexRecursive(node));
+                }
+        );
+    }
+
+    TEST_F(MeshExtractorTest,
+           some_vertices_extracted_when_extent_range_is_all_and_option_says_removing_outer_polygons) { // NOLINT
+        auto options = mesh_extract_options_;
+        options.exclude_city_obj_if_first_vertex_is_outside_extent = false;
+        options.exclude_triangles_outside_extent = true;
+        options.extent = Extent(GeoCoordinate(-90, -180, -9999), GeoCoordinate(90, 180, 9999));
+        foreachMeshGranularityAndLOD(
+                options,
+                [this](Node& node, int lod_num) {
+                    ASSERT_TRUE(haveVertexRecursive(node));
                 }
         );
     }
