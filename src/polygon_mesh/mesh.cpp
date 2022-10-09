@@ -92,7 +92,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long int other_vertices_size) {
+    void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
         for (const auto& vec: other_uv_1) {
             uv1_.push_back(vec);

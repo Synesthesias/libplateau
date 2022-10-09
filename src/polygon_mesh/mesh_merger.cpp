@@ -18,7 +18,7 @@ namespace plateau::polygonMesh {
 
         /// 3Dメッシュのうち範囲外の部分を除去します。
         /// 具体的には、頂点、インデックス、UVのリストと範囲を受け取り、そのうち範囲外の頂点とポリゴンを除いたものを outと名前の付いた引数のvectorに追加します。
-        /// 頂点と範囲は極座標であることが前提です。
+        /// 頂点と範囲は極座標（緯度、経度、高さ）であることが前提です。
         void removeTrianglesOutsideExtent(Extent extent,
                                           const std::vector<TVec3d>& src_vertices,
                                           const std::vector<unsigned int>& src_indices,
