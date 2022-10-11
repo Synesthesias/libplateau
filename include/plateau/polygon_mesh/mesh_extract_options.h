@@ -23,25 +23,6 @@ namespace plateau::polygonMesh {
                 extent(Extent(GeoCoordinate(-90, -180, -99999), GeoCoordinate(90, 180, 99999))) // 全範囲をデフォルトとします。
                 {}
 
-        /// 設定を引数で指定するコンストラクタです。
-        MeshExtractOptions(TVec3d reference_point, CoordinateSystem mesh_axes, MeshGranularity mesh_granularity,
-                           unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side,
-                           float unit_scale, int coordinate_zone_id,
-                           bool exclude_city_obj_if_first_vertex_is_outside_extent,
-                           bool exclude_triangles_outside_extent, Extent extent) :
-                reference_point(reference_point),
-                mesh_axes(mesh_axes),
-                mesh_granularity(mesh_granularity),
-                max_lod(max_lod),
-                min_lod(min_lod),
-                export_appearance(export_appearance),
-                grid_count_of_side(grid_count_of_side),
-                unit_scale(unit_scale),
-                coordinate_zone_id(coordinate_zone_id),
-                exclude_city_object_outside_extent(exclude_city_obj_if_first_vertex_is_outside_extent),
-                exclude_triangles_outside_extent(exclude_triangles_outside_extent),
-                extent(extent){}
-
     public:
         TVec3d reference_point;
         CoordinateSystem mesh_axes;
