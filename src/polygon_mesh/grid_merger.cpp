@@ -86,7 +86,7 @@ namespace plateau::polygonMesh {
             int primary_import_id = 0;
             for (auto co: city_objs) {
                 // 範囲外、または位置不明ならスキップします（スキップする設定の場合）。
-                if(options.exclude_city_obj_if_first_vertex_is_outside_extent && !options.extent.contains(*co)) continue;
+                if(options.exclude_city_object_outside_extent && !options.extent.contains(*co)) continue;
 
                 int grid_id = getGridId(city_envelope, PolygonMeshUtils::cityObjPos(*co), options.grid_count_of_side, options.grid_count_of_side);
                 auto city_obj_with_import_id = CityObjectWithImportID(co, primary_import_id, -1);

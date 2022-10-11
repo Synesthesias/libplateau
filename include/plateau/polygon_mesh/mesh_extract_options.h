@@ -20,7 +20,7 @@ namespace plateau::polygonMesh {
                 grid_count_of_side(grid_count_of_side),
                 unit_scale(unit_scale),
                 coordinate_zone_id(coordinate_zone_id),
-                exclude_city_obj_if_first_vertex_is_outside_extent(exclude_city_obj_if_first_vertex_is_outside_extent),
+                exclude_city_object_outside_extent(exclude_city_obj_if_first_vertex_is_outside_extent),
                 exclude_triangles_outside_extent(exclude_triangles_outside_extent),
                 extent(extent){}
 
@@ -53,7 +53,7 @@ namespace plateau::polygonMesh {
          * 10km×10kmの地形のような巨大なオブジェクトでは、実際には範囲内なのに最初の頂点が遠いために除外されるということがおきます。
          * したがって、この値は建物では true, 地形では false となるべきです。
          */
-        bool exclude_city_obj_if_first_vertex_is_outside_extent;
+        bool exclude_city_object_outside_extent;
 
         /**
          * 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。

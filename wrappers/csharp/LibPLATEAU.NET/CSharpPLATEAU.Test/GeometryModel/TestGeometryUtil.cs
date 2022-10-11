@@ -22,7 +22,7 @@ namespace PLATEAU.Test.GeometryModel
                 gridCountOfSide: 5,
                 unitScale: 1f,
                 coordinateZoneID,
-                excludeCityObjIfFirstVertexIsOutsideExtent: true,
+                excludeCityObjectOutsideExtent: true,
                 excludeTrianglesOutsideExtent: false,
                 new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
             );

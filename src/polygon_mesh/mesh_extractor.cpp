@@ -11,7 +11,7 @@
 namespace plateau::polygonMesh {
     namespace {
         bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options){
-            return options.exclude_city_obj_if_first_vertex_is_outside_extent && !options.extent.contains(city_obj);
+            return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
         }
 
         void extractInner(Model& out_model, const citygml::CityModel& city_model,

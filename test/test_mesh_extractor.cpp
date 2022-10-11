@@ -137,7 +137,7 @@ namespace plateau::polygonMesh {
     TEST_F(MeshExtractorTest,
            no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
-        options.exclude_city_obj_if_first_vertex_is_outside_extent = false;
+        options.exclude_city_object_outside_extent = false;
         options.exclude_triangles_outside_extent = true;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
         foreachMeshGranularityAndLOD(
@@ -151,7 +151,7 @@ namespace plateau::polygonMesh {
     TEST_F(MeshExtractorTest,
            some_vertices_extracted_when_extent_range_is_all_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
-        options.exclude_city_obj_if_first_vertex_is_outside_extent = false;
+        options.exclude_city_object_outside_extent = false;
         options.exclude_triangles_outside_extent = true;
         options.extent = Extent(GeoCoordinate(-90, -180, -9999), GeoCoordinate(90, 180, 9999));
         foreachMeshGranularityAndLOD(

@@ -99,7 +99,7 @@ namespace PLATEAU.Interop
         public int GridCountOfSide;
         public float UnitScale;
         public int CoordinateZoneID;
-        [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjIfFirstVertexIsOutsideExtent;
+        [MarshalAs(UnmanagedType.U1)] public bool ExcludeCityObjectOutsideExtent;
         [MarshalAs(UnmanagedType.U1)] public bool ExcludeTrianglesOutsideExtent;
          public Extent Extent;
 
@@ -119,7 +119,7 @@ namespace PLATEAU.Interop
          /// 詳しくは次の国土地理院のサイトをご覧ください。
          ///　<see href="https://www.gsi.go.jp/sokuchikijun/jpc.html"/>
          /// </param>
-         /// <param name="excludeCityObjIfFirstVertexIsOutsideExtent">
+         /// <param name="excludeCityObjectOutsideExtent">
          /// 範囲外の3Dモデルを出力から除外するための、2つの方法のうち1つを有効にするかどうかを bool で指定します。
          /// その方法とは、都市オブジェクトの最初の頂点の位置が範囲外のとき、そのオブジェクトはすべて範囲外とみなして出力から除外します。
          /// これはビル1棟程度の大きさのオブジェクトでは有効ですが、
@@ -135,7 +135,7 @@ namespace PLATEAU.Interop
         public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes,
             MeshGranularity meshGranularity, uint maxLOD, uint minLOD, bool exportAppearance, int gridCountOfSide,
             float unitScale, int coordinateZoneID,
-            bool excludeCityObjIfFirstVertexIsOutsideExtent,
+            bool excludeCityObjectOutsideExtent,
             bool excludeTrianglesOutsideExtent, Extent extent)
         {
             this.ReferencePoint = referencePoint;
@@ -147,7 +147,7 @@ namespace PLATEAU.Interop
             this.GridCountOfSide = gridCountOfSide;
             this.UnitScale = unitScale;
             this.CoordinateZoneID = coordinateZoneID;
-            this.ExcludeCityObjIfFirstVertexIsOutsideExtent = excludeCityObjIfFirstVertexIsOutsideExtent;
+            this.ExcludeCityObjectOutsideExtent = excludeCityObjectOutsideExtent;
             this.ExcludeTrianglesOutsideExtent = excludeTrianglesOutsideExtent;
             this.Extent = extent;
         }
