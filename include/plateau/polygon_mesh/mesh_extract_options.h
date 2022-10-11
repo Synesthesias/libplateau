@@ -2,10 +2,28 @@
 
 #include <plateau/io/mesh_convert_options.h>
 #include <citygml/vecs.hpp>
+#include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 namespace plateau::polygonMesh {
 
     struct MeshExtractOptions {
+        /// 設定をデフォルト値にするコンストラクタです。
+        MeshExtractOptions() :
+                reference_point(TVec3d(0, 0, 0)),
+                mesh_axes(geometry::CoordinateSystem::EUN),
+                mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
+                max_lod(plateau::polygonMesh::PolygonMeshUtils::max_lod_in_specification_), // 仕様上ありえる最大LODをデフォルトとします。
+                min_lod(0), // 仕様上ありえる最小LODをデフォルトとします。
+                export_appearance(true),
+                grid_count_of_side(10),
+                unit_scale(1.0),
+                coordinate_zone_id(9), // 東京で歪みの少ない直交座標系をデフォルトとします。
+                exclude_city_object_outside_extent(true),
+                exclude_triangles_outside_extent(false),
+                extent(Extent(GeoCoordinate(-90, -180, -99999), GeoCoordinate(90, 180, 99999))) // 全範囲をデフォルトとします。
+                {}
+
+        /// 設定を引数で指定するコンストラクタです。
         MeshExtractOptions(TVec3d reference_point, CoordinateSystem mesh_axes, MeshGranularity mesh_granularity,
                            unsigned max_lod, unsigned min_lod, bool export_appearance, int grid_count_of_side,
                            float unit_scale, int coordinate_zone_id,
