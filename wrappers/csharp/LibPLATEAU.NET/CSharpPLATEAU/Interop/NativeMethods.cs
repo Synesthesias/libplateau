@@ -87,6 +87,9 @@ namespace PLATEAU.Interop
         public int CoordinateZoneID;
     }
 
+    /// <summary>
+    /// GMLファイルから3Dメッシュを取り出すための設定です。
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct MeshExtractOptions
     {
@@ -104,7 +107,7 @@ namespace PLATEAU.Interop
          public Extent Extent;
 
          /// <summary>
-         /// GMLファイルから3Dメッシュを取り出すための設定です。
+         /// 設定値を引数ですべて指定する版のコンストラクタです。
          /// </summary>
          /// <param name="referencePoint">直交座標系における座標で、3Dモデルの原点をどこに設定するかです。</param>
          /// <param name="meshAxes">座標軸の向きです。</param>
@@ -152,7 +155,17 @@ namespace PLATEAU.Interop
             this.Extent = extent;
         }
 
-        /// <summary>
+         /// <summary>
+         /// デフォルト値の設定を返します。
+         /// </summary>
+         public static MeshExtractOptions DefaultValue()
+         {
+             var apiResult = NativeMethods.plateau_mesh_extract_options_default_value(out var defaultOptions);
+             DLLUtil.CheckDllError(apiResult);
+             return defaultOptions;
+         }
+
+         /// <summary>
         /// 設定の値が正常なら true, 異常な点があれば false を返します。
         /// <param name="failureMessage">異常な点があれば、それを説明する文字列が入ります。正常なら空文字列になります。</param>
         /// </summary>
@@ -1103,5 +1116,13 @@ namespace PLATEAU.Interop
             PredefinedCityModelPackage package,
             [MarshalAs(UnmanagedType.U1)] out bool outHasAppearance,
             out int outMinLOD, out int outMaxLOD);
+        
+        // ***************
+        //  mesh_extract_options_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_extract_options_default_value(
+            out MeshExtractOptions outDefaultOptions);
+        
     }
 }
