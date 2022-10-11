@@ -12,7 +12,7 @@ namespace plateau::polygonMesh {
                 reference_point(TVec3d(0, 0, 0)),
                 mesh_axes(geometry::CoordinateSystem::EUN),
                 mesh_granularity(MeshGranularity::PerPrimaryFeatureObject),
-                max_lod(plateau::polygonMesh::PolygonMeshUtils::max_lod_in_specification_), // 仕様上ありえる最大LODをデフォルトとします。
+                max_lod(PolygonMeshUtils::max_lod_in_specification_), // 仕様上ありえる最大LODをデフォルトとします。
                 min_lod(0), // 仕様上ありえる最小LODをデフォルトとします。
                 export_appearance(true),
                 grid_count_of_side(10),
