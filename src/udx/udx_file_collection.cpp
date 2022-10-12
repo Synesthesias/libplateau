@@ -11,28 +11,24 @@
 namespace plateau::udx {
     namespace fs = std::filesystem;
 
-    PredefinedCityModelPackage UdxSubFolder::getPackage() const {
-        return dirNameToPackage(name_);
-    }
-
-    PredefinedCityModelPackage UdxSubFolder::dirNameToPackage(const std::string& dir_name){
-        if (dir_name == bldg) return PredefinedCityModelPackage::Building;
-        if (dir_name == tran) return PredefinedCityModelPackage::Road;
-        if (dir_name == urf) return PredefinedCityModelPackage::UrbanPlanningDecision;
-        if (dir_name == luse) return PredefinedCityModelPackage::LandUse;
-        if (dir_name == frn) return PredefinedCityModelPackage::CityFurniture;
-        if (dir_name == veg) return PredefinedCityModelPackage::Vegetation;
-        if (dir_name == dem) return PredefinedCityModelPackage::Relief;
-        if (dir_name == fld) return PredefinedCityModelPackage::DisasterRisk;
-        if (dir_name == tnm) return PredefinedCityModelPackage::DisasterRisk;
-        if (dir_name == lsld) return PredefinedCityModelPackage::DisasterRisk;
-        if (dir_name == htd) return PredefinedCityModelPackage::DisasterRisk;
-        if (dir_name == ifld) return PredefinedCityModelPackage::DisasterRisk;
+    PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name){
+        if (folder_name == bldg) return PredefinedCityModelPackage::Building;
+        if (folder_name == tran) return PredefinedCityModelPackage::Road;
+        if (folder_name == urf) return PredefinedCityModelPackage::UrbanPlanningDecision;
+        if (folder_name == luse) return PredefinedCityModelPackage::LandUse;
+        if (folder_name == frn) return PredefinedCityModelPackage::CityFurniture;
+        if (folder_name == veg) return PredefinedCityModelPackage::Vegetation;
+        if (folder_name == dem) return PredefinedCityModelPackage::Relief;
+        if (folder_name == fld) return PredefinedCityModelPackage::DisasterRisk;
+        if (folder_name == tnm) return PredefinedCityModelPackage::DisasterRisk;
+        if (folder_name == lsld) return PredefinedCityModelPackage::DisasterRisk;
+        if (folder_name == htd) return PredefinedCityModelPackage::DisasterRisk;
+        if (folder_name == ifld) return PredefinedCityModelPackage::DisasterRisk;
         return PredefinedCityModelPackage::Unknown;
     }
 
-    CityModelPackageInfo UdxSubFolder::getPackageInfo() const {
-        return CityModelPackageInfo::getPredefined(getPackage());
+    CityModelPackageInfo UdxSubFolder::getPackageInfo(const std::string& folder_name) {
+        return CityModelPackageInfo::getPredefined(getPackage(folder_name));
     }
 
     std::shared_ptr<UdxFileCollection> UdxFileCollection::find(const std::string& source) {
@@ -84,7 +80,8 @@ namespace plateau::udx {
         // udxフォルダ内の各フォルダについて
         for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
             if(!entry.is_directory()) continue;
-            const auto package = UdxSubFolder(entry.path().filename().string()).getPackage();
+            auto udx_sub_folder = UdxSubFolder(entry.path().filename().string());
+            const auto package = udx_sub_folder.getPackage(udx_sub_folder.getName());
             auto& file_map = collection.files_;
             if(file_map.count(package) == 0){
                 file_map.emplace(package, std::vector<GmlFileInfo>());
@@ -167,7 +164,7 @@ namespace plateau::udx {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
-        return files_[package].size();
+        return (int)files_[package].size();
     }
 
     std::shared_ptr<std::vector<std::string>> UdxFileCollection::getGmlFiles(PredefinedCityModelPackage package) {
@@ -217,7 +214,7 @@ namespace plateau::udx {
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if(found) return true;
                 // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
-                search_pos = std::min(str.cend(), str_begin + hint_matched_pos + hint.size());
+                search_pos = std::min(str.cend(), str_begin + (long long)hint_matched_pos + (long long)hint.size());
             }
 
         }

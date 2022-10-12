@@ -48,9 +48,8 @@ namespace plateau::udx {
         //! 内水浸水想定区域
         inline static const std::string ifld = "ifld";
 
-        PredefinedCityModelPackage getPackage() const;
-        static PredefinedCityModelPackage dirNameToPackage(const std::string& str);
-        CityModelPackageInfo getPackageInfo() const;
+        static PredefinedCityModelPackage getPackage(const std::string& folder_name);
+        static CityModelPackageInfo getPackageInfo(const std::string& folder_name);
 
         const std::string& getName() const {
             return name_;
