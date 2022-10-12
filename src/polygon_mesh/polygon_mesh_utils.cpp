@@ -2,6 +2,7 @@
 #include "../io/polar_to_plane_cartesian.h"
 #include "plateau/polygon_mesh/mesh.h"
 #include "plateau/geometry/geo_reference.h"
+#include "citygml/citymodel.h"
 
 namespace plateau::polygonMesh {
     using namespace citygml;
