@@ -1029,7 +1029,7 @@ namespace PLATEAU.Interop
             [In] IntPtr geoReferencePtr);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_sub_folder_dir_name_to_package(
+        internal static extern APIResult plateau_udx_sub_folder_get_package(
             string dirName,
             out PredefinedCityModelPackage outPackage);
 
