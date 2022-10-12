@@ -34,7 +34,7 @@ namespace plateau::geometry {
             default:
                 throw std::out_of_range("Invalid argument");
         }
-        converted_point = (converted_point - reference_point_) / unit_scale_;
+        converted_point = converted_point / unit_scale_ - reference_point_;
         return converted_point;
     }
 
@@ -55,7 +55,7 @@ namespace plateau::geometry {
     }
 
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
-        TVec3d before_convert_lat_lon = point * unit_scale_ + reference_point_;
+        TVec3d before_convert_lat_lon = (point + reference_point_) * unit_scale_;
         TVec3d lat_lon;
         switch (coordinate_system_) {
         case CoordinateSystem::ENU:
