@@ -1,4 +1,4 @@
-?¿using System;
+using System;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Udx
