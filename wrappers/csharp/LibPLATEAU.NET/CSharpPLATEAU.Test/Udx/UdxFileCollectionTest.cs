@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.Udx;
 
 namespace PLATEAU.Test.Udx

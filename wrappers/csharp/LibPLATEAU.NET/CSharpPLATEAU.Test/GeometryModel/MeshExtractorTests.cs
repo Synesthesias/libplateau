@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.Test.CityGML;
 
 namespace PLATEAU.Test.GeometryModel

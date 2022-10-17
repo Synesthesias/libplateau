@@ -1,6 +1,6 @@
 #include <plateau/geometry/geo_reference.h>
 #include "polar_to_plane_cartesian.h"
-#include "plateau/io/obj_writer.h"
+#include "plateau/mesh_writer/obj_writer.h"
 
 namespace plateau::geometry {
     GeoReference::GeoReference(int coordinate_zone_id, const TVec3d& reference_point, float unit_scale,

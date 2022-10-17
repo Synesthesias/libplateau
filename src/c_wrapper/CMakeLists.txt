@@ -3,7 +3,6 @@ enable_language(C)
 #project("libplateau_c")
 
 add_library(c_wrapper OBJECT
-  "mesh_converter_c.cpp"
   "libplateau_c.h"
   "citygml_c.cpp"
   "city_model_c.h"
@@ -36,10 +35,15 @@ add_library(c_wrapper OBJECT
   "mesh_code_c.cpp"
   "gml_file_info_c.cpp"
   "city_model_package_info_c.cpp"
-  "mesh_extract_options_c.cpp")
+  "mesh_extract_options_c.cpp"
+  "gltf_writer_c.cpp" 
+  "obj_writer_c.cpp"
+  )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
 
 set_target_properties(c_wrapper PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
+
+include_directories("${GLTFSDK_INCLUDE}")
