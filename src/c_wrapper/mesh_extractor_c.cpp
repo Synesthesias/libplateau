@@ -15,7 +15,7 @@ extern "C"{
             const MeshExtractOptions options,
             Model* const out_model){
         API_TRY{
-            MeshExtractor::extract(*out_model, *city_model_handle->getCityModelPtr(), options);
+            MeshExtractor::extract(*out_model, city_model_handle->getCityModel(), options);
             return APIResult::Success;
         }
         API_CATCH;

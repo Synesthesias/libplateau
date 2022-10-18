@@ -3,8 +3,7 @@
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
-#include "../io/polar_to_plane_cartesian.h"
-#include "plateau/io/obj_writer.h"
+#include "plateau/mesh_writer/obj_writer.h"
 
 namespace plateau::polygonMesh {
     using namespace citygml;
@@ -92,14 +91,12 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addUV1(const Polygon& other_poly) {
+    void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
-        auto& other_uv_1 = other_poly.getTexCoordsForTheme("rgbTexture", true);
         for (const auto& vec: other_uv_1) {
             uv1_.push_back(vec);
         }
         // other_uv_1 の数が頂点数に足りなければ 0 で埋めます。
-        auto other_vertices_size = other_poly.getVertices().size();
         for (size_t i = other_uv_1.size(); i < other_vertices_size; i++) {
             uv1_.emplace_back(0, 0);
         }

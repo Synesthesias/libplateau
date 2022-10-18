@@ -21,13 +21,18 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/gtest")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/gtest/googletest/include")
 
 add_executable(plateau_test
-    "test_mesh_converter.cpp"
     "test_primary_city_object_types.cpp"
     "test_mesh_extractor.cpp"
     "test_grid_merger.cpp"
     "test_mesh_code.cpp"
     "test_udx.cpp"
+<<<<<<< HEAD
     "test_vector_tile.cpp")
+=======
+    "test_obj_writer.cpp"
+    "test_gltf_writer.cpp"
+    )
+>>>>>>> c6312a8e9f33a19fb082a92080b432b0b6d52c4e
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
 
@@ -11,19 +11,9 @@ namespace PLATEAU.Test.GeometryModel
         public static Model ExtractModel()
         {
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            int coordinateZoneID = 9;
-            var options = new MeshExtractOptions(
-                cityModel.GetCenterPoint(coordinateZoneID),
-                CoordinateSystem.WUN,
-                MeshGranularity.PerCityModelArea,
-                maxLOD: 2,
-                minLOD: 2,
-                exportAppearance: true,
-                gridCountOfSide: 5,
-                unitScale: 1f,
-                coordinateZoneID,
-                new Extent(new GeoCoordinate(-90, -180, -9999), new GeoCoordinate(90, 180, 9999))
-            );
+            var options = MeshExtractOptions.DefaultValue();
+            options.MinLOD = 2;
+            options.MaxLOD = 2;
 
             var model = new Model();
             MeshExtractor.Extract(ref model, cityModel, options);

@@ -1,7 +1,6 @@
 #include "grid_merger.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include "../io/polar_to_plane_cartesian.h"
-#include "plateau/io/obj_writer.h"
+#include "plateau/mesh_writer/obj_writer.h"
 #include "mesh_merger.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
@@ -78,17 +77,17 @@ namespace plateau::polygonMesh {
         /**
          * city_objs の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
          * また ImportID を割り振ります。
-         * extentの範囲外のものは除外します。
+         * extentの範囲外のものは除外します（除外する設定の場合）。
          */
         GridIDToObjsMap classifyCityObjsToGrid(const ConstCityObjects& city_objs, const Envelope& city_envelope,
-                                               int grid_num_x, int grid_num_y, const Extent& extent) {
-            auto grid_id_to_objs_map = initGridIdToObjsMap(grid_num_x, grid_num_y);
+                                               const MeshExtractOptions& options) {
+            auto grid_id_to_objs_map = initGridIdToObjsMap(options.grid_count_of_side, options.grid_count_of_side);
             int primary_import_id = 0;
             for (auto co: city_objs) {
-                // 範囲外、または位置不明ならスキップします。
-                if(!extent.contains(*co)) continue;
+                // 範囲外、または位置不明ならスキップします（スキップする設定の場合）。
+                if(options.exclude_city_object_outside_extent && !options.extent.contains(*co)) continue;
 
-                int grid_id = getGridId(city_envelope, PolygonMeshUtils::cityObjPos(*co), grid_num_x, grid_num_y);
+                int grid_id = getGridId(city_envelope, PolygonMeshUtils::cityObjPos(*co), options.grid_count_of_side, options.grid_count_of_side);
                 auto city_obj_with_import_id = CityObjectWithImportID(co, primary_import_id, -1);
                 grid_id_to_objs_map.at(grid_id).push_back(city_obj_with_import_id);
                 primary_import_id++;
@@ -105,8 +104,7 @@ namespace plateau::polygonMesh {
         const auto& primary_city_objs = city_model.getAllCityObjectsOfType(
                 PrimaryCityObjectTypes::getPrimaryTypeMask());
         const auto& city_envelope = city_model.getEnvelope();
-        auto grid_id_to_objs_map = classifyCityObjsToGrid(primary_city_objs, city_envelope, options.grid_count_of_side,
-                                                          options.grid_count_of_side, options.extent);
+        auto grid_id_to_objs_map = classifyCityObjsToGrid(primary_city_objs, city_envelope, options);
 
         // 主要地物の子（最小地物）を親と同じグリッドに追加します。
         // 意図はグリッドの端で同じ建物が分断されないようにするためです。
