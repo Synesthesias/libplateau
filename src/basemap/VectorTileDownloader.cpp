@@ -5,7 +5,7 @@
 VectorTile VectorTileDownloader::download(
     std::string uri,
     TileCoordinate coordinate
-    ) {
+) {
     VectorTile vector_tile;
     vector_tile.coordinate = coordinate;
 
@@ -43,7 +43,6 @@ VectorTile VectorTileDownloader::download(
             return true; // return 'false' if you want to cancel the request.
         });
     vector_tile.image = body;
-
 
     return vector_tile;
 }

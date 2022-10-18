@@ -13,7 +13,7 @@ std::shared_ptr<std::vector<VectorTile>> VectorTileLoader::load(plateau::geometr
 
     TileProjection tileProjection;
     auto temp = tileProjection.getTileCoordinates(extent);
-    for(TileCoordinate coordinate : *temp) {
+    for (TileCoordinate coordinate : *temp) {
         VectorTileDownloader downloader;
         vectorTiles->push_back(downloader.download(uri_, coordinate));
     }

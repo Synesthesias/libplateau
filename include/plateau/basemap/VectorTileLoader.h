@@ -22,7 +22,7 @@ struct VectorTile {
     std::string image;
 };
 
-class LIBPLATEAU_EXPORT VectorTileLoader{
+class LIBPLATEAU_EXPORT VectorTileLoader {
 public:
     VectorTileLoader() = default;
 

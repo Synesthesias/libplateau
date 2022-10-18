@@ -1,7 +1,6 @@
 #pragma once
 
 #include <httplib.h>
-#include <libplateau_api.h>
 #include <plateau/basemap/VectorTileLoader.h>
 
 class VectorTileDownloader {
