@@ -1,10 +1,21 @@
-﻿using System;
-using PLATEAU.Interop;
-using System.Threading;
+﻿using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
+using System;
 
 namespace PLATEAU.MeshWriter
 {
+    public struct GltfWriteOptions
+    {
+        public GltfFileFormat GltfFileFormat;
+        public string TextureDirectoryPath;
+
+        public GltfWriteOptions(GltfFileFormat format, string path)
+        {
+            this.GltfFileFormat = format;
+            this.TextureDirectoryPath = path;
+        }
+    }
+
     public class GltfWriter : IDisposable
     {
         private readonly IntPtr handle;
@@ -12,9 +23,9 @@ namespace PLATEAU.MeshWriter
 
         public bool Write(string destination, Model model, GltfWriteOptions options)
         {
-            string tex_path = options.texture_directory_path;
-            MeshFileFormat format = options.mesh_file_format;
-            var result = NativeMethods.plateau_gltf_writer_write(this.handle, out var flg, destination, model.Handle, tex_path, format);
+            string texturePath = options.TextureDirectoryPath;
+            GltfFileFormat format = options.GltfFileFormat;
+            var result = NativeMethods.plateau_gltf_writer_write(this.handle, out var flg, destination, model.Handle, texturePath, format);
             DLLUtil.CheckDllError(result);
             return flg;
         }

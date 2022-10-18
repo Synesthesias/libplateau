@@ -4,6 +4,7 @@
 
 using namespace citygml;
 using namespace plateau::polygonMesh;
+using namespace plateau::geometry;
 
 class GridMergerTest : public ::testing::Test {
 protected:

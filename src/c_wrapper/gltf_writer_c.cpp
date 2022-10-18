@@ -6,7 +6,7 @@ using namespace plateau::meshWriter;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gltf_writer_write(GltfWriter* handle, bool* out,
-            const char* gltf_file_path, const plateau::polygonMesh::Model* model, const char* tex_path, MeshFileFormat format) {
+            const char* gltf_file_path, const plateau::polygonMesh::Model* model, const char* tex_path, GltfFileFormat format) {
         API_TRY{
             plateau::meshWriter::GltfWriteOptions gltf_options;
             gltf_options.texture_directory_path = tex_path;
