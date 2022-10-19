@@ -1,5 +1,4 @@
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
-#include "../io/polar_to_plane_cartesian.h"
 #include "plateau/polygon_mesh/mesh.h"
 #include "plateau/geometry/geo_reference.h"
 #include "citygml/citymodel.h"
@@ -61,7 +60,7 @@ namespace plateau::polygonMesh {
             return TVec3d{0, 0, 0};
         }
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        return GeoReference(coordinate_zone_id).project(city_center);
+        return geometry::GeoReference(coordinate_zone_id).project(city_center);
     }
 
     /**

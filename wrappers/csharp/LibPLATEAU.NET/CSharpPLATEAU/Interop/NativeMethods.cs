@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
-using PLATEAU.IO;
+using PLATEAU.Geometries;
 using PLATEAU.Udx;
 
 // �?���?のサイズをDLLで�?��とりする時の型を決めます�??
@@ -9,6 +9,31 @@ using DllStrSizeT = System.Int32;
 
 namespace PLATEAU.Interop
 {
+    /// <summary>
+    /// メッシュの結合単位
+    /// </summary>
+    public enum MeshGranularity
+    {
+        /// <summary>
+        /// 最小地物単位(LOD2, LOD3の各部品)
+        /// </summary>
+        PerAtomicFeatureObject,
+        /// <summary>
+        /// 主要地物単位(建築物、道路等)
+        /// </summary>
+        PerPrimaryFeatureObject,
+        /// <summary>
+        /// 都市モデル地域単位(GMLファイル内のすべてを結合)
+        /// </summary>
+        PerCityModelArea
+    }
+
+    public enum GltfFileFormat
+    {
+        GLB,
+        GLTF
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d
     {
@@ -1102,5 +1127,38 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_extract_options_default_value(
             out MeshExtractOptions outDefaultOptions);
         
+        // ***************
+        //  gltf_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_gltf_writer(out IntPtr outHandle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_gltf_writer([In] IntPtr gltf_writer);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gltf_writer_write(
+            [In] IntPtr handle,
+            out bool flg,
+            [In] string gltfFilePath,
+            [In] IntPtr ModelPtr,
+            [In] string tex_path,
+            GltfFileFormat format);
+
+        // ***************
+        //  obj_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_obj_writer(out IntPtr outHandle);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_obj_writer([In] IntPtr obj_writer);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_obj_writer_write(
+            [In] IntPtr handle,
+            out bool flg,
+            [In] string objFilePath,
+            [In] IntPtr ModelPtr);
     }
 }

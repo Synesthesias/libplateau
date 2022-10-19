@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
 

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
-using PLATEAU.IO;
 
 namespace PLATEAU.Test.Geom
 {

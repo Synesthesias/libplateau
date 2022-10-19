@@ -1,7 +1,6 @@
 #include "grid_merger.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include "../io/polar_to_plane_cartesian.h"
-#include "plateau/io/obj_writer.h"
+#include "plateau/mesh_writer/obj_writer.h"
 #include "mesh_merger.h"
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
@@ -100,7 +99,7 @@ namespace plateau::polygonMesh {
 
     GridMergeResult
     GridMerger::gridMerge(const CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
-                          const GeoReference& geo_reference) {
+                          const geometry::GeoReference& geo_reference) {
         // city_model に含まれる 主要地物 をグリッドに分類します。
         const auto& primary_city_objs = city_model.getAllCityObjectsOfType(
                 PrimaryCityObjectTypes::getPrimaryTypeMask());
