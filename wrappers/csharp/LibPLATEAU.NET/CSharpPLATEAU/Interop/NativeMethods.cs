@@ -28,23 +28,10 @@ namespace PLATEAU.Interop
         PerCityModelArea
     }
 
-    public enum MeshFileFormat
+    public enum GltfFileFormat
     {
         GLB,
         GLTF
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct GltfWriteOptions
-    {
-        public MeshFileFormat mesh_file_format;
-        public string texture_directory_path;
-
-        public GltfWriteOptions(MeshFileFormat format, string path)
-        {
-            this.mesh_file_format = format;
-            this.texture_directory_path = path;
-        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1153,7 +1140,7 @@ namespace PLATEAU.Interop
             [In] string gltfFilePath,
             [In] IntPtr ModelPtr,
             [In] string tex_path,
-            MeshFileFormat format);
+            GltfFileFormat format);
 
         // ***************
         //  obj_writer_c.cpp

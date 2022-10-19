@@ -7,9 +7,10 @@
 #include "../src/c_wrapper/citygml_c.cpp"
 #include "../src/polygon_mesh/grid_merger.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
-#include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 using namespace citygml;
+using namespace plateau::geometry;
+
 namespace plateau::polygonMesh {
 
     class MeshExtractorTest : public ::testing::Test {

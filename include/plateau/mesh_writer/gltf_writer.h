@@ -1,29 +1,23 @@
 ﻿#pragma once
 #include <string>
-#include <fstream>
 
 #include <citygml/citygml.h>
 #include <libplateau_api.h>
-#include <plateau_dll_logger.h>
 
 #include <GLTFSDK/GLTF.h>
 #include <GLTFSDK/BufferBuilder.h>
 #include <GLTFSDK/GLTFResourceWriter.h>
-#include <GLTFSDK/GLBResourceWriter.h>
-#include <GLTFSDK/IStreamWriter.h>
-#include <GLTFSDK/Serialize.h>
 
 #include <plateau/polygon_mesh/mesh_extractor.h>
-#include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 
 namespace plateau::meshWriter {
     /**
-     * @enum MeshFileFormat
+     * @enum GltfFileFormat
      *
      * 出力ファイルフォーマット
      */
-    enum class MeshFileFormat {
+    enum class GltfFileFormat {
         GLB,
         GLTF
     };
@@ -35,7 +29,7 @@ namespace plateau::meshWriter {
         /**
          * \brief 出力ファイルフォーマットを指定します。
          */
-        MeshFileFormat mesh_file_format;
+        GltfFileFormat mesh_file_format;
 
         /**
          * \brief テクスチャファイル用のディレクトリをgltfファイルからの相対パスで指定します。
@@ -44,7 +38,7 @@ namespace plateau::meshWriter {
         std::string texture_directory_path;
 
         GltfWriteOptions() :
-            mesh_file_format(MeshFileFormat::GLB), texture_directory_path("") {
+            mesh_file_format(GltfFileFormat::GLB), texture_directory_path("") {
         }
     };
 

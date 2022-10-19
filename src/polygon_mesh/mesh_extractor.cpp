@@ -17,7 +17,7 @@ namespace plateau::polygonMesh {
                           const MeshExtractOptions& options) {
             if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
 
-            const auto geo_reference = GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
+            const auto geo_reference = geometry::GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
 
             // rootNode として LODノード を作ります。
             for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {

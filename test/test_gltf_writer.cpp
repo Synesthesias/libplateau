@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 #include <citygml/citygml.h>
@@ -34,7 +35,7 @@ namespace plateau::meshWriter {
 
     TEST_F(GltfWriterTest, OutputsGltfAndBin) {
         GltfWriteOptions gltf_options;
-        gltf_options.mesh_file_format = MeshFileFormat::GLTF;
+        gltf_options.mesh_file_format = GltfFileFormat::GLTF;
         gltf_options.texture_directory_path = "./texture";
 
         fs::remove(expected_output_gltf_);

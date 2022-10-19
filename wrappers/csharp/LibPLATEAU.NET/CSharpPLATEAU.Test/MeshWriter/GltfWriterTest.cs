@@ -19,10 +19,10 @@ namespace PLATEAU.Test.MeshWriter
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             var gltfFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".glb";
 
-            var option = new GltfWriteOptions(MeshFileFormat.GLB, "");//出力フォーマットとテクスチャファイルの保存先ディレクトリ名指定（NULLならディレクトリは作成しない）            
+            var option = new GltfWriteOptions(GltfFileFormat.GLB, "");//出力フォーマットとテクスチャファイルの保存先ディレクトリ名指定（NULLならディレクトリは作成しない）            
 
             var gltf_writer = new GltfWriter();
-            if (option.mesh_file_format == MeshFileFormat.GLTF) gltfFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".gltf";
+            if (option.GltfFileFormat == GltfFileFormat.GLTF) gltfFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".gltf";
             File.Delete(gltfFileName);
             var flg = gltf_writer.Write(gltfFileName, model, option);
             Assert.IsTrue(File.Exists(gltfFileName), "変換後ファイルが実在する");

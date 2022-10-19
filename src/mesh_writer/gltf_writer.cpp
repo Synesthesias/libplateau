@@ -14,6 +14,11 @@
 
 #include <cassert>
 #include <codecvt>
+#include <fstream>
+
+#include <GLTFSDK/GLBResourceWriter.h>
+#include <GLTFSDK/IStreamWriter.h>
+#include <GLTFSDK/Serialize.h>
 
 namespace fs = std::filesystem;
 namespace gltf = Microsoft::glTF;
@@ -98,14 +103,14 @@ namespace plateau::meshWriter {
         std::unique_ptr < gltf::ResourceWriter > resourceWriter;
 
         // create a GLTFResourceWriter
-        if (options.mesh_file_format == plateau::meshWriter::MeshFileFormat::GLTF) {
+        if (options.mesh_file_format == plateau::meshWriter::GltfFileFormat::GLTF) {
             resourceWriter = std::make_unique<gltf::GLTFResourceWriter>(std::move(streamWriter));
         }
 
         // create a GLBResourceWriter. This class derives
         // from GLTFResourceWriter and adds support for writing manifests to a GLB container's
         // JSON chunk and resource data to the binary chunk.
-        if (options.mesh_file_format == plateau::meshWriter::MeshFileFormat::GLB) {
+        if (options.mesh_file_format == plateau::meshWriter::GltfFileFormat::GLB) {
             resourceWriter = std::make_unique<gltf::GLBResourceWriter>(std::move(streamWriter));
         }
 

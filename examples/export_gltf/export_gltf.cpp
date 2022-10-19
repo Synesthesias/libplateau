@@ -64,13 +64,13 @@ int main() {
         auto model = plateau::polygonMesh::MeshExtractor::extract(*city_model_, mesh_extract_options_);
 
         plateau::meshWriter::GltfWriteOptions gltf_options;
-        gltf_options.mesh_file_format = plateau::meshWriter::MeshFileFormat::GLTF;
+        gltf_options.mesh_file_format = plateau::meshWriter::GltfFileFormat::GLTF;
         gltf_options.texture_directory_path = "./texture";
 
         const auto destination = fs::path(".").string();
         const auto gml_file_name = fs::path(gml_file_path).filename().string();
         auto base_obj_name = fs::path(gml_file_name).replace_extension(".glb").string();
-        if (gltf_options.mesh_file_format == plateau::meshWriter::MeshFileFormat::GLTF) {
+        if (gltf_options.mesh_file_format == plateau::meshWriter::GltfFileFormat::GLTF) {
             base_obj_name = fs::path(gml_file_name).replace_extension(".gltf").string();
         }
         const auto gltf_file_path = fs::path(destination).append(base_obj_name).make_preferred().string();
