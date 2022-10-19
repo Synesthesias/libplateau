@@ -95,6 +95,20 @@ namespace PLATEAU.Test.Geom
             CheckProjectUnproject(new PlateauVector3d(-100, -100, -100), 4f, CoordinateSystem.EUN, 9);
         }
 
+        [TestMethod]
+        public void Getter_Returns_Value()
+        {
+            var geoReference = new GeoReference(
+                new PlateauVector3d(1, 2, 3), 4, CoordinateSystem.ENU, 5
+            );
+            Assert.AreEqual(1, geoReference.ReferencePoint.X);
+            Assert.AreEqual(2, geoReference.ReferencePoint.Y);
+            Assert.AreEqual(3, geoReference.ReferencePoint.Z);
+            Assert.AreEqual(4, geoReference.UnitScale);
+            Assert.AreEqual(5, geoReference.ZoneID);
+            Assert.AreEqual(CoordinateSystem.ENU, geoReference.CoordinateSystem);
+        }
+
         private static void CheckProjectUnproject(PlateauVector3d reference_point, float unit_scale, CoordinateSystem coordinate_system, int zone_id)
         {
             using var geoReference = new GeoReference(reference_point, unit_scale, coordinate_system, zone_id);

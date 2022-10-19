@@ -85,6 +85,22 @@ namespace PLATEAU.Geometries
             return outLatlon;
         }
 
+        public PlateauVector3d ReferencePoint =>
+            DLLUtil.GetNativeValue<PlateauVector3d>(Handle,
+                NativeMethods.plateau_geo_reference_get_reference_point);
+
+        public int ZoneID =>
+            DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_geo_reference_get_zone_id);
+
+        public float UnitScale =>
+            DLLUtil.GetNativeValue<float>(Handle,
+                NativeMethods.plateau_geo_reference_get_unit_scale);
+
+        public CoordinateSystem CoordinateSystem =>
+            DLLUtil.GetNativeValue<CoordinateSystem>(Handle,
+                NativeMethods.plateau_geo_reference_get_coordinate_system);
+
         public void Dispose()
         {
             if (this.isDisposed) return;

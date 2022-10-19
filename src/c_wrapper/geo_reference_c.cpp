@@ -28,15 +28,36 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-DLL_VALUE_FUNC(plateau_geo_reference_project,
-               GeoReference,
-               TVec3d,
-               handle->project(lat_lon),
-               , GeoCoordinate lat_lon)
+    DLL_VALUE_FUNC(plateau_geo_reference_project,
+                   GeoReference,
+                   TVec3d,
+                   handle->project(lat_lon),
+                   , GeoCoordinate lat_lon)
 
     DLL_VALUE_FUNC(plateau_geo_reference_unproject,
                GeoReference,
                GeoCoordinate,
                handle->unproject(point),
                , TVec3d point)
+
+    DLL_VALUE_FUNC(plateau_geo_reference_get_reference_point,
+                  GeoReference,
+                  TVec3d,
+                  handle->getReferencePoint())
+
+    DLL_VALUE_FUNC(plateau_geo_reference_get_zone_id,
+                 GeoReference,
+                 int,
+                 handle->getZoneID())
+
+    DLL_VALUE_FUNC(plateau_geo_reference_get_unit_scale,
+                GeoReference,
+                float,
+                handle->getUnitScale())
+
+    DLL_VALUE_FUNC(plateau_geo_reference_get_coordinate_system,
+                   GeoReference,
+                   CoordinateSystem,
+                   handle->getCoordinateSystem())
+
 }
