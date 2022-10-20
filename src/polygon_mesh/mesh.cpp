@@ -123,7 +123,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_indices_size) {
+    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
@@ -139,19 +139,19 @@ namespace plateau::polygonMesh {
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            unsigned prev_num_indices = indices_.size() - sub_mesh_indices_size;
-            SubMesh::addSubMesh(prev_num_indices, indices_.size() - 1, texture_path, sub_meshes_);
+//            unsigned prev_num_indices = indices_.size() - sub_mesh_indices_size;
+            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index/*indices_.size() - 1*/, texture_path, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
-            extendLastSubMesh();
+            extendLastSubMesh(sub_mesh_end_index);
         }
     }
 
-    void Mesh::extendLastSubMesh() {
+    void Mesh::extendLastSubMesh(size_t sub_mesh_end_index) {
         if (sub_meshes_.empty()) {
-            sub_meshes_.emplace_back(0, indices_.size() - 1, "");
+            sub_meshes_.emplace_back(0, sub_mesh_end_index/*indices_.size() - 1*/, "");
         } else {
-            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex((int) indices_.size() - 1);
+            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index/*(int) indices_.size() - 1*/);
         }
     }
 }

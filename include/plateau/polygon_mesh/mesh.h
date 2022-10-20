@@ -19,7 +19,7 @@ namespace plateau::polygonMesh {
      * 詳しくは Model クラスのコメントをご覧ください。
      *
      * このメッシュ情報がどのように生成されるかというと、
-     * 空のMeshから MeshMerger::merge(...) 関数で citygml::Polygon を渡すことで Mesh に情報が追加されます。
+     * 空のMeshから MeshMerger::merge(...) 関数で Mesh または citygml::Polygon を渡すことで Mesh に情報が追加されます。
      * Polygon が複数あれば Polygonごとに複数回 Mergeが実行されることで複数個のSubMeshを含んだMeshが構築されるようになっています。
      *
      * 保持する頂点の座標系について、
@@ -68,14 +68,14 @@ namespace plateau::polygonMesh {
          * 代わりに extendLastSubMesh を実行します。
          * なぜなら、同じテクスチャであればサブメッシュを分けるのは無意味で描画負荷を増やすだけと思われるためです。
          */
-        void addSubMesh(const std::string& texture_path, size_t sub_mesh_indices_size);
+        void addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index);
 
         /**
          * 直前の SubMesh の範囲を拡大し、範囲の終わりがindicesリストの最後を指すようにします。
          * 利用すべき状況 : 形状を追加したけど、テクスチャは前と同じものにしたいとう状況で利用できます。
          * SubMeshがない場合は最初の1つをテクスチャなしで追加します。
          */
-        void extendLastSubMesh();
+        void extendLastSubMesh(size_t sub_mesh_end_index);
 
     private:
         std::vector<TVec3d> vertices_;

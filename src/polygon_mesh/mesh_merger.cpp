@@ -90,6 +90,7 @@ namespace plateau::polygonMesh {
 
         /**
          * Plateau の Polygon を Mesh に変換します。
+         * 新規Meshを作り、そこにPolygonの情報をコピーします。すなわち:
          * Vertices を極座標から平面直角座標に変換したうえでコピーします。
          * Indices, UV1 をコピーします。
          * 引数の gml_path は、テクスチャパスを相対から絶対に変換するときの基準パスです。
@@ -105,7 +106,6 @@ namespace plateau::polygonMesh {
             const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
 
             // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
-            // TODO ここは別関数に切り出したほうが綺麗
             std::vector<TVec3d> out_vertices;
             std::vector<unsigned int> out_indices;
             std::vector<TVec2f> out_uv_1;
@@ -136,7 +136,7 @@ namespace plateau::polygonMesh {
 
             mesh.addVerticesList(vertices_xyz);
             auto vert_count = mesh.getVertices().size();
-            // 下の引数 invert_mesh_front_back が false の理由 : ポリゴンの反転は merge 時に行うため、今はしません。 // TODO そうだっけ？
+            // 下の引数 invert_mesh_front_back が false の理由 : ポリゴンの反転は merge 時に行うため、今はしません。
             mesh.addIndicesList(*other_indices, 0, false);
             mesh.addUV1(*other_uv_1, vert_count);
             auto texture = poly.getTextureFor("rgbTexture");
@@ -156,7 +156,7 @@ namespace plateau::polygonMesh {
                     texture_path = abs_path.u8string();
                 }
             }
-            mesh.addSubMesh(texture_path,mesh.getIndices().size() );
+            mesh.addSubMesh(texture_path,0, mesh.getIndices().size() - 1 );
             return mesh;
         }
 
@@ -183,32 +183,25 @@ namespace plateau::polygonMesh {
         mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
                          bool invert_mesh_front_back) {
             if (!isValidMesh(other_mesh)) return;
+            auto prev_indices_count = mesh.getIndices().size();
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
-
-//            const auto& texture = other_poly.getTextureFor("rgbTexture");
-//            std::string texture_path;
-//            if (texture == nullptr) {
-//                texture_path = std::string("");
-//            } else {
-//                // テクスチャパスを相対から絶対に変換
-//                texture_path = texture->getUrl();
-//                std::filesystem::path tpath = std::filesystem::u8path(texture_path);
-//                if (tpath.is_relative()) {
-//                    std::filesystem::path a_path = gml_path;
-//                    a_path = a_path.parent_path();
-//                    a_path /= tpath;
-//                    auto abs_path = std::filesystem::absolute(a_path);
-//
-//                    texture_path = abs_path.u8string();
-//                }
-//            }
-            // TODO ここは other_sub_meshesのうち1つだけしかコピーできていない。
-            //      だが実際には複数のsubmeshesもあり得る。すべてコピーすべき。
+            
             const auto& other_sub_meshes = other_mesh.getSubMeshes();
-            const auto& texture_path = other_sub_meshes[other_sub_meshes.size()-1].getTexturePath();
-            auto indices_size = other_mesh.getIndices().size();
-            mesh.addSubMesh(texture_path, indices_size);
+            size_t offset = prev_indices_count;
+            for(const auto& other_sub_mesh : other_sub_meshes){
+                const auto& texture_path = other_sub_mesh.getTexturePath();
+                size_t start_index = other_sub_mesh.getStartIndex() + offset;
+                size_t end_index = other_sub_mesh.getEndIndex() + offset;
+                assert(start_index <= end_index);
+                assert(end_index < mesh.getIndices().size());
+                assert((end_index - start_index + 1) % 3 == 0);
+                mesh.addSubMesh(texture_path, start_index, end_index);
+                offset = end_index;
+            }
+//            const auto& texture_path = other_sub_meshes[other_sub_meshes.size()-1].getTexturePath();
+//            auto indices_size = other_mesh.getIndices().size();
+//            mesh.addSubMesh(texture_path, indices_size);
         }
 
         /**
@@ -221,7 +214,7 @@ namespace plateau::polygonMesh {
             if (!isValidMesh(other_mesh)) return;
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
-            mesh.extendLastSubMesh();
+            mesh.extendLastSubMesh(mesh.getIndices().size());
 
         }
 
