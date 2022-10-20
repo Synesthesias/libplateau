@@ -139,7 +139,6 @@ namespace plateau::polygonMesh {
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-//            unsigned prev_num_indices = indices_.size() - sub_mesh_indices_size;
             SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index/*indices_.size() - 1*/, texture_path, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。

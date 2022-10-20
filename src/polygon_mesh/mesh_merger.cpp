@@ -186,7 +186,7 @@ namespace plateau::polygonMesh {
             auto prev_indices_count = mesh.getIndices().size();
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
-            
+
             const auto& other_sub_meshes = other_mesh.getSubMeshes();
             size_t offset = prev_indices_count;
             for(const auto& other_sub_mesh : other_sub_meshes){
@@ -199,9 +199,6 @@ namespace plateau::polygonMesh {
                 mesh.addSubMesh(texture_path, start_index, end_index);
                 offset = end_index;
             }
-//            const auto& texture_path = other_sub_meshes[other_sub_meshes.size()-1].getTexturePath();
-//            auto indices_size = other_mesh.getIndices().size();
-//            mesh.addSubMesh(texture_path, indices_size);
         }
 
         /**
