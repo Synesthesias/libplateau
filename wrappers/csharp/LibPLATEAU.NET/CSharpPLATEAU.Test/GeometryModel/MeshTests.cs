@@ -1,5 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NuGet.Frameworks;
+using PLATEAU.Geometries;
+using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
 
@@ -51,6 +54,60 @@ namespace PLATEAU.Test.GeometryModel
             var mesh = Mesh.Create("testMesh");
             Assert.AreEqual(0, mesh.VerticesCount);
             mesh.Dispose();
+        }
+
+        [TestMethod]
+        public void Merge_Same_Mesh_Then_Vertex_Count_Doubles()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var mesh = TestGeometryUtil.FirstMeshInModel(model);
+            // 同じインスタンス同士でマージするとバグになるので
+            // 実質的なコピーを用意するためもう一度ロードします。
+            var model2 = TestGeometryUtil.ExtractModel();
+            var mesh2 = TestGeometryUtil.FirstMeshInModel(model2);
+            
+            int numVert = mesh.VerticesCount;
+            int numUV1 = mesh.GetUv1().Length;
+            int numUV2 = mesh.GetUv2().Length;
+            int numUV3 = mesh.GetUv3().Length;
+            int numIndices = mesh.IndicesCount;
+            mesh.MergeMesh(mesh2, CoordinateSystem.ENU, true);
+            Assert.AreEqual(2 * numVert, mesh.VerticesCount);
+            Assert.AreEqual(2 * numUV1, mesh.GetUv1().Length);
+            Assert.AreEqual(2 * numUV2, mesh.GetUv2().Length);
+            Assert.AreEqual(2 * numUV3, mesh.GetUv3().Length);
+            Assert.AreEqual(2 * numIndices, mesh.IndicesCount);
+        }
+
+        [TestMethod]
+        public void MergeMeshData_Works()
+        {
+            var mesh = Mesh.Create("testMesh");
+            mesh.MergeMeshInfo(
+                new []
+                {
+                    new PlateauVector3d(11, 12, 13),
+                    new PlateauVector3d(21, 22, 23),
+                    new PlateauVector3d(31, 32, 33)
+                },
+                new uint[]
+                {
+                    0, 1, 2
+                },
+                new PlateauVector2f[]
+                {
+                    new PlateauVector2f(1.1f, 1.2f),
+                    new PlateauVector2f(2.1f, 2.2f),
+                    new PlateauVector2f(3.1f, 3.2f)
+                },
+                CoordinateSystem.ENU, true
+            );
+            Assert.AreEqual(3, mesh.GetUv1().Length);
+            Assert.AreEqual(33, mesh.GetVertexAt(2).Z);
+            Assert.AreEqual(2, mesh.GetIndiceAt(2));
+            Console.WriteLine($"{mesh.GetUv1()[0]}, {mesh.GetUv1()[1]}, {mesh.GetUv1()[2]}");
+            Assert.AreEqual(3.2f, mesh.GetUv1()[2].Y);
+            
         }
     }
 }

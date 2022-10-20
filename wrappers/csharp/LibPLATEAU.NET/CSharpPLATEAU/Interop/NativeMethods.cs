@@ -874,17 +874,17 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv1(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv2(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_uv3(
             [In] IntPtr plateauMeshPtr,
-            PlateauVector2f[] outUvPosArray);
+            [Out] PlateauVector2f[] outUvPosArray);
 
         // ***************
         //  sub_mesh_c.cpp
@@ -1189,5 +1189,28 @@ namespace PLATEAU.Interop
             out bool flg,
             [In] string objFilePath,
             [In] IntPtr ModelPtr);
+        
+        // ***************
+        //  mesh_merger_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_merge_mesh(
+            [In] IntPtr meshPtr,
+            [In] IntPtr otherMeshPtr,
+            CoordinateSystem meshAxes,
+            [MarshalAs(UnmanagedType.U1)] bool includeTexture);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_mesh_merger_mesh_info(
+            [In] IntPtr meshPtr,
+            [In] PlateauVector3d[] vertices,
+            int verticesCount,
+            [In] uint[] indices,
+            int indicesCount,
+            [In] PlateauVector2f[] uv1,
+            int uv1Count,
+            CoordinateSystem meshAxes,
+            [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }
 }

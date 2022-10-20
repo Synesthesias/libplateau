@@ -34,6 +34,13 @@ namespace plateau::polygonMesh {
                               const TVec2f& uv_2_element, const TVec2f& uv_3_element);
 
         /**
+         * Mesh に Polygon をマージする代わりに、データ配列を直接 move で渡す版です。
+         */
+        static void mergeMeshInfo(Mesh& mesh,
+                                  std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+                                  plateau::geometry::CoordinateSystem mesh_axes, bool include_texture);
+
+        /**
          * merge関数を 引数 city_object_ の各 Polygon に対して実行します。
          */
         static void mergePolygonsInCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,

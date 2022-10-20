@@ -1,5 +1,6 @@
 #include <plateau/polygon_mesh/mesh.h>
 #include "libplateau_c.h"
+#include <cassert>
 using namespace citygml;
 using namespace libplateau;
 using namespace plateau::polygonMesh;

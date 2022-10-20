@@ -2,6 +2,7 @@
 #include <memory>
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
+#include <plateau/polygon_mesh/mesh_merger.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include "plateau/mesh_writer/obj_writer.h"
 
@@ -14,6 +15,18 @@ namespace plateau::polygonMesh {
             uv2_(UV()),
             uv3_(UV()),
             sub_meshes_() {
+    }
+
+    Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1) :
+            Mesh(id)
+    {
+        vertices_.insert(vertices_.end(), vertices.begin(), vertices.end());
+        indices_.insert(indices_.end(), indices.begin(), indices.end());
+        uv1_.insert(uv1_.end(), uv_1.begin(), uv_1.end());
+        for(int i=0; i<vertices_.size(); i++){
+            uv2_.emplace_back(0,0);
+            uv3_.emplace_back(0, 0);
+        }
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {
@@ -139,7 +152,7 @@ namespace plateau::polygonMesh {
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index/*indices_.size() - 1*/, texture_path, sub_meshes_);
+            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
             extendLastSubMesh(sub_mesh_end_index);
@@ -148,9 +161,9 @@ namespace plateau::polygonMesh {
 
     void Mesh::extendLastSubMesh(size_t sub_mesh_end_index) {
         if (sub_meshes_.empty()) {
-            sub_meshes_.emplace_back(0, sub_mesh_end_index/*indices_.size() - 1*/, "");
+            sub_meshes_.emplace_back(0, sub_mesh_end_index, "");
         } else {
-            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index/*(int) indices_.size() - 1*/);
+            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index);
         }
     }
 }

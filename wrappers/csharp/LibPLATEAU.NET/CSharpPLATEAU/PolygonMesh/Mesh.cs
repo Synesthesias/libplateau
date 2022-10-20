@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
 namespace PLATEAU.PolygonMesh
@@ -98,6 +99,27 @@ namespace PLATEAU.PolygonMesh
             var subMeshPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_mesh_get_sub_mesh_at_index);
             return new SubMesh(subMeshPtr);
+        }
+
+        public void MergeMesh(Mesh otherMesh, CoordinateSystem meshAxes, bool includeTexture)
+        {
+            var result = NativeMethods.plateau_mesh_merger_merge_mesh(
+                Handle, otherMesh.Handle, meshAxes, includeTexture
+            );
+            DLLUtil.CheckDllError(result);
+        }
+
+        public void MergeMeshInfo(PlateauVector3d[] vertices, uint[] indices, PlateauVector2f[] uv1,
+            CoordinateSystem meshAxes, bool includeTexture)
+        {
+            Console.WriteLine(uv1[0]);
+            var result = NativeMethods.plateau_mesh_merger_mesh_info(
+                Handle,
+                vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                meshAxes, includeTexture
+            );
+            Console.WriteLine(GetUv1()[0]);
+            DLLUtil.CheckDllError(result);
         }
 
         /// <summary>

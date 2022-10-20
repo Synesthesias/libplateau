@@ -184,6 +184,7 @@ namespace plateau::polygonMesh {
                          bool invert_mesh_front_back) {
             if (!isValidMesh(other_mesh)) return;
             auto prev_indices_count = mesh.getIndices().size();
+
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
 
@@ -197,7 +198,6 @@ namespace plateau::polygonMesh {
                 assert(end_index < mesh.getIndices().size());
                 assert((end_index - start_index + 1) % 3 == 0);
                 mesh.addSubMesh(texture_path, start_index, end_index);
-                offset = end_index;
             }
         }
 
@@ -253,8 +253,9 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                                   const GeoReference& geo_reference, const TVec2f& uv_2_element,
-                                  const TVec2f& uv_3_element, const std::string& gml_path) {
+                                  const TVec2f&uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
+        // TODO ここで Polygon から Mesh に変換するためにデータのコピーが入るので重そう
         auto other_mesh = plateauPolygonToMesh(other_poly, mesh_extract_options.exclude_triangles_outside_extent, gml_path, mesh_extract_options.extent, geo_reference);
         mergeMesh(mesh, other_mesh, mesh_extract_options.mesh_axes, mesh_extract_options.export_appearance,
                   uv_2_element, uv_3_element);
@@ -269,7 +270,13 @@ namespace plateau::polygonMesh {
         }else{
             mergeWithoutTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
         }
+    }
 
+    void MeshMerger::mergeMeshInfo(Mesh& mesh,
+                                   std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+                                   CoordinateSystem mesh_axes, bool include_texture){
+        auto other_mesh = Mesh("", std::move(vertices), std::move(indices), std::move(uv_1));
+        mergeMesh(mesh, other_mesh, mesh_axes, include_texture, TVec2f(0, 0), TVec2f(0, 0));
     }
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
