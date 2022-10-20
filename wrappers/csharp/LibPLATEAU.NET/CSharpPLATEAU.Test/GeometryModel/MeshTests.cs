@@ -48,8 +48,9 @@ namespace PLATEAU.Test.GeometryModel
         [TestMethod]
         public void CreateMesh()
         {
-            using var mesh = Mesh.Create("testMesh");
+            var mesh = Mesh.Create("testMesh");
             Assert.AreEqual(0, mesh.VerticesCount);
+            mesh.Dispose();
         }
     }
 }

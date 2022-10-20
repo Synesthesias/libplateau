@@ -16,6 +16,10 @@ namespace plateau::polygonMesh {
             return !(other_poly.getVertices().empty() || other_poly.getIndices().empty());
         }
 
+        bool isValidMesh(const Mesh& mesh){
+            return !(mesh.getVertices().empty() || mesh.getIndices().empty());
+        }
+
         /// 3Dメッシュのうち範囲外の部分を除去します。
         /// 具体的には、頂点、インデックス、UVのリストと範囲を受け取り、そのうち範囲外の頂点とポリゴンを除いたものを outと名前の付いた引数のvectorに追加します。
         /// 頂点と範囲は極座標（緯度、経度、高さ）であることが前提です。
@@ -84,28 +88,32 @@ namespace plateau::polygonMesh {
             assert(out_indices.size() % 3 == 0);
         }
 
+        /**
+         * Plateau の Polygon を Mesh に変換します。
+         * Vertices を極座標から平面直角座標に変換したうえでコピーします。
+         * Indices, UV1 をコピーします。
+         * 引数の gml_path は、テクスチャパスを相対から絶対に変換するときの基準パスです。
+         */
+        Mesh plateauPolygonToMesh(
+                const Polygon& poly, bool remove_triangles_outside_extent, const std::string& gml_path,
+                Extent extent, GeoReference geo_reference){
+            auto mesh = Mesh(poly.getId());
 
-
-        /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
-        /// 座標変換を伴います。
-        void mergeShapeWithConvertCoords(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
-                                         const TVec2f& uv_3_element, const GeoReference& geo_reference,
-                                         bool invert_mesh_front_back, bool remove_triangles_outside_extent,
-                                         Extent extent) {
-            unsigned prev_num_vertices = mesh.getVertices().size();
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
-            const auto& vertices_lat_lon_original = other_poly.getVertices();
-            const auto& other_indices_original = other_poly.getIndices();
-            const auto& other_uv_1_original = other_poly.getTexCoordsForTheme("rgbTexture", true);
+            const auto& vertices_lat_lon_original = poly.getVertices();
+            const auto& other_indices_original = poly.getIndices();
+            const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
+
+            // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
+            // TODO ここは別関数に切り出したほうが綺麗
+            std::vector<TVec3d> out_vertices;
+            std::vector<unsigned int> out_indices;
+            std::vector<TVec2f> out_uv_1;
 
             const std::vector<TVec3d>* vertices_lat_lon = &vertices_lat_lon_original;
             const std::vector<unsigned int>* other_indices = &other_indices_original;
             const std::vector<TVec2f>* other_uv_1 = &other_uv_1_original;
 
-            // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
-            std::vector<TVec3d> out_vertices;
-            std::vector<unsigned int> out_indices;
-            std::vector<TVec2f> out_uv_1;
             if (remove_triangles_outside_extent) {
                 out_vertices = std::vector<TVec3d>();
                 out_indices = std::vector<unsigned int>();
@@ -127,26 +135,11 @@ namespace plateau::polygonMesh {
             }
 
             mesh.addVerticesList(vertices_xyz);
-            mesh.addIndicesList(*other_indices, prev_num_vertices, invert_mesh_front_back);
-            mesh.addUV1(*other_uv_1, vertices_xyz.size());
-            mesh.addUV2WithSameVal(uv_2_element, vertices_xyz.size());
-            mesh.addUV3WithSameVal(uv_3_element, vertices_xyz.size());
-        }
-
-        /**
-         * merge関数 のテクスチャあり版です。
-         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける SubMesh が追加されます。
-         */
-        void
-        mergeWithTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                         const GeoReference& geo_reference, bool invert_mesh_front_back, const std::string& gml_path,
-                         bool remove_triangles_outside_extent, Extent extent) {
-            if (!isValidPolygon(other_poly)) return;
-            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference,
-                                        invert_mesh_front_back, remove_triangles_outside_extent,
-                                        extent);
-
-            const auto& texture = other_poly.getTextureFor("rgbTexture");
+            auto vert_count = mesh.getVertices().size();
+            // 下の引数 invert_mesh_front_back が false の理由 : ポリゴンの反転は merge 時に行うため、今はしません。 // TODO そうだっけ？
+            mesh.addIndicesList(*other_indices, 0, false);
+            mesh.addUV1(*other_uv_1, vert_count);
+            auto texture = poly.getTextureFor("rgbTexture");
             std::string texture_path;
             if (texture == nullptr) {
                 texture_path = std::string("");
@@ -163,7 +156,58 @@ namespace plateau::polygonMesh {
                     texture_path = abs_path.u8string();
                 }
             }
-            size_t indices_size = other_poly.getIndices().size();
+            mesh.addSubMesh(texture_path,mesh.getIndices().size() );
+            return mesh;
+        }
+
+
+
+        /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
+        void mergeShape(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
+                        bool invert_mesh_front_back) {
+            auto prev_num_vertices = mesh.getVertices().size();
+            auto other_num_vertices = other_mesh.getVertices().size();
+
+            mesh.addVerticesList(other_mesh.getVertices());
+            mesh.addIndicesList(other_mesh.getIndices(), (unsigned) prev_num_vertices, invert_mesh_front_back);
+            mesh.addUV1(other_mesh.getUV1(), (unsigned) other_num_vertices);
+            mesh.addUV2WithSameVal(uv_2_element, (unsigned) other_num_vertices);
+            mesh.addUV3WithSameVal(uv_3_element, (unsigned) other_num_vertices);
+        }
+
+        /**
+         * merge関数 のテクスチャあり版です。
+         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける SubMesh が追加されます。
+         */
+        void
+        mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
+                         bool invert_mesh_front_back) {
+            if (!isValidMesh(other_mesh)) return;
+            mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
+                       invert_mesh_front_back);
+
+//            const auto& texture = other_poly.getTextureFor("rgbTexture");
+//            std::string texture_path;
+//            if (texture == nullptr) {
+//                texture_path = std::string("");
+//            } else {
+//                // テクスチャパスを相対から絶対に変換
+//                texture_path = texture->getUrl();
+//                std::filesystem::path tpath = std::filesystem::u8path(texture_path);
+//                if (tpath.is_relative()) {
+//                    std::filesystem::path a_path = gml_path;
+//                    a_path = a_path.parent_path();
+//                    a_path /= tpath;
+//                    auto abs_path = std::filesystem::absolute(a_path);
+//
+//                    texture_path = abs_path.u8string();
+//                }
+//            }
+            // TODO ここは other_sub_meshesのうち1つだけしかコピーできていない。
+            //      だが実際には複数のsubmeshesもあり得る。すべてコピーすべき。
+            const auto& other_sub_meshes = other_mesh.getSubMeshes();
+            const auto& texture_path = other_sub_meshes[other_sub_meshes.size()-1].getTexturePath();
+            auto indices_size = other_mesh.getIndices().size();
             mesh.addSubMesh(texture_path, indices_size);
         }
 
@@ -171,14 +215,12 @@ namespace plateau::polygonMesh {
          * merge関数 のテクスチャ無し版です。
          * 生成される Mesh の SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
          */
-        void mergeWithoutTexture(Mesh& mesh, const Polygon& other_poly, const TVec2f& uv_2_element,
+        void mergeWithoutTexture(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element,
                                  const TVec2f& uv_3_element,
-                                 const GeoReference& geo_reference, bool invert_mesh_front_back,
-                                 bool remove_triangles_outside_extent, Extent extent) {
-            if (!isValidPolygon(other_poly)) return;
-            mergeShapeWithConvertCoords(mesh, other_poly, uv_2_element, uv_3_element, geo_reference,
-                                        invert_mesh_front_back, remove_triangles_outside_extent,
-                                        extent);
+                                 bool invert_mesh_front_back) {
+            if (!isValidMesh(other_mesh)) return;
+            mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
+                       invert_mesh_front_back);
             mesh.extendLastSubMesh();
 
         }
@@ -224,16 +266,16 @@ namespace plateau::polygonMesh {
                            const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
         bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_extract_options.mesh_axes);
+        auto other_mesh = plateauPolygonToMesh(other_poly, mesh_extract_options.exclude_triangles_outside_extent, gml_path, mesh_extract_options.extent, geo_reference);
         if (mesh_extract_options.export_appearance) {
-            mergeWithTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back,
-                             gml_path,
-                             mesh_extract_options.exclude_triangles_outside_extent,
-                             mesh_extract_options.extent);
+            mergeWithTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
         } else {
-            mergeWithoutTexture(mesh, other_poly, uv_2_element, uv_3_element, geo_reference, invert_mesh_front_back,
-                                mesh_extract_options.exclude_triangles_outside_extent,
-                                mesh_extract_options.extent);
+            mergeWithoutTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
         }
+    }
+
+    void MeshMerger::merge(Mesh& mesh, const Mesh& other_mesh){
+        // TODO
     }
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,

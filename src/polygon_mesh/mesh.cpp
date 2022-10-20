@@ -24,7 +24,7 @@ namespace plateau::polygonMesh {
         return vertices_;
     }
 
-    const std::vector<int>& Mesh::getIndices() const {
+    const std::vector<unsigned>& Mesh::getIndices() const {
         return indices_;
     }
 
@@ -58,6 +58,14 @@ namespace plateau::polygonMesh {
         }
     }
 
+    /**
+     * Indices を追加します。
+     * メッシュのマージ処理の流れについて
+     * [1]元のメッシュ　→　[2]頂点追加　→　[3]Indices追加 → [4]UV等追加
+     * のうち [3] をこの関数が担当します。
+     * 引数の prev_num_vertices には、[1]の段階の頂点数（頂点追加する前の頂点数がいくつであったか）を渡します。
+     * この値は、追加する indices の値のオフセットとなります。
+     */
     void Mesh::addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices,
                               bool invert_mesh_front_back) {
         auto prev_num_indices = indices_.size();
@@ -66,13 +74,14 @@ namespace plateau::polygonMesh {
             throw std::runtime_error("size of other_indices must be multiple of 3.");
         }
 
+        // TODO この2つの for は1つの forにまとめられるはず
         // インデックスリストの末尾に追加します。
-        for (unsigned int other_index: other_indices) {
-            indices_.push_back((int) other_index);
+        for (auto other_index: other_indices) {
+            indices_.push_back(other_index);
         }
         // 追加分のインデックスを新しい値にします。以前の頂点の数だけインデックスの数値を大きくすれば良いです。
         for (unsigned i = prev_num_indices; i < indices_.size(); i++) {
-            indices_.at(i) += (int) prev_num_vertices;
+            indices_.at(i) += (int)prev_num_vertices;
         }
 
         // メッシュを裏返すべきとき、次の方法で裏返します:

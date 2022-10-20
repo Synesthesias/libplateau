@@ -10,11 +10,12 @@ namespace PLATEAU.PolygonMesh
     ///
     /// 詳しくは <see cref="Model"/> クラスのコメントをご覧ください。
     /// </summary>
-    public class Mesh : PInvokeDisposable
+    public class Mesh
     {
-        public Mesh(IntPtr handle) : base(handle)
+        public IntPtr Handle { get; }
+        public Mesh(IntPtr handle)
         {
-            
+            Handle = handle;
         }
 
         public static Mesh Create(string meshID)
@@ -99,7 +100,13 @@ namespace PLATEAU.PolygonMesh
             return new SubMesh(subMeshPtr);
         }
 
-        protected override void DisposeNative()
+        /// <summary>
+        /// 取扱注意:
+        /// 通常は Model が廃棄されるときに C++側で Mesh も廃棄されるので、このメソッドを呼ぶ必要はありません。
+        /// Model に属さず、C#側で明示的に Create した Mesh のみ Dispose してください。
+        /// それ以外のタイミングで呼ぶとメモリ違反でUnityが落ちます。
+        /// </summary>
+        public void Dispose()
         {
             var result = NativeMethods.plateau_delete_mesh(Handle);
             DLLUtil.CheckDllError(result);
