@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
 
 namespace PLATEAU.Test.GeometryModel
@@ -42,6 +43,13 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual(numVert, numUV1);
             Assert.AreEqual(numVert, numUV2);
             Assert.AreEqual(numVert, numUV3);
+        }
+
+        [TestMethod]
+        public void CreateMesh()
+        {
+            using var mesh = Mesh.Create("testMesh");
+            Assert.AreEqual(0, mesh.VerticesCount);
         }
     }
 }

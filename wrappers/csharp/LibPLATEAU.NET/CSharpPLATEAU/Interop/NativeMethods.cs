@@ -101,7 +101,7 @@ namespace PLATEAU.Interop
 
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MeshConvertOptionsData
+    public struct MeshConvertOptionsData
     {
         public CoordinateSystem MeshAxes;
         public PlateauVector3d ReferencePoint;
@@ -828,6 +828,15 @@ namespace PLATEAU.Interop
         // ***************
         //  mesh_c.cpp
         // ***************
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_mesh(
+            out IntPtr newMeshPtr,
+            string meshID);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_mesh(
+            [In] IntPtr handle);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_get_vertices_count(

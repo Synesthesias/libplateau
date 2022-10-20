@@ -5,10 +5,24 @@ using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C"{
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_mesh(
+        Mesh** out_mesh_ptr,
+        const char* mesh_id
+) {
+    *out_mesh_ptr = new Mesh(std::string(mesh_id));
+    return APIResult::Success;
+}
+
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_mesh(const Mesh* mesh){
+    delete mesh;
+    return APIResult::Success;
+}
+
+
     DLL_VALUE_FUNC(plateau_mesh_get_vertices_count,
-                   Mesh,
-                   int,
-                   handle->getVertices().size())
+                       Mesh,
+                       int,
+                       handle->getVertices().size())
 
     DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_vertex_at_index,
                                     Mesh,
