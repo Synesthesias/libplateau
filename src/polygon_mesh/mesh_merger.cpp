@@ -1,4 +1,4 @@
-#include "mesh_merger.h"
+#include <plateau/polygon_mesh/mesh_merger.h>
 #include "citygml/texture.h"
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>

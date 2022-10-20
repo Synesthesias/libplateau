@@ -1,7 +1,7 @@
 #include "grid_merger.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
 #include "plateau/mesh_writer/obj_writer.h"
-#include "mesh_merger.h"
+#include <plateau/polygon_mesh/mesh_merger.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 namespace plateau::polygonMesh {

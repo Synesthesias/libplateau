@@ -38,6 +38,7 @@ add_library(c_wrapper OBJECT
   "mesh_extract_options_c.cpp"
   "gltf_writer_c.cpp" 
   "obj_writer_c.cpp"
+  "mesh_merger_c.cpp"
   )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
