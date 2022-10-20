@@ -255,17 +255,21 @@ namespace plateau::polygonMesh {
                            const GeoReference& geo_reference, const TVec2f& uv_2_element,
                            const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
-        bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_extract_options.mesh_axes);
         auto other_mesh = plateauPolygonToMesh(other_poly, mesh_extract_options.exclude_triangles_outside_extent, gml_path, mesh_extract_options.extent, geo_reference);
-        if (mesh_extract_options.export_appearance) {
-            mergeWithTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
-        } else {
-            mergeWithoutTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
-        }
+        merge(mesh, other_mesh, mesh_extract_options.mesh_axes, mesh_extract_options.export_appearance,
+              uv_2_element, uv_3_element);
     }
 
-    void MeshMerger::merge(Mesh& mesh, const Mesh& other_mesh){
-        // TODO
+    void MeshMerger::merge(Mesh& mesh, const Mesh& other_mesh, CoordinateSystem mesh_axes, bool include_textures,
+                           const TVec2f& uv_2_element, const TVec2f& uv_3_element){
+        if(!isValidMesh(other_mesh)) return;
+        bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_axes);
+        if(include_textures){
+            mergeWithTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
+        }else{
+            mergeWithoutTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
+        }
+
     }
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,

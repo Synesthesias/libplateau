@@ -28,10 +28,10 @@ namespace plateau::polygonMesh {
                           const TVec2f& uv_3_element, const std::string& gml_path);
 
         /**
-         * 上の merge 関数は Mesh に citygml::Polygon を加えるのに対して、
-         * この merge 関数は Mesh に Mesh を加えます。
+         * Mesh に Polygon をマージする代わりに Mesh をマージする版です。
          */
-        static void merge(Mesh& mesh, const Mesh& other_mesh);
+        static void merge(Mesh& mesh, const Mesh& other_mesh, plateau::geometry::CoordinateSystem mesh_axes, bool include_textures,
+                          const TVec2f& uv_2_element, const TVec2f& uv_3_element);
 
         /**
          * merge関数を 引数 city_object_ の各 Polygon に対して実行します。
