@@ -251,17 +251,17 @@ namespace plateau::polygonMesh {
         }
     } // merge で使う無名名前空間関数
 
-    void MeshMerger::merge(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
-                           const GeoReference& geo_reference, const TVec2f& uv_2_element,
-                           const TVec2f& uv_3_element, const std::string& gml_path) {
+    void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
+                                  const GeoReference& geo_reference, const TVec2f& uv_2_element,
+                                  const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
         auto other_mesh = plateauPolygonToMesh(other_poly, mesh_extract_options.exclude_triangles_outside_extent, gml_path, mesh_extract_options.extent, geo_reference);
-        merge(mesh, other_mesh, mesh_extract_options.mesh_axes, mesh_extract_options.export_appearance,
-              uv_2_element, uv_3_element);
+        mergeMesh(mesh, other_mesh, mesh_extract_options.mesh_axes, mesh_extract_options.export_appearance,
+                  uv_2_element, uv_3_element);
     }
 
-    void MeshMerger::merge(Mesh& mesh, const Mesh& other_mesh, CoordinateSystem mesh_axes, bool include_textures,
-                           const TVec2f& uv_2_element, const TVec2f& uv_3_element){
+    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, CoordinateSystem mesh_axes, bool include_textures,
+                               const TVec2f& uv_2_element, const TVec2f& uv_3_element){
         if(!isValidMesh(other_mesh)) return;
         bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_axes);
         if(include_textures){
@@ -277,7 +277,8 @@ namespace plateau::polygonMesh {
                                                const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
         auto polygons = findAllPolygons(city_object, lod);
         for (auto poly: polygons) {
-            MeshMerger::merge(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element,
+                                     gml_path);
         }
     }
 
