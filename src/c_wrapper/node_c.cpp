@@ -5,6 +5,21 @@ using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C" {
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_node(
+        Node** out_node_ptr,
+        char* id
+){
+    *out_node_ptr = new Node(std::string(id));
+    return APIResult::Success;
+}
+
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
+        Node* node_ptr
+){
+    delete node_ptr;
+    return APIResult::Success;
+}
+
     DLL_STRING_PTR_FUNC(plateau_node_get_name,
                         Node,
                         handle->getName())
@@ -36,4 +51,20 @@ extern "C" {
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
+
+    /**
+     * Node に Mesh をセットします。
+     * 取扱注意:
+     * std::move により Mesh を移動するので、前の Mesh は利用不可になります。
+     */
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_set_mesh_by_std_move(
+            Node* node,
+            Mesh* mesh
+            ){
+    API_TRY{
+        node->setMesh(std::move(*mesh));
+        return APIResult::Success;
+    }API_CATCH;
+    return APIResult::ErrorUnknown;
+}
 }

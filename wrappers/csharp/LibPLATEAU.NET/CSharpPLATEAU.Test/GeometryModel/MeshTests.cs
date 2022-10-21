@@ -80,28 +80,11 @@ namespace PLATEAU.Test.GeometryModel
         }
 
         [TestMethod]
-        public void MergeMeshData_Works()
+        public void MergeMeshData_From_Empty_Mesh()
         {
             var mesh = Mesh.Create("testMesh");
-            mesh.MergeMeshInfo(
-                new []
-                {
-                    new PlateauVector3d(11, 12, 13),
-                    new PlateauVector3d(21, 22, 23),
-                    new PlateauVector3d(31, 32, 33)
-                },
-                new uint[]
-                {
-                    0, 1, 2
-                },
-                new PlateauVector2f[]
-                {
-                    new PlateauVector2f(1.1f, 1.2f),
-                    new PlateauVector2f(2.1f, 2.2f),
-                    new PlateauVector2f(3.1f, 3.2f)
-                },
-                CoordinateSystem.ENU, true
-            );
+            SimpleMeshInfo(out var vertices, out var indices, out var uv1);
+            mesh.MergeMeshInfo(vertices, indices, uv1, CoordinateSystem.ENU, true);
             Assert.AreEqual(3, mesh.GetUv1().Length);
             Assert.AreEqual(33, mesh.GetVertexAt(2).Z);
             Assert.AreEqual(2, mesh.GetIndiceAt(2));
@@ -109,5 +92,26 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual(3.2f, mesh.GetUv1()[2].Y);
             
         }
+
+        public static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices, out PlateauVector2f[] uv1)
+        {
+            vertices = new[]
+            {
+                new PlateauVector3d(11, 12, 13),
+                new PlateauVector3d(21, 22, 23),
+                new PlateauVector3d(31, 32, 33)
+            };
+            indices = new uint[]
+            {
+                0, 1, 2
+            };
+            uv1 = new[]
+            {
+                new PlateauVector2f(1.1f, 1.2f),
+                new PlateauVector2f(2.1f, 2.2f),
+                new PlateauVector2f(3.1f, 3.2f)
+            };
+        }
+        
     }
 }

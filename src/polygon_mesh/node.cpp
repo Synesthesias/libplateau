@@ -11,12 +11,12 @@ namespace plateau::polygonMesh {
     Node::Node(std::string name, Mesh&& mesh) :
             name_(std::move(name)),
             child_nodes_(),
-            mesh_(std::forward<Mesh>(mesh)) {}
+            mesh_(std::move(mesh)) {}
 
     Node::Node(std::string name, std::optional<Mesh>&& optional_mesh) :
             name_(std::move(name)),
             child_nodes_(),
-            mesh_(std::forward<std::optional<Mesh>>(optional_mesh)) {}
+            mesh_(std::move(optional_mesh)) {}
 
     void Node::addChildNode(Node&& node) {
         child_nodes_.push_back(std::forward<Node>(node));
@@ -28,6 +28,10 @@ namespace plateau::polygonMesh {
 
     std::optional<Mesh>& Node::getMesh() {
         return mesh_;
+    }
+
+    void Node::setMesh(Mesh&& mesh) {
+        mesh_ = std::optional<Mesh>(std::move(mesh));
     }
 
     const std::optional<Mesh>& Node::getMesh() const {
