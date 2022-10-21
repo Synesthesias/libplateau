@@ -90,12 +90,16 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
+## openssl
+add_subdirectory("3rdparty/openssl-cmake")
+
 # libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 add_subdirectory("examples/export_gltf")
+add_subdirectory("examples/https_mock_test")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
