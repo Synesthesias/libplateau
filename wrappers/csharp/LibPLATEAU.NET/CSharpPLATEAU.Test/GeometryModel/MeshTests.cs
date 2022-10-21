@@ -82,9 +82,7 @@ namespace PLATEAU.Test.GeometryModel
         [TestMethod]
         public void MergeMeshData_From_Empty_Mesh()
         {
-            var mesh = Mesh.Create("testMesh");
-            SimpleMeshInfo(out var vertices, out var indices, out var uv1);
-            mesh.MergeMeshInfo(vertices, indices, uv1, CoordinateSystem.ENU, true);
+            var mesh = CreateSimpleMesh();
             Assert.AreEqual(3, mesh.GetUv1().Length);
             Assert.AreEqual(33, mesh.GetVertexAt(2).Z);
             Assert.AreEqual(2, mesh.GetIndiceAt(2));
@@ -93,7 +91,24 @@ namespace PLATEAU.Test.GeometryModel
             
         }
 
-        public static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices, out PlateauVector2f[] uv1)
+        [TestMethod]
+        public void AddSubMesh()
+        {
+            var mesh = CreateSimpleMesh();
+            mesh.AddSubMesh("test.png", 0, 2);
+            var subMesh = mesh.GetSubMeshAt(0);
+            Assert.AreEqual("test.png", subMesh.TexturePath);
+        }
+
+        private static Mesh CreateSimpleMesh()
+        {
+            var mesh = Mesh.Create("testMesh");
+            SimpleMeshInfo(out var vertices, out var indices, out var uv1);
+            mesh.MergeMeshInfo(vertices, indices, uv1, CoordinateSystem.ENU, true);
+            return mesh;
+        }
+        
+        private static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices, out PlateauVector2f[] uv1)
         {
             vertices = new[]
             {

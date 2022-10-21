@@ -53,6 +53,19 @@ extern "C"{
                  &handle->getSubMeshes().at(index),
                  index >= handle->getSubMeshes().size())
 
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_add_sub_mesh(
+            Mesh* mesh,
+            char* texture_path,
+            int sub_mesh_start_index,
+            int sub_mesh_end_index
+    ) {
+        API_TRY {
+            mesh->addSubMesh(std::string(texture_path), sub_mesh_start_index, sub_mesh_end_index);
+            return APIResult::Success;
+        } API_CATCH
+        return APIResult::ErrorUnknown;
+    }
+
 
 
     /**
