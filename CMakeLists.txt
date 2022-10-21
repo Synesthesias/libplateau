@@ -94,12 +94,16 @@ set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTF
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
+## openssl
+add_subdirectory("3rdparty/openssl-cmake")
+
 # libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 add_subdirectory("examples/export_gltf")
+add_subdirectory("examples/https_mock_test")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
