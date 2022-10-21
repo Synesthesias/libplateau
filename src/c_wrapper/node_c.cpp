@@ -60,11 +60,26 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_set_mesh_by_std_move(
             Node* node,
             Mesh* mesh
+            ) {
+        API_TRY {
+            node->setMesh(std::move(*mesh));
+            return APIResult::Success;
+        } API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    /**
+     * 取扱注意:
+     * move するので、 前の child_node は利用不可になります。
+     */
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_add_child_node_by_std_move(
+            Node* node,
+            Node* child_node
             ){
-    API_TRY{
-        node->setMesh(std::move(*mesh));
-        return APIResult::Success;
-    }API_CATCH;
-    return APIResult::ErrorUnknown;
-}
+        API_TRY{
+            node->addChildNode(std::move(*child_node));
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
 }

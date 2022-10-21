@@ -105,6 +105,20 @@ namespace PLATEAU.PolygonMesh
             mesh.MarkInvalid();
         }
 
+        /// <summary>
+        /// 子ノードを追加します。
+        /// 取扱注意:
+        /// C++の move によって <see cref="Node"/> を移動するので、
+        /// 実行後は元の <see cref="Node"/> は利用不可になります。
+        /// </summary>
+        public void AddChildNodeByCppMove(Node node)
+        {
+            var result = NativeMethods.plateau_node_add_child_node_by_std_move(
+                Handle, node.Handle);
+            DLLUtil.CheckDllError(result);
+            node.MarkInvalid();
+        }
+
         public void MarkInvalid()
         {
             this.isValid = false;

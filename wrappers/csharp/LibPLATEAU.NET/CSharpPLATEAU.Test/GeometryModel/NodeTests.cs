@@ -35,5 +35,15 @@ namespace PLATEAU.Test.GeometryModel
             node.SetMeshByCppMove(mesh);
             Assert.ThrowsException<Exception>(() => mesh.VerticesCount, "MeshをMoveしたあと、Meshの情報にアクセスできない");
         }
+
+        [TestMethod]
+        public void AddChildNode()
+        {
+            var parent = Node.Create("parent");
+            var child = Node.Create("child");
+            parent.AddChildNodeByCppMove(child);
+            Assert.AreEqual("child", parent.GetChildAt(0).Name, "子が追加されます。");
+            Assert.ThrowsException<Exception>(() => child.Name, "move後は利用不可になります。");
+        }
     }
 }

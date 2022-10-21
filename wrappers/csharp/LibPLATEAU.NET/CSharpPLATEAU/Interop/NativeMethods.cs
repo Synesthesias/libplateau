@@ -977,6 +977,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_node_set_mesh_by_std_move(
             [In] IntPtr nodePtr,
             [In] IntPtr meshPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_node_add_child_node_by_std_move(
+            [In] IntPtr nodePtr,
+            [In] IntPtr childNodePtr);
 
         // ***************
         //  geometry_utils_c.cpp
