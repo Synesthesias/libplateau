@@ -1,28 +1,36 @@
 #include <plateau/basemap/VectorTileDownloader.h>
+#include <plateau/basemap/TileProjection.h>
+
 #include <httplib.h>
+#include  <filesystem>
+#include <fstream>
 
 
-VectorTile VectorTileDownloader::download(
-    std::string uri,
+VectorTileDownloader::VectorTileDownloader(std::string uri){
+    uri_ = uri;
+}
+
+std::shared_ptr <VectorTile> VectorTileDownloader::download(
+    std::string destination,
     TileCoordinate coordinate
 ) {
-    VectorTile vector_tile;
-    vector_tile.coordinate = coordinate;
+    auto vector_tile = std::make_shared<VectorTile>();
+    vector_tile->coordinate = coordinate;
 
     //URI編集
     int first = 0;
-    int last = uri.find_first_of('/');
+    int last = uri_.find_first_of('/');
     std::vector<std::string> strs;
 
-    while (first < uri.size()) {
-        std::string subStr(uri, first, last - first);
+    while (first < uri_.size()) {
+        std::string subStr(uri_, first, last - first);
         strs.push_back(subStr);
 
         first = last + 1;
-        last = uri.find_first_of('/', first);
+        last = uri_.find_first_of('/', first);
 
         if (last == std::string::npos) {
-            last = uri.size();
+            last = uri_.size();
         }
     }
 
@@ -31,7 +39,6 @@ VectorTile VectorTileDownloader::download(
 
 
     httplib::Client client(host);
-
     std::string body;
     auto result = client.Get(
         path, httplib::Headers(),
@@ -42,7 +49,24 @@ VectorTile VectorTileDownloader::download(
             body.append(data, data_length);
             return true; // return 'false' if you want to cancel the request.
         });
-    vector_tile.image = body;
+
+    std::string extension = ".png";
+    std::string foldPath = destination + "\\" + std::to_string(coordinate.zoom_level) + "\\"
+        + std::to_string(coordinate.column);
+    std::filesystem::create_directories(foldPath);
+    std::string filePath = foldPath + "\\" + std::to_string(coordinate.row) + extension;
+    std::fstream fs(filePath, std::ios::out | std::ios::binary | std::ios::trunc);
+    fs.write(body.c_str(), body.length());
+
+    vector_tile->image_path = filePath;
 
     return vector_tile;
+}
+
+const char* VectorTileDownloader::getUri() {
+    return uri_.c_str();
+}
+
+void VectorTileDownloader::setUri(char* uri) {
+    uri_ = uri;
 }

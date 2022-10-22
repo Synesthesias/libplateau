@@ -1,20 +1,20 @@
 #include <gtest/gtest.h>
 
-#include <plateau/basemap/VectorTileLoader.h>
-#include <fstream>
+#include <plateau/basemap/VectorTileDownloader.h>
+#include <plateau/basemap/TileProjection.h>
+
 
 class VectorTileTest : public ::testing::Test {
 protected:
 };
 
 TEST_F(VectorTileTest, VectorTileTest) {
-    VectorTileLoader loader;
-    plateau::geometry::GeoCoordinate min(35, 137, 0);
-    plateau::geometry::GeoCoordinate max(35.1, 137.1, 0);
+    plateau::geometry::GeoCoordinate min(35.5335751, 139.7755041, -10000);
+    plateau::geometry::GeoCoordinate max(35.54136964, 139.78712557, 10000);
     plateau::geometry::Extent extent(min, max);
 
-    auto vectorTiles = loader.load(extent);
+    TileProjection tileProjection;
+    auto tileCoordinates = tileProjection.getTileCoordinates(extent, 15);
 
-    ASSERT_EQ(vectorTiles->size(), 120);
+    ASSERT_EQ(tileCoordinates->size(), 4);
 }
-
