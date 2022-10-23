@@ -3,13 +3,14 @@
 
 #include <citygml/citygml.h>
 #include <libplateau_api.h>
-
-#include <GLTFSDK/GLTF.h>
-#include <GLTFSDK/BufferBuilder.h>
-#include <GLTFSDK/GLTFResourceWriter.h>
-
 #include <plateau/polygon_mesh/mesh_extractor.h>
 
+namespace Microsoft::glTF {
+    struct Scene;
+    struct Mesh;
+    class Document;
+    class BufferBuilder;
+}
 
 namespace plateau::meshWriter {
     /**
@@ -44,10 +45,7 @@ namespace plateau::meshWriter {
 
     class LIBPLATEAU_EXPORT GltfWriter {
     public:
-        GltfWriter() :
-            image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(), mesh_(),
-            material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
-        }
+        GltfWriter();
 
         bool write(const std::string& destination, const plateau::polygonMesh::Model& model, GltfWriteOptions options);
 
@@ -58,8 +56,8 @@ namespace plateau::meshWriter {
         void writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder);
 
         std::map<std::string, std::string> required_materials_;
-        Microsoft::glTF::Scene scene_;
-        Microsoft::glTF::Mesh mesh_;
+        std::unique_ptr<Microsoft::glTF::Scene> scene_;
+        std::unique_ptr<Microsoft::glTF::Mesh> mesh_;
         std::string node_name_;
         int image_id_num_, texture_id_num_;
         std::map<std::string, std::string> material_ids_;

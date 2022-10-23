@@ -19,6 +19,9 @@
 #include <GLTFSDK/GLBResourceWriter.h>
 #include <GLTFSDK/IStreamWriter.h>
 #include <GLTFSDK/Serialize.h>
+#include <GLTFSDK/GLTF.h>
+#include <GLTFSDK/BufferBuilder.h>
+
 
 namespace fs = std::filesystem;
 namespace gltf = Microsoft::glTF;
@@ -77,6 +80,10 @@ namespace {
 }
 
 namespace plateau::meshWriter {
+    GltfWriter::GltfWriter() :
+        image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(new gltf::Scene), mesh_(new gltf::Mesh),
+        material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
+    }
 
     bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options){
 
@@ -84,8 +91,8 @@ namespace plateau::meshWriter {
         node_name_ = "";
         image_id_num_ = 0;
         texture_id_num_ = 0;
-        scene_.nodes.clear();
-        mesh_.primitives.clear();
+        scene_->nodes.clear();
+        mesh_->primitives.clear();
         material_ids_.clear();
         options_ = options;
 
@@ -144,7 +151,7 @@ namespace plateau::meshWriter {
             }
         }
 
-        document.SetDefaultScene(std::move(scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
+        document.SetDefaultScene(std::move(*scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
         bufferBuilder.Output(document);
         std::string manifest;
 
@@ -254,17 +261,17 @@ namespace plateau::meshWriter {
         meshPrimitive.attributes[gltf::ACCESSOR_POSITION] = accessorIdPositions;
         if (accessorIdTexCoords != "") meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
 
-        mesh_.primitives.push_back(meshPrimitive);
+        mesh_->primitives.push_back(meshPrimitive);
     }
 
     void GltfWriter::writeNode(gltf::Document& document) {
-        auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+        auto meshId = document.meshes.Append(*mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         gltf::Node node;
         node.meshId = meshId;
         node.name = node_name_;
         auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-        scene_.nodes.push_back(nodeId);
-        mesh_.primitives.clear();
+        scene_->nodes.push_back(nodeId);
+        mesh_->primitives.clear();
     }
 
     std::string GltfWriter::writeMaterialReference(std::string texture_url, gltf::Document& document) {
