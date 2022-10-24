@@ -39,6 +39,7 @@ namespace plateau::meshWriter {
     class LIBPLATEAU_EXPORT GltfWriter {
     public:
         GltfWriter();
+        ~GltfWriter();
 
         bool write(const std::string& destination, const plateau::polygonMesh::Model& model, GltfWriteOptions options);
 

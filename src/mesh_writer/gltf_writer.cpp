@@ -104,6 +104,9 @@ namespace plateau::meshWriter {
     GltfWriter::GltfWriter() : pimpl(new impl) {
     }
 
+    GltfWriter::~GltfWriter() {
+    }
+
     bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options) {
 
         pimpl->required_materials_.clear();
