@@ -20,9 +20,14 @@ namespace plateau::polygonMesh {
     Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes) :
             Mesh(id)
     {
-        vertices_.insert(vertices_.end(), vertices.begin(), vertices.end());
-        indices_.insert(indices_.end(), indices.begin(), indices.end());
-        uv1_.insert(uv1_.end(), uv_1.begin(), uv_1.end());
+//        vertices_.insert(vertices_.end(), vertices.begin(), vertices.end());
+//        indices_.insert(indices_.end(), indices.begin(), indices.end());
+//        uv1_.insert(uv1_.end(), uv_1.begin(), uv_1.end());
+        vertices_ = vertices;
+        indices_ = indices;
+        uv1_ = uv_1;
+        uv2_ = UV();
+        uv3_ = UV();
         for(int i=0; i<vertices_.size(); i++){
             uv2_.emplace_back(0,0);
             uv3_.emplace_back(0, 0);
