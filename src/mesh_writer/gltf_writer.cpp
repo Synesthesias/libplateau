@@ -80,21 +80,40 @@ namespace {
 }
 
 namespace plateau::meshWriter {
-    GltfWriter::GltfWriter() :
-        image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(new gltf::Scene), mesh_(new gltf::Mesh),
-        material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
+    class GltfWriter::impl {
+    public:
+        impl() : image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(), mesh_(),
+            material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
+        }
+
+        void precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
+        std::string writeMaterialReference(std::string texUrl, Microsoft::glTF::Document& document);
+        void writeNode(Microsoft::glTF::Document& document);
+        void writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder);
+
+        Microsoft::glTF::Scene scene_;
+        Microsoft::glTF::Mesh mesh_;
+        std::map<std::string, std::string> required_materials_;
+        std::string node_name_;
+        int image_id_num_, texture_id_num_;
+        std::map<std::string, std::string> material_ids_;
+        std::string default_material_id_, current_material_id_;
+        GltfWriteOptions options_;
+    };
+
+    GltfWriter::GltfWriter() : pimpl(new impl) {
     }
 
-    bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options){
+    bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options) {
 
-        required_materials_.clear();
-        node_name_ = "";
-        image_id_num_ = 0;
-        texture_id_num_ = 0;
-        scene_->nodes.clear();
-        mesh_->primitives.clear();
-        material_ids_.clear();
-        options_ = options;
+        pimpl->required_materials_.clear();
+        pimpl->node_name_ = "";
+        pimpl->image_id_num_ = 0;
+        pimpl->texture_id_num_ = 0;
+        pimpl->scene_.nodes.clear();
+        pimpl->mesh_.primitives.clear();
+        pimpl->material_ids_.clear();
+        pimpl->options_ = options;
 
         std::filesystem::path path = gltf_file_path;
         if (path.is_relative()) {
@@ -140,18 +159,18 @@ namespace plateau::meshWriter {
         material.metallicRoughness.baseColorFactor = gltf::Color4(0.5f, 0.5f, 0.5f, 1.0f);
         material.metallicRoughness.metallicFactor = 0.0f;
         material.metallicRoughness.roughnessFactor = 1.0f;
-        default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+        pimpl->default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
 
         auto& root_node = model.getRootNodeAt(0);
         auto num_root_child = root_node.getChildCount();
         if (0 < num_root_child) {
             for (int lod = 0; lod < num_root_child; lod++) {
                 auto& lod_node = root_node.getChildAt(lod);
-                precessNodeRecursive(lod_node, document, bufferBuilder);
+                pimpl->precessNodeRecursive(lod_node, document, bufferBuilder);
             }
         }
 
-        document.SetDefaultScene(std::move(*scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
+        document.SetDefaultScene(std::move(pimpl->scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
         bufferBuilder.Output(document);
         std::string manifest;
 
@@ -176,14 +195,14 @@ namespace plateau::meshWriter {
         }
 
         // テクスチャファイルコピー
-        for (const auto& [_, texture_url] : required_materials_) {
+        for (const auto& [_, texture_url] : pimpl->required_materials_) {
             copyTexture(fs::absolute(path).u8string(), texture_url, options);
         }
 
         return true;
     }
 
-    void GltfWriter::precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void GltfWriter::impl::precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
 
         node_name_ = node.getName();
 
@@ -254,27 +273,27 @@ namespace plateau::meshWriter {
         }
     }
 
-    void GltfWriter::writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void GltfWriter::impl::writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder) {
         gltf::MeshPrimitive meshPrimitive;
         meshPrimitive.materialId = current_material_id_;
         meshPrimitive.indicesAccessorId = accessorIdIndices;
         meshPrimitive.attributes[gltf::ACCESSOR_POSITION] = accessorIdPositions;
         if (accessorIdTexCoords != "") meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
 
-        mesh_->primitives.push_back(meshPrimitive);
+        mesh_.primitives.push_back(meshPrimitive);
     }
 
-    void GltfWriter::writeNode(gltf::Document& document) {
-        auto meshId = document.meshes.Append(*mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+    void GltfWriter::impl::writeNode(gltf::Document& document) {
+        auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         gltf::Node node;
         node.meshId = meshId;
         node.name = node_name_;
         auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-        scene_->nodes.push_back(nodeId);
-        mesh_->primitives.clear();
+        scene_.nodes.push_back(nodeId);
+        mesh_.primitives.clear();
     }
 
-    std::string GltfWriter::writeMaterialReference(std::string texture_url, gltf::Document& document) {
+    std::string GltfWriter::impl::writeMaterialReference(std::string texture_url, gltf::Document& document) {
         // マテリアル名はテクスチャファイル名(拡張子抜き)
         const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
         const bool material_exists = required_materials_.find(material_name) != required_materials_.end();
