@@ -31,6 +31,8 @@ extern "C" {
             int indices_count,
             TVec2f* uv_1_array,
             int uv_1_count,
+            SubMesh** sub_mesh_pointers_array,
+            int sub_mesh_count,
             CoordinateSystem mesh_axes,
             bool include_texture
     ) {
@@ -38,9 +40,16 @@ extern "C" {
             auto vertices = std::vector<TVec3d>(vertices_array, vertices_array + vertices_count);
             auto indices = std::vector<unsigned>(indices_array, indices_array + indices_count);
             auto uv_1 = std::vector<TVec2f>(uv_1_array, uv_1_array + uv_1_count);
+
+            auto sub_meshes = std::vector<SubMesh>();
+            for(int i=0; i<sub_mesh_count; i++){
+                SubMesh* sub_mesh_ptr = *(sub_mesh_pointers_array + i);
+                sub_meshes.push_back(*(sub_mesh_ptr));
+            }
+
             MeshMerger::mergeMeshInfo(*mesh,
                                       std::move(vertices), std::move(indices), std::move(uv_1),
-                                      mesh_axes, include_texture);
+                                      std::move(sub_meshes), mesh_axes, include_texture);
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

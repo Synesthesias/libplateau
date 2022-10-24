@@ -67,6 +67,9 @@ TEST_F(MeshMergerTest, mesh_merger_info){
     std::vector<TVec2f> uv_1 = {TVec2f(0.11, 0.12),
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32)};
+    std::vector<SubMesh> sub_meshes = {
+            SubMesh(0, 2, "")
+    };
     auto mesh = Mesh("testMesh");
     // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
 //    MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
@@ -76,6 +79,7 @@ TEST_F(MeshMergerTest, mesh_merger_info){
             vertices.data(), vertices.size(),
             indices.data(), indices.size(),
             uv_1.data(), uv_1.size(),
+            sub_meshes.data(), sub_meshes.size(),
             CoordinateSystem::ENU, true
             );
     ASSERT_EQ(33, mesh.getVertices().at(2).z);

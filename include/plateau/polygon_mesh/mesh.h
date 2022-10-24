@@ -31,7 +31,7 @@ namespace plateau::polygonMesh {
         
     public:
         explicit Mesh(const std::string& id);
-        Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1 );
+        Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes);
 
         /// コピーを禁止します。
         Mesh(const Mesh& mesh) = delete;

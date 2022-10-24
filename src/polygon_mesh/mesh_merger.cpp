@@ -274,8 +274,9 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::mergeMeshInfo(Mesh& mesh,
                                    std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+                                   std::vector<SubMesh>&& sub_meshes,
                                    CoordinateSystem mesh_axes, bool include_texture){
-        auto other_mesh = Mesh("", std::move(vertices), std::move(indices), std::move(uv_1));
+        auto other_mesh = Mesh("", std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes));
         mergeMesh(mesh, other_mesh, mesh_axes, include_texture, TVec2f(0, 0), TVec2f(0, 0));
     }
 

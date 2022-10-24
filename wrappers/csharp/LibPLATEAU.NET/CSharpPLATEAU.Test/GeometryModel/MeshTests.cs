@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NuGet.Frameworks;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
@@ -96,19 +95,20 @@ namespace PLATEAU.Test.GeometryModel
         {
             var mesh = CreateSimpleMesh();
             mesh.AddSubMesh("test.png", 0, 2);
-            var subMesh = mesh.GetSubMeshAt(0);
+            var subMesh = mesh.GetSubMeshAt(1);
             Assert.AreEqual("test.png", subMesh.TexturePath);
         }
 
         private static Mesh CreateSimpleMesh()
         {
             var mesh = Mesh.Create("testMesh");
-            SimpleMeshInfo(out var vertices, out var indices, out var uv1);
-            mesh.MergeMeshInfo(vertices, indices, uv1, CoordinateSystem.ENU, true);
+            SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
+            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.ENU, true);
             return mesh;
         }
-        
-        private static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices, out PlateauVector2f[] uv1)
+
+        private static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices,
+            out PlateauVector2f[] uv1, out SubMesh[] subMeshes)
         {
             vertices = new[]
             {
@@ -125,6 +125,10 @@ namespace PLATEAU.Test.GeometryModel
                 new PlateauVector2f(1.1f, 1.2f),
                 new PlateauVector2f(2.1f, 2.2f),
                 new PlateauVector2f(3.1f, 3.2f)
+            };
+            subMeshes = new[]
+            {
+                SubMesh.Create(0, 2, "testTexturePath.png")
             };
         }
         

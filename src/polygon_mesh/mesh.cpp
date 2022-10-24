@@ -17,7 +17,7 @@ namespace plateau::polygonMesh {
             sub_meshes_() {
     }
 
-    Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1) :
+    Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes) :
             Mesh(id)
     {
         vertices_.insert(vertices_.end(), vertices.begin(), vertices.end());
@@ -27,6 +27,7 @@ namespace plateau::polygonMesh {
             uv2_.emplace_back(0,0);
             uv3_.emplace_back(0, 0);
         }
+        sub_meshes_ = sub_meshes;
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {

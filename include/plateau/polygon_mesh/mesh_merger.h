@@ -37,7 +37,7 @@ namespace plateau::polygonMesh {
          * Mesh に Polygon をマージする代わりに、データ配列を直接 move で渡す版です。
          */
         static void mergeMeshInfo(Mesh& mesh,
-                                  std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+                                  std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes,
                                   plateau::geometry::CoordinateSystem mesh_axes, bool include_texture);
 
         /**

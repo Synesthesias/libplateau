@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
 using PLATEAU.Interop;
 using PLATEAU.Util;
 
@@ -14,11 +11,11 @@ namespace PLATEAU.PolygonMesh
     /// </summary>
     public class SubMesh
     {
-        private IntPtr handle;
+        public IntPtr Handle { get; }
         private bool isValid = true;
         public SubMesh(IntPtr handle)
         {
-            this.handle = handle;
+            this.Handle = handle;
         }
 
         public static SubMesh Create(int startIndex, int endIndex, string texturePath)
@@ -34,7 +31,7 @@ namespace PLATEAU.PolygonMesh
             get
             {
                 ThrowIfInvalid();
-                int startIndex = DLLUtil.GetNativeValue<int>(this.handle,
+                int startIndex = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_sub_mesh_get_start_index);
                 return startIndex;
             }
@@ -45,7 +42,7 @@ namespace PLATEAU.PolygonMesh
             get
             {
                 ThrowIfInvalid();
-                int endIndex = DLLUtil.GetNativeValue<int>(this.handle,
+                int endIndex = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_sub_mesh_get_end_index);
                 return endIndex;
             }
@@ -56,7 +53,7 @@ namespace PLATEAU.PolygonMesh
             get
             {
                 ThrowIfInvalid();
-                string path = DLLUtil.GetNativeString(this.handle,
+                string path = DLLUtil.GetNativeString(Handle,
                     NativeMethods.plateau_sub_mesh_get_texture_path);
                 return path;
             }
@@ -64,15 +61,15 @@ namespace PLATEAU.PolygonMesh
 
         /// <summary>
         /// 取扱注意:
-        /// 通常は <see cref="Model"/> が廃棄されるときに C++側で <see cref="SubMesh"/> も廃棄されるので、
+        /// 通常は <see cref="Mesh"/> が廃棄されるときに C++側で <see cref="SubMesh"/> も廃棄されるので、
         /// このメソッドを呼ぶ必要はありません。
-        /// Model に属さず、C#側で明示的に Create した SubMesh のみ Dispose してください。
+        /// <see cref="Mesh"/> に属さず、C#側で明示的に Create した <see cref="SubMesh"/> のみ <see cref="Dispose"/> してください。
         /// それ以外のタイミングで呼ぶとメモリ違反でUnityが落ちます。
         /// </summary>
         public void Dispose()
         {
             ThrowIfInvalid();
-            var result = NativeMethods.plateau_delete_sub_mesh(this.handle);
+            var result = NativeMethods.plateau_delete_sub_mesh(Handle);
             DLLUtil.CheckDllError(result);
             this.isValid = false;
         }

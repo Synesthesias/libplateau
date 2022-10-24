@@ -1257,6 +1257,8 @@ namespace PLATEAU.Interop
             int indicesCount,
             [In] PlateauVector2f[] uv1,
             int uv1Count,
+            [In] IntPtr[] subMeshPointers,
+            int subMeshCount,
             CoordinateSystem meshAxes,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
     }
