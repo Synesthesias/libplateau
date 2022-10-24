@@ -1,8 +1,6 @@
 #pragma once
 
-#include <httplib.h>
 #include <memory>
-#include <vector>
 #include <libplateau_api.h>
 #include "plateau/geometry/geo_coordinate.h"
 
