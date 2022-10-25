@@ -19,7 +19,7 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(tileCoordinates->size(), 4);
 
     VectorTileDownloader downloader("http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png");
-    std::string destination = "../../../../sampleFigure";
+    std::string destination = "./Basemap";
     auto tile = downloader.download(destination.c_str(), tileCoordinates->front());
 
     ASSERT_EQ(tile->coordinate.zoom_level, 15);
