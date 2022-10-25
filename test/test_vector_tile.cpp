@@ -17,4 +17,14 @@ TEST_F(VectorTileTest, VectorTileTest) {
     auto tileCoordinates = tileProjection.getTileCoordinates(extent, 15);
 
     ASSERT_EQ(tileCoordinates->size(), 4);
+
+    VectorTileDownloader downloader("http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png");
+    std::string destination = "../../../../sampleFigure";
+    auto tile = downloader.download(destination.c_str(), tileCoordinates->front());
+
+    ASSERT_EQ(tile->coordinate.zoom_level, 15);
+    ASSERT_EQ(tile->coordinate.column, 29106);
+    ASSERT_EQ(tile->coordinate.row, 12918);
+
+    ASSERT_EQ(tile->image_path, destination + "\\15\\29106\\12918.png");
 }
