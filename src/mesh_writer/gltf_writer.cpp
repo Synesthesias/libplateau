@@ -80,9 +80,9 @@ namespace {
 }
 
 namespace plateau::meshWriter {
-    class GltfWriter::impl {
+    class GltfWriter::Impl {
     public:
-        impl() : image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(), mesh_(),
+        Impl() : image_id_num_(0), texture_id_num_(0), node_name_(""), scene_(), mesh_(),
             material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
         }
 
@@ -101,7 +101,7 @@ namespace plateau::meshWriter {
         GltfWriteOptions options_;
     };
 
-    GltfWriter::GltfWriter() : pimpl(new impl) {
+    GltfWriter::GltfWriter() : impl(new Impl) {
     }
 
     GltfWriter::~GltfWriter() {
@@ -109,14 +109,14 @@ namespace plateau::meshWriter {
 
     bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options) {
 
-        pimpl->required_materials_.clear();
-        pimpl->node_name_ = "";
-        pimpl->image_id_num_ = 0;
-        pimpl->texture_id_num_ = 0;
-        pimpl->scene_.nodes.clear();
-        pimpl->mesh_.primitives.clear();
-        pimpl->material_ids_.clear();
-        pimpl->options_ = options;
+        impl->required_materials_.clear();
+        impl->node_name_ = "";
+        impl->image_id_num_ = 0;
+        impl->texture_id_num_ = 0;
+        impl->scene_.nodes.clear();
+        impl->mesh_.primitives.clear();
+        impl->material_ids_.clear();
+        impl->options_ = options;
 
         std::filesystem::path path = gltf_file_path;
         if (path.is_relative()) {
@@ -162,18 +162,18 @@ namespace plateau::meshWriter {
         material.metallicRoughness.baseColorFactor = gltf::Color4(0.5f, 0.5f, 0.5f, 1.0f);
         material.metallicRoughness.metallicFactor = 0.0f;
         material.metallicRoughness.roughnessFactor = 1.0f;
-        pimpl->default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+        impl->default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
 
         auto& root_node = model.getRootNodeAt(0);
         auto num_root_child = root_node.getChildCount();
         if (0 < num_root_child) {
             for (int lod = 0; lod < num_root_child; lod++) {
                 auto& lod_node = root_node.getChildAt(lod);
-                pimpl->precessNodeRecursive(lod_node, document, bufferBuilder);
+                impl->precessNodeRecursive(lod_node, document, bufferBuilder);
             }
         }
 
-        document.SetDefaultScene(std::move(pimpl->scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
+        document.SetDefaultScene(std::move(impl->scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
         bufferBuilder.Output(document);
         std::string manifest;
 
@@ -198,14 +198,14 @@ namespace plateau::meshWriter {
         }
 
         // テクスチャファイルコピー
-        for (const auto& [_, texture_url] : pimpl->required_materials_) {
+        for (const auto& [_, texture_url] : impl->required_materials_) {
             copyTexture(fs::absolute(path).u8string(), texture_url, options);
         }
 
         return true;
     }
 
-    void GltfWriter::impl::precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void GltfWriter::Impl::precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
 
         node_name_ = node.getName();
 
@@ -276,7 +276,7 @@ namespace plateau::meshWriter {
         }
     }
 
-    void GltfWriter::impl::writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void GltfWriter::Impl::writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder) {
         gltf::MeshPrimitive meshPrimitive;
         meshPrimitive.materialId = current_material_id_;
         meshPrimitive.indicesAccessorId = accessorIdIndices;
@@ -286,7 +286,7 @@ namespace plateau::meshWriter {
         mesh_.primitives.push_back(meshPrimitive);
     }
 
-    void GltfWriter::impl::writeNode(gltf::Document& document) {
+    void GltfWriter::Impl::writeNode(gltf::Document& document) {
         auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         gltf::Node node;
         node.meshId = meshId;
@@ -296,7 +296,7 @@ namespace plateau::meshWriter {
         mesh_.primitives.clear();
     }
 
-    std::string GltfWriter::impl::writeMaterialReference(std::string texture_url, gltf::Document& document) {
+    std::string GltfWriter::Impl::writeMaterialReference(std::string texture_url, gltf::Document& document) {
         // マテリアル名はテクスチャファイル名(拡張子抜き)
         const auto material_name = fs::u8path(texture_url).filename().replace_extension().u8string();
         const bool material_exists = required_materials_.find(material_name) != required_materials_.end();

@@ -44,7 +44,7 @@ namespace plateau::meshWriter {
         bool write(const std::string& destination, const plateau::polygonMesh::Model& model, GltfWriteOptions options);
 
     private:
-        class impl;
-        std::unique_ptr<impl> pimpl;
+        class Impl;
+        std::unique_ptr<Impl> impl;
     };
 }
