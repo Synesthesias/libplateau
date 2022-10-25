@@ -2,6 +2,7 @@
 
 #include <plateau/basemap/VectorTileDownloader.h>
 #include <plateau/basemap/TileProjection.h>
+#include <filesystem>
 
 
 class VectorTileTest : public ::testing::Test {
@@ -27,4 +28,8 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(tile->coordinate.row, 12918);
 
     ASSERT_EQ(tile->image_path, destination + "\\15\\29106\\12918.png");
+
+    ASSERT_TRUE(std::filesystem::exists(tile->image_path));
+
+    std::filesystem::remove_all(destination);
 }
