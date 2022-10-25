@@ -26,10 +26,7 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(tile->coordinate.zoom_level, 15);
     ASSERT_EQ(tile->coordinate.column, 29106);
     ASSERT_EQ(tile->coordinate.row, 12918);
-
     ASSERT_EQ(tile->image_path, destination + "\\15\\29106\\12918.png");
-
     ASSERT_TRUE(std::filesystem::exists(tile->image_path));
-
     std::filesystem::remove_all(destination);
 }
