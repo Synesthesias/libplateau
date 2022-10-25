@@ -6,12 +6,12 @@
 #include <fstream>
 
 
-VectorTileDownloader::VectorTileDownloader(std::string uri){
+VectorTileDownloader::VectorTileDownloader(const char* uri) {
     uri_ = uri;
 }
 
 std::shared_ptr <VectorTile> VectorTileDownloader::download(
-    std::string destination,
+    const char* destination,
     TileCoordinate coordinate
 ) {
     auto vector_tile = std::make_shared<VectorTile>();
@@ -51,7 +51,8 @@ std::shared_ptr <VectorTile> VectorTileDownloader::download(
         });
 
     std::string extension = ".png";
-    std::string foldPath = destination + "\\" + std::to_string(coordinate.zoom_level) + "\\"
+    std::string dest = destination;
+    std::string foldPath = dest + "\\" + std::to_string(coordinate.zoom_level) + "\\"
         + std::to_string(coordinate.column);
     std::filesystem::create_directories(foldPath);
     std::string filePath = foldPath + "\\" + std::to_string(coordinate.row) + extension;

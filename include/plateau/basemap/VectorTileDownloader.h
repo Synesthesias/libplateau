@@ -21,13 +21,12 @@ struct VectorTile {
 
 class LIBPLATEAU_EXPORT VectorTileDownloader {
 public:
-    VectorTileDownloader(std::string uri);
+    VectorTileDownloader(const char* uri);
 
-    static std::shared_ptr <VectorTile> download(std::string destination, TileCoordinate coordinate);
+    static std::shared_ptr <VectorTile> download(const char* destination, TileCoordinate coordinate);
     static const char* getUri();
     static void setUri(char* uri);
 
 private:
     static inline std::string uri_ = "http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
-
 };

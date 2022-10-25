@@ -11,6 +11,15 @@ namespace {
         double latrad = latitude * M_PI / 180.0;
         return (int)(floor((1.0 - asinh(tan(latrad)) / M_PI) / 2.0 * (1 << z)));
     }
+
+    double tileX2long(int x, int z) {
+        return x / (double)(1 << z) * 360.0 - 180;
+    }
+
+    double tileY2lat(int y, int z) {
+        double n = M_PI - 2.0 * M_PI * y / (double)(1 << z);
+        return 180.0 / M_PI * atan(0.5 * (exp(n) - exp(-n)));
+    }
 }
 
 std::shared_ptr <std::vector<TileCoordinate>> TileProjection::getTileCoordinates(const plateau::geometry::Extent& extent, int zoomLevel) {
@@ -31,4 +40,21 @@ std::shared_ptr <std::vector<TileCoordinate>> TileProjection::getTileCoordinates
     }
 
     return tileCoordinates;
+}
+
+std::shared_ptr <TileCoordinate> TileProjection::project(const plateau::geometry::GeoCoordinate& coordinate, int zoomLevel) {
+    auto tileCoordinate = std::make_shared<TileCoordinate>();
+    tileCoordinate->column = long2tileX(coordinate.longitude, zoomLevel);
+    tileCoordinate->row = lat2tileY(coordinate.latitude, zoomLevel);
+    tileCoordinate->zoom_level = zoomLevel;
+
+    return tileCoordinate;
+}
+
+std::shared_ptr<plateau::geometry::GeoCoordinate> TileProjection::unproject(TileCoordinate& coordinate, int zoomLevel) {
+    auto geoCoordinate = std::make_shared<plateau::geometry::GeoCoordinate>();
+    geoCoordinate->latitude = tileY2lat(coordinate.row, zoomLevel);
+    geoCoordinate->longitude = tileX2long(coordinate.column, zoomLevel);
+
+    return geoCoordinate;
 }
