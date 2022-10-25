@@ -26,6 +26,7 @@ add_executable(plateau_test
     "test_grid_merger.cpp"
     "test_mesh_code.cpp"
     "test_udx.cpp"
+    "test_vector_tile.cpp"
     "test_obj_writer.cpp"
     "test_gltf_writer.cpp"
     )
