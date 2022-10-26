@@ -72,16 +72,16 @@ TEST_F(MeshMergerTest, mesh_merger_info){
     };
     auto mesh = Mesh("testMesh");
     // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
-//    MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
-//                              CoordinateSystem::ENU, true);
-    plateau_mesh_merger_mesh_info(
-            &mesh,
-            vertices.data(), vertices.size(),
-            indices.data(), indices.size(),
-            uv_1.data(), uv_1.size(),
-            sub_meshes.data(), sub_meshes.size(),
-            CoordinateSystem::ENU, true
-            );
+    MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
+                              std::move(sub_meshes), CoordinateSystem::ENU, true);
+//    plateau_mesh_merger_mesh_info(
+//            &mesh,
+//            vertices.data(), vertices.size(),
+//            indices.data(), indices.size(),
+//            uv_1.data(), uv_1.size(),
+//            sub_meshes.data(), sub_meshes.size(),
+//            CoordinateSystem::ENU, true
+//            );
     ASSERT_EQ(33, mesh.getVertices().at(2).z);
     ASSERT_EQ(2, mesh.getIndices().at(2));
     ASSERT_EQ((float)0.32, mesh.getUV1().at(2).y);
