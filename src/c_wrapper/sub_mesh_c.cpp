@@ -28,8 +28,8 @@ extern "C"{
         return APIResult::Success;
     }
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_sub_mesh(const SubMesh* sub_mesh){
-    delete sub_mesh;
-    return APIResult::Success;
-}
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_sub_mesh(const SubMesh* sub_mesh) {
+        delete sub_mesh;
+        return APIResult::Success;
+    }
 }

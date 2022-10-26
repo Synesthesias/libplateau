@@ -97,7 +97,7 @@ namespace plateau::polygonMesh {
          */
         Mesh plateauPolygonToMesh(
                 const Polygon& poly, bool remove_triangles_outside_extent, const std::string& gml_path,
-                Extent extent, GeoReference geo_reference){
+                Extent extent, GeoReference geo_reference) {
             auto mesh = Mesh(poly.getId());
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
@@ -156,7 +156,7 @@ namespace plateau::polygonMesh {
                     texture_path = abs_path.u8string();
                 }
             }
-            mesh.addSubMesh(texture_path,0, mesh.getIndices().size() - 1 );
+            mesh.addSubMesh(texture_path, 0, mesh.getIndices().size() - 1);
             return mesh;
         }
 

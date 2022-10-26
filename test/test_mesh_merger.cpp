@@ -50,16 +50,16 @@ TEST_F(MeshMergerTest, when_merge_then_vertices_count_is_sum_of_before) {
     ASSERT_GT(uv_2_count_2, 0);
     ASSERT_GT(uv_3_count_2, 0);
     MeshMerger::mergeMesh(*mesh_1, *mesh_2, CoordinateSystem::EUN, true,
-                          TVec2f{0,0}, TVec2f{0,0});
-    ASSERT_EQ( vert_count_1 + vert_count_2, mesh_1->getVertices().size());
-    ASSERT_EQ( indices_count_1 + indices_count_2, mesh_1->getIndices().size());
-    ASSERT_EQ( uv_1_count_1 + uv_1_count_2, mesh_1->getUV1().size());
-    ASSERT_EQ( uv_2_count_1 + uv_2_count_2, mesh_1->getUV2().size());
-    ASSERT_EQ( uv_3_count_1 + uv_3_count_2, mesh_1->getUV3().size());
+                          TVec2f{0, 0}, TVec2f{0, 0});
+    ASSERT_EQ(vert_count_1 + vert_count_2, mesh_1->getVertices().size());
+    ASSERT_EQ(indices_count_1 + indices_count_2, mesh_1->getIndices().size());
+    ASSERT_EQ(uv_1_count_1 + uv_1_count_2, mesh_1->getUV1().size());
+    ASSERT_EQ(uv_2_count_1 + uv_2_count_2, mesh_1->getUV2().size());
+    ASSERT_EQ(uv_3_count_1 + uv_3_count_2, mesh_1->getUV3().size());
 
 }
 
-TEST_F(MeshMergerTest, mesh_merger_info){
+TEST_F(MeshMergerTest, mesh_merger_info) {
     std::vector<TVec3d> vertices = {TVec3d(11, 12, 13),
                                     TVec3d(21, 22, 23),
                                     TVec3d(31, 32, 33)};
@@ -74,16 +74,8 @@ TEST_F(MeshMergerTest, mesh_merger_info){
     // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
     MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
                               std::move(sub_meshes), CoordinateSystem::ENU, true);
-//    plateau_mesh_merger_mesh_info(
-//            &mesh,
-//            vertices.data(), vertices.size(),
-//            indices.data(), indices.size(),
-//            uv_1.data(), uv_1.size(),
-//            sub_meshes.data(), sub_meshes.size(),
-//            CoordinateSystem::ENU, true
-//            );
     ASSERT_EQ(33, mesh.getVertices().at(2).z);
     ASSERT_EQ(2, mesh.getIndices().at(2));
-    ASSERT_EQ((float)0.32, mesh.getUV1().at(2).y);
+    ASSERT_EQ((float) 0.32, mesh.getUV1().at(2).y);
 
 }

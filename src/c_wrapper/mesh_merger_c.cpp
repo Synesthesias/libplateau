@@ -13,13 +13,13 @@ extern "C" {
             CoordinateSystem mesh_axes,
             bool include_texture
     ) {
-        API_TRY{
+        API_TRY {
             MeshMerger::mergeMesh(
                     *mesh, *other_mesh, mesh_axes, include_texture,
                     TVec2f(0, 0), TVec2f(0, 0)
             );
             return APIResult::Success;
-        }API_CATCH;
+        } API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
@@ -42,7 +42,7 @@ extern "C" {
             auto uv_1 = std::vector<TVec2f>(uv_1_array, uv_1_array + uv_1_count);
 
             auto sub_meshes = std::vector<SubMesh>();
-            for(int i=0; i<sub_mesh_count; i++){
+            for (int i = 0; i < sub_mesh_count; i++) {
                 SubMesh* sub_mesh_ptr = *(sub_mesh_pointers_array + i);
                 sub_meshes.push_back(*(sub_mesh_ptr));
             }

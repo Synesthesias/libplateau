@@ -29,16 +29,16 @@ extern "C" {
                  &handle->getRootNodeAt(index),
                  index >= handle->getRootNodeCount())
 
-     // node を model::root_node_ に加えます。
-     // std::move によって node を移動するので、移動後に元の Node は利用不可になります。
+    /// node を model::root_node_ に加えます。
+    /// std::move によって node を移動するので、移動後に元の Node は利用不可になります。
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_model_add_node_by_std_move(
             Model* model,
             Node* node
     ) {
-            API_TRY{
-                model->addNode(std::move(*node));
-                return APIResult::Success;
-            }API_CATCH;
-            return APIResult::ErrorUnknown;
+        API_TRY {
+            model->addNode(std::move(*node));
+            return APIResult::Success;
+        } API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 }

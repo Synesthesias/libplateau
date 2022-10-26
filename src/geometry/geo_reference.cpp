@@ -54,7 +54,7 @@ namespace plateau::geometry {
         zone_id_ = value;
     }
 
-    float GeoReference::getUnitScale() const{
+    float GeoReference::getUnitScale() const {
         return unit_scale_;
     }
 

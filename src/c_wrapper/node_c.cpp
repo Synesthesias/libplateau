@@ -5,20 +5,20 @@ using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C" {
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_node(
-        Node** out_node_ptr,
-        char* id
-){
-    *out_node_ptr = new Node(std::string(id));
-    return APIResult::Success;
-}
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_node(
+            Node** out_node_ptr,
+            char* id
+    ) {
+        *out_node_ptr = new Node(std::string(id));
+        return APIResult::Success;
+    }
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
-        Node* node_ptr
-){
-    delete node_ptr;
-    return APIResult::Success;
-}
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
+            Node* node_ptr
+    ) {
+        delete node_ptr;
+        return APIResult::Success;
+    }
 
     DLL_STRING_PTR_FUNC(plateau_node_get_name,
                         Node,
@@ -75,11 +75,11 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_node_add_child_node_by_std_move(
             Node* node,
             Node* child_node
-            ){
-        API_TRY{
+    ) {
+        API_TRY {
             node->addChildNode(std::move(*child_node));
             return APIResult::Success;
-        }API_CATCH;
+        } API_CATCH;
         return APIResult::ErrorUnknown;
     }
 }
