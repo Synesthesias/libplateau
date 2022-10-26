@@ -90,14 +90,10 @@ namespace plateau::polygonMesh {
             throw std::runtime_error("size of other_indices must be multiple of 3.");
         }
 
-        // TODO この2つの for は1つの forにまとめられるはず
         // インデックスリストの末尾に追加します。
+        // 以前の頂点の数だけインデックスの数値を大きくします。
         for (auto other_index: other_indices) {
-            indices_.push_back(other_index);
-        }
-        // 追加分のインデックスを新しい値にします。以前の頂点の数だけインデックスの数値を大きくすれば良いです。
-        for (unsigned i = prev_num_indices; i < indices_.size(); i++) {
-            indices_.at(i) += (int)prev_num_vertices;
+            indices_.push_back(other_index + (int)prev_num_vertices);
         }
 
         // メッシュを裏返すべきとき、次の方法で裏返します:
