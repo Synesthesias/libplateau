@@ -89,16 +89,18 @@ namespace plateau::polygonMesh {
         }
 
         /**
-         * Plateau の Polygon を Mesh に変換します。
-         * 新規Meshを作り、そこにPolygonの情報をコピーします。すなわち:
+         * Plateau の Polygon を Mesh情報 に変換します。
+         * Mesh構築に必要な情報を Polygon から コピーします。すなわち:
          * Vertices を極座標から平面直角座標に変換したうえでコピーします。
-         * Indices, UV1 をコピーします。
+         * Indices, UV1 をコピーします。SubMeshを生成します。
          * 引数の gml_path は、テクスチャパスを相対から絶対に変換するときの基準パスです。
+         * 結果は引数で out と名の付くものに格納されます。
          */
-        Mesh plateauPolygonToMesh(
+        void plateauPolygonToMeshInfo(
                 const Polygon& poly, bool remove_triangles_outside_extent, const std::string& gml_path,
-                Extent extent, GeoReference geo_reference) {
-            auto mesh = Mesh(poly.getId());
+                Extent extent, GeoReference geo_reference,
+                std::vector<TVec3d>& out_vertices, std::vector<unsigned>& out_indices, std::vector<TVec2f>& out_uv_1,
+                std::vector<SubMesh>& out_sub_meshes) {
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon_original = poly.getVertices();
@@ -106,39 +108,45 @@ namespace plateau::polygonMesh {
             const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
 
             // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
-            std::vector<TVec3d> out_vertices;
-            std::vector<unsigned int> out_indices;
-            std::vector<TVec2f> out_uv_1;
+            std::vector<TVec3d> out_filtered_vertices;
+            std::vector<unsigned int> out_filtered_indices;
+            std::vector<TVec2f> out_filtered_uv_1;
 
             const std::vector<TVec3d>* vertices_lat_lon = &vertices_lat_lon_original;
             const std::vector<unsigned int>* other_indices = &other_indices_original;
             const std::vector<TVec2f>* other_uv_1 = &other_uv_1_original;
 
             if (remove_triangles_outside_extent) {
-                out_vertices = std::vector<TVec3d>();
-                out_indices = std::vector<unsigned int>();
-                out_uv_1 = std::vector<TVec2f>();
+                out_filtered_vertices = std::vector<TVec3d>();
+                out_filtered_indices = std::vector<unsigned int>();
+                out_filtered_uv_1 = std::vector<TVec2f>();
                 removeTrianglesOutsideExtent(extent, vertices_lat_lon_original, other_indices_original,
                                              other_uv_1_original,
-                                             out_vertices, out_indices, out_uv_1);
-                vertices_lat_lon = &out_vertices;
-                other_indices = &out_indices;
-                other_uv_1 = &out_uv_1;
+                                             out_filtered_vertices, out_filtered_indices, out_filtered_uv_1);
+                vertices_lat_lon = &out_filtered_vertices;
+                other_indices = &out_filtered_indices;
+                other_uv_1 = &out_filtered_uv_1;
             }
 
             // 極座標から平面直角座標へ変換します。
-            auto vertices_xyz = std::vector<TVec3d>();
-            vertices_xyz.reserve(vertices_lat_lon->size());
+            out_vertices = std::vector<TVec3d>();
+            out_vertices.reserve(vertices_lat_lon->size());
             for (const auto& lat_lon: *vertices_lat_lon) {
                 auto xyz = geo_reference.project(lat_lon);
-                vertices_xyz.push_back(xyz);
+                out_vertices.push_back(xyz);
             }
 
-            mesh.addVerticesList(vertices_xyz);
-            auto vert_count = mesh.getVertices().size();
-            // 下の引数 invert_mesh_front_back が false の理由 : ポリゴンの反転は merge 時に行うため、今はしません。
-            mesh.addIndicesList(*other_indices, 0, false);
-            mesh.addUV1(*other_uv_1, vert_count);
+            // Indicesをコピーします。
+            out_indices = *other_indices;
+
+            // UV1をコピーし、頂点数に足りない分を 0 で埋めます。
+            out_uv_1 = *other_uv_1;
+            auto vert_count = out_vertices.size();
+            for(auto i = out_uv_1.size(); i<vert_count; i++){
+                out_uv_1.emplace_back(0, 0);
+            }
+
+            // テクスチャパスを取得し SubMesh を作ります。
             auto texture = poly.getTextureFor("rgbTexture");
             std::string texture_path;
             if (texture == nullptr) {
@@ -156,8 +164,7 @@ namespace plateau::polygonMesh {
                     texture_path = abs_path.u8string();
                 }
             }
-            mesh.addSubMesh(texture_path, 0, mesh.getIndices().size() - 1);
-            return mesh;
+            out_sub_meshes = std::vector<SubMesh>{SubMesh(0, out_indices.size() - 1, texture_path)};
         }
 
 
@@ -253,12 +260,22 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                                   const GeoReference& geo_reference, const TVec2f& uv_2_element,
-                                  const TVec2f&uv_3_element, const std::string& gml_path) {
+                                  const TVec2f& uv_3_element, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
-        // TODO ここで Polygon から Mesh に変換するためにデータのコピーが入るので重そう
-        auto other_mesh = plateauPolygonToMesh(other_poly, mesh_extract_options.exclude_triangles_outside_extent, gml_path, mesh_extract_options.extent, geo_reference);
-        mergeMesh(mesh, other_mesh, mesh_extract_options.mesh_axes, mesh_extract_options.export_appearance,
-                  uv_2_element, uv_3_element);
+        std::vector<TVec3d> vertices;
+        std::vector<unsigned> indices;
+        std::vector<TVec2f> uv_1;
+        std::vector<SubMesh> sub_meshes;
+        plateauPolygonToMeshInfo(
+                other_poly, mesh_extract_options.exclude_triangles_outside_extent,
+                gml_path, mesh_extract_options.extent, geo_reference,
+                vertices, indices, uv_1, sub_meshes
+        );
+        mergeMeshInfo(mesh, std::move(vertices),
+                      std::move(indices), std::move(uv_1), std::move(sub_meshes),
+                      mesh_extract_options.mesh_axes,
+                      mesh_extract_options.export_appearance
+        );
     }
 
     void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, CoordinateSystem mesh_axes, bool include_textures,
