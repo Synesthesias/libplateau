@@ -10,12 +10,12 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_merger_merge_mesh(
             Mesh* mesh,
             Mesh* other_mesh,
-            CoordinateSystem mesh_axes,
+            bool invert_mesh_front_back,
             bool include_texture
     ) {
         API_TRY {
             MeshMerger::mergeMesh(
-                    *mesh, *other_mesh, mesh_axes, include_texture,
+                    *mesh, *other_mesh, invert_mesh_front_back, include_texture,
                     TVec2f(0, 0), TVec2f(0, 0)
             );
             return APIResult::Success;
@@ -33,7 +33,8 @@ extern "C" {
             int uv_1_count,
             SubMesh** sub_mesh_pointers_array,
             int sub_mesh_count,
-            CoordinateSystem mesh_axes,
+            CoordinateSystem mesh_axis_convert_from,
+            CoordinateSystem mesh_axis_convert_to,
             bool include_texture
     ) {
         API_TRY {
@@ -49,7 +50,8 @@ extern "C" {
 
             MeshMerger::mergeMeshInfo(*mesh,
                                       std::move(vertices), std::move(indices), std::move(uv_1),
-                                      std::move(sub_meshes), mesh_axes, include_texture);
+                                      std::move(sub_meshes),
+                                      mesh_axis_convert_from, mesh_axis_convert_to, include_texture);
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

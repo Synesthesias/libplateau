@@ -70,7 +70,7 @@ namespace PLATEAU.Test.GeometryModel
             int numUV2 = mesh.GetUv2().Length;
             int numUV3 = mesh.GetUv3().Length;
             int numIndices = mesh.IndicesCount;
-            mesh.MergeMesh(mesh2, CoordinateSystem.ENU, true);
+            mesh.MergeMesh(mesh2, true);
             Assert.AreEqual(2 * numVert, mesh.VerticesCount);
             Assert.AreEqual(2 * numUV1, mesh.GetUv1().Length);
             Assert.AreEqual(2 * numUV2, mesh.GetUv2().Length);
@@ -103,7 +103,7 @@ namespace PLATEAU.Test.GeometryModel
         {
             var mesh = Mesh.Create("testMesh");
             SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
-            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.ENU, true);
+            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.EUN, true);
             return mesh;
         }
 
