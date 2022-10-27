@@ -23,6 +23,15 @@ namespace plateau::geometry {
         return converted_point;
     }
 
+    TVec3d GeoReference::projectWithoutAxisConvert(const TVec3d& lat_lon) const {
+        // 前提として、座標軸は 変換前 ENU → 変換後 ENU であるとします。
+        // そのため reference_point_ の代わりに reference_point_ を ENU に変換した値が利用されます。
+        TVec3d point = lat_lon;
+        PolarToPlaneCartesian().project(point, zone_id_);
+        TVec3 converted_point = point / unit_scale_ - convertAxisToENU(coordinate_system_, reference_point_);
+        return converted_point;
+    }
+
     TVec3d GeoReference::convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex) {
         switch (axis) {
             case CoordinateSystem::ENU:

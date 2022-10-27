@@ -132,7 +132,7 @@ namespace plateau::polygonMesh {
             out_vertices = std::vector<TVec3d>();
             out_vertices.reserve(vertices_lat_lon->size());
             for (const auto& lat_lon: *vertices_lat_lon) {
-                auto xyz = geo_reference.project(lat_lon);
+                auto xyz = geo_reference.projectWithoutAxisConvert(lat_lon);
                 out_vertices.push_back(xyz);
             }
 
