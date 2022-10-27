@@ -91,7 +91,7 @@ namespace plateau::polygonMesh {
         /**
          * Plateau の Polygon を Mesh情報 に変換します。
          * Mesh構築に必要な情報を Polygon から コピーします。すなわち:
-         * Vertices を極座標から平面直角座標に変換したうえでコピーします。
+         * Vertices を極座標から平面直角座標に変換したうえでコピーします。座標軸は 入力も出力も ENU です。
          * Indices, UV1 をコピーします。SubMeshを生成します。
          * 引数の gml_path は、テクスチャパスを相対から絶対に変換するときの基準パスです。
          * 結果は引数で out と名の付くものに格納されます。
