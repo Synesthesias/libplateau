@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
@@ -15,7 +14,7 @@ namespace PLATEAU.Test.GeometryModel
             options.MinLOD = 2;
             options.MaxLOD = 2;
 
-            var model = new Model();
+            var model = Model.Create();
             MeshExtractor.Extract(ref model, cityModel, options);
             return model;
         }

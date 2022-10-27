@@ -23,9 +23,22 @@ namespace plateau::polygonMesh {
          * なおその他の情報のマージには未対応です。例えば LinearRing は考慮されません。
          * options.export_appearance の値によって、 mergeWithTexture または mergeWithoutTexture を呼び出します。
          */
-        static void merge(Mesh& mesh, const citygml::Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
-                          const geometry::GeoReference& geo_reference, const TVec2f& uv_2_element,
-                          const TVec2f& uv_3_element, const std::string& gml_path);
+        static void mergePolygon(Mesh& mesh, const citygml::Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
+                                 const geometry::GeoReference& geo_reference, const TVec2f& uv_2_element,
+                                 const TVec2f& uv_3_element, const std::string& gml_path);
+
+        /**
+         * Mesh に Polygon をマージする代わりに Mesh をマージする版です。
+         */
+        static void mergeMesh(Mesh& mesh, const Mesh& other_mesh, plateau::geometry::CoordinateSystem mesh_axes, bool include_textures,
+                              const TVec2f& uv_2_element, const TVec2f& uv_3_element);
+
+        /**
+         * Mesh に Polygon をマージする代わりに、データ配列を直接 move で渡す版です。
+         */
+        static void mergeMeshInfo(Mesh& mesh,
+                                  std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes,
+                                  plateau::geometry::CoordinateSystem mesh_axes, bool include_texture);
 
         /**
          * merge関数を 引数 city_object_ の各 Polygon に対して実行します。

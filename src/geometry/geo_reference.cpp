@@ -54,6 +54,14 @@ namespace plateau::geometry {
         zone_id_ = value;
     }
 
+    float GeoReference::getUnitScale() const {
+        return unit_scale_;
+    }
+
+    CoordinateSystem GeoReference::getCoordinateSystem() const {
+        return coordinate_system_;
+    }
+
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
         TVec3d before_convert_lat_lon = (point + reference_point_) * unit_scale_;
         TVec3d lat_lon;

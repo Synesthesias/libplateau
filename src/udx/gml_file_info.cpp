@@ -30,6 +30,10 @@ namespace plateau::udx {
         return path_;
     }
 
+    void GmlFileInfo::setPath(const std::string& path) {
+        path_ = path;
+    }
+
      MeshCode GmlFileInfo::getMeshCode() const {
         return MeshCode(code_);
     }

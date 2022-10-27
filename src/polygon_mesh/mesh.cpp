@@ -2,6 +2,7 @@
 #include <memory>
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
+#include <plateau/polygon_mesh/mesh_merger.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include "plateau/mesh_writer/obj_writer.h"
 
@@ -16,6 +17,21 @@ namespace plateau::polygonMesh {
             sub_meshes_() {
     }
 
+    Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+               std::vector<SubMesh>&& sub_meshes) :
+            Mesh(id) {
+        vertices_ = vertices;
+        indices_ = indices;
+        uv1_ = uv_1;
+        uv2_ = UV();
+        uv3_ = UV();
+        for (int i = 0; i < vertices_.size(); i++) {
+            uv2_.emplace_back(0, 0);
+            uv3_.emplace_back(0, 0);
+        }
+        sub_meshes_ = sub_meshes;
+    }
+
     std::vector<TVec3d>& Mesh::getVertices() {
         return vertices_;
     }
@@ -24,7 +40,7 @@ namespace plateau::polygonMesh {
         return vertices_;
     }
 
-    const std::vector<int>& Mesh::getIndices() const {
+    const std::vector<unsigned>& Mesh::getIndices() const {
         return indices_;
     }
 
@@ -58,6 +74,14 @@ namespace plateau::polygonMesh {
         }
     }
 
+    /**
+     * Indices を追加します。
+     * メッシュのマージ処理の流れについて
+     * [1]元のメッシュ　→　[2]頂点追加　→　[3]Indices追加 → [4]UV等追加
+     * のうち [3] をこの関数が担当します。
+     * 引数の prev_num_vertices には、[1]の段階の頂点数（頂点追加する前の頂点数がいくつであったか）を渡します。
+     * この値は、追加する indices の値のオフセットとなります。
+     */
     void Mesh::addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices,
                               bool invert_mesh_front_back) {
         auto prev_num_indices = indices_.size();
@@ -67,12 +91,9 @@ namespace plateau::polygonMesh {
         }
 
         // インデックスリストの末尾に追加します。
-        for (unsigned int other_index: other_indices) {
-            indices_.push_back((int) other_index);
-        }
-        // 追加分のインデックスを新しい値にします。以前の頂点の数だけインデックスの数値を大きくすれば良いです。
-        for (unsigned i = prev_num_indices; i < indices_.size(); i++) {
-            indices_.at(i) += (int) prev_num_vertices;
+        // 以前の頂点の数だけインデックスの数値を大きくします。
+        for (auto other_index: other_indices) {
+            indices_.push_back(other_index + (int)prev_num_vertices);
         }
 
         // メッシュを裏返すべきとき、次の方法で裏返します:
@@ -114,7 +135,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_indices_size) {
+    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
@@ -130,19 +151,18 @@ namespace plateau::polygonMesh {
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            unsigned prev_num_indices = indices_.size() - sub_mesh_indices_size;
-            SubMesh::addSubMesh(prev_num_indices, indices_.size() - 1, texture_path, sub_meshes_);
+            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
-            extendLastSubMesh();
+            extendLastSubMesh(sub_mesh_end_index);
         }
     }
 
-    void Mesh::extendLastSubMesh() {
+    void Mesh::extendLastSubMesh(size_t sub_mesh_end_index) {
         if (sub_meshes_.empty()) {
-            sub_meshes_.emplace_back(0, indices_.size() - 1, "");
+            sub_meshes_.emplace_back(0, sub_mesh_end_index, "");
         } else {
-            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex((int) indices_.size() - 1);
+            sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index);
         }
     }
 }

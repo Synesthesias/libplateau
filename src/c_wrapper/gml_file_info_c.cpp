@@ -26,7 +26,19 @@ extern "C" {
                         GmlFileInfo,
                         handle->getPath())
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_set_path(
+        GmlFileInfo* gml_file_info,
+        char* path
+        ){
+        API_TRY{
+            gml_file_info->setPath(std::string(path));
+            return APIResult::Success;
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
     DLL_STRING_PTR_FUNC(plateau_gml_file_info_get_feature_type_str,
                         GmlFileInfo,
                         handle->getFeatureType())
+
 }

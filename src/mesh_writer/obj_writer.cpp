@@ -158,7 +158,7 @@ namespace plateau::meshWriter {
                 writeVertices(ofs, vertices);
 
                 if (0 < uvs.size()) {
-                    std::vector<TVec2f> texcoords;
+                    std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
                     for (const auto& uv : uvs) {
                         auto t = uv;
                         t.y = 1.0 - uv.y;

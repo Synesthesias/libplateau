@@ -1,5 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Geometries;
+using PLATEAU.Interop;
+using PLATEAU.PolygonMesh;
 using PLATEAU.Test.CityGML;
 
 namespace PLATEAU.Test.GeometryModel
@@ -43,5 +46,91 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual(numVert, numUV2);
             Assert.AreEqual(numVert, numUV3);
         }
+
+        [TestMethod]
+        public void CreateMesh()
+        {
+            var mesh = Mesh.Create("testMesh");
+            Assert.AreEqual(0, mesh.VerticesCount);
+            mesh.Dispose();
+        }
+
+        [TestMethod]
+        public void Merge_Same_Mesh_Then_Vertex_Count_Doubles()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var mesh = TestGeometryUtil.FirstMeshInModel(model);
+            // 同じインスタンス同士でマージするとバグになるので
+            // 実質的なコピーを用意するためもう一度ロードします。
+            var model2 = TestGeometryUtil.ExtractModel();
+            var mesh2 = TestGeometryUtil.FirstMeshInModel(model2);
+            
+            int numVert = mesh.VerticesCount;
+            int numUV1 = mesh.GetUv1().Length;
+            int numUV2 = mesh.GetUv2().Length;
+            int numUV3 = mesh.GetUv3().Length;
+            int numIndices = mesh.IndicesCount;
+            mesh.MergeMesh(mesh2, CoordinateSystem.ENU, true);
+            Assert.AreEqual(2 * numVert, mesh.VerticesCount);
+            Assert.AreEqual(2 * numUV1, mesh.GetUv1().Length);
+            Assert.AreEqual(2 * numUV2, mesh.GetUv2().Length);
+            Assert.AreEqual(2 * numUV3, mesh.GetUv3().Length);
+            Assert.AreEqual(2 * numIndices, mesh.IndicesCount);
+        }
+
+        [TestMethod]
+        public void MergeMeshData_From_Empty_Mesh()
+        {
+            var mesh = CreateSimpleMesh();
+            Assert.AreEqual(3, mesh.GetUv1().Length);
+            Assert.AreEqual(33, mesh.GetVertexAt(2).Z);
+            Assert.AreEqual(2, mesh.GetIndiceAt(2));
+            Console.WriteLine($"{mesh.GetUv1()[0]}, {mesh.GetUv1()[1]}, {mesh.GetUv1()[2]}");
+            Assert.AreEqual(3.2f, mesh.GetUv1()[2].Y);
+            
+        }
+
+        [TestMethod]
+        public void AddSubMesh()
+        {
+            var mesh = CreateSimpleMesh();
+            mesh.AddSubMesh("test.png", 0, 2);
+            var subMesh = mesh.GetSubMeshAt(1);
+            Assert.AreEqual("test.png", subMesh.TexturePath);
+        }
+
+        private static Mesh CreateSimpleMesh()
+        {
+            var mesh = Mesh.Create("testMesh");
+            SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
+            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.ENU, true);
+            return mesh;
+        }
+
+        private static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices,
+            out PlateauVector2f[] uv1, out SubMesh[] subMeshes)
+        {
+            vertices = new[]
+            {
+                new PlateauVector3d(11, 12, 13),
+                new PlateauVector3d(21, 22, 23),
+                new PlateauVector3d(31, 32, 33)
+            };
+            indices = new uint[]
+            {
+                0, 1, 2
+            };
+            uv1 = new[]
+            {
+                new PlateauVector2f(1.1f, 1.2f),
+                new PlateauVector2f(2.1f, 2.2f),
+                new PlateauVector2f(3.1f, 3.2f)
+            };
+            subMeshes = new[]
+            {
+                SubMesh.Create(0, 2, "testTexturePath.png")
+            };
+        }
+        
     }
 }
