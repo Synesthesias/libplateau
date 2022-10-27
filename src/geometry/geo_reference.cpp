@@ -18,24 +18,42 @@ namespace plateau::geometry {
     TVec3d GeoReference::project(const TVec3d& lat_lon) const {
         TVec3d point = lat_lon;
         PolarToPlaneCartesian().project(point, zone_id_);
-        TVec3 converted_point = point;
-        switch (coordinate_system_) {
+        TVec3 converted_point = convertAxisFromENUTo(coordinate_system_, point);
+        converted_point = converted_point / unit_scale_ - reference_point_;
+        return converted_point;
+    }
+
+    TVec3d GeoReference::convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex) {
+        switch (axis) {
             case CoordinateSystem::ENU:
-                break; // 変換なし
+                return vertex; // 変換なし
             case CoordinateSystem::WUN:
-                converted_point = {-point.x, point.z, point.y};
-                break;
+                return {-vertex.x, vertex.z, vertex.y};
             case CoordinateSystem::EUN:
-                converted_point = {point.x, point.z, point.y};
-                break;
+                return {vertex.x, vertex.z, vertex.y};
             case CoordinateSystem::NWU:
-                converted_point = {point.y, -point.x, point.z};
-                break;
+                return {vertex.y, -vertex.x, vertex.z};
             default:
                 throw std::out_of_range("Invalid argument");
         }
-        converted_point = converted_point / unit_scale_ - reference_point_;
-        return converted_point;
+    }
+
+    TVec3d GeoReference::convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex) {
+        switch (axis) {
+            case CoordinateSystem::ENU:
+                return vertex; // 変換なし
+            case CoordinateSystem::WUN:
+                // WUN → ENU の式は 逆変換 ENU → WUN と同じです。
+                return {-vertex.x, vertex.z, vertex.y};
+            case CoordinateSystem::EUN:
+                // EUN → ENU の式は 逆変換 ENU → EUN と同じです。
+                return {vertex.x, vertex.z, vertex.y};
+            case CoordinateSystem::NWU:
+                // NWU → ENU の式は 逆変換 ENU → NWU とは異なります。
+                return {-vertex.y, vertex.x, vertex.z};
+            default:
+                throw std::out_of_range("Invalid argument");
+        }
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {

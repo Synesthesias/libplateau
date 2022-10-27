@@ -22,6 +22,8 @@ namespace plateau::geometry {
          */
         TVec3d project(const GeoCoordinate& point) const;
         TVec3d project(const TVec3d& lat_lon) const;
+        static TVec3d convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex);
+        static TVec3d convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex);
 
         GeoCoordinate unproject(const TVec3d& point) const;
 
