@@ -304,7 +304,7 @@ namespace plateau::polygonMesh {
         for(int i=0; i<vertex_count; i++){
             const auto& before = vs.at(i);
             // BEFORE → ENU
-            const auto& enu = GeoReference::convertAxisToENU(mesh_axis_convert_from, before);
+            const auto enu = GeoReference::convertAxisToENU(mesh_axis_convert_from, before);
             // ENU → AFTER
             vs.at(i) = GeoReference::convertAxisFromENUTo(mesh_axis_convert_to, enu);
         }

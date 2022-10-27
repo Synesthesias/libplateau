@@ -91,30 +91,7 @@ namespace plateau::geometry {
 
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
         TVec3d before_convert_lat_lon = (point + reference_point_) * unit_scale_;
-        TVec3d lat_lon;
-        switch (coordinate_system_) {
-        case CoordinateSystem::ENU:
-            lat_lon = before_convert_lat_lon;
-            break;
-        case CoordinateSystem::WUN:
-            lat_lon.x = -before_convert_lat_lon.x;
-            lat_lon.y = before_convert_lat_lon.z;
-            lat_lon.z = before_convert_lat_lon.y;
-            break;
-        case CoordinateSystem::NWU:
-            lat_lon.x = -before_convert_lat_lon.y;
-            lat_lon.y = before_convert_lat_lon.x;
-            lat_lon.z = before_convert_lat_lon.z;
-            break;
-        case CoordinateSystem::EUN:
-            lat_lon.x = before_convert_lat_lon.x;
-            lat_lon.y = before_convert_lat_lon.z;
-            lat_lon.z = before_convert_lat_lon.y;
-            break;
-        default:
-            throw std::out_of_range("Invalid argument");
-        }
-
+        TVec3d lat_lon = convertAxisToENU(coordinate_system_, before_convert_lat_lon);
         PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
         return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
     }

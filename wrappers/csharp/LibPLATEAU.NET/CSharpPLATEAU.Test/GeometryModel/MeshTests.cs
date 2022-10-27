@@ -103,7 +103,7 @@ namespace PLATEAU.Test.GeometryModel
         {
             var mesh = Mesh.Create("testMesh");
             SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
-            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.EUN, true);
+            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.EUN, CoordinateSystem.EUN, true);
             return mesh;
         }
 
