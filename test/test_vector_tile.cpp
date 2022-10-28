@@ -36,7 +36,14 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(tile.coordinate.zoom_level, 15);
     ASSERT_EQ(tile.coordinate.column, 29106);
     ASSERT_EQ(tile.coordinate.row, 12918);
-    ASSERT_EQ(tile.image_path, destination + "\\15\\29106\\12918.png");
+    ASSERT_EQ(tile.image_path, std::filesystem::u8path(destination).append("15").append("29106").append("12918.png").u8string());
     ASSERT_TRUE(std::filesystem::exists(tile.image_path));
     std::filesystem::remove_all(destination);
+
+    auto actual_extent = TileProjection::unproject(tile.coordinate);
+    
+    ASSERT_LE(abs(actual_extent.min.latitude - 35.5414), 0.001);
+    ASSERT_LE(abs(actual_extent.min.longitude - 139.768), 0.001);
+    ASSERT_LE(abs(actual_extent.max.latitude - 35.5501), 0.001);
+    ASSERT_LE(abs(actual_extent.max.longitude - 139.779), 0.001);
 }

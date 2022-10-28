@@ -51,10 +51,17 @@ TileCoordinate TileProjection::project(const plateau::geometry::GeoCoordinate& c
     return tile_coordinate;
 }
 
-plateau::geometry::GeoCoordinate TileProjection::unproject(const TileCoordinate& coordinate, const int zoom_level) {
-    plateau::geometry::GeoCoordinate geo_coordinate;
-    geo_coordinate.latitude = tileY2lat(coordinate.row, zoom_level);
-    geo_coordinate.longitude = tileX2long(coordinate.column, zoom_level);
-
-    return geo_coordinate;
+plateau::geometry::Extent TileProjection::unproject(const TileCoordinate& coordinate) {
+    return {
+        {
+            tileY2lat(coordinate.row + 1, coordinate.zoom_level),
+            tileX2long(coordinate.column, coordinate.zoom_level),
+            0
+        },
+        {
+            tileY2lat(coordinate.row, coordinate.zoom_level),
+            tileX2long(coordinate.column + 1, coordinate.zoom_level),
+            0
+        }
+    };
 }
