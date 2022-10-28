@@ -11,7 +11,7 @@
 namespace plateau::udx {
     namespace fs = std::filesystem;
 
-    PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name){
+    PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name) {
         if (folder_name == bldg) return PredefinedCityModelPackage::Building;
         if (folder_name == tran) return PredefinedCityModelPackage::Road;
         if (folder_name == urf) return PredefinedCityModelPackage::UrbanPlanningDecision;
@@ -37,38 +37,38 @@ namespace plateau::udx {
         return result;
     }
 
-    namespace{
+    namespace {
         /**
-         * 謖?ｮ壹ヱ繧ｹ繧定ｵｷ轤ｹ縺ｫ縲∝ｹ?━蜈域爾邏｢(BFS)縺ｧGML繝輔ぃ繧､繝ｫ繧呈､懃ｴ｢縺励∪縺吶??
-         * 讀懃ｴ｢縺ｮ鬮倬?溷喧縺ｮ縺溘ａ縲；ML繝輔ぃ繧､繝ｫ縺ｮ驟咲ｽｮ蝣ｴ謇?縺ｮ豺ｱ縺輔?縺吶∋縺ｦ蜷後§縺ｧ縺ゅｋ縺ｨ縺?≧蜑肴署縺ｫ遶九■縲?
-         * 譛?蛻昴?GML繝輔ぃ繧､繝ｫ縺瑚ｦ九▽縺九▲縺溷慍轤ｹ縺ｧ縺薙ｌ莉･荳頑ｷｱ縺?ヵ繧ｩ繝ｫ繝?縺ｮ謗｢邏｢縺ｯ荳ｭ豁｢縺励∪縺吶??
-         * 蜷後§豺ｱ縺輔↓縺ゅｋ蛻･縺ｮ繝輔か繝ｫ繝?縺ｯ謗｢邏｢蟇ｾ雎｡縺ｨ縺励∪縺吶??
-         * @param dir_path  讀懃ｴ｢縺ｮ襍ｷ轤ｹ縺ｨ縺ｪ繧九ヱ繧ｹ縺ｧ縺吶??
-         * @param result 邨先棡縺ｯ縺薙? vector 縺ｫ霑ｽ蜉?縺輔ｌ縺ｾ縺吶??
-         * @return GML繝輔ぃ繧､繝ｫ縺ｮ繝代せ縺ｮ vector 縺ｧ縺吶??
+         * 指定パスを起点に、幅優先探索(BFS)でGMLファイルを検索します。
+         * 検索の高速化のため、GMLファイルの配置場所の深さはすべて同じであるという前提に立ち、
+         * 最初のGMLファイルが見つかった地点でこれ以上深いフォルダの探索は中止します。
+         * 同じ深さにある別のフォルダは探索対象とします。
+         * @param dir_path  検索の起点となるパスです。
+         * @param result 結果はこの vector に追加されます。
+         * @return GMLファイルのパスの vector です。
          */
-        void findGMLsBFS(const std::string& dir_path, std::vector<GmlFileInfo>& result){
+        void findGMLsBFS(const std::string& dir_path, std::vector<GmlFileInfo>& result) {
             auto queue = std::queue<std::string>();
             queue.push(dir_path);
             bool push_more_dir = true;
-            while(!queue.empty()){
+            while (!queue.empty()) {
                 auto next_dir = queue.front();
                 queue.pop();
-                // 繝輔ぃ繧､繝ｫ縺九ｉ讀懃ｴ｢縺励∪縺吶??
-                for(const auto& entry : fs::directory_iterator(next_dir)){
-                    if(entry.is_directory()) continue;
+                // ファイルから検索します。
+                for (const auto& entry : fs::directory_iterator(next_dir)) {
+                    if (entry.is_directory()) continue;
                     const auto& path = entry.path();
-                    if(path.extension() == ".gml"){
+                    if (path.extension() == ".gml") {
                         result.emplace_back(path.string());
-                        // 譛?蛻昴?GML繝輔ぃ繧､繝ｫ縺瑚ｦ九▽縺九▲縺溘ｉ縲√％繧御ｻ･荳頑爾邏｢繧ｭ繝･繝ｼ縺ｫ蜈･繧後↑縺?ｈ縺?↓縺励∪縺吶??
-                        // 蜷後§豺ｱ縺輔↓縺ゅｋ繝輔か繝ｫ繝?縺ｯ縺吶〒縺ｫ繧ｭ繝･繝ｼ縺ｫ蜈･縺｣縺ｦ縺?ｋ縺ｮ縺ｧ縲√?梧ｷｱ縺輔?蜷後§縺?縺代←繝輔か繝ｫ繝?縺碁＆縺??阪→縺?≧迥ｶ豕√?讀懃ｴ｢蟇ｾ雎｡縺ｫ蜷ｫ縺ｾ繧後∪縺吶??
+                        // 最初のGMLファイルが見つかったら、これ以上探索キューに入れないようにします。
+                        // 同じ深さにあるフォルダはすでにキューに入っているので、「深さは同じだけどフォルダが違う」という状況は検索対象に含まれます。
                         push_more_dir = false;
                     }
                 }
-                // 谺｡縺ｫ謗｢邏｢縺吶∋縺阪ョ繧｣繝ｬ繧ｯ繝医Μ繧偵く繝･繝ｼ縺ｫ蜈･繧後∪縺吶??
-                if(!push_more_dir) continue;
-                for(const auto& entry : fs::directory_iterator(next_dir)){
-                    if(!entry.is_directory()) continue;
+                // 次に探索すべきディレクトリをキューに入れます。
+                if (!push_more_dir) continue;
+                for (const auto& entry : fs::directory_iterator(next_dir)) {
+                    if (!entry.is_directory()) continue;
                     queue.push(entry.path().string());
                 }
             }
@@ -77,13 +77,13 @@ namespace plateau::udx {
 
     void UdxFileCollection::find(const std::string& source, UdxFileCollection& collection) {
         collection.udx_path_ = fs::u8path(source).append(u"udx").make_preferred().u8string();
-        // udx繝輔か繝ｫ繝?蜀??蜷?ヵ繧ｩ繝ｫ繝?縺ｫ縺､縺?※
+        // udxフォルダ内の各フォルダについて
         for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
-            if(!entry.is_directory()) continue;
+            if (!entry.is_directory()) continue;
             auto udx_sub_folder = UdxSubFolder(entry.path().filename().string());
             const auto package = udx_sub_folder.getPackage(udx_sub_folder.getName());
             auto& file_map = collection.files_;
-            if(file_map.count(package) == 0){
+            if (file_map.count(package) == 0) {
                 file_map.emplace(package, std::vector<GmlFileInfo>());
             }
             auto& gml_files = collection.files_.at(package);
@@ -114,16 +114,16 @@ namespace plateau::udx {
 
     void UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
                                               UdxFileCollection& collection) const {
-        // 縺薙ｌ縺後↑縺?→繝輔ぅ繝ｫ繧ｿ繝ｼ縺ｮ邨先棡縺ｫ蟇ｾ縺励※ fetch 繧貞ｮ溯｡後☆繧九→縺阪↓繝代せ縺後★繧後∪縺吶??
+        // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
         collection.setUdxPath(udx_path_);
-        // 讀懃ｴ｢逕ｨ縺ｫ縲∝ｼ墓焚縺ｮ mesh_codes 繧呈枚蟄怜?縺ｮ繧ｻ繝?ヨ縺ｫ縺励∪縺吶??
+        // 検索用に、引数の mesh_codes を文字列のセットにします。
         auto mesh_codes_str_set = std::set<std::string>();
-        for (const auto& mesh_code: mesh_codes) {
+        for (const auto& mesh_code : mesh_codes) {
             mesh_codes_str_set.insert(mesh_code.get());
         }
-        // 繝輔ぃ繧､繝ｫ縺斐→縺ｫ mesh_codes_str_set 縺ｫ蜷ｫ縺ｾ繧後ｋ縺ｪ繧芽ｿｽ蜉?縺励※縺?″縺ｾ縺吶??
-        for (const auto& [sub_folder, files]: files_) {
-            for (const auto& file: files) {
+        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        for (const auto& [sub_folder, files] : files_) {
+            for (const auto& file : files) {
                 if (mesh_codes_str_set.find(file.getMeshCode().get()) != mesh_codes_str_set.end()) {
                     collection.addFile(sub_folder, file);
                 }
@@ -132,7 +132,7 @@ namespace plateau::udx {
     }
 
     std::shared_ptr<UdxFileCollection>
-    UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
+        UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
         auto result = std::make_shared<UdxFileCollection>();
         filterByMeshCodes(mesh_codes, *result);
         return result;
@@ -150,7 +150,7 @@ namespace plateau::udx {
         return getGmlFileInfo(package, index).getPath();
     }
 
-    const GmlFileInfo& UdxFileCollection::getGmlFileInfo(PredefinedCityModelPackage package, int index){
+    const GmlFileInfo& UdxFileCollection::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
@@ -179,62 +179,62 @@ namespace plateau::udx {
         return result;
     }
 
-    // fetch 縺ｧ菴ｿ縺?┌蜷埼未謨ｰ
-    namespace{
+    // fetch で使う無名関数
+    namespace {
         using ConstStrIterT = decltype(std::string("a").cbegin());
 
         /**
-         * @brief 豁｣隕剰｡ｨ迴ｾ縺ｧ讀懃ｴ｢縺励∪縺吶′縲√ヲ繝ｳ繝医ｒ荳弱∴繧九％縺ｨ縺ｧ讀懃ｴ｢繧帝ｫ倬?溷喧縺励∪縺吶??
-         *        繝偵Φ繝医→縺ｯ菴輔°縺ｫ縺､縺?※縺ｯ縲? 髢｢謨ｰ searchAllStringsBetween 縺ｮ繧ｳ繝｡繝ｳ繝医ｒ蜿ら?縺励※縺上□縺輔＞縲?
-         * @param str 讀懃ｴ｢蟇ｾ雎｡縺ｮ譁?ｭ怜?縺ｧ縺吶??
-         * @param search_pos 讀懃ｴ｢縺ｮ髢句ｧ倶ｽ咲ｽｮ縺ｧ縺吶??
-         * @param matched 讀懃ｴ｢邨先棡縺ｯ縺薙％縺ｫ譬ｼ邏阪＆繧後∪縺吶??
-         * @param regex 讀懃ｴ｢縺吶ｋ豁｣隕剰｡ｨ迴ｾ縺ｧ縺吶??
-         * @param hint 繝偵Φ繝域枚蟄怜?縺ｧ縺吶?よｭ｣隕剰｡ｨ迴ｾ縺梧､懃ｴ｢繝偵ャ繝医☆繧九→縺阪?√ヲ繝ｳ繝域枚蟄怜?縺悟ｿ?★讀懃ｴ｢繝偵ャ繝医＠縲?
-         *             縺九▽縺昴?繝偵Φ繝域枚蟄怜?縺ｮ蜻ｨ蝗ｲ縺ｮ謖?ｮ壹ヰ繧､繝域焚縺ｫ縺昴?豁｣隕剰｡ｨ迴ｾ繝偵ャ繝域枚蟄怜?縺悟性縺ｾ繧後ｋ縺薙→縺梧擅莉ｶ縺ｨ縺ｪ繧翫∪縺吶??
-         * @param search_range_before_hint 繝偵Φ繝域枚蟄怜?縺ｮ蜑阪?菴輔ヰ繧､繝育岼縺九ｉ豁｣隕剰｡ｨ迴ｾ縺ｫ繧医ｋ讀懃ｴ｢繧貞ｧ九ａ繧九°縺ｧ縺吶??
-         * @param search_range_after_hint 繝偵Φ繝域枚蟄怜?縺ｮ蠕後?菴輔ヰ繧､繝育岼縺ｾ縺ｧ豁｣隕剰｡ｨ迴ｾ縺ｫ繧医ｋ讀懃ｴ｢蟇ｾ雎｡縺ｫ縺吶ｋ縺九〒縺吶??
-         * @return 繝偵ャ繝医＠縺溘ｉtrue, 縺ｪ縺代ｌ縺ｰ false 繧定ｿ斐＠縺ｾ縺吶??
+         * @brief 正規表現で検索しますが、ヒントを与えることで検索を高速化します。
+         *        ヒントとは何かについては、 関数 searchAllStringsBetween のコメントを参照してください。
+         * @param str 検索対象の文字列です。
+         * @param search_pos 検索の開始位置です。
+         * @param matched 検索結果はここに格納されます。
+         * @param regex 検索する正規表現です。
+         * @param hint ヒント文字列です。正規表現が検索ヒットするとき、ヒント文字列が必ず検索ヒットし、
+         *             かつそのヒント文字列の周囲の指定バイト数にその正規表現ヒット文字列が含まれることが条件となります。
+         * @param search_range_before_hint ヒント文字列の前の何バイト目から正規表現による検索を始めるかです。
+         * @param search_range_after_hint ヒント文字列の後の何バイト目まで正規表現による検索対象にするかです。
+         * @return ヒットしたらtrue, なければ false を返します。
          */
         bool regexSearchWithHint(const std::string& str, ConstStrIterT search_pos, std::smatch& matched,
                                  const std::regex& regex, const std::string& hint,
                                  unsigned search_range_before_hint, unsigned search_range_after_hint
         ) {
             const auto str_begin = str.cbegin();
-            while(search_pos != str.cend()){
-                // 繝偵Φ繝医〒讀懃ｴ｢縺励∪縺吶??
+            while (search_pos != str.cend()) {
+                // ヒントで検索します。
                 auto hint_matched_pos = str.find(hint, search_pos - str_begin);
-                // 繝偵Φ繝医〒讀懃ｴ｢繝偵ャ繝医＠縺ｪ縺代ｌ縺ｰ縲∵ｭ｣隕剰｡ｨ迴ｾ縺ｧ繧よ､懃ｴ｢繝偵ャ繝医＠縺ｾ縺帙ｓ縲ゅ◎縺ｮ繧医≧縺ｪ繝偵Φ繝医′貂｡縺輔ｌ縺ｦ縺?ｋ縺薙→縺悟燕謠舌〒縺吶??
+                // ヒントで検索ヒットしなければ、正規表現でも検索ヒットしません。そのようなヒントが渡されていることが前提です。
                 if (hint_matched_pos == std::string::npos) return false;
-                // 繝偵Φ繝医′讀懃ｴ｢繝偵ャ繝医＠縺溘?縺ｧ縲√◎縺ｮ蜻ｨ蝗ｲ縺ｮ謖?ｮ壽焚縺ｮ繝舌う繝育ｯ?峇繧呈ｭ｣隕剰｡ｨ迴ｾ縺ｮ讀懃ｴ｢遽?峇縺ｫ縺励∪縺吶??
+                // ヒントが検索ヒットしたので、その周囲の指定数のバイト範囲を正規表現の検索範囲にします。
                 auto search_start =
-                        str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
-                auto search_end = std::min(str.end(), str_begin + (long long) hint_matched_pos + (long long)hint.size() + search_range_after_hint);
-                // 豁｣隕剰｡ｨ迴ｾ縺ｧ繝偵ャ繝医＠縺溘ｉ縲√◎縺ｮ邨先棡繧貞ｼ墓焚 matched 縺ｫ譬ｼ邏阪＠縺ｦ霑斐＠縺ｾ縺吶??
+                    str_begin + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
+                auto search_end = std::min(str.end(), str_begin + (long long)hint_matched_pos + (long long)hint.size() + search_range_after_hint);
+                // 正規表現でヒットしたら、その結果を引数 matched に格納して返します。
                 bool found = std::regex_search(search_start, search_end, matched, regex);
-                if(found) return true;
-                // 繝偵Φ繝医↓縺ｯ繝偵ャ繝医＠縺溘￠縺ｩ豁｣隕剰｡ｨ迴ｾ縺ｫ繝偵ャ繝医＠縺ｪ縺九▲縺溘こ繝ｼ繧ｹ縺ｧ縺吶?よ､懃ｴ｢菴咲ｽｮ繧帝?ｲ繧√※蜀榊ｺｦ繝偵Φ繝医ｒ讀懃ｴ｢縺励∪縺吶??
+                if (found) return true;
+                // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
                 search_pos = std::min(str.cend(), str_begin + (long long)hint_matched_pos + (long long)hint.size());
             }
 
         }
 
         /**
-         * 蠑墓焚譁?ｭ怜? str 縺ｮ縺?■縲∝ｼ墓焚 begin_tag_regex 縺ｨ end_tag_regex 縺ｧ蝗ｲ縺ｾ繧後◆譁?ｭ怜?繧偵☆縺ｹ縺ｦ讀懃ｴ｢縺? set 縺ｧ霑斐＠縺ｾ縺吶??
-         * end_tag_regex 縺ｯ begin_tag_regex 縺檎匳蝣ｴ縺吶ｋ邂?園繧医ｊ蠕後′讀懃ｴ｢蟇ｾ雎｡縺ｨ縺ｪ繧翫∪縺吶??
-         * begin_tag_regex 縺ｫ蟇ｾ蠢懊☆繧? end_tag_regex 縺後↑縺??ｴ蜷医?《tr縺ｮ譛ｫ蟆ｾ縺ｾ縺ｧ縺悟ｯｾ雎｡縺ｨ縺ｪ繧翫∪縺吶??
-         * 讀懃ｴ｢邨先棡縺ｮ縺?■蜷後§譁?ｭ怜?縺ｯ1縺､縺ｫ縺ｾ縺ｨ繧√ｉ繧後∪縺吶??
+         * 引数文字列 str のうち、引数 begin_tag_regex と end_tag_regex で囲まれた文字列をすべて検索し set で返します。
+         * end_tag_regex は begin_tag_regex が登場する箇所より後が検索対象となります。
+         * begin_tag_regex に対応する end_tag_regex がない場合、strの末尾までが対象となります。
+         * 検索結果のうち同じ文字列は1つにまとめられます。
          *
-         * 繝偵Φ繝医↓縺､縺?※:
-         * 讀懃ｴ｢縺ｮ鬮倬?溷喧縺ｮ縺溘ａ縺ｫ蠑墓焚縺ｧ繝偵Φ繝域枚蟄怜?繧剃ｸ弱∴繧句ｿ?ｦ√′縺ゅｊ縺ｾ縺吶??
-         * 萓九∴縺ｰ40MB縺ｮGML繝輔ぃ繧､繝ｫ縺ｫ蟇ｾ縺励※諢夂峩縺ｫ豁｣隕剰｡ｨ迴ｾ縺ｧ讀懃ｴ｢縺吶ｋ縺ｨ1蛻?30遘堤ｨ句ｺｦ縺ｮ譎る俣縺後°縺九ｊ縺ｾ縺吶??
-         * 蠑墓焚縺ｧ繝偵Φ繝医ｒ荳弱∴繧九％縺ｨ縺ｧ縲∵ｭ｣隕剰｡ｨ迴ｾ縺ｮ讀懃ｴ｢遽?峇縺檎強縺ｾ繧? 4遘堤ｨ句ｺｦ縺ｫ遏ｭ邵ｮ縺ｧ縺阪∪縺励◆縲?
-         * 繝偵Φ繝域枚蟄怜?縺ｨ縺ｯ縲∵ｭ｣隕剰｡ｨ迴ｾ縺梧､懃ｴ｢繝偵ャ繝医☆繧九→縺阪?√◎縺ｮ蝣ｴ謇?縺ｧ繝偵Φ繝域枚蟄怜?繧ょｿ?★繝偵ャ繝医☆繧九?√→縺?≧譚｡莉ｶ繧呈ｺ?縺溘☆譁?ｭ怜?縺ｧ縺吶??
-         * 萓九∴縺ｰ縲∵枚蟄怜? <start_tag> 繧呈､懃ｴ｢縺励◆縺?′縲?<諡ｬ蠑ｧ> 縺ｮ蜑榊ｾ後↓蜊願ｧ偵せ繝壹?繧ｹ縺悟?縺｣縺ｦ縺?ｋ繧ｱ繝ｼ繧ｹ繧よ､懃ｴ｢縺励◆縺?→縺?≧蝣ｴ蜷医??
-         * 讀懃ｴ｢豁｣隕剰｡ｨ迴ｾ縺ｯ < *start_tag *> 縺ｧ縺ゅｊ縲√ヲ繝ｳ繝域枚蟄怜?縺ｯ start_tag 縺ｨ縺ｪ繧翫∪縺吶??
-         * 縺薙?縺ｨ縺阪?√∪縺壽ｭ｣隕剰｡ｨ迴ｾ讀懃ｴ｢繧医ｊ繧るｫ倬?溘↑騾壼ｸｸ譁?ｭ怜?讀懃ｴ｢縺ｧ start_tag 縺梧､懃ｴ｢縺輔ｌ縺ｾ縺吶??
-         * 縺昴＠縺ｦ隕九▽縺九▲縺滉ｽ咲ｽｮ縺九ｉ蜑榊ｾ後↓謖?ｮ壹ヰ繧､繝域焚縺ｮ蟷?ｒ縺ｨ縺｣縺溽ｯ?峇繧呈ｭ｣隕剰｡ｨ迴ｾ縺ｧ讀懃ｴ｢縺励∪縺吶??
-         * 縺昴?遽?峇縺ｯ蠑墓焚 search_range_before_hint, search_range_after_hint 縺ｧ謖?ｮ壹＠縺ｾ縺吶?ゅ％縺ｮ蛟､縺ｯ蟆代↑縺?⊇縺?′騾溘￥縺ｪ繧翫∪縺吶??
+         * ヒントについて:
+         * 検索の高速化のために引数でヒント文字列を与える必要があります。
+         * 例えば40MBのGMLファイルに対して愚直に正規表現で検索すると1分30秒程度の時間がかかります。
+         * 引数でヒントを与えることで、正規表現の検索範囲が狭まり 4秒程度に短縮できました。
+         * ヒント文字列とは、正規表現が検索ヒットするとき、その場所でヒント文字列も必ずヒットする、という条件を満たす文字列です。
+         * 例えば、文字列 <start_tag> を検索したいが、<括弧> の前後に半角スペースが入っているケースも検索したいという場合、
+         * 検索正規表現は < *start_tag *> であり、ヒント文字列は start_tag となります。
+         * このとき、まず正規表現検索よりも高速な通常文字列検索で start_tag が検索されます。
+         * そして見つかった位置から前後に指定バイト数の幅をとった範囲を正規表現で検索します。
+         * その範囲は引数 search_range_before_hint, search_range_after_hint で指定します。この値は少ないほうが速くなります。
          */
         std::set<std::string> searchAllStringsBetween(
                 const std::regex& begin_tag_regex, const std::regex& end_tag_regex,
@@ -247,29 +247,29 @@ namespace plateau::udx {
             std::smatch end_tag_matched;
             auto begin_tag_search_iter = str.begin();
             while (true) {
-                // 髢句ｧ九ち繧ｰ繧呈､懃ｴ｢縺励∪縺吶??
+                // 開始タグを検索します。
                 if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
-                                         search_range_before_hint, search_range_after_hint)) {
+                    search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
-                // 邨ゆｺ?ち繧ｰ繧呈､懃ｴ｢縺励∪縺吶??
+                // 終了タグを検索します。
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
-                                        search_range_before_hint, search_range_after_hint)) {
-                    // 髢句ｧ九ち繧ｰ縺ｨ邨ゆｺ?ち繧ｰ縺ｫ謖溘∪繧後◆譁?ｭ怜?繧堤ｵ先棡縺ｨ縺励※譬ｼ邏阪＠縺ｾ縺吶??
+                    search_range_before_hint, search_range_after_hint)) {
+                    // 開始タグと終了タグに挟まれた文字列を結果として格納します。
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 } else {
                     found.insert(std::string(next_of_begin_tag, str.end()));
                     break;
                 }
                 const auto next_of_end_tag = end_tag_matched[0].second;
-                // 繧､繝?Ξ繝ｼ繧ｿ繝ｼ繧帝?ｲ繧√∪縺吶??
+                // イテレーターを進めます。
                 begin_tag_search_iter = next_of_end_tag;
             }
             return found;
         }
 
-        std::string loadFile(const fs::path& file_path){
+        std::string loadFile(const fs::path& file_path) {
             std::ifstream ifs(file_path.u8string());
             if (!ifs) {
                 throw std::runtime_error(
@@ -282,20 +282,20 @@ namespace plateau::udx {
 
         auto regex_options = std::regex::optimize | std::regex::nosubs;
 
-        std::set<std::string> searchAllImagePathsInGML(const std::string& file_content){
-            // 髢句ｧ九ち繧ｰ縺ｯ <app:imageURI> 縺ｧ縺吶?ゅ◆縺?縺励??<諡ｬ蠑ｧ> 縺ｮ蜑榊ｾ後↓蜊願ｧ偵せ繝壹?繧ｹ縺後≠縺｣縺ｦ繧り憶縺?ｂ縺ｮ縺ｨ縺励∪縺吶??
+        std::set<std::string> searchAllImagePathsInGML(const std::string& file_content) {
+            // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
             static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
-            // 邨ゆｺ?ち繧ｰ縺ｯ </app:imageURI> 縺ｧ縺吶?ゅ◆縺?縺励??<諡ｬ蠑ｧ> 縺ｨ /(繧ｹ繝ｩ繝?す繝･) 縺ｮ蜑榊ｾ後↓蜊願ｧ偵せ繝壹?繧ｹ縺後≠縺｣縺ｦ繧り憶縺?ｂ縺ｮ縺ｨ縺励∪縺吶??
+            // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
             static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
             static auto tag_hint = std::string("app:imageURI");
             auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
             return found_url_strings;
         }
 
-        std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content){
-            // 髢句ｧ九ち繧ｰ縺ｯ codeSpace=" 縺ｧ縺吶?ゅ◆縺?縺? =(繧､繧ｳ繝ｼ繝ｫ), "(繝?繝悶Ν繧ｯ繧ｩ繝ｼ繝??繧ｷ繝ｧ繝ｳ)縺ｮ蜑榊ｾ後↓蜊願ｧ偵せ繝壹?繧ｹ縺後≠縺｣縺ｦ繧り憶縺?ｂ縺ｮ縺ｨ縺励∪縺吶??
+        std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content) {
+            // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に半角スペースがあっても良いものとします。
             static const auto begin_tag = std::regex(R"(codeSpace *= *")", regex_options);
-            // 邨ゆｺ?ち繧ｰ縺ｯ縲?幕蟋九ち繧ｰ縺ｮ谺｡縺ｮ "(繝?繝悶Ν繧ｯ繧ｩ繝ｼ繝??繧ｷ繝ｧ繝ｳ)縺ｧ縺吶??
+            // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。
             static const auto end_tag = std::regex(R"(")", regex_options);
             static const auto begin_tag_hint = "codeSpace";
             auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
@@ -303,18 +303,18 @@ namespace plateau::udx {
         }
 
         /**
-         * 蠑墓焚縺ｮ set 縺ｮ荳ｭ霄ｫ繧堤嶌蟇ｾ繝代せ縺ｨ隗｣驥医＠縲? set縺ｮ蜷?ｦ∫ｴ?繧偵さ繝斐?縺励∪縺吶??
-         * 逶ｸ蟇ｾ繝代せ縺ｮ蝓ｺ貅悶? 繧ｳ繝斐?蜈?? 蠑墓焚 src_base_path縲? 繧ｳ繝斐?蜈医? dest_base_path 縺ｫ縺ｪ繧翫∪縺吶??
-         * 繧ｳ繝斐?蜈医↓蜷悟錐縺ｮ繝輔か繝ｫ繝?縺悟ｭ伜惠縺吶ｋ蝣ｴ蜷医?繧ｳ繝斐?縺励∪縺帙ｓ縲?
-         * 繧ｳ繝斐?蜈?′螳溷惠縺励↑縺??ｴ蜷医?繧ｳ繝斐?縺励∪縺帙ｓ縲?
+         * 引数の set の中身を相対パスと解釈し、 setの各要素をコピーします。
+         * 相対パスの基準は コピー元は 引数 src_base_path、 コピー先は dest_base_path になります。
+         * コピー先に同名のフォルダが存在する場合はコピーしません。
+         * コピー元が実在しない場合はコピーしません。
          */
-        void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path){
-            for(const auto& path : path_set){
+        void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path) {
+            for (const auto& path : path_set) {
                 auto src = src_base_path;
                 auto dest = dest_base_path;
                 src.append(path).make_preferred();
                 dest.append(path).make_preferred();
-                if(!fs::exists(src)){
+                if (!fs::exists(src)) {
                     std::cout << "file not exist : " << src.string() << std::endl;
                     continue;
                 }
@@ -322,7 +322,7 @@ namespace plateau::udx {
                 fs::copy(src, dest, fs::copy_options::skip_existing);
             }
         }
-    } // fetch 縺ｧ菴ｿ縺?┌蜷埼未謨ｰ
+    } // fetch で使う無名関数
 
 
     std::string UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
@@ -335,19 +335,19 @@ namespace plateau::udx {
         const auto& gml_file_path = gml_file.getPath();
         fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
 
-        // GML繝輔ぃ繧､繝ｫ繧定ｪｭ縺ｿ霎ｼ縺ｿ縲?未騾｣縺吶ｋ繝?け繧ｹ繝√Ε繝代せ縺ｨ繧ｳ繝ｼ繝峨Μ繧ｹ繝医ヱ繧ｹ繧貞叙蠕励＠縺ｾ縺吶??
+        // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
         const auto gml_content = loadFile(gml_file.getPath());
         auto image_paths = searchAllImagePathsInGML(gml_content);
         auto codelist_paths = searchAllCodelistPathsInGML(gml_content);
 
-        for(const auto& path : image_paths){
+        for (const auto& path : image_paths) {
             std::cout << path << std::endl;
         }
-        for(const auto& path : codelist_paths){
+        for (const auto& path : codelist_paths) {
             std::cout << path << std::endl;
         }
 
-        // 繝?け繧ｹ繝√Ε縺ｨ繧ｳ繝ｼ繝峨Μ繧ｹ繝医ヵ繧｡繧､繝ｫ繧偵さ繝斐?縺励∪縺吶??
+        // テクスチャとコードリストファイルをコピーします。
         auto gml_dir_path = fs::path(gml_file_path).parent_path();
         auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
         copyFiles(image_paths, gml_dir_path, app_destination_path);
@@ -365,7 +365,7 @@ namespace plateau::udx {
         double lat_sum = 0;
         double lon_sum = 0;
         double height_sum = 0;
-        for(const auto& mesh_code : mesh_codes){
+        for (const auto& mesh_code : mesh_codes) {
             const auto& center = mesh_code.getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
@@ -394,7 +394,7 @@ namespace plateau::udx {
     }
 
     void UdxFileCollection::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {
-        if(files_.count(sub_folder) <= 0){
+        if (files_.count(sub_folder) <= 0) {
             files_.emplace(sub_folder, std::vector<GmlFileInfo>());
         }
         files_.at(sub_folder).push_back(gml_file_info);
