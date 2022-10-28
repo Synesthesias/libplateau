@@ -107,6 +107,8 @@ namespace plateau::polygonMesh {
             const auto& other_indices_original = poly.getIndices();
             const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
 
+            assert(other_indices_original.size() % 3 == 0);
+
             // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
             std::vector<TVec3d> out_filtered_vertices;
             std::vector<unsigned int> out_filtered_indices;
@@ -116,10 +118,10 @@ namespace plateau::polygonMesh {
             const std::vector<unsigned int>* other_indices = &other_indices_original;
             const std::vector<TVec2f>* other_uv_1 = &other_uv_1_original;
 
+            out_filtered_vertices = std::vector<TVec3d>();
+            out_filtered_indices = std::vector<unsigned int>();
+            out_filtered_uv_1 = std::vector<TVec2f>();
             if (remove_triangles_outside_extent) {
-                out_filtered_vertices = std::vector<TVec3d>();
-                out_filtered_indices = std::vector<unsigned int>();
-                out_filtered_uv_1 = std::vector<TVec2f>();
                 removeTrianglesOutsideExtent(extent, vertices_lat_lon_original, other_indices_original,
                                              other_uv_1_original,
                                              out_filtered_vertices, out_filtered_indices, out_filtered_uv_1);
@@ -128,6 +130,10 @@ namespace plateau::polygonMesh {
                 other_uv_1 = &out_filtered_uv_1;
             }
 
+            assert(other_indices->size() % 3 == 0);
+
+            if(vertices_lat_lon->empty() || other_indices->empty()) return;
+
             // 極座標から平面直角座標へ変換します。
             out_vertices = std::vector<TVec3d>();
             out_vertices.reserve(vertices_lat_lon->size());
@@ -135,9 +141,13 @@ namespace plateau::polygonMesh {
                 auto xyz = geo_reference.projectWithoutAxisConvert(lat_lon);
                 out_vertices.push_back(xyz);
             }
+            assert(out_vertices.size() == vertices_lat_lon->size());
 
             // Indicesをコピーします。
             out_indices = *other_indices;
+
+            assert(out_indices.size() == other_indices->size());
+            assert(out_indices.size() % 3 == 0);
 
             // UV1をコピーし、頂点数に足りない分を 0 で埋めます。
             out_uv_1 = *other_uv_1;
