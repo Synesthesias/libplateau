@@ -228,7 +228,7 @@ namespace plateau::polygonMesh {
             if (!isValidMesh(other_mesh)) return;
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
-            mesh.extendLastSubMesh(mesh.getIndices().size());
+            mesh.extendLastSubMesh(mesh.getIndices().size() - 1);
 
         }
 
