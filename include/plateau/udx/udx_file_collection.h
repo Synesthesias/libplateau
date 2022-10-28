@@ -99,14 +99,14 @@ namespace plateau::udx {
          * \param extent 座標範囲
          * \return フィルタリングされた都市モデルデータ
          */
-        std::shared_ptr<UdxFileCollection> filter(geometry::Extent extent);
+        std::shared_ptr<UdxFileCollection> filter(const geometry::Extent& extent) const;
 
         /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
          * \param extent 座標範囲
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
-        void filter(geometry::Extent extent, UdxFileCollection& collection);
+        void filter(const geometry::Extent& extent, UdxFileCollection& collection) const;
 
         /**
          * \brief メッシュコードで都市モデルデータをフィルタリングします。

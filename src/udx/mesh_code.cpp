@@ -102,12 +102,17 @@ namespace plateau::udx {
         }
     }
 
-    bool MeshCode::isWithin(const MeshCode& other) const
-    {
+    bool MeshCode::isWithin(const MeshCode& other) const {
         if (get() == other.get())
             return true;
 
         return get().substr(0, 6) == other.get();
+    }
+
+    MeshCode MeshCode::asSecond() const {
+        auto result = *this;
+        result.level_ = 2;
+        return result;
     }
 
     std::string MeshCode::get() const {
@@ -129,11 +134,11 @@ namespace plateau::udx {
         return get() == other.get();
     }
 
-    bool MeshCode::operator<(MeshCode& other) const{
+    bool MeshCode::operator<(MeshCode& other) const {
         return std::stoi(get()) < std::stoi(other.get());
     }
 
-    bool MeshCode::operator<(const MeshCode& other) const{
+    bool MeshCode::operator<(const MeshCode& other) const {
         return std::stoi(get()) < std::stoi(other.get());
     }
 
