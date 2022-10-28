@@ -2,35 +2,46 @@
 #include <plateau/basemap/TileProjection.h>
 
 #include <httplib.h>
-#include  <filesystem>
+#include <filesystem>
 #include <fstream>
+#include <utility>
 
+namespace fs = std::filesystem;
 
-VectorTileDownloader::VectorTileDownloader(const char* uri) {
-    uri_ = uri;
+VectorTileDownloader::VectorTileDownloader(
+    std::string destination,
+    const plateau::geometry::Extent& extent,
+    const int zoom_level)
+    : url_(default_url_)
+    , destination_(std::move(destination))
+    , extent_(extent)
+    , zoom_level_(zoom_level)
+    , tiles_(TileProjection::getTileCoordinates(extent, zoom_level)) {
 }
 
-std::shared_ptr <VectorTile> VectorTileDownloader::download(
-    const char* destination,
+
+VectorTile VectorTileDownloader::download(
+    const std::string& url,
+    const std::string& destination,
     TileCoordinate coordinate
 ) {
-    auto vector_tile = std::make_shared<VectorTile>();
-    vector_tile->coordinate = coordinate;
+    VectorTile vector_tile;
+    vector_tile.coordinate = coordinate;
 
     //URI編集
-    int first = 0;
-    int last = uri_.find_first_of('/');
+    size_t first = 0;
+    auto last = url.find_first_of('/');
     std::vector<std::string> strs;
 
-    while (first < uri_.size()) {
-        std::string subStr(uri_, first, last - first);
+    while (first < url.size()) {
+        std::string subStr(url, first, last - first);
         strs.push_back(subStr);
 
-        first = last + 1;
-        last = uri_.find_first_of('/', first);
+        first = last + 1ull;
+        last = url.find_first_of('/', first);
 
         if (last == std::string::npos) {
-            last = uri_.size();
+            last = url.size();
         }
     }
 
@@ -50,24 +61,60 @@ std::shared_ptr <VectorTile> VectorTileDownloader::download(
             return true; // return 'false' if you want to cancel the request.
         });
 
-    std::string extension = ".png";
-    std::string dest = destination;
-    std::string foldPath = dest + "\\" + std::to_string(coordinate.zoom_level) + "\\"
-        + std::to_string(coordinate.column);
-    std::filesystem::create_directories(foldPath);
-    std::string filePath = foldPath + "\\" + std::to_string(coordinate.row) + extension;
-    std::fstream fs(filePath, std::ios::out | std::ios::binary | std::ios::trunc);
+    const std::string extension = ".png";
+    auto folder_path =
+        fs::u8path(destination)
+        .append(std::to_string(coordinate.zoom_level))
+        .append(std::to_string(coordinate.column));
+    create_directories(folder_path);
+    auto file_path = folder_path.append(std::to_string(coordinate.row) + extension);
+    std::fstream fs(file_path, std::ios::out | std::ios::binary | std::ios::trunc);
     fs.write(body.c_str(), body.length());
 
-    vector_tile->image_path = filePath;
+    vector_tile.image_path = file_path.u8string();
 
     return vector_tile;
 }
 
-const char* VectorTileDownloader::getUri() {
-    return uri_.c_str();
+void VectorTileDownloader::updateTileCoordinates() {
+    tiles_ = TileProjection::getTileCoordinates(extent_, zoom_level_);
 }
 
-void VectorTileDownloader::setUri(char* uri) {
-    uri_ = uri;
+void VectorTileDownloader::setExtent(const plateau::geometry::Extent& extent) {
+    extent_ = extent;
+
+    updateTileCoordinates();
+}
+
+int VectorTileDownloader::getTileCount() const {
+    if (tiles_ == nullptr)
+        return 0;
+
+    return static_cast<int>(tiles_->size());
+}
+
+TileCoordinate VectorTileDownloader::getTile(int index) const {
+    if (tiles_ == nullptr)
+        return {};
+
+    return (*tiles_)[index];
+}
+
+VectorTile VectorTileDownloader::download(const int index) const {
+    if (tiles_ == nullptr)
+        return {};
+
+    return download(url_, destination_, (*tiles_)[index]);
+}
+
+const std::string& VectorTileDownloader::getUrl() {
+    return url_;
+}
+
+void VectorTileDownloader::setUrl(const std::string& value) {
+    url_ = value;
+}
+
+std::string VectorTileDownloader::getDefaultUrl() {
+    return default_url_;
 }
