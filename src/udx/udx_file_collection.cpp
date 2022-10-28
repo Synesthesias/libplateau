@@ -91,25 +91,27 @@ namespace plateau::udx {
         }
     }
 
-    std::shared_ptr<UdxFileCollection> UdxFileCollection::filter(geometry::Extent extent) {
+    std::shared_ptr<UdxFileCollection> UdxFileCollection::filter(const geometry::Extent& extent) const {
         auto result = std::make_shared<UdxFileCollection>();
         filter(extent, *result);
         return result;
     }
 
-    void UdxFileCollection::filter(geometry::Extent extent, UdxFileCollection& collection) {
+    void UdxFileCollection::filter(const geometry::Extent& extent, UdxFileCollection& collection) const {
         std::vector<MeshCode> mesh_codes;
         MeshCode::getThirdMeshes(extent, mesh_codes);
+        std::set<std::string> second_mesh_strings;
 
-        for (const auto& [sub_folder, files] : files_) {
-            for (const auto& file : files) {
-                for (const auto& mesh_code : mesh_codes) {
-                    if (mesh_code.isWithin(file.getMeshCode())) {
-                        collection.addFile(sub_folder, file);
-                    }
-                }
-            }
+        // 2次メッシュのリスト取得
+        for (const auto& mesh_code : mesh_codes) {
+            second_mesh_strings.insert(mesh_code.asSecond().get());
         }
+
+        for (const auto& second_mesh_string : second_mesh_strings) {
+            mesh_codes.emplace_back(second_mesh_string);
+        }
+
+        filterByMeshCodes(mesh_codes, collection);
     }
 
     void UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
