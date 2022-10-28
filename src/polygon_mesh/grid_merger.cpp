@@ -104,14 +104,26 @@ namespace plateau::polygonMesh {
         const auto& primary_city_objs = city_model.getAllCityObjectsOfType(
                 PrimaryCityObjectTypes::getPrimaryTypeMask());
         const auto& city_envelope = city_model.getEnvelope();
-        auto grid_id_to_objs_map = classifyCityObjsToGrid(primary_city_objs, city_envelope, options);
+        auto grid_id_to_primary_objs_map = classifyCityObjsToGrid(primary_city_objs, city_envelope, options);
 
-        // 主要地物の子（最小地物）を親と同じグリッドに追加します。
+        // このMapに入れられた都市オブジェクトが変換対象となります。
+        auto grid_id_to_objs_map = GridIDToObjsMap();
+        // キーとなるグリッドIDだけコピーします。
+        for(const auto& pair : grid_id_to_primary_objs_map){
+            grid_id_to_objs_map[pair.first] = std::list<CityObjectWithImportID>();
+        }
+
+        // 主要地物とその子（最小地物）を親と同じグリッドに追加します。
         // 意図はグリッドの端で同じ建物が分断されないようにするためです。
-        for (const auto& pair: grid_id_to_objs_map) {
+        for (const auto& pair: grid_id_to_primary_objs_map) {
             unsigned grid_id = pair.first;
             const auto& primary_objs = pair.second;
             for (const auto& primary_obj: primary_objs) {
+                // 主要地物を追加します（追加するべき場合のみ）
+                if(MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj.getCityObject())){
+                    grid_id_to_objs_map.at(grid_id).push_back(primary_obj);
+                }
+                // 子の最小地物を同じグリッドに追加します。
                 int primary_id = primary_obj.getPrimaryImportID();
                 auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj.getCityObject());
                 int secondary_id = 0;
@@ -125,18 +137,18 @@ namespace plateau::polygonMesh {
 
         // グリッドをさらに分割してグループにします。
         // グループの分割基準:
-        // 今のLODをn、仕様上存在しうる最大LODをm として、各オブジェクトを次のグループに分けます。
-        // - 同じオブジェクトが (0, 1, 2, ..., m) のLODであるポリゴンをどれも有する
-        // - 同じオブジェクトが (0, 1, 2, ..., m-1) のLODであるポリゴンをどれも有し、mを有しない
+        // 仕様上存在しうる最大LODをm として、各オブジェクトを次のグループに分けます。
+        // - 同じオブジェクトが (0, 1, 2, ..., m) のLODであるポリゴンをどれも有する つまり 全LODに対応する
+        // - 同じオブジェクトが (0, 1, 2, ..., m-1) のLODであるポリゴンをどれも有し、mを有しない つまり 最大LODを除く全LODに対応する
         // - ...
-        // - 同じオブジェクトが (0, 1) のLODであるポリゴンをどれも有し、(2, 3, ..., m)のLODであるポリゴンをどれも有しない
-        // - 同じオブジェクトが (0) のLODであるポリゴンを有し、(1, 2, 3,  ..., m) のLODであるポリゴンをどれも有しない
+        // - 同じオブジェクトが (0, 1) のLODであるポリゴンをどれも有し、(2, 3, ..., m)のLODであるポリゴンをどれも有しない つまり LOD 0, 1のみに対応する
+        // - 同じオブジェクトが (0) のLODであるポリゴンを有し、(1, 2, 3,  ..., m) のLODであるポリゴンをどれも有しない つまり LOD 0 のみに対応する
         // 今の仕様上、mは3なので、各グリッドは最大4つに分割されます。
         // したがって、grid 0 と group 0 to 3 が対応します。 grid1 と group 4 to 7 が対応します。
         // 一般化すると、 grid i と group (i*m) to (i*(m+1)-1)が対応します。
         // 仕様上、あるオブジェクトのLOD i が存在すれば、同じオブジェクトの lod 0 to i-1 がすべて存在します。したがって、各オブジェクトは必ず上記グループのどれか1つに該当するはずです。
         // そのようにグループ分けする利点は、
-        // 「高いLODを表示したいけど、低いLODにしか対応していない箇所が穴になってしまう」という状況で、穴をちょうど埋める範囲の低LODグループが存在することです。
+        // 「高いLODを表示したが、低いLODにしか対応していない箇所が穴になってしまう」という状況で、穴をちょうど埋める範囲の低LODグループが存在することです。
         auto group_id_to_objs_map = GroupIDToObjsMap();
         for (const auto& grid_objs_pair: grid_id_to_objs_map) {
             auto grid_id = grid_objs_pair.first;

@@ -14,19 +14,6 @@ namespace plateau::polygonMesh {
             return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
         }
 
-        namespace {
-            /**
-             * 主要地物のメッシュを含むべきかどうかを bool で返します。
-             * LOD2以上である建物は、主要地物の子である最小地物に必要なメッシュが入ります。
-             * そのため主要地物のメッシュを含めるとダブるため含めません。
-             */
-            bool shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
-                return !(lod >= 2 && // ( LODが2以上 かつ
-                         (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
-                         (citygml::CityObject::CityObjectsType) 0); // ビット演算で、フラグに Building を含む)の NOT
-            }
-        }
-
         void extractInner(Model& out_model, const citygml::CityModel& city_model,
                           const MeshExtractOptions& options) {
             if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
@@ -67,7 +54,7 @@ namespace plateau::polygonMesh {
                             if (shouldSkipCityObj(*primary_obj, options)) continue;
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
-                            if (shouldContainPrimaryMesh(lod, *primary_obj)) {
+                            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, geo_reference,
                                                                       TVec2f{0, 0},
                                                                       TVec2f{0, 0}, city_model.getGmlPath());
@@ -95,7 +82,7 @@ namespace plateau::polygonMesh {
                             // 主要地物のノードを作成します。
                             auto primary_mesh = std::optional<Mesh>(std::nullopt);
 
-                            if (shouldContainPrimaryMesh(lod, *primary_obj)) {
+                            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 primary_mesh = Mesh(primary_obj->getId());
                                 MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options,
                                                                       geo_reference,
@@ -140,5 +127,11 @@ namespace plateau::polygonMesh {
     void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model,
                                 const MeshExtractOptions& options) {
         extractInner(out_model, city_model, options);
+    }
+
+    bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
+        return !(lod >= 2 && // ( LODが2以上 かつ
+                 (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
+                 (citygml::CityObject::CityObjectsType) 0); // ビット演算で、フラグに Building を含む)の NOT
     }
 }
