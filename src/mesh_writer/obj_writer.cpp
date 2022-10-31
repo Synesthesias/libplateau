@@ -108,15 +108,15 @@ namespace plateau::meshWriter {
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Model& model) {
-        auto ofs = std::ofstream(obj_file_path);
+    void ObjWriter::writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
+        auto ofs = std::ofstream(fs::u8path(obj_file_path_utf8));
         if (!ofs.is_open()) {
-            throw std::string("Failed to open stream of obj path : ") + obj_file_path;
+            throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path_utf8);
         }
         ofs << std::fixed << std::setprecision(6);
 
         // MTL参照
-        const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
+        const auto mtl_file_name = fs::u8path(obj_file_path_utf8).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
         auto& root_node = model.getRootNodeAt(0);

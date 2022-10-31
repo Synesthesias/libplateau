@@ -20,7 +20,7 @@ namespace plateau::meshWriter {
 
     private:
         // OBJ書き出し
-        void writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Model& model);
+        void writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model);
         void writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node);
         void writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node);
         void writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices);
