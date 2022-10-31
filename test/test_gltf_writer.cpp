@@ -47,19 +47,24 @@ namespace plateau::meshWriter {
         assertFileExists(expected_output_bin_);
     }
 
+
     TEST_F(GltfWriterTest, export_path_can_contain_multibyte_chars){ // NOLINT
         fs::remove_all(u8"./tempTestDestDir");
-        auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト");
-        auto texture_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト/テクスチャ");
+        auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語対応テスト");
+        fs::create_directories(output_dir);
+        auto texture_dir = fs::u8path(u8"./tempTestDtDir/日本語対応テスト/tex");
         auto expected_output_gltf = fs::path(output_dir).append(basename_ + ".gltf");
+        auto expected_output_bin = fs::path(output_dir).append(basename_ + ".bin");
         GltfWriteOptions gltf_options;
         gltf_options.mesh_file_format = GltfFileFormat::GLTF;
         gltf_options.texture_directory_path = texture_dir.u8string();
 
         auto result = GltfWriter().write(expected_output_gltf.u8string(), *model_, gltf_options);
 
-        assertFileExists(expected_output_gltf.u8string());
-
+        ASSERT_TRUE(result);
+        assertFileExists(expected_output_gltf.string());
+        assertFileExists(expected_output_bin.string());
+        fs::remove_all(u8"./tempTestDestDir");
     }
 
     void GltfWriterTest::assertFileExists(const std::string& file_path) {
