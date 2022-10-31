@@ -31,7 +31,8 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(coordinate.column, 29106);
     ASSERT_EQ(coordinate.row, 12919);
 
-    auto tile = downloader.download(0);
+    VectorTile tile;
+    downloader.download(0, tile);
 
     ASSERT_EQ(tile.coordinate.zoom_level, 15);
     ASSERT_EQ(tile.coordinate.column, 29106);

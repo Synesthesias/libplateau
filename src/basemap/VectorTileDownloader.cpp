@@ -20,13 +20,13 @@ VectorTileDownloader::VectorTileDownloader(
 }
 
 
-VectorTile VectorTileDownloader::download(
+void VectorTileDownloader::download(
     const std::string& url,
     const std::string& destination,
-    TileCoordinate coordinate
+    const TileCoordinate& coordinate,
+    VectorTile& out_vector_tile
 ) {
-    VectorTile vector_tile;
-    vector_tile.coordinate = coordinate;
+    out_vector_tile.coordinate = coordinate;
 
     //URI編集
     size_t first = 0;
@@ -71,9 +71,7 @@ VectorTile VectorTileDownloader::download(
     std::fstream fs(file_path, std::ios::out | std::ios::binary | std::ios::trunc);
     fs.write(body.c_str(), body.length());
 
-    vector_tile.image_path = file_path.u8string();
-
-    return vector_tile;
+    out_vector_tile.image_path = file_path.u8string();
 }
 
 void VectorTileDownloader::updateTileCoordinates() {
@@ -100,11 +98,21 @@ TileCoordinate VectorTileDownloader::getTile(int index) const {
     return (*tiles_)[index];
 }
 
-VectorTile VectorTileDownloader::download(const int index) const {
+std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) const {
     if (tiles_ == nullptr)
-        return {};
+        return nullptr;
 
-    return download(url_, destination_, (*tiles_)[index]);
+    const auto result = std::make_shared<VectorTile>();
+    download(url_, destination_, (*tiles_)[index], *result);
+
+    return result;
+}
+
+void VectorTileDownloader::download(int index, VectorTile& out_vector_tile) const {
+    if (tiles_ == nullptr)
+        out_vector_tile = {};
+
+    download(url_, destination_, (*tiles_)[index], out_vector_tile);
 }
 
 const std::string& VectorTileDownloader::getUrl() {
@@ -115,6 +123,6 @@ void VectorTileDownloader::setUrl(const std::string& value) {
     url_ = value;
 }
 
-std::string VectorTileDownloader::getDefaultUrl() {
+const std::string& VectorTileDownloader::getDefaultUrl() {
     return default_url_;
 }
