@@ -326,8 +326,7 @@ namespace plateau::udx {
         }
     } // fetch で使う無名関数
 
-
-    std::string UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
+    void UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
         const auto root_folder_name = fs::u8path(udx_path_).parent_path().filename().string();
         auto destination_root = fs::u8path(destination_root_path);
         const auto destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
@@ -335,7 +334,11 @@ namespace plateau::udx {
         gml_destination_path.append(getRelativePath(gml_file.getPath()));
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = gml_file.getPath();
-        fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
+        try {
+            fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
+        }
+        catch (...) {
+        }
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
         const auto gml_content = loadFile(gml_file.getPath());
@@ -354,8 +357,6 @@ namespace plateau::udx {
         auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
         copyFiles(image_paths, gml_dir_path, app_destination_path);
         copyFiles(codelist_paths, gml_dir_path, app_destination_path);
-
-        return gml_destination_path.u8string();
     }
 
     std::string UdxFileCollection::getU8RelativePath(const std::string& path) const {

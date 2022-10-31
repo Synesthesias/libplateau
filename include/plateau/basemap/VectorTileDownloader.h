@@ -27,13 +27,14 @@ public:
 
     int getTileCount() const;
     TileCoordinate getTile(int index) const;
-    VectorTile download(int index) const;
+    std::shared_ptr<VectorTile> download(int index) const;
+    void download(int index, VectorTile& out_vector_tile) const;
 
     const std::string& getUrl();
     void setUrl(const std::string& value);
 
-    static std::string getDefaultUrl();
-    static VectorTile download(const std::string& url, const std::string& destination, TileCoordinate coordinate);
+    static const std::string& getDefaultUrl();
+    static void download(const std::string& url, const std::string& destination, const TileCoordinate& coordinate, VectorTile& out_vector_tile);
 
 private:
     static inline std::string default_url_ = "http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
