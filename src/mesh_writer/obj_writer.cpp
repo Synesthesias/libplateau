@@ -5,11 +5,6 @@
 #include <filesystem>
 
 #include <citygml/citymodel.h>
-#include <citygml/geometry.h>
-#include <citygml/polygon.h>
-#include <citygml/texture.h>
-
-#include <plateau/polygon_mesh/primary_city_object_types.h>
 
 #include <plateau/mesh_writer/obj_writer.h>
 
@@ -140,7 +135,7 @@ namespace plateau::meshWriter {
 
     void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
 
-        auto node_name = node.getName();
+        const auto& node_name = node.getName();
 
         const auto& mesh = node.getMesh();
         if (mesh.has_value()) {
@@ -157,11 +152,11 @@ namespace plateau::meshWriter {
 
                 writeVertices(ofs, vertices);
 
-                if (0 < uvs.size()) {
+                if (!uvs.empty()) {
                     std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
                     for (const auto& uv : uvs) {
                         auto t = uv;
-                        t.y = 1.0 - uv.y;
+                        t.y = (float)1.0 - uv.y;
                         texcoords.push_back(t);
                     }
                     writeUVs(ofs, uvs);
@@ -170,7 +165,7 @@ namespace plateau::meshWriter {
                 for (auto& sub_mesh : sub_meshes) {
                     auto st = sub_mesh.getStartIndex();
                     auto ed = sub_mesh.getEndIndex();
-                    std::vector<unsigned int> indices(all_indices.begin() + st, all_indices.begin() + ed + 1);
+                    std::vector<unsigned int> indices(all_indices.begin() + (long long)st, all_indices.begin() + (long long)ed + 1);
 
                     auto texUrl = sub_mesh.getTexturePath();
                     std::replace(texUrl.begin(), texUrl.end(), '\\', '/');
@@ -200,7 +195,7 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) {
+    void ObjWriter::writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) const {
         unsigned face[3];
         for (unsigned i = 0; i < indices.size(); i++) {
             face[i % 3] = indices[i] + v_offset_ + 1;
@@ -213,7 +208,7 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices) {
+    void ObjWriter::writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices) const {
         unsigned face[3] = {};
         unsigned uv_face[3] = {};
         for (unsigned i = 0; i < indices.size(); i++) {
@@ -230,8 +225,8 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::string texUrl) {
-        if (texUrl == "") {
+    void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::string& texUrl) {
+        if (texUrl.empty()) {
             applyDefaultMaterial(ofs);
             return;
         }

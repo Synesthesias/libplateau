@@ -32,7 +32,7 @@ namespace plateau::meshWriter {
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
         const std::shared_ptr<plateau::polygonMesh::Model> model_ = plateau::polygonMesh::MeshExtractor::extract(*city_model_, options);
 
-        void assertFileExists(const fs::path& file_path);
+        static void assertFileExists(const fs::path& file_path);
     };
 
     TEST_F(ObjWriterTest, OutputsObjAndMtl) { // NOLINT
