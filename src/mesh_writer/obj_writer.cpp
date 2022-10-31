@@ -89,7 +89,7 @@ namespace plateau::meshWriter {
         uv_offset_ = 0;
         required_materials_.clear();
 
-        std::filesystem::path path = obj_file_path;
+        std::filesystem::path path = std::filesystem::u8path(obj_file_path);
         if (path.is_relative()) {
             auto pathCurrent = std::filesystem::current_path();
             pathCurrent /= path;

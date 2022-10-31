@@ -35,7 +35,7 @@ namespace plateau::meshWriter {
         void assertFileExists(const std::string& file_path);
     };
 
-    TEST_F(ObjWriterTest, OutputsObjAndMtl) {
+    TEST_F(ObjWriterTest, OutputsObjAndMtl) { // NOLINT
         fs::remove(expected_output_obj_);
         fs::remove(expected_output_mtl_);
 
@@ -43,6 +43,14 @@ namespace plateau::meshWriter {
 
         assertFileExists(expected_output_obj_);
         assertFileExists(expected_output_mtl_);
+    }
+
+    TEST_F(ObjWriterTest, when_export_path_contains_multibyte_chars){ // NOLINT
+        auto output_dir = fs::u8path(u8"./tempTestDestDir_日本語パス");
+        auto expected_output_obj = output_dir.append(basename_ + ".obj");
+        auto result = ObjWriter().write(expected_output_obj.string(), *model_);
+        ASSERT_TRUE(result);
+        assertFileExists(expected_output_obj.string());
     }
 
     void ObjWriterTest::assertFileExists(const std::string& file_path) {
