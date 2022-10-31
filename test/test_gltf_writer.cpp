@@ -29,8 +29,9 @@ namespace plateau::meshWriter {
         plateau::polygonMesh::MeshExtractOptions mesh_extract_options_;
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
         const std::shared_ptr<plateau::polygonMesh::Model> model_ = plateau::polygonMesh::MeshExtractor::extract(*city_model_, mesh_extract_options_);
-        
+
         void assertFileExists(const std::string& file_path);
+        bool exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path, fs::path output_texture_dir);
     };
 
     TEST_F(GltfWriterTest, OutputsGltfAndBin) {
@@ -48,18 +49,18 @@ namespace plateau::meshWriter {
     }
 
 
-    TEST_F(GltfWriterTest, export_path_can_contain_multibyte_chars){ // NOLINT
+    TEST_F(GltfWriterTest, gltf_export_path_can_contain_multibyte_chars){ // NOLINT
         fs::remove_all(u8"./tempTestDestDir");
+
         auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語対応テスト");
-        fs::create_directories(output_dir);
-        auto texture_dir = fs::u8path(u8"./tempTestDtDir/日本語対応テスト/tex");
         auto expected_output_gltf = fs::path(output_dir).append(basename_ + ".gltf");
         auto expected_output_bin = fs::path(output_dir).append(basename_ + ".bin");
-        GltfWriteOptions gltf_options;
-        gltf_options.mesh_file_format = GltfFileFormat::GLTF;
-        gltf_options.texture_directory_path = texture_dir.u8string();
 
-        auto result = GltfWriter().write(expected_output_gltf.u8string(), *model_, gltf_options);
+        auto result = exportGltf(
+                GltfFileFormat::GLTF, output_dir, expected_output_gltf,
+                fs::u8path(u8"./tempTestDtDir/日本語対応テスト/テクスチャ"));
+
+
 
         ASSERT_TRUE(result);
         assertFileExists(expected_output_gltf.string());
@@ -67,9 +68,36 @@ namespace plateau::meshWriter {
         fs::remove_all(u8"./tempTestDestDir");
     }
 
+    TEST_F(GltfWriterTest, glb_export_path_can_contain_multibyte_chars){ // NOLINT
+        fs::remove_all(u8"./tempTestDestDir");
+        auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語対応テスト");
+        fs::create_directories(output_dir);
+        auto expected_output_glb = fs::path(output_dir).append(basename_ + ".glb");
+
+        auto result = exportGltf(
+                GltfFileFormat::GLB,
+                output_dir,expected_output_glb,
+                fs::u8path(u8"./tempTestDtDir/日本語対応テスト/テクスチャ"));
+
+        ASSERT_TRUE(result);
+        assertFileExists(expected_output_glb.string());
+        fs::remove_all(u8"./tempTestDestDir");
+    }
+
     void GltfWriterTest::assertFileExists(const std::string& file_path) {
         std::ifstream ifs(file_path);
         ASSERT_TRUE(ifs.is_open());
         ifs.close();
+    }
+
+    bool GltfWriterTest::exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path, fs::path texture_dir){
+        fs::create_directories(output_dir);
+
+        GltfWriteOptions gltf_options;
+        gltf_options.mesh_file_format = file_format;
+        gltf_options.texture_directory_path = texture_dir.u8string();
+
+        auto is_succeed = GltfWriter().write(output_gltf_path.u8string(), *model_, gltf_options);
+        return is_succeed;
     }
 }
