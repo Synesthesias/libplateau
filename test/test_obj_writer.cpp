@@ -45,7 +45,7 @@ namespace plateau::meshWriter {
         assertFileExists(expected_output_mtl_);
     }
 
-    TEST_F(ObjWriterTest, export_path_can_contain_multibyte_chars){ // NOLINT
+    TEST_F(ObjWriterTest, export_path_can_contain_multibyte_chars) { // NOLINT
         fs::remove_all(u8"./tempTestDestDir");
         auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト/");
         fs::create_directories(output_dir);

@@ -47,6 +47,21 @@ namespace plateau::meshWriter {
         assertFileExists(expected_output_bin_);
     }
 
+    TEST_F(GltfWriterTest, export_path_can_contain_multibyte_chars){ // NOLINT
+        fs::remove_all(u8"./tempTestDestDir");
+        auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト");
+        auto texture_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト/テクスチャ");
+        auto expected_output_gltf = fs::path(output_dir).append(basename_ + ".gltf");
+        GltfWriteOptions gltf_options;
+        gltf_options.mesh_file_format = GltfFileFormat::GLTF;
+        gltf_options.texture_directory_path = texture_dir.u8string();
+
+        auto result = GltfWriter().write(expected_output_gltf.u8string(), *model_, gltf_options);
+
+        assertFileExists(expected_output_gltf.u8string());
+
+    }
+
     void GltfWriterTest::assertFileExists(const std::string& file_path) {
         std::ifstream ifs(file_path);
         ASSERT_TRUE(ifs.is_open());
