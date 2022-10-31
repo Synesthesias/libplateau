@@ -17,24 +17,27 @@ namespace plateau::meshWriter {
         void SetUp() override {
             params_.tesselate = true;
         }
+
         ParserParams params_;
-        
+
 
         const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
         std::string output_directory_ = ".";
         std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
-        std::string expected_output_gltf_ = fs::path(output_directory_).append(basename_).string() + ".gltf";
-        std::string expected_output_bin_ = fs::path(output_directory_).append(basename_).string() + ".bin";
+        fs::path expected_output_gltf_ = fs::path(output_directory_).append(basename_ + ".gltf");
+        fs::path expected_output_bin_ = fs::path(output_directory_).append(basename_ + ".bin");
 
         plateau::polygonMesh::MeshExtractOptions mesh_extract_options_;
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
-        const std::shared_ptr<plateau::polygonMesh::Model> model_ = plateau::polygonMesh::MeshExtractor::extract(*city_model_, mesh_extract_options_);
+        const std::shared_ptr<plateau::polygonMesh::Model> model_ = plateau::polygonMesh::MeshExtractor::extract(
+                *city_model_, mesh_extract_options_);
 
-        void assertFileExists(const std::string& file_path);
-        bool exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path, fs::path output_texture_dir);
+        void assertFileExists(const fs::path& file_path);
+        bool exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path,
+                        fs::path output_texture_dir);
     };
 
-    TEST_F(GltfWriterTest, OutputsGltfAndBin) {
+    TEST_F(GltfWriterTest, OutputsGltfAndBin) { // NOLINT
         GltfWriteOptions gltf_options;
         gltf_options.mesh_file_format = GltfFileFormat::GLTF;
         gltf_options.texture_directory_path = "./texture";
@@ -42,14 +45,15 @@ namespace plateau::meshWriter {
         fs::remove(expected_output_gltf_);
         fs::remove(expected_output_bin_);
 
-        auto result = GltfWriter().write(expected_output_gltf_, *model_, gltf_options);
+        auto result = GltfWriter().write(expected_output_gltf_.string(), *model_, gltf_options);
 
+        ASSERT_TRUE(result);
         assertFileExists(expected_output_gltf_);
         assertFileExists(expected_output_bin_);
     }
 
 
-    TEST_F(GltfWriterTest, gltf_export_path_can_contain_multibyte_chars){ // NOLINT
+    TEST_F(GltfWriterTest, gltf_export_path_can_contain_multibyte_chars) { // NOLINT
         fs::remove_all(u8"./tempTestDestDir");
 
         auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語対応テスト");
@@ -61,14 +65,13 @@ namespace plateau::meshWriter {
                 fs::u8path(u8"./tempTestDtDir/日本語対応テスト/テクスチャ"));
 
 
-
         ASSERT_TRUE(result);
-        assertFileExists(expected_output_gltf.string());
-        assertFileExists(expected_output_bin.string());
+        assertFileExists(expected_output_gltf);
+        assertFileExists(expected_output_bin);
         fs::remove_all(u8"./tempTestDestDir");
     }
 
-    TEST_F(GltfWriterTest, glb_export_path_can_contain_multibyte_chars){ // NOLINT
+    TEST_F(GltfWriterTest, glb_export_path_can_contain_multibyte_chars) { // NOLINT
         fs::remove_all(u8"./tempTestDestDir");
         auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語対応テスト");
         fs::create_directories(output_dir);
@@ -76,21 +79,22 @@ namespace plateau::meshWriter {
 
         auto result = exportGltf(
                 GltfFileFormat::GLB,
-                output_dir,expected_output_glb,
+                output_dir, expected_output_glb,
                 fs::u8path(u8"./tempTestDtDir/日本語対応テスト/テクスチャ"));
 
         ASSERT_TRUE(result);
-        assertFileExists(expected_output_glb.string());
+        assertFileExists(expected_output_glb);
         fs::remove_all(u8"./tempTestDestDir");
     }
 
-    void GltfWriterTest::assertFileExists(const std::string& file_path) {
+    void GltfWriterTest::assertFileExists(const fs::path& file_path) {
         std::ifstream ifs(file_path);
         ASSERT_TRUE(ifs.is_open());
         ifs.close();
     }
 
-    bool GltfWriterTest::exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path, fs::path texture_dir){
+    bool GltfWriterTest::exportGltf(GltfFileFormat file_format, fs::path output_dir, fs::path output_gltf_path,
+                                    fs::path texture_dir) {
         fs::create_directories(output_dir);
 
         GltfWriteOptions gltf_options;

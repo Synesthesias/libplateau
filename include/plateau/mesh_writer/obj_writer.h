@@ -16,7 +16,7 @@ namespace plateau::meshWriter {
             v_offset_(0), uv_offset_(0), required_materials_() {
         }
 
-        bool write(const std::string& obj_file_path, const plateau::polygonMesh::Model& model);
+        bool write(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model);
 
     private:
         // OBJ書き出し
@@ -30,7 +30,7 @@ namespace plateau::meshWriter {
         void writeMaterialReference(std::ofstream& ofs, const std::string texUrl);
 
         // MTL書き出し
-        void writeMtl(const std::string& obj_file_path);
+        void writeMtl(const std::string& obj_file_path_utf8);
 
 
         std::map<std::string, std::string> required_materials_;

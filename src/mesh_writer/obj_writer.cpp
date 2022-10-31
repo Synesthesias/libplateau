@@ -82,14 +82,14 @@ namespace {
 }
 
 namespace plateau::meshWriter {
-    bool ObjWriter::write(const std::string& obj_file_path, const plateau::polygonMesh::Model& model) {
+    bool ObjWriter::write(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
 
         // 内部状態初期化
         v_offset_ = 0;
         uv_offset_ = 0;
         required_materials_.clear();
 
-        std::filesystem::path path = std::filesystem::u8path(obj_file_path);
+        std::filesystem::path path = std::filesystem::u8path(obj_file_path_utf8);
         if (path.is_relative()) {
             auto pathCurrent = std::filesystem::current_path();
             pathCurrent /= path;
@@ -103,7 +103,7 @@ namespace plateau::meshWriter {
             copyTexture(fs::absolute(path).u8string(), texture_url);
         }
 
-        writeMtl(obj_file_path);
+        writeMtl(obj_file_path_utf8);
 
         return true;
     }
@@ -247,11 +247,11 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeMtl(const std::string& obj_file_path) {
-        const auto mtl_file_path = fs::u8path(obj_file_path).replace_extension(".mtl").string();
+    void ObjWriter::writeMtl(const std::string& obj_file_path_utf8) {
+        const auto mtl_file_path = fs::u8path(obj_file_path_utf8).replace_extension(".mtl");
         auto mtl_ofs = std::ofstream(mtl_file_path);
         if (!mtl_ofs.is_open()) {
-            throw std::string("Failed to open mtl file: ") + mtl_file_path;
+            throw std::runtime_error("Failed to open mtl file: " + mtl_file_path.u8string());
         }
 
         mtl_ofs << generateDefaultMtl();

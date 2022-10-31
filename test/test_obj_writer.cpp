@@ -21,8 +21,8 @@ namespace plateau::meshWriter {
         const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
         std::string output_directory_ = ".";
         std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
-        std::string expected_output_obj_ = fs::path(output_directory_).append(basename_).string() + ".obj";
-        std::string expected_output_mtl_ = fs::path(output_directory_).append(basename_).string() + ".mtl";
+        fs::path expected_output_obj_ = fs::path(output_directory_).append(basename_ + ".obj");
+        fs::path expected_output_mtl_ = fs::path(output_directory_).append(basename_ + ".mtl");
 
         plateau::polygonMesh::MeshExtractOptions options;
 
@@ -32,15 +32,16 @@ namespace plateau::meshWriter {
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
         const std::shared_ptr<plateau::polygonMesh::Model> model_ = plateau::polygonMesh::MeshExtractor::extract(*city_model_, options);
 
-        void assertFileExists(const std::string& file_path);
+        void assertFileExists(const fs::path& file_path);
     };
 
     TEST_F(ObjWriterTest, OutputsObjAndMtl) { // NOLINT
         fs::remove(expected_output_obj_);
         fs::remove(expected_output_mtl_);
 
-        auto result = ObjWriter().write(expected_output_obj_, *model_);
+        auto result = ObjWriter().write(expected_output_obj_.string(), *model_);
 
+        ASSERT_TRUE(result);
         assertFileExists(expected_output_obj_);
         assertFileExists(expected_output_mtl_);
     }
@@ -53,12 +54,12 @@ namespace plateau::meshWriter {
         auto expected_output_mtl = fs::path(output_dir).append(basename_ + ".mtl");
         auto result = ObjWriter().write(expected_output_obj.u8string(), *model_);
         ASSERT_TRUE(result);
-        assertFileExists(expected_output_obj.string());
-        assertFileExists(expected_output_mtl.string());
+        assertFileExists(expected_output_obj);
+        assertFileExists(expected_output_mtl);
         fs::remove_all(u8"./tempTestDestDir");
     }
 
-    void ObjWriterTest::assertFileExists(const std::string& file_path) {
+    void ObjWriterTest::assertFileExists(const fs::path& file_path) {
         std::ifstream ifs(file_path);
         ASSERT_TRUE(ifs.is_open());
         ifs.close();
