@@ -3,7 +3,7 @@ add_compile_definitions(LIBPLATEAU_BUILD)
 
 add_library(plateau SHARED "")
 
-target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK)
+target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl)
 target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}")
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
@@ -15,4 +15,5 @@ add_subdirectory(polygon_mesh)
 add_subdirectory(geometry)
 add_subdirectory(c_wrapper)
 add_subdirectory(udx)
+add_subdirectory(network)
 target_link_libraries(plateau PUBLIC c_wrapper)
