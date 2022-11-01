@@ -58,6 +58,7 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
 if(COMPILER_SUPPORTS_PIC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 endif()
 
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
