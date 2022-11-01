@@ -49,7 +49,7 @@ TEST_F(MeshMergerTest, when_merge_then_vertices_count_is_sum_of_before) {
     ASSERT_GT(uv_1_count_2, 0);
     ASSERT_GT(uv_2_count_2, 0);
     ASSERT_GT(uv_3_count_2, 0);
-    MeshMerger::mergeMesh(*mesh_1, *mesh_2, CoordinateSystem::EUN, true,
+    MeshMerger::mergeMesh(*mesh_1, *mesh_2, false, true,
                           TVec2f{0, 0}, TVec2f{0, 0});
     ASSERT_EQ(vert_count_1 + vert_count_2, mesh_1->getVertices().size());
     ASSERT_EQ(indices_count_1 + indices_count_2, mesh_1->getIndices().size());
@@ -73,7 +73,7 @@ TEST_F(MeshMergerTest, mesh_merger_info) {
     auto mesh = Mesh("testMesh");
     // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
     MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
-                              std::move(sub_meshes), CoordinateSystem::ENU, true);
+                              std::move(sub_meshes), CoordinateSystem::ENU, CoordinateSystem::ENU, true);
     ASSERT_EQ(33, mesh.getVertices().at(2).z);
     ASSERT_EQ(2, mesh.getIndices().at(2));
     ASSERT_EQ((float) 0.32, mesh.getUV1().at(2).y);

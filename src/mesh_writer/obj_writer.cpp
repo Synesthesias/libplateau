@@ -5,11 +5,6 @@
 #include <filesystem>
 
 #include <citygml/citymodel.h>
-#include <citygml/geometry.h>
-#include <citygml/polygon.h>
-#include <citygml/texture.h>
-
-#include <plateau/polygon_mesh/primary_city_object_types.h>
 
 #include <plateau/mesh_writer/obj_writer.h>
 
@@ -82,14 +77,14 @@ namespace {
 }
 
 namespace plateau::meshWriter {
-    bool ObjWriter::write(const std::string& obj_file_path, const plateau::polygonMesh::Model& model) {
+    bool ObjWriter::write(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
 
         // 内部状態初期化
         v_offset_ = 0;
         uv_offset_ = 0;
         required_materials_.clear();
 
-        std::filesystem::path path = obj_file_path;
+        std::filesystem::path path = std::filesystem::u8path(obj_file_path_utf8);
         if (path.is_relative()) {
             auto pathCurrent = std::filesystem::current_path();
             pathCurrent /= path;
@@ -103,20 +98,20 @@ namespace plateau::meshWriter {
             copyTexture(fs::absolute(path).u8string(), texture_url);
         }
 
-        writeMtl(obj_file_path);
+        writeMtl(obj_file_path_utf8);
 
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Model& model) {
-        auto ofs = std::ofstream(obj_file_path);
+    void ObjWriter::writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
+        auto ofs = std::ofstream(fs::u8path(obj_file_path_utf8));
         if (!ofs.is_open()) {
-            throw std::string("Failed to open stream of obj path : ") + obj_file_path;
+            throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path_utf8);
         }
         ofs << std::fixed << std::setprecision(6);
 
         // MTL参照
-        const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
+        const auto mtl_file_name = fs::u8path(obj_file_path_utf8).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
         auto& root_node = model.getRootNodeAt(0);
@@ -140,7 +135,7 @@ namespace plateau::meshWriter {
 
     void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
 
-        auto node_name = node.getName();
+        const auto& node_name = node.getName();
 
         const auto& mesh = node.getMesh();
         if (mesh.has_value()) {
@@ -157,11 +152,11 @@ namespace plateau::meshWriter {
 
                 writeVertices(ofs, vertices);
 
-                if (0 < uvs.size()) {
+                if (!uvs.empty()) {
                     std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
                     for (const auto& uv : uvs) {
                         auto t = uv;
-                        t.y = 1.0 - uv.y;
+                        t.y = (float)1.0 - uv.y;
                         texcoords.push_back(t);
                     }
                     writeUVs(ofs, uvs);
@@ -170,7 +165,7 @@ namespace plateau::meshWriter {
                 for (auto& sub_mesh : sub_meshes) {
                     auto st = sub_mesh.getStartIndex();
                     auto ed = sub_mesh.getEndIndex();
-                    std::vector<unsigned int> indices(all_indices.begin() + st, all_indices.begin() + ed + 1);
+                    std::vector<unsigned int> indices(all_indices.begin() + (long long)st, all_indices.begin() + (long long)ed + 1);
 
                     auto texUrl = sub_mesh.getTexturePath();
                     std::replace(texUrl.begin(), texUrl.end(), '\\', '/');
@@ -200,7 +195,7 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) {
+    void ObjWriter::writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) const {
         unsigned face[3];
         for (unsigned i = 0; i < indices.size(); i++) {
             face[i % 3] = indices[i] + v_offset_ + 1;
@@ -213,7 +208,7 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices) {
+    void ObjWriter::writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices) const {
         unsigned face[3] = {};
         unsigned uv_face[3] = {};
         for (unsigned i = 0; i < indices.size(); i++) {
@@ -230,8 +225,8 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::string texUrl) {
-        if (texUrl == "") {
+    void ObjWriter::writeMaterialReference(std::ofstream& ofs, const std::string& texUrl) {
+        if (texUrl.empty()) {
             applyDefaultMaterial(ofs);
             return;
         }
@@ -247,11 +242,11 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeMtl(const std::string& obj_file_path) {
-        const auto mtl_file_path = fs::u8path(obj_file_path).replace_extension(".mtl").string();
+    void ObjWriter::writeMtl(const std::string& obj_file_path_utf8) {
+        const auto mtl_file_path = fs::u8path(obj_file_path_utf8).replace_extension(".mtl");
         auto mtl_ofs = std::ofstream(mtl_file_path);
         if (!mtl_ofs.is_open()) {
-            throw std::string("Failed to open mtl file: ") + mtl_file_path;
+            throw std::runtime_error("Failed to open mtl file: " + mtl_file_path.u8string());
         }
 
         mtl_ofs << generateDefaultMtl();

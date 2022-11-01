@@ -18,24 +18,51 @@ namespace plateau::geometry {
     TVec3d GeoReference::project(const TVec3d& lat_lon) const {
         TVec3d point = lat_lon;
         PolarToPlaneCartesian().project(point, zone_id_);
-        TVec3 converted_point = point;
-        switch (coordinate_system_) {
+        TVec3 converted_point = convertAxisFromENUTo(coordinate_system_, point);
+        converted_point = converted_point / unit_scale_ - reference_point_;
+        return converted_point;
+    }
+
+    TVec3d GeoReference::projectWithoutAxisConvert(const TVec3d& lat_lon) const {
+        // 前提として、座標軸は 変換前 ENU → 変換後 ENU であるとします。
+        // そのため reference_point_ の代わりに reference_point_ を ENU に変換した値が利用されます。
+        TVec3d point = lat_lon;
+        PolarToPlaneCartesian().project(point, zone_id_);
+        TVec3 converted_point = point / unit_scale_ - convertAxisToENU(coordinate_system_, reference_point_);
+        return converted_point;
+    }
+
+    TVec3d GeoReference::convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex) {
+        switch (axis) {
             case CoordinateSystem::ENU:
-                break; // 変換なし
+                return vertex; // 変換なし
             case CoordinateSystem::WUN:
-                converted_point = {-point.x, point.z, point.y};
-                break;
+                return {-vertex.x, vertex.z, vertex.y};
             case CoordinateSystem::EUN:
-                converted_point = {point.x, point.z, point.y};
-                break;
+                return {vertex.x, vertex.z, vertex.y};
             case CoordinateSystem::NWU:
-                converted_point = {point.y, -point.x, point.z};
-                break;
+                return {vertex.y, -vertex.x, vertex.z};
             default:
                 throw std::out_of_range("Invalid argument");
         }
-        converted_point = converted_point / unit_scale_ - reference_point_;
-        return converted_point;
+    }
+
+    TVec3d GeoReference::convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex) {
+        switch (axis) {
+            case CoordinateSystem::ENU:
+                return vertex; // 変換なし
+            case CoordinateSystem::WUN:
+                // WUN → ENU の式は 逆変換 ENU → WUN と同じです。
+                return {-vertex.x, vertex.z, vertex.y};
+            case CoordinateSystem::EUN:
+                // EUN → ENU の式は 逆変換 ENU → EUN と同じです。
+                return {vertex.x, vertex.z, vertex.y};
+            case CoordinateSystem::NWU:
+                // NWU → ENU の式は 逆変換 ENU → NWU とは異なります。
+                return {-vertex.y, vertex.x, vertex.z};
+            default:
+                throw std::out_of_range("Invalid argument");
+        }
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {
@@ -64,30 +91,7 @@ namespace plateau::geometry {
 
     GeoCoordinate GeoReference::unproject(const TVec3d& point) const {
         TVec3d before_convert_lat_lon = (point + reference_point_) * unit_scale_;
-        TVec3d lat_lon;
-        switch (coordinate_system_) {
-        case CoordinateSystem::ENU:
-            lat_lon = before_convert_lat_lon;
-            break;
-        case CoordinateSystem::WUN:
-            lat_lon.x = -before_convert_lat_lon.x;
-            lat_lon.y = before_convert_lat_lon.z;
-            lat_lon.z = before_convert_lat_lon.y;
-            break;
-        case CoordinateSystem::NWU:
-            lat_lon.x = -before_convert_lat_lon.y;
-            lat_lon.y = before_convert_lat_lon.x;
-            lat_lon.z = before_convert_lat_lon.z;
-            break;
-        case CoordinateSystem::EUN:
-            lat_lon.x = before_convert_lat_lon.x;
-            lat_lon.y = before_convert_lat_lon.z;
-            lat_lon.z = before_convert_lat_lon.y;
-            break;
-        default:
-            throw std::out_of_range("Invalid argument");
-        }
-
+        TVec3d lat_lon = convertAxisToENU(coordinate_system_, before_convert_lat_lon);
         PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
         return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
     }

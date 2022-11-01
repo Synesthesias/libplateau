@@ -39,13 +39,13 @@ namespace plateau::udx {
 
     namespace {
         /**
-         * w’èƒpƒX‚ğ‹N“_‚ÉA•—Dæ’Tõ(BFS)‚ÅGMLƒtƒ@ƒCƒ‹‚ğŒŸõ‚µ‚Ü‚·B
-         * ŒŸõ‚Ì‚‘¬‰»‚Ì‚½‚ßAGMLƒtƒ@ƒCƒ‹‚Ì”z’uêŠ‚Ì[‚³‚Í‚·‚×‚Ä“¯‚¶‚Å‚ ‚é‚Æ‚¢‚¤‘O’ñ‚É—§‚¿A
-         * Å‰‚ÌGMLƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚Á‚½’n“_‚Å‚±‚êˆÈã[‚¢ƒtƒHƒ‹ƒ_‚Ì’Tõ‚Í’†~‚µ‚Ü‚·B
-         * “¯‚¶[‚³‚É‚ ‚é•Ê‚ÌƒtƒHƒ‹ƒ_‚Í’Tõ‘ÎÛ‚Æ‚µ‚Ü‚·B
-         * @param dir_path  ŒŸõ‚Ì‹N“_‚Æ‚È‚éƒpƒX‚Å‚·B
-         * @param result Œ‹‰Ê‚Í‚±‚Ì vector ‚É’Ç‰Á‚³‚ê‚Ü‚·B
-         * @return GMLƒtƒ@ƒCƒ‹‚ÌƒpƒX‚Ì vector ‚Å‚·B
+         * æŒ‡å®šãƒ‘ã‚¹ã‚’èµ·ç‚¹ã«ã€å¹…å„ªå…ˆæ¢ç´¢(BFS)ã§GMLãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¤œç´¢ã—ã¾ã™ã€‚
+         * æ¤œç´¢ã®é«˜é€ŸåŒ–ã®ãŸã‚ã€GMLãƒ•ã‚¡ã‚¤ãƒ«ã®é…ç½®å ´æ‰€ã®æ·±ã•ã¯ã™ã¹ã¦åŒã˜ã§ã‚ã‚‹ã¨ã„ã†å‰æã«ç«‹ã¡ã€
+         * æœ€åˆã®GMLãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã£ãŸåœ°ç‚¹ã§ã“ã‚Œä»¥ä¸Šæ·±ã„ãƒ•ã‚©ãƒ«ãƒ€ã®æ¢ç´¢ã¯ä¸­æ­¢ã—ã¾ã™ã€‚
+         * åŒã˜æ·±ã•ã«ã‚ã‚‹åˆ¥ã®ãƒ•ã‚©ãƒ«ãƒ€ã¯æ¢ç´¢å¯¾è±¡ã¨ã—ã¾ã™ã€‚
+         * @param dir_path  æ¤œç´¢ã®èµ·ç‚¹ã¨ãªã‚‹ãƒ‘ã‚¹ã§ã™ã€‚
+         * @param result çµæœã¯ã“ã® vector ã«è¿½åŠ ã•ã‚Œã¾ã™ã€‚
+         * @return GMLãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã® vector ã§ã™ã€‚
          */
         void findGMLsBFS(const std::string& dir_path, std::vector<GmlFileInfo>& result) {
             auto queue = std::queue<std::string>();
@@ -54,18 +54,18 @@ namespace plateau::udx {
             while (!queue.empty()) {
                 auto next_dir = queue.front();
                 queue.pop();
-                // ƒtƒ@ƒCƒ‹‚©‚çŒŸõ‚µ‚Ü‚·B
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æ¤œç´¢ã—ã¾ã™
                 for (const auto& entry : fs::directory_iterator(next_dir)) {
                     if (entry.is_directory()) continue;
                     const auto& path = entry.path();
                     if (path.extension() == ".gml") {
                         result.emplace_back(path.string());
-                        // Å‰‚ÌGMLƒtƒ@ƒCƒ‹‚ªŒ©‚Â‚©‚Á‚½‚çA‚±‚êˆÈã’TõƒLƒ…[‚É“ü‚ê‚È‚¢‚æ‚¤‚É‚µ‚Ü‚·B
-                        // “¯‚¶[‚³‚É‚ ‚éƒtƒHƒ‹ƒ_‚Í‚·‚Å‚ÉƒLƒ…[‚É“ü‚Á‚Ä‚¢‚é‚Ì‚ÅAu[‚³‚Í“¯‚¶‚¾‚¯‚ÇƒtƒHƒ‹ƒ_‚ªˆá‚¤v‚Æ‚¢‚¤ó‹µ‚ÍŒŸõ‘ÎÛ‚ÉŠÜ‚Ü‚ê‚Ü‚·B
+                        // æœ€åˆã®GMLãƒ•ã‚¡ã‚¤ãƒ«ãŒè¦‹ã¤ã‹ã£ãŸã‚‰ã€ã“ã‚Œä»¥ä¸Šæ¢ç´¢ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œãªã„ã‚ˆã†ã«ã—ã¾ã™ã€‚
+                        // åŒã˜æ·±ã•ã«ã‚ã‚‹ãƒ•ã‚©ãƒ«ãƒ€ã¯ã™ã§ã«ã‚­ãƒ¥ãƒ¼ã«å…¥ã£ã¦ã„ã‚‹ã®ã§ã€ã€Œæ·±ã•ã¯åŒã˜ã ã‘ã©ãƒ•ã‚©ãƒ«ãƒ€ãŒé•ã†ã€ã¨ã„ã†çŠ¶æ³ã¯æ¤œç´¢å¯¾è±¡ã«å«ã¾ã‚Œã¾ã™ã€‚
                         push_more_dir = false;
                     }
                 }
-                // Ÿ‚É’Tõ‚·‚×‚«ƒfƒBƒŒƒNƒgƒŠ‚ğƒLƒ…[‚É“ü‚ê‚Ü‚·B
+                // æ¬¡ã«æ¢ç´¢ã™ã¹ããƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œã¾ã™ã€‚
                 if (!push_more_dir) continue;
                 for (const auto& entry : fs::directory_iterator(next_dir)) {
                     if (!entry.is_directory()) continue;
@@ -77,7 +77,7 @@ namespace plateau::udx {
 
     void UdxFileCollection::find(const std::string& source, UdxFileCollection& collection) {
         collection.udx_path_ = fs::u8path(source).append(u"udx").make_preferred().u8string();
-        // udxƒtƒHƒ‹ƒ_“à‚ÌŠeƒtƒHƒ‹ƒ_‚É‚Â‚¢‚Ä
+        // udxãƒ•ã‚©ãƒ«ãƒ€å†…ã®å„ãƒ•ã‚©ãƒ«ãƒ€ã«ã¤ã„ã¦
         for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
             if (!entry.is_directory()) continue;
             auto udx_sub_folder = UdxSubFolder(entry.path().filename().string());
@@ -102,7 +102,7 @@ namespace plateau::udx {
         MeshCode::getThirdMeshes(extent, mesh_codes);
         std::set<std::string> second_mesh_strings;
 
-        // 2ŸƒƒbƒVƒ…‚ÌƒŠƒXƒgæ“¾
+        // 2æ¬¡ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒªã‚¹ãƒˆå–å¾—
         for (const auto& mesh_code : mesh_codes) {
             second_mesh_strings.insert(mesh_code.asSecond().get());
         }
@@ -116,14 +116,14 @@ namespace plateau::udx {
 
     void UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
                                               UdxFileCollection& collection) const {
-        // ‚±‚ê‚ª‚È‚¢‚ÆƒtƒBƒ‹ƒ^[‚ÌŒ‹‰Ê‚É‘Î‚µ‚Ä fetch ‚ğÀs‚·‚é‚Æ‚«‚ÉƒpƒX‚ª‚¸‚ê‚Ü‚·B
+        // ã“ã‚ŒãŒãªã„ã¨ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã®çµæœã«å¯¾ã—ã¦ fetch ã‚’å®Ÿè¡Œã™ã‚‹ã¨ãã«ãƒ‘ã‚¹ãŒãšã‚Œã¾ã™ã€‚
         collection.setUdxPath(udx_path_);
-        // ŒŸõ—p‚ÉAˆø”‚Ì mesh_codes ‚ğ•¶š—ñ‚ÌƒZƒbƒg‚É‚µ‚Ü‚·B
+        // æ¤œç´¢ç”¨ã«ã€å¼•æ•°ã® mesh_codes ã‚’æ–‡å­—åˆ—ã®ã‚»ãƒƒãƒˆã«ã—ã¾ã™ã€‚
         auto mesh_codes_str_set = std::set<std::string>();
         for (const auto& mesh_code : mesh_codes) {
             mesh_codes_str_set.insert(mesh_code.get());
         }
-        // ƒtƒ@ƒCƒ‹‚²‚Æ‚É mesh_codes_str_set ‚ÉŠÜ‚Ü‚ê‚é‚È‚ç’Ç‰Á‚µ‚Ä‚¢‚«‚Ü‚·B
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã”ã¨ã« mesh_codes_str_set ã«å«ã¾ã‚Œã‚‹ãªã‚‰è¿½åŠ ã—ã¦ã„ãã¾ã™ã€‚
         for (const auto& [sub_folder, files] : files_) {
             for (const auto& file : files) {
                 if (mesh_codes_str_set.find(file.getMeshCode().get()) != mesh_codes_str_set.end()) {
@@ -181,63 +181,63 @@ namespace plateau::udx {
         return result;
     }
 
-    // fetch ‚Åg‚¤–³–¼ŠÖ”
+    // fetch ã§ä½¿ã†ç„¡åé–¢æ•°
     namespace {
         using ConstStrIterT = decltype(std::string("a").cbegin());
 
         /**
-         * @brief ³‹K•\Œ»‚ÅŒŸõ‚µ‚Ü‚·‚ªAƒqƒ“ƒg‚ğ—^‚¦‚é‚±‚Æ‚ÅŒŸõ‚ğ‚‘¬‰»‚µ‚Ü‚·B
-         *        ƒqƒ“ƒg‚Æ‚Í‰½‚©‚É‚Â‚¢‚Ä‚ÍA ŠÖ” searchAllStringsBetween ‚ÌƒRƒƒ“ƒg‚ğQÆ‚µ‚Ä‚­‚¾‚³‚¢B
-         * @param str ŒŸõ‘ÎÛ‚Ì•¶š—ñ‚Å‚·B
-         * @param search_pos ŒŸõ‚ÌŠJnˆÊ’u‚Å‚·B
-         * @param matched ŒŸõŒ‹‰Ê‚Í‚±‚±‚ÉŠi”[‚³‚ê‚Ü‚·B
-         * @param regex ŒŸõ‚·‚é³‹K•\Œ»‚Å‚·B
-         * @param hint ƒqƒ“ƒg•¶š—ñ‚Å‚·B³‹K•\Œ»‚ªŒŸõƒqƒbƒg‚·‚é‚Æ‚«Aƒqƒ“ƒg•¶š—ñ‚ª•K‚¸ŒŸõƒqƒbƒg‚µA
-         *             ‚©‚Â‚»‚Ìƒqƒ“ƒg•¶š—ñ‚ÌüˆÍ‚Ìw’èƒoƒCƒg”‚É‚»‚Ì³‹K•\Œ»ƒqƒbƒg•¶š—ñ‚ªŠÜ‚Ü‚ê‚é‚±‚Æ‚ªğŒ‚Æ‚È‚è‚Ü‚·B
-         * @param search_range_before_hint ƒqƒ“ƒg•¶š—ñ‚Ì‘O‚Ì‰½ƒoƒCƒg–Ú‚©‚ç³‹K•\Œ»‚É‚æ‚éŒŸõ‚ğn‚ß‚é‚©‚Å‚·B
-         * @param search_range_after_hint ƒqƒ“ƒg•¶š—ñ‚ÌŒã‚Ì‰½ƒoƒCƒg–Ú‚Ü‚Å³‹K•\Œ»‚É‚æ‚éŒŸõ‘ÎÛ‚É‚·‚é‚©‚Å‚·B
-         * @return ƒqƒbƒg‚µ‚½‚çtrue, ‚È‚¯‚ê‚Î false ‚ğ•Ô‚µ‚Ü‚·B
-         */
+        * @brief æ­£è¦è¡¨ç¾ã§æ¤œç´¢ã—ã¾ã™ãŒã€ãƒ’ãƒ³ãƒˆã‚’ä¸ãˆã‚‹ã“ã¨ã§æ¤œç´¢ã‚’é«˜é€ŸåŒ–ã—ã¾ã™ã€‚
+        *        ãƒ’ãƒ³ãƒˆã¨ã¯ä½•ã‹ã«ã¤ã„ã¦ã¯ã€ é–¢æ•° searchAllStringsBetween ã®ã‚³ãƒ¡ãƒ³ãƒˆã‚’å‚ç…§ã—ã¦ãã ã•ã„ã€‚
+        * @param str æ¤œç´¢å¯¾è±¡ã®æ–‡å­—åˆ—ã§ã™ã€‚
+        * @param search_pos æ¤œç´¢ã®é–‹å§‹ä½ç½®ã§ã™ã€‚
+        * @param matched æ¤œç´¢çµæœã¯ã“ã“ã«æ ¼ç´ã•ã‚Œã¾ã™ã€‚
+        * @param regex æ¤œç´¢ã™ã‚‹æ­£è¦è¡¨ç¾ã§ã™ã€‚
+        * @param hint ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã§ã™ã€‚æ­£è¦è¡¨ç¾ãŒæ¤œç´¢ãƒ’ãƒƒãƒˆã™ã‚‹ã¨ãã€ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ãŒå¿…ãšæ¤œç´¢ãƒ’ãƒƒãƒˆã—ã€
+        *             ã‹ã¤ãã®ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã®å‘¨å›²ã®æŒ‡å®šãƒã‚¤ãƒˆæ•°ã«ãã®æ­£è¦è¡¨ç¾ãƒ’ãƒƒãƒˆæ–‡å­—åˆ—ãŒå«ã¾ã‚Œã‚‹ã“ã¨ãŒæ¡ä»¶ã¨ãªã‚Šã¾ã™ã€‚
+        * @param search_range_before_hint ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã®å‰ã®ä½•ãƒã‚¤ãƒˆç›®ã‹ã‚‰æ­£è¦è¡¨ç¾ã«ã‚ˆã‚‹æ¤œç´¢ã‚’å§‹ã‚ã‚‹ã‹ã§ã™ã€‚
+        * @param search_range_after_hint ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã®å¾Œã®ä½•ãƒã‚¤ãƒˆç›®ã¾ã§æ­£è¦è¡¨ç¾ã«ã‚ˆã‚‹æ¤œç´¢å¯¾è±¡ã«ã™ã‚‹ã‹ã§ã™ã€‚
+        * @return ãƒ’ãƒƒãƒˆã—ãŸã‚‰true, ãªã‘ã‚Œã° false ã‚’è¿”ã—ã¾ã™ã€‚
+        */
         bool regexSearchWithHint(const std::string& str, ConstStrIterT search_pos, std::smatch& matched,
                                  const std::regex& regex, const std::string& hint,
                                  unsigned search_range_before_hint, unsigned search_range_after_hint
         ) {
             const auto str_begin = str.cbegin();
             while (search_pos != str.cend()) {
-                // ƒqƒ“ƒg‚ÅŒŸõ‚µ‚Ü‚·B
+                // ãƒ’ãƒ³ãƒˆã§æ¤œç´¢ã—ã¾ã™ã€‚
                 auto hint_matched_pos = str.find(hint, search_pos - str_begin);
-                // ƒqƒ“ƒg‚ÅŒŸõƒqƒbƒg‚µ‚È‚¯‚ê‚ÎA³‹K•\Œ»‚Å‚àŒŸõƒqƒbƒg‚µ‚Ü‚¹‚ñB‚»‚Ì‚æ‚¤‚Èƒqƒ“ƒg‚ª“n‚³‚ê‚Ä‚¢‚é‚±‚Æ‚ª‘O’ñ‚Å‚·B
+                // ãƒ’ãƒ³ãƒˆã§æ¤œç´¢ãƒ’ãƒƒãƒˆã—ãªã‘ã‚Œã°ã€æ­£è¦è¡¨ç¾ã§ã‚‚æ¤œç´¢ãƒ’ãƒƒãƒˆã—ã¾ã›ã‚“ã€‚ãã®ã‚ˆã†ãªãƒ’ãƒ³ãƒˆãŒæ¸¡ã•ã‚Œã¦ã„ã‚‹ã“ã¨ãŒå‰æã§ã™ã€‚
                 if (hint_matched_pos == std::string::npos) return false;
-                // ƒqƒ“ƒg‚ªŒŸõƒqƒbƒg‚µ‚½‚Ì‚ÅA‚»‚ÌüˆÍ‚Ìw’è”‚ÌƒoƒCƒg”ÍˆÍ‚ğ³‹K•\Œ»‚ÌŒŸõ”ÍˆÍ‚É‚µ‚Ü‚·B
+                // ãƒ’ãƒ³ãƒˆãŒæ¤œç´¢ãƒ’ãƒƒãƒˆã—ãŸã®ã§ã€ãã®å‘¨å›²ã®æŒ‡å®šæ•°ã®ãƒã‚¤ãƒˆç¯„å›²ã‚’æ­£è¦è¡¨ç¾ã®æ¤œç´¢ç¯„å›²ã«ã—ã¾ã™ã€‚
                 auto search_start =
                     str_begin + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
                 auto search_end = std::min(str.end(), str_begin + (long long)hint_matched_pos + (long long)hint.size() + search_range_after_hint);
-                // ³‹K•\Œ»‚Åƒqƒbƒg‚µ‚½‚çA‚»‚ÌŒ‹‰Ê‚ğˆø” matched ‚ÉŠi”[‚µ‚Ä•Ô‚µ‚Ü‚·B
+                // æ­£è¦è¡¨ç¾ã§ãƒ’ãƒƒãƒˆã—ãŸã‚‰ã€ãã®çµæœã‚’å¼•æ•° matched ã«æ ¼ç´ã—ã¦è¿”ã—ã¾ã™ã€‚
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if (found) return true;
-                // ƒqƒ“ƒg‚É‚Íƒqƒbƒg‚µ‚½‚¯‚Ç³‹K•\Œ»‚Éƒqƒbƒg‚µ‚È‚©‚Á‚½ƒP[ƒX‚Å‚·BŒŸõˆÊ’u‚ği‚ß‚ÄÄ“xƒqƒ“ƒg‚ğŒŸõ‚µ‚Ü‚·B
+                // ãƒ’ãƒ³ãƒˆã«ã¯ãƒ’ãƒƒãƒˆã—ãŸã‘ã©æ­£è¦è¡¨ç¾ã«ãƒ’ãƒƒãƒˆã—ãªã‹ã£ãŸã‚±ãƒ¼ã‚¹ã§ã™ã€‚æ¤œç´¢ä½ç½®ã‚’é€²ã‚ã¦å†åº¦ãƒ’ãƒ³ãƒˆã‚’æ¤œç´¢ã—ã¾ã™ã€‚
                 search_pos = std::min(str.cend(), str_begin + (long long)hint_matched_pos + (long long)hint.size());
             }
 
         }
 
         /**
-         * ˆø”•¶š—ñ str ‚Ì‚¤‚¿Aˆø” begin_tag_regex ‚Æ end_tag_regex ‚ÅˆÍ‚Ü‚ê‚½•¶š—ñ‚ğ‚·‚×‚ÄŒŸõ‚µ set ‚Å•Ô‚µ‚Ü‚·B
-         * end_tag_regex ‚Í begin_tag_regex ‚ª“oê‚·‚é‰ÓŠ‚æ‚èŒã‚ªŒŸõ‘ÎÛ‚Æ‚È‚è‚Ü‚·B
-         * begin_tag_regex ‚É‘Î‰‚·‚é end_tag_regex ‚ª‚È‚¢ê‡Astr‚Ì––”ö‚Ü‚Å‚ª‘ÎÛ‚Æ‚È‚è‚Ü‚·B
-         * ŒŸõŒ‹‰Ê‚Ì‚¤‚¿“¯‚¶•¶š—ñ‚Í1‚Â‚É‚Ü‚Æ‚ß‚ç‚ê‚Ü‚·B
-         *
-         * ƒqƒ“ƒg‚É‚Â‚¢‚Ä:
-         * ŒŸõ‚Ì‚‘¬‰»‚Ì‚½‚ß‚Éˆø”‚Åƒqƒ“ƒg•¶š—ñ‚ğ—^‚¦‚é•K—v‚ª‚ ‚è‚Ü‚·B
-         * —á‚¦‚Î40MB‚ÌGMLƒtƒ@ƒCƒ‹‚É‘Î‚µ‚Ä‹ğ’¼‚É³‹K•\Œ»‚ÅŒŸõ‚·‚é‚Æ1•ª30•b’ö“x‚ÌŠÔ‚ª‚©‚©‚è‚Ü‚·B
-         * ˆø”‚Åƒqƒ“ƒg‚ğ—^‚¦‚é‚±‚Æ‚ÅA³‹K•\Œ»‚ÌŒŸõ”ÍˆÍ‚ª‹·‚Ü‚è 4•b’ö“x‚É’Zk‚Å‚«‚Ü‚µ‚½B
-         * ƒqƒ“ƒg•¶š—ñ‚Æ‚ÍA³‹K•\Œ»‚ªŒŸõƒqƒbƒg‚·‚é‚Æ‚«A‚»‚ÌêŠ‚Åƒqƒ“ƒg•¶š—ñ‚à•K‚¸ƒqƒbƒg‚·‚éA‚Æ‚¢‚¤ğŒ‚ğ–‚½‚·•¶š—ñ‚Å‚·B
-         * —á‚¦‚ÎA•¶š—ñ <start_tag> ‚ğŒŸõ‚µ‚½‚¢‚ªA<Š‡ŒÊ> ‚Ì‘OŒã‚É”¼ŠpƒXƒy[ƒX‚ª“ü‚Á‚Ä‚¢‚éƒP[ƒX‚àŒŸõ‚µ‚½‚¢‚Æ‚¢‚¤ê‡A
-         * ŒŸõ³‹K•\Œ»‚Í < *start_tag *> ‚Å‚ ‚èAƒqƒ“ƒg•¶š—ñ‚Í start_tag ‚Æ‚È‚è‚Ü‚·B
-         * ‚±‚Ì‚Æ‚«A‚Ü‚¸³‹K•\Œ»ŒŸõ‚æ‚è‚à‚‘¬‚È’Êí•¶š—ñŒŸõ‚Å start_tag ‚ªŒŸõ‚³‚ê‚Ü‚·B
-         * ‚»‚µ‚ÄŒ©‚Â‚©‚Á‚½ˆÊ’u‚©‚ç‘OŒã‚Éw’èƒoƒCƒg”‚Ì•‚ğ‚Æ‚Á‚½”ÍˆÍ‚ğ³‹K•\Œ»‚ÅŒŸõ‚µ‚Ü‚·B
-         * ‚»‚Ì”ÍˆÍ‚Íˆø” search_range_before_hint, search_range_after_hint ‚Åw’è‚µ‚Ü‚·B‚±‚Ì’l‚Í­‚È‚¢‚Ù‚¤‚ª‘¬‚­‚È‚è‚Ü‚·B
-         */
+        * å¼•æ•°æ–‡å­—åˆ— str ã®ã†ã¡ã€å¼•æ•° begin_tag_regex ã¨ end_tag_regex ã§å›²ã¾ã‚ŒãŸæ–‡å­—åˆ—ã‚’ã™ã¹ã¦æ¤œç´¢ã— set ã§è¿”ã—ã¾ã™ã€‚
+        * end_tag_regex ã¯ begin_tag_regex ãŒç™»å ´ã™ã‚‹ç®‡æ‰€ã‚ˆã‚Šå¾ŒãŒæ¤œç´¢å¯¾è±¡ã¨ãªã‚Šã¾ã™ã€‚
+        * begin_tag_regex ã«å¯¾å¿œã™ã‚‹ end_tag_regex ãŒãªã„å ´åˆã€strã®æœ«å°¾ã¾ã§ãŒå¯¾è±¡ã¨ãªã‚Šã¾ã™ã€‚
+        * æ¤œç´¢çµæœã®ã†ã¡åŒã˜æ–‡å­—åˆ—ã¯1ã¤ã«ã¾ã¨ã‚ã‚‰ã‚Œã¾ã™ã€‚
+        *
+        * ãƒ’ãƒ³ãƒˆã«ã¤ã„ã¦:
+        * æ¤œç´¢ã®é«˜é€ŸåŒ–ã®ãŸã‚ã«å¼•æ•°ã§ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚’ä¸ãˆã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
+        * ä¾‹ãˆã°40MBã®GMLãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã—ã¦æ„šç›´ã«æ­£è¦è¡¨ç¾ã§æ¤œç´¢ã™ã‚‹ã¨1åˆ†30ç§’ç¨‹åº¦ã®æ™‚é–“ãŒã‹ã‹ã‚Šã¾ã™ã€‚
+        * å¼•æ•°ã§ãƒ’ãƒ³ãƒˆã‚’ä¸ãˆã‚‹ã“ã¨ã§ã€æ­£è¦è¡¨ç¾ã®æ¤œç´¢ç¯„å›²ãŒç‹­ã¾ã‚Š 4ç§’ç¨‹åº¦ã«çŸ­ç¸®ã§ãã¾ã—ãŸã€‚
+        * ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã¨ã¯ã€æ­£è¦è¡¨ç¾ãŒæ¤œç´¢ãƒ’ãƒƒãƒˆã™ã‚‹ã¨ãã€ãã®å ´æ‰€ã§ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã‚‚å¿…ãšãƒ’ãƒƒãƒˆã™ã‚‹ã€ã¨ã„ã†æ¡ä»¶ã‚’æº€ãŸã™æ–‡å­—åˆ—ã§ã™ã€‚
+        * ä¾‹ãˆã°ã€æ–‡å­—åˆ— <start_tag> ã‚’æ¤œç´¢ã—ãŸã„ãŒã€<æ‹¬å¼§> ã®å‰å¾Œã«åŠè§’ã‚¹ãƒšãƒ¼ã‚¹ãŒå…¥ã£ã¦ã„ã‚‹ã‚±ãƒ¼ã‚¹ã‚‚æ¤œç´¢ã—ãŸã„ã¨ã„ã†å ´åˆã€
+        * æ¤œç´¢æ­£è¦è¡¨ç¾ã¯ < *start_tag *> ã§ã‚ã‚Šã€ãƒ’ãƒ³ãƒˆæ–‡å­—åˆ—ã¯ start_tag ã¨ãªã‚Šã¾ã™ã€‚
+        * ã“ã®ã¨ãã€ã¾ãšæ­£è¦è¡¨ç¾æ¤œç´¢ã‚ˆã‚Šã‚‚é«˜é€Ÿãªé€šå¸¸æ–‡å­—åˆ—æ¤œç´¢ã§ start_tag ãŒæ¤œç´¢ã•ã‚Œã¾ã™ã€‚
+        * ãã—ã¦è¦‹ã¤ã‹ã£ãŸä½ç½®ã‹ã‚‰å‰å¾Œã«æŒ‡å®šãƒã‚¤ãƒˆæ•°ã®å¹…ã‚’ã¨ã£ãŸç¯„å›²ã‚’æ­£è¦è¡¨ç¾ã§æ¤œç´¢ã—ã¾ã™ã€‚
+        * ãã®ç¯„å›²ã¯å¼•æ•° search_range_before_hint, search_range_after_hint ã§æŒ‡å®šã—ã¾ã™ã€‚ã“ã®å€¤ã¯å°‘ãªã„ã»ã†ãŒé€Ÿããªã‚Šã¾ã™ã€‚
+        */
         std::set<std::string> searchAllStringsBetween(
                 const std::regex& begin_tag_regex, const std::regex& end_tag_regex,
                 const std::string& str,
@@ -249,23 +249,23 @@ namespace plateau::udx {
             std::smatch end_tag_matched;
             auto begin_tag_search_iter = str.begin();
             while (true) {
-                // ŠJnƒ^ƒO‚ğŒŸõ‚µ‚Ü‚·B
+                // é–‹å§‹ã‚¿ã‚°ã‚’æ¤œç´¢ã—ã¾ã™ã€‚
                 if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
                     search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
-                // I—¹ƒ^ƒO‚ğŒŸõ‚µ‚Ü‚·B
+                // çµ‚äº†ã‚¿ã‚°ã‚’æ¤œç´¢ã—ã¾ã™ã€‚
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
                     search_range_before_hint, search_range_after_hint)) {
-                    // ŠJnƒ^ƒO‚ÆI—¹ƒ^ƒO‚É‹²‚Ü‚ê‚½•¶š—ñ‚ğŒ‹‰Ê‚Æ‚µ‚ÄŠi”[‚µ‚Ü‚·B
+                    // é–‹å§‹ã‚¿ã‚°ã¨çµ‚äº†ã‚¿ã‚°ã«æŒŸã¾ã‚ŒãŸæ–‡å­—åˆ—ã‚’çµæœã¨ã—ã¦æ ¼ç´ã—ã¾ã™ã€‚
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 } else {
                     found.insert(std::string(next_of_begin_tag, str.end()));
                     break;
                 }
                 const auto next_of_end_tag = end_tag_matched[0].second;
-                // ƒCƒeƒŒ[ƒ^[‚ği‚ß‚Ü‚·B
+                // ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ãƒ¼ã‚’é€²ã‚ã¾ã™ã€‚
                 begin_tag_search_iter = next_of_end_tag;
             }
             return found;
@@ -285,9 +285,9 @@ namespace plateau::udx {
         auto regex_options = std::regex::optimize | std::regex::nosubs;
 
         std::set<std::string> searchAllImagePathsInGML(const std::string& file_content) {
-            // ŠJnƒ^ƒO‚Í <app:imageURI> ‚Å‚·B‚½‚¾‚µA<Š‡ŒÊ> ‚Ì‘OŒã‚É”¼ŠpƒXƒy[ƒX‚ª‚ ‚Á‚Ä‚à—Ç‚¢‚à‚Ì‚Æ‚µ‚Ü‚·B
+            // é–‹å§‹ã‚¿ã‚°ã¯ <app:imageURI> ã§ã™ã€‚ãŸã ã—ã€<æ‹¬å¼§> ã®å‰å¾Œã«åŠè§’ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ã¦ã‚‚è‰¯ã„ã‚‚ã®ã¨ã—ã¾ã™ã€‚
             static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
-            // I—¹ƒ^ƒO‚Í </app:imageURI> ‚Å‚·B‚½‚¾‚µA<Š‡ŒÊ> ‚Æ /(ƒXƒ‰ƒbƒVƒ…) ‚Ì‘OŒã‚É”¼ŠpƒXƒy[ƒX‚ª‚ ‚Á‚Ä‚à—Ç‚¢‚à‚Ì‚Æ‚µ‚Ü‚·B
+            // çµ‚äº†ã‚¿ã‚°ã¯ </app:imageURI> ã§ã™ã€‚ãŸã ã—ã€<æ‹¬å¼§> ã¨ /(ã‚¹ãƒ©ãƒƒã‚·ãƒ¥) ã®å‰å¾Œã«åŠè§’ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ã¦ã‚‚è‰¯ã„ã‚‚ã®ã¨ã—ã¾ã™ã€‚
             static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
             static auto tag_hint = std::string("app:imageURI");
             auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
@@ -295,9 +295,9 @@ namespace plateau::udx {
         }
 
         std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content) {
-            // ŠJnƒ^ƒO‚Í codeSpace=" ‚Å‚·B‚½‚¾‚µ =(ƒCƒR[ƒ‹), "(ƒ_ƒuƒ‹ƒNƒH[ƒe[ƒVƒ‡ƒ“)‚Ì‘OŒã‚É”¼ŠpƒXƒy[ƒX‚ª‚ ‚Á‚Ä‚à—Ç‚¢‚à‚Ì‚Æ‚µ‚Ü‚·B
+            // é–‹å§‹ã‚¿ã‚°ã¯ codeSpace=" ã§ã™ã€‚ãŸã ã— =(ã‚¤ã‚³ãƒ¼ãƒ«), "(ãƒ€ãƒ–ãƒ«ã‚¯ã‚©ãƒ¼ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³)ã®å‰å¾Œã«åŠè§’ã‚¹ãƒšãƒ¼ã‚¹ãŒã‚ã£ã¦ã‚‚è‰¯ã„ã‚‚ã®ã¨ã—ã¾ã™ã€‚
             static const auto begin_tag = std::regex(R"(codeSpace *= *")", regex_options);
-            // I—¹ƒ^ƒO‚ÍAŠJnƒ^ƒO‚ÌŸ‚Ì "(ƒ_ƒuƒ‹ƒNƒH[ƒe[ƒVƒ‡ƒ“)‚Å‚·B
+            // çµ‚äº†ã‚¿ã‚°ã¯ã€é–‹å§‹ã‚¿ã‚°ã®æ¬¡ã® "(ãƒ€ãƒ–ãƒ«ã‚¯ã‚©ãƒ¼ãƒ†ãƒ¼ã‚·ãƒ§ãƒ³)ã§ã™ã€‚
             static const auto end_tag = std::regex(R"(")", regex_options);
             static const auto begin_tag_hint = "codeSpace";
             auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
@@ -305,10 +305,10 @@ namespace plateau::udx {
         }
 
         /**
-         * ˆø”‚Ì set ‚Ì’†g‚ğ‘Š‘ÎƒpƒX‚Æ‰ğß‚µA set‚ÌŠe—v‘f‚ğƒRƒs[‚µ‚Ü‚·B
-         * ‘Š‘ÎƒpƒX‚ÌŠî€‚Í ƒRƒs[Œ³‚Í ˆø” src_base_pathA ƒRƒs[æ‚Í dest_base_path ‚É‚È‚è‚Ü‚·B
-         * ƒRƒs[æ‚É“¯–¼‚ÌƒtƒHƒ‹ƒ_‚ª‘¶İ‚·‚éê‡‚ÍƒRƒs[‚µ‚Ü‚¹‚ñB
-         * ƒRƒs[Œ³‚ªÀİ‚µ‚È‚¢ê‡‚ÍƒRƒs[‚µ‚Ü‚¹‚ñB
+         * å¼•æ•°ã® set ã®ä¸­èº«ã‚’ç›¸å¯¾ãƒ‘ã‚¹ã¨è§£é‡ˆã—ã€ setã®å„è¦ç´ ã‚’ã‚³ãƒ”ãƒ¼ã—ã¾ã™ã€‚
+         * ç›¸å¯¾ãƒ‘ã‚¹ã®åŸºæº–ã¯ ã‚³ãƒ”ãƒ¼å…ƒã¯ å¼•æ•° src_base_pathã€ ã‚³ãƒ”ãƒ¼å…ˆã¯ dest_base_path ã«ãªã‚Šã¾ã™ã€‚
+         * ã‚³ãƒ”ãƒ¼å…ˆã«åŒåã®ãƒ•ã‚©ãƒ«ãƒ€ãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ã‚³ãƒ”ãƒ¼ã—ã¾ã›ã‚“ã€‚
+         * ã‚³ãƒ”ãƒ¼å…ƒãŒå®Ÿåœ¨ã—ãªã„å ´åˆã¯ã‚³ãƒ”ãƒ¼ã—ã¾ã›ã‚“ã€‚
          */
         void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path) {
             for (const auto& path : path_set) {
@@ -324,7 +324,7 @@ namespace plateau::udx {
                 fs::copy(src, dest, fs::copy_options::skip_existing);
             }
         }
-    } // fetch ‚Åg‚¤–³–¼ŠÖ”
+    } // fetch ã§ä½¿ã†ç„¡åé–¢æ•°
 
     void UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
         const auto root_folder_name = fs::u8path(udx_path_).parent_path().filename().string();
@@ -340,7 +340,7 @@ namespace plateau::udx {
         catch (...) {
         }
 
-        // GMLƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İAŠÖ˜A‚·‚éƒeƒNƒXƒ`ƒƒƒpƒX‚ÆƒR[ƒhƒŠƒXƒgƒpƒX‚ğæ“¾‚µ‚Ü‚·B
+        // GMLãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã€é–¢é€£ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ã‚¹ã¨ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆãƒ‘ã‚¹ã‚’å–å¾—ã—ã¾ã™ã€‚
         const auto gml_content = loadFile(gml_file.getPath());
         auto image_paths = searchAllImagePathsInGML(gml_content);
         auto codelist_paths = searchAllCodelistPathsInGML(gml_content);
@@ -352,7 +352,7 @@ namespace plateau::udx {
             std::cout << path << std::endl;
         }
 
-        // ƒeƒNƒXƒ`ƒƒ‚ÆƒR[ƒhƒŠƒXƒgƒtƒ@ƒCƒ‹‚ğƒRƒs[‚µ‚Ü‚·B
+        // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã‚³ãƒ¼ãƒ‰ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚³ãƒ”ãƒ¼ã—ã¾ã™ã€‚
         auto gml_dir_path = fs::path(gml_file_path).parent_path();
         auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
         copyFiles(image_paths, gml_dir_path, app_destination_path);

@@ -91,7 +91,7 @@ namespace plateau::polygonMesh {
         /**
          * Plateau の Polygon を Mesh情報 に変換します。
          * Mesh構築に必要な情報を Polygon から コピーします。すなわち:
-         * Vertices を極座標から平面直角座標に変換したうえでコピーします。
+         * Vertices を極座標から平面直角座標に変換したうえでコピーします。座標軸は 入力も出力も ENU です。
          * Indices, UV1 をコピーします。SubMeshを生成します。
          * 引数の gml_path は、テクスチャパスを相対から絶対に変換するときの基準パスです。
          * 結果は引数で out と名の付くものに格納されます。
@@ -107,6 +107,8 @@ namespace plateau::polygonMesh {
             const auto& other_indices_original = poly.getIndices();
             const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
 
+            assert(other_indices_original.size() % 3 == 0);
+
             // 範囲外の頂点とポリゴンを除去します（除去する設定の場合）。
             std::vector<TVec3d> out_filtered_vertices;
             std::vector<unsigned int> out_filtered_indices;
@@ -116,10 +118,10 @@ namespace plateau::polygonMesh {
             const std::vector<unsigned int>* other_indices = &other_indices_original;
             const std::vector<TVec2f>* other_uv_1 = &other_uv_1_original;
 
+            out_filtered_vertices = std::vector<TVec3d>();
+            out_filtered_indices = std::vector<unsigned int>();
+            out_filtered_uv_1 = std::vector<TVec2f>();
             if (remove_triangles_outside_extent) {
-                out_filtered_vertices = std::vector<TVec3d>();
-                out_filtered_indices = std::vector<unsigned int>();
-                out_filtered_uv_1 = std::vector<TVec2f>();
                 removeTrianglesOutsideExtent(extent, vertices_lat_lon_original, other_indices_original,
                                              other_uv_1_original,
                                              out_filtered_vertices, out_filtered_indices, out_filtered_uv_1);
@@ -128,16 +130,24 @@ namespace plateau::polygonMesh {
                 other_uv_1 = &out_filtered_uv_1;
             }
 
+            assert(other_indices->size() % 3 == 0);
+
+            if(vertices_lat_lon->empty() || other_indices->empty()) return;
+
             // 極座標から平面直角座標へ変換します。
             out_vertices = std::vector<TVec3d>();
             out_vertices.reserve(vertices_lat_lon->size());
             for (const auto& lat_lon: *vertices_lat_lon) {
-                auto xyz = geo_reference.project(lat_lon);
+                auto xyz = geo_reference.projectWithoutAxisConvert(lat_lon);
                 out_vertices.push_back(xyz);
             }
+            assert(out_vertices.size() == vertices_lat_lon->size());
 
             // Indicesをコピーします。
             out_indices = *other_indices;
+
+            assert(out_indices.size() == other_indices->size());
+            assert(out_indices.size() % 3 == 0);
 
             // UV1をコピーし、頂点数に足りない分を 0 で埋めます。
             out_uv_1 = *other_uv_1;
@@ -218,7 +228,7 @@ namespace plateau::polygonMesh {
             if (!isValidMesh(other_mesh)) return;
             mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
                        invert_mesh_front_back);
-            mesh.extendLastSubMesh(mesh.getIndices().size());
+            mesh.extendLastSubMesh(mesh.getIndices().size() - 1);
 
         }
 
@@ -242,21 +252,18 @@ namespace plateau::polygonMesh {
 
     }
 
-    namespace{ // merge で使う無名名前空間関数です。
-        /**
-         * PLATEAUからメッシュを読み込んで座標軸を変換をするとき、このままだとメッシュが裏返ることがあります（座標軸が反転したりするので）。
-         * 裏返りを補正する必要があるかどうかを bool で返します。
-         */
-        bool shouldInvertIndicesOnMeshConvert(CoordinateSystem sys){
-            switch(sys){
-                case CoordinateSystem::ENU:
-                case CoordinateSystem::WUN:
-                case CoordinateSystem::NWU: return false;
-                case CoordinateSystem::EUN: return true;
-                default: throw std::runtime_error("Unknown coordinate system.");
-            }
+    bool MeshMerger::shouldInvertIndicesOnMeshConvert(const CoordinateSystem sys) {
+        switch (sys) {
+            case CoordinateSystem::ENU:
+            case CoordinateSystem::WUN:
+            case CoordinateSystem::NWU:
+                return false;
+            case CoordinateSystem::EUN:
+                return true;
+            default:
+                throw std::runtime_error("Unknown coordinate system.");
         }
-    } // merge で使う無名名前空間関数
+    }
 
     void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
                                   const GeoReference& geo_reference, const TVec2f& uv_2_element,
@@ -273,15 +280,15 @@ namespace plateau::polygonMesh {
         );
         mergeMeshInfo(mesh, std::move(vertices),
                       std::move(indices), std::move(uv_1), std::move(sub_meshes),
+                      geometry::CoordinateSystem::ENU,
                       mesh_extract_options.mesh_axes,
                       mesh_extract_options.export_appearance
         );
     }
 
-    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, CoordinateSystem mesh_axes, bool include_textures,
+    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures,
                                const TVec2f& uv_2_element, const TVec2f& uv_3_element){
         if(!isValidMesh(other_mesh)) return;
-        bool invert_mesh_front_back = shouldInvertIndicesOnMeshConvert(mesh_axes);
         if(include_textures){
             mergeWithTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
         }else{
@@ -292,9 +299,28 @@ namespace plateau::polygonMesh {
     void MeshMerger::mergeMeshInfo(Mesh& mesh,
                                    std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
                                    std::vector<SubMesh>&& sub_meshes,
-                                   CoordinateSystem mesh_axes, bool include_texture){
-        auto other_mesh = Mesh("", std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes));
-        mergeMesh(mesh, other_mesh, mesh_axes, include_texture, TVec2f(0, 0), TVec2f(0, 0));
+                                   CoordinateSystem mesh_axis_convert_from,
+                                   CoordinateSystem mesh_axis_convert_to, bool include_texture){
+
+        // 座標軸を変換するとき、符号の反転によってポリゴンが裏返ることがあります。それを補正するためにポリゴンを裏返す処理が必要かどうかを求めます。
+        // 座標軸を FROM から TO に変換するとして、それは 下記の [1]と[2] の XOR で求まります。
+        bool invert_mesh_front_back =
+                shouldInvertIndicesOnMeshConvert(mesh_axis_convert_from) !=  // [1] FROM → ENU に変換するときに反転の必要があるか
+                shouldInvertIndicesOnMeshConvert( mesh_axis_convert_to);     // [2] ENU → TO に変換するときに反転の必要があるか
+
+        // 座標軸を変換します。
+        std::vector<TVec3d> vs = std::move(vertices);
+        auto vertex_count = vs.size();
+        for(int i=0; i<vertex_count; i++){
+            const auto& before = vs.at(i);
+            // BEFORE → ENU
+            const auto enu = GeoReference::convertAxisToENU(mesh_axis_convert_from, before);
+            // ENU → AFTER
+            vs.at(i) = GeoReference::convertAxisFromENUTo(mesh_axis_convert_to, enu);
+        }
+
+        auto other_mesh = Mesh("", std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes));
+        mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture, TVec2f(0, 0), TVec2f(0, 0));
     }
 
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,

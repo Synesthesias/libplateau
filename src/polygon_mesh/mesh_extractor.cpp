@@ -3,6 +3,7 @@
 #include "citygml/tesselator.h"
 #include "citygml/texture.h"
 #include "../src/polygon_mesh/grid_merger.h"
+#include "citygml/cityobject.h"
 #include <plateau/polygon_mesh/mesh_merger.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/mesh_writer/obj_writer.h>
@@ -50,12 +51,14 @@ namespace plateau::polygonMesh {
                         // 主要地物ごとにメッシュを結合します。
                         for (auto primary_obj: primary_city_objs) {
                             // 範囲外ならスキップします。
-                            if(shouldSkipCityObj(*primary_obj, options)) continue;
+                            if (shouldSkipCityObj(*primary_obj, options)) continue;
                             // 主要地物のメッシュを作ります。
                             auto mesh = Mesh(primary_obj->getId());
-                            MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, geo_reference,
-                                                                  TVec2f{0, 0},
-                                                                  TVec2f{0, 0}, city_model.getGmlPath());
+                            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
+                                MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, geo_reference,
+                                                                      TVec2f{0, 0},
+                                                                      TVec2f{0, 0}, city_model.getGmlPath());
+                            }
                             if (lod >= 2) {
                                 // 主要地物の子である各最小地物をメッシュに加えます。
                                 auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj);
@@ -77,15 +80,9 @@ namespace plateau::polygonMesh {
                             // 範囲外ならスキップします。
                             if(shouldSkipCityObj(*primary_obj, options)) continue;
                             // 主要地物のノードを作成します。
-                            // 主要地物のノードに主要地物のメッシュを含むべきかどうかは状況により異なります。
-                            // LOD2以上である建物は、子の最小地物に必要なメッシュが入ります。
-                            // よって主要地物ノードにもメッシュを含めるとダブるため含めません。
                             auto primary_mesh = std::optional<Mesh>(std::nullopt);
-                            bool should_contain_primary_mesh =
-                                    !(lod >= 2 && // ( LODが2以上 かつ
-                                      (primary_obj->getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
-                                      (citygml::CityObject::CityObjectsType) 0); // ビット演算で、フラグに Building を含む)の NOT
-                            if (should_contain_primary_mesh) {
+
+                            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 primary_mesh = Mesh(primary_obj->getId());
                                 MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options,
                                                                       geo_reference,
@@ -130,5 +127,11 @@ namespace plateau::polygonMesh {
     void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model,
                                 const MeshExtractOptions& options) {
         extractInner(out_model, city_model, options);
+    }
+
+    bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
+        return !(lod >= 2 && // ( LODが2以上 かつ
+                 (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
+                 (citygml::CityObject::CityObjectsType) 0); // ビット演算で、フラグに Building を含む)の NOT
     }
 }
