@@ -14,6 +14,7 @@ TEST_F(VectorTileTest, VectorTileTest) {
     plateau::geometry::GeoCoordinate max(35.54136964, 139.78712557, 10000);
     plateau::geometry::Extent extent(min, max);
 
+<<<<<<< HEAD
     std::string destination = "./Basemap";
     VectorTileDownloader downloader(destination, extent);
 
@@ -47,4 +48,21 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_LE(abs(actual_extent.min.longitude - 139.768), 0.001);
     ASSERT_LE(abs(actual_extent.max.latitude - 35.5501), 0.001);
     ASSERT_LE(abs(actual_extent.max.longitude - 139.779), 0.001);
+=======
+    TileProjection tileProjection;
+    auto tileCoordinates = tileProjection.getTileCoordinates(extent, 15);
+
+    ASSERT_EQ(tileCoordinates->size(), 4);
+
+    VectorTileDownloader downloader("http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png");
+    std::string destination = "./Basemap";
+    auto tile = downloader.download(destination.c_str(), tileCoordinates->front());
+
+    ASSERT_EQ(tile->coordinate.zoom_level, 15);
+    ASSERT_EQ(tile->coordinate.column, 29106);
+    ASSERT_EQ(tile->coordinate.row, 12918);
+    ASSERT_EQ(tile->image_path, destination + "\\15\\29106\\12918.png");
+    ASSERT_TRUE(std::filesystem::exists(tile->image_path));
+    std::filesystem::remove_all(destination);
+>>>>>>> d66b8b0fa4c0cda7d16be1403f77b2a569ede64a
 }

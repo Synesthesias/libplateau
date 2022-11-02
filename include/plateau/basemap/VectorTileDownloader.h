@@ -7,17 +7,29 @@
 
 struct TileCoordinate {
     int column;
+<<<<<<< HEAD
     int row;
+=======
+
+    int row;
+
+>>>>>>> d66b8b0fa4c0cda7d16be1403f77b2a569ede64a
     int zoom_level;
 };
 
 struct VectorTile {
+<<<<<<< HEAD
     TileCoordinate coordinate{};
+=======
+    TileCoordinate coordinate;
+
+>>>>>>> d66b8b0fa4c0cda7d16be1403f77b2a569ede64a
     std::string image_path;
 };
 
 class LIBPLATEAU_EXPORT VectorTileDownloader {
 public:
+<<<<<<< HEAD
     VectorTileDownloader(
         std::string destination,
         const plateau::geometry::Extent& extent,
@@ -46,4 +58,14 @@ private:
     std::shared_ptr<std::vector<TileCoordinate>> tiles_;
 
     void updateTileCoordinates();
+=======
+    VectorTileDownloader(const char* uri);
+
+    std::shared_ptr <VectorTile> download(const char* destination, TileCoordinate coordinate);
+    const char* getUri();
+    void setUri(char* uri);
+
+private:
+    std::string uri_ = "http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
+>>>>>>> d66b8b0fa4c0cda7d16be1403f77b2a569ede64a
 };
