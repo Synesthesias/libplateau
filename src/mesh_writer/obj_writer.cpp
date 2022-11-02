@@ -175,8 +175,8 @@ namespace plateau::meshWriter {
                     std::replace(texUrl.begin(), texUrl.end(), '\\', '/');
                     writeMaterialReference(ofs, texUrl);
 
-                    /// UV番号を明記する記法と省略する記法が混在すると Blender にインポートしたときにUVがずれるので
-                    /// テクスチャがなくともUVは記載します。
+                    // UV番号を明記する記法と省略する記法が混在すると Blender にインポートしたときにUVがずれるので
+                    // テクスチャがなくともUVは記載します。
                     writeIndicesWithUV(ofs, indices);
                 }
                 v_offset_ += vertices.size();
