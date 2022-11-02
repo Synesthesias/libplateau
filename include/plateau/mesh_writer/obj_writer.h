@@ -24,7 +24,6 @@ namespace plateau::meshWriter {
         void writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node);
         void writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node);
         static void writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices);
-        void writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) const;
         void writeIndicesWithUV(std::ofstream& ofs, const std::vector<unsigned int>& indices) const;
         static void writeUVs(std::ofstream& ofs, const std::vector<TVec2f>& uvs);
         void writeMaterialReference(std::ofstream& ofs, const std::string& texUrl);

@@ -7,6 +7,7 @@
 #include <citygml/citymodel.h>
 
 #include <plateau/mesh_writer/obj_writer.h>
+#include <cassert>
 
 namespace fs = std::filesystem;
 using namespace citygml;
@@ -150,6 +151,8 @@ namespace plateau::meshWriter {
                 const auto& all_indices = mesh.value().getIndices();
                 const auto& uvs = mesh.value().getUV1();
 
+                assert(all_indices.size() % 3 == 0);
+
                 writeVertices(ofs, vertices);
 
                 if (!uvs.empty()) {
@@ -166,16 +169,15 @@ namespace plateau::meshWriter {
                     auto st = sub_mesh.getStartIndex();
                     auto ed = sub_mesh.getEndIndex();
                     std::vector<unsigned int> indices(all_indices.begin() + (long long)st, all_indices.begin() + (long long)ed + 1);
+                    assert(indices.size() % 3 == 0);
 
                     auto texUrl = sub_mesh.getTexturePath();
                     std::replace(texUrl.begin(), texUrl.end(), '\\', '/');
                     writeMaterialReference(ofs, texUrl);
 
-                    if (!texUrl.empty()) {
-                        writeIndicesWithUV(ofs, indices);
-                    } else {
-                        writeIndices(ofs, indices);
-                    }
+                    // UV番号を明記する記法と省略する記法が混在すると Blender にインポートしたときにUVがずれるので
+                    // テクスチャがなくともUVは記載します。
+                    writeIndicesWithUV(ofs, indices);
                 }
                 v_offset_ += vertices.size();
                 uv_offset_ += uvs.size();
@@ -192,19 +194,6 @@ namespace plateau::meshWriter {
     void ObjWriter::writeUVs(std::ofstream& ofs, const std::vector<TVec2f>& uvs) {
         for (const auto& uv : uvs) {
             ofs << "vt " << uv.x << " " << uv.y << std::endl;
-        }
-    }
-
-    void ObjWriter::writeIndices(std::ofstream& ofs, const std::vector<unsigned int>& indices) const {
-        unsigned face[3];
-        for (unsigned i = 0; i < indices.size(); i++) {
-            face[i % 3] = indices[i] + v_offset_ + 1;
-
-            if (i % 3 < 2) {
-                continue;
-            }
-
-            ofs << generateFace(face[0], face[1], face[2]);
         }
     }
 
