@@ -83,6 +83,20 @@ namespace PLATEAU.Test.CityGML
         }
 
         [TestMethod]
+        public void GetValueOrNull_Returns_Value_If_Found()
+        {
+            var val = this.attrMap.GetValueOrNull("建物ID");
+            Assert.AreEqual("13111-bldg-98", val.AsString);
+        }
+
+        [TestMethod]
+        public void GetValueOrNull_Returns_Null_If_Not_Found()
+        {
+            var val = this.attrMap.GetValueOrNull("DummyNotFound");
+            Assert.IsNull(val);
+        }
+
+        [TestMethod]
         public void ContainsKey_Returns_True_On_Found()
         {
             bool result = this.attrMap.ContainsKey("建物ID");
