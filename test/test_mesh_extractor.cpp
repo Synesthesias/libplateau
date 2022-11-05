@@ -89,6 +89,7 @@ namespace plateau::polygonMesh {
         const auto& first_atomic_node = first_primary_node.getChildAt(0);
         ASSERT_FALSE(first_primary_node.getMesh().has_value());
         ASSERT_TRUE(first_atomic_node.getMesh().has_value());
+        std::cout << model->debugString() << std::endl;
     }
 
     TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_per_city_model_area) { // NOLINT

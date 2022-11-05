@@ -29,6 +29,9 @@ namespace plateau::polygonMesh {
 
         void setEndIndex(int end_index);
 
+        /// SubMesh の情報を stringstream に書き込みます。
+        void debugString(std::stringstream& ss, int indent) const;
+
     private:
         /**
          * start_index_, end_index_ は、Meshの Indices リストの中のある範囲を表現します。

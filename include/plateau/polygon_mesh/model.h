@@ -36,6 +36,12 @@ namespace plateau::polygonMesh {
 
         Node& getRootNodeAt(size_t index);
         const Node& getRootNodeAt(size_t index) const;
+
+        /// 子もメッシュもないノードを削除します。
+        void eraseEmptyNodes();
+
+        // Model以下の階層構造を読みやすい文字列にします。
+        std::string debugString() const;
     private:
         std::vector<Node> root_nodes_;
     };

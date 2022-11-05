@@ -49,4 +49,27 @@ namespace plateau::polygonMesh {
     const Node& Node::getChildAt(unsigned int index) const {
         return child_nodes_.at(index);
     }
+
+    void Node::eraseEmptyChildren() {
+        auto new_end = std::remove_if(child_nodes_.begin(), child_nodes_.end(), [](Node& child) {
+            child.eraseEmptyChildren();
+            if(child.getChildCount() == 0 && (!child.getMesh().has_value())) return true;
+            return false;
+        });
+        child_nodes_.erase(new_end, child_nodes_.end());
+    }
+
+    void Node::debugString(std::stringstream& ss, int indent) const {
+        for(int i=0; i<indent; i++) ss << "    ";
+        ss << "Node: " << name_ << std::endl;
+        if(mesh_.has_value()){
+            mesh_.value().debugString(ss, indent + 1);
+        }else{
+            for(int i=0; i<indent + 1; i++) ss << "    ";
+            ss << "No Mesh" << std::endl;
+        }
+        for(const auto& child : child_nodes_) {
+            child.debugString(ss, indent + 1);
+        }
+    }
 }
