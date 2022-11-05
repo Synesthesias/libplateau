@@ -33,7 +33,8 @@ namespace plateau::polygonMesh {
     }
 
     void SubMesh::debugString(std::stringstream& ss, int indent) const {
-        for(int i=0; i < indent; i++) ss << "    ";
-        ss << "SubMesh: [" << start_index_ << ", " << end_index_ << "] texturePath = '" << texture_path_ << "'" << std::endl;
+        for (int i = 0; i < indent; i++) ss << "    ";
+        ss << "SubMesh: [" << start_index_ << ", " << end_index_ << "] texturePath = '" << texture_path_ << "'"
+           << std::endl;
     }
 }

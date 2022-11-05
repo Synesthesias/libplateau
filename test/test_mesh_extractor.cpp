@@ -197,21 +197,10 @@ namespace plateau::polygonMesh {
         const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
                                                                        MeshGranularity::PerPrimaryFeatureObject,
                                                                        MeshGranularity::PerAtomicFeatureObject};
-//        for (const auto granularity: test_pattern_granularity) {
-//            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
-//            options.mesh_granularity = granularity;
-//            options.min_lod = 0;
-//            options.max_lod = 2;
-//            auto model = MeshExtractor::extract(*city_model_, options);
-//            for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
-//                auto& lod_node = model->getRootNodeAt(lod);
-//                check_func(lod_node, lod);
-//            }
-//        }
 
         options.min_lod = 0;
         options.max_lod = 2;
-        foreachMeshGranularity(options, [&options, &check_func](Model& model){
+        foreachMeshGranularity(options, [&options, &check_func](Model& model) {
             for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
                 auto& lod_node = model.getRootNodeAt(lod);
                 check_func(lod_node, lod);
@@ -223,7 +212,7 @@ namespace plateau::polygonMesh {
         const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
                                                                        MeshGranularity::PerPrimaryFeatureObject,
                                                                        MeshGranularity::PerAtomicFeatureObject};
-        for(const auto granularity : test_pattern_granularity){
+        for (const auto granularity: test_pattern_granularity) {
             std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
             options.mesh_granularity = granularity;
             auto model = MeshExtractor::extract(*city_model_, options);

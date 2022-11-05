@@ -53,7 +53,7 @@ namespace plateau::polygonMesh {
     void Node::eraseEmptyChildren() {
         auto new_end = std::remove_if(child_nodes_.begin(), child_nodes_.end(), [](Node& child) {
             child.eraseEmptyChildren();
-            if(child.getChildCount() == 0 && (!child.doPolygonExists())) return true;
+            if (child.getChildCount() == 0 && (!child.doPolygonExists())) return true;
             return false;
         });
         child_nodes_.erase(new_end, child_nodes_.end());
@@ -61,23 +61,23 @@ namespace plateau::polygonMesh {
 
     bool Node::doPolygonExists() {
         const auto& mesh_optional = getMesh();
-        if(!mesh_optional.has_value()) return false;
+        if (!mesh_optional.has_value()) return false;
         const auto& mesh = mesh_optional.value();
-        if(mesh.getVertices().empty()) return false;
-        if(mesh.getIndices().empty()) return false;
+        if (mesh.getVertices().empty()) return false;
+        if (mesh.getIndices().empty()) return false;
         return true;
     }
 
     void Node::debugString(std::stringstream& ss, int indent) const {
-        for(int i=0; i<indent; i++) ss << "    ";
+        for (int i = 0; i < indent; i++) ss << "    ";
         ss << "Node: " << name_ << std::endl;
-        if(mesh_.has_value()){
+        if (mesh_.has_value()) {
             mesh_.value().debugString(ss, indent + 1);
-        }else{
-            for(int i=0; i<indent + 1; i++) ss << "    ";
+        } else {
+            for (int i = 0; i < indent + 1; i++) ss << "    ";
             ss << "No Mesh" << std::endl;
         }
-        for(const auto& child : child_nodes_) {
+        for (const auto& child: child_nodes_) {
             child.debugString(ss, indent + 1);
         }
     }
