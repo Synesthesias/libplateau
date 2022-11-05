@@ -1,5 +1,6 @@
 #include <plateau/polygon_mesh/node.h>
 #include "plateau/polygon_mesh/model.h"
+#include <algorithm>
 
 namespace plateau::polygonMesh {
 
