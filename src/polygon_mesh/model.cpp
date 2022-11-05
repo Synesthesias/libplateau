@@ -25,7 +25,7 @@ namespace plateau::polygonMesh {
     void Model::eraseEmptyNodes() {
         auto new_end = std::remove_if(root_nodes_.begin(), root_nodes_.end(), [](Node& node){
             node.eraseEmptyChildren();
-            if(node.getChildCount() == 0 && (!node.getMesh().has_value())) return true;
+            if(node.getChildCount() == 0 && (!node.doPolygonExists())) return true;
             return false;
         });
         root_nodes_.erase(new_end, root_nodes_.end());

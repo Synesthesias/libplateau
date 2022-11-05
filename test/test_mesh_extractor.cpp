@@ -36,7 +36,8 @@ namespace plateau::polygonMesh {
          * @param check_func
          * 各組み合わせでのチェック内容を渡します。 引数にLODノード, LOD番号 をとる関数オブジェクトです。
          */
-        void foreachMeshGranularityAndLOD(MeshExtractOptions options, std::function<void(Node&, int)> check_func);
+        void foreachMeshGranularityAndLOD(MeshExtractOptions options, std::function<void(Node&, unsigned)> check_func);
+        void foreachMeshGranularity(MeshExtractOptions options, std::function<void(Model&)> check_func);
     };
 
 
@@ -89,7 +90,6 @@ namespace plateau::polygonMesh {
         const auto& first_atomic_node = first_primary_node.getChildAt(0);
         ASSERT_FALSE(first_primary_node.getMesh().has_value());
         ASSERT_TRUE(first_atomic_node.getMesh().has_value());
-        std::cout << model->debugString() << std::endl;
     }
 
     TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_per_city_model_area) { // NOLINT
@@ -127,10 +127,10 @@ namespace plateau::polygonMesh {
     TEST_F(MeshExtractorTest, no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_obj) { // NOLINT
         auto options = mesh_extract_options_;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
-        foreachMeshGranularityAndLOD(
+        foreachMeshGranularity(
                 options,
-                [this](Node& node, int lod_num) {
-                    ASSERT_FALSE(haveVertexRecursive(node));
+                [](Model& model) {
+                    ASSERT_EQ(model.getRootNodeCount(), 0);
                 }
         );
     }
@@ -141,10 +141,10 @@ namespace plateau::polygonMesh {
         options.exclude_city_object_outside_extent = false;
         options.exclude_triangles_outside_extent = true;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
-        foreachMeshGranularityAndLOD(
+        foreachMeshGranularity(
                 options,
-                [this](Node& node, int lod_num) {
-                    ASSERT_FALSE(haveVertexRecursive(node));
+                [](Model& model) {
+                    ASSERT_EQ(model.getRootNodeCount(), 0);
                 }
         );
     }
@@ -193,20 +193,41 @@ namespace plateau::polygonMesh {
     }
 
     void MeshExtractorTest::foreachMeshGranularityAndLOD(MeshExtractOptions options,
-                                                         std::function<void(Node&, int)> check_func) {
+                                                         std::function<void(Node&, unsigned)> check_func) {
         const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
                                                                        MeshGranularity::PerPrimaryFeatureObject,
                                                                        MeshGranularity::PerAtomicFeatureObject};
-        for (const auto granularity: test_pattern_granularity) {
-            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
-            options.mesh_granularity = granularity;
-            options.min_lod = 0;
-            options.max_lod = 2;
-            auto model = MeshExtractor::extract(*city_model_, options);
+//        for (const auto granularity: test_pattern_granularity) {
+//            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
+//            options.mesh_granularity = granularity;
+//            options.min_lod = 0;
+//            options.max_lod = 2;
+//            auto model = MeshExtractor::extract(*city_model_, options);
+//            for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
+//                auto& lod_node = model->getRootNodeAt(lod);
+//                check_func(lod_node, lod);
+//            }
+//        }
+
+        options.min_lod = 0;
+        options.max_lod = 2;
+        foreachMeshGranularity(options, [&options, &check_func](Model& model){
             for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
-                auto& lod_node = model->getRootNodeAt(lod);
+                auto& lod_node = model.getRootNodeAt(lod);
                 check_func(lod_node, lod);
             }
+        });
+    }
+
+    void MeshExtractorTest::foreachMeshGranularity(MeshExtractOptions options, std::function<void(Model&)> check_func) {
+        const std::vector<MeshGranularity> test_pattern_granularity = {MeshGranularity::PerCityModelArea,
+                                                                       MeshGranularity::PerPrimaryFeatureObject,
+                                                                       MeshGranularity::PerAtomicFeatureObject};
+        for(const auto granularity : test_pattern_granularity){
+            std::cout << "testing mesh_granularity = " << (int) granularity << std::endl;
+            options.mesh_granularity = granularity;
+            auto model = MeshExtractor::extract(*city_model_, options);
+            check_func(*model);
         }
     }
 }
