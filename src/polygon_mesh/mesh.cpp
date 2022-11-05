@@ -167,9 +167,9 @@ namespace plateau::polygonMesh {
     }
 
     void Mesh::debugString(std::stringstream& ss, int indent) const {
-        for(int i=0; i<indent; i++) ss << "    ";
+        for (int i = 0; i < indent; i++) ss << "    ";
         ss << "Mesh: ( " << vertices_.size() << " vertices, " << indices_.size() << " indices )" << std::endl;
-        for(const auto& sub_mesh : sub_meshes_){
+        for (const auto& sub_mesh: sub_meshes_) {
             sub_mesh.debugString(ss, indent + 1);
         }
     }
