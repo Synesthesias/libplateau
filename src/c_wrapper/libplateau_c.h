@@ -85,8 +85,8 @@ using dll_str_size_t = int;
  */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-            HANDLE_TYPE* const handle, \
-            RETURN_VALUE_TYPE* const out\
+            HANDLE_TYPE* const handle, /* C# では引数   [In] IntPtr handle に対応します。 */ \
+            RETURN_VALUE_TYPE* const out /* C# では引数 out OutType ret に対応します。 */ \
             __VA_ARGS__ \
             ){ \
         API_TRY{ \

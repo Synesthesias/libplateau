@@ -136,6 +136,26 @@ namespace PLATEAU.Interop
         public int CoordinateZoneID;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TileCoordinate
+    {
+        public int Column;
+        public int Row;
+        public int ZoomLevel;
+
+        public TileCoordinate(int column, int row, int zoomLevel)
+        {
+            this.Column = column;
+            this.Row = row;
+            this.ZoomLevel = zoomLevel;
+        }
+
+        public override string ToString()
+        {
+            return $"TileCoordinate: (Column={Column}, Row={Row}, ZoomLevel={this.ZoomLevel})";
+        }
+    }
+
     /// <summary>
     /// GMLファイルから3Dメッシュを取り出すための設定です。
     /// </summary>
@@ -1287,5 +1307,34 @@ namespace PLATEAU.Interop
             CoordinateSystem meshAxisConvertFrom,
             CoordinateSystem meshAxisConvertTo,
             [MarshalAs(UnmanagedType.U1)] bool includeTexture);
+        
+        // ***************
+        //  vector_tile_downloader_c.cpp
+        // ***************
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_create_vector_tile_downloader(
+            out IntPtr handle,
+            string destination,
+            Extent extent);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_tile_downloader(
+            [In] IntPtr handle);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_get_tile_count(
+            [In] IntPtr handle,
+            out int tileCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_download(
+            [In] IntPtr handle,
+            int index,
+            out TileCoordinate tileCoordinate,
+            out int sizeOfImagePath);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_last_image_path(
+            [In] IntPtr strPtr);
     }
 }
