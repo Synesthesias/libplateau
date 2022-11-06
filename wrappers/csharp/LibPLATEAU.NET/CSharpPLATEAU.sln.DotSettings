@@ -48,4 +48,5 @@ internal static extern APIResult plateau_$FuncName$(
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=measuredheight/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Minatomirai/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=texturecoordinates/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=texturetargetdefinition/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=texturetargetdefinition/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=unproject/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

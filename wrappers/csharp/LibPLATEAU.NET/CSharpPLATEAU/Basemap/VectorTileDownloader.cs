@@ -5,6 +5,9 @@ using PLATEAU.Util;
 
 namespace PLATEAU.Basemap
 {
+    /// <summary>
+    /// 地理院地図の地図タイルをダウンロードします。
+    /// </summary>
     public class VectorTileDownloader : PInvokeDisposable
     {
         public VectorTileDownloader(IntPtr handle) : base(handle)
@@ -23,6 +26,9 @@ namespace PLATEAU.Basemap
         public int TileCount => DLLUtil.GetNativeValue<int>(Handle,
             NativeMethods.plateau_vector_tile_downloader_get_tile_count);
 
+        /// <summary>
+        /// 地理院地図タイルをダウンロードして pngファイルに保存します。
+        /// </summary>
         public void Download(int index, out TileCoordinate tileCoordinate, out string imagePath)
         {
             var result = NativeMethods.plateau_vector_tile_downloader_download(

@@ -20,6 +20,7 @@ namespace PLATEAU.Test.Basemap
         public void TestCleanup()
         {
             
+            Directory.Delete(TestDestDir, true);
         }
         
         [TestMethod]
@@ -36,7 +37,7 @@ namespace PLATEAU.Test.Basemap
             Assert.AreEqual(4, tileCount);
             for (int i = 0; i < tileCount; i++)
             {
-                downloader.Download(i, out var coord, out string path);
+                downloader.Download(i, out var _, out string path);
             }
 
             string[] filesShouldExist =

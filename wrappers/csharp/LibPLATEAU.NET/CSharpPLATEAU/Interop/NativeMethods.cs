@@ -152,7 +152,7 @@ namespace PLATEAU.Interop
 
         public override string ToString()
         {
-            return $"TileCoordinate: (Column={Column}, Row={Row}, ZoomLevel={this.ZoomLevel})";
+            return $"TileCoordinate: (Column={this.Column}, Row={this.Row}, ZoomLevel={this.ZoomLevel})";
         }
     }
 
@@ -251,6 +251,11 @@ namespace PLATEAU.Interop
             this.Longitude = lon;
             this.Height = height;
         }
+
+        public override string ToString()
+        {
+            return $"GeoCoordinate: (Lat={this.Latitude}, Lon={this.Longitude}, Height={this.Height})";
+        }
     }
 
     /// <summary>
@@ -266,6 +271,16 @@ namespace PLATEAU.Interop
         {
             this.Min = min;
             this.Max = max;
+        }
+
+        public GeoCoordinate Center => new GeoCoordinate(
+            (this.Min.Latitude + this.Max.Latitude) * 0.5,
+            (this.Min.Longitude + this.Max.Longitude) * 0.5,
+            (this.Min.Height + this.Max.Height) * 0.5);
+
+        public override string ToString()
+        {
+            return $"Extent: (Min={this.Min}, Max={this.Max})";
         }
     }
 
@@ -1336,5 +1351,20 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_vector_tile_downloader_last_image_path(
             [In] IntPtr strPtr);
+
+        // ***************
+        //  vector_tile_downloader_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_tile_projection_project(
+            [In] GeoCoordinate geoCoordinate,
+            int zoomLevel,
+            out TileCoordinate outTileCoordinate);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_tile_projection_unproject(
+            [In] TileCoordinate tileCoordinate,
+            out Extent outExtent);
     }
 }
