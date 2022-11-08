@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <libplateau_api.h>
+#include <filesystem>
 #include "plateau/geometry/geo_coordinate.h"
 
 
@@ -16,6 +17,9 @@ struct VectorTile {
     std::string image_path;
 };
 
+/**
+ * 地理院地図タイルをダウンロードして画像ファイルとして保存します。
+ */
 class LIBPLATEAU_EXPORT VectorTileDownloader {
 public:
     VectorTileDownloader(
@@ -29,6 +33,10 @@ public:
     TileCoordinate getTile(int index) const;
     std::shared_ptr<VectorTile> download(int index) const;
     void download(int index, VectorTile& out_vector_tile) const;
+
+    /// TileCoordinateの地図タイルをダウンロードしたとき、その画像ファイルがどこに配置されるべきかを返します。
+    static std::filesystem::path calcDestinationPath(const TileCoordinate& coord, const std::string& destination);
+    std::filesystem::path calcDestinationPath(int index) const;
 
     const std::string& getUrl();
     void setUrl(const std::string& value);

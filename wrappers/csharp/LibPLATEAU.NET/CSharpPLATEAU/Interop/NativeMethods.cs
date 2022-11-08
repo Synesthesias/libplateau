@@ -256,6 +256,24 @@ namespace PLATEAU.Interop
         {
             return $"GeoCoordinate: (Lat={this.Latitude}, Lon={this.Longitude}, Height={this.Height})";
         }
+
+        public static GeoCoordinate Min(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                Math.Min(op1.Latitude, op2.Latitude),
+                Math.Min(op1.Longitude, op2.Longitude),
+                Math.Min(op1.Height, op2.Height)
+            );
+        }
+
+        public static GeoCoordinate Max(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                Math.Max(op1.Latitude, op2.Latitude),
+                Math.Max(op1.Longitude, op2.Longitude),
+                Math.Max(op1.Height, op2.Height)
+            );
+        }
     }
 
     /// <summary>

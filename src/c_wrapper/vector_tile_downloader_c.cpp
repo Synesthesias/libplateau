@@ -69,4 +69,7 @@ extern "C" {
         }API_CATCH
         return APIResult::ErrorUnknown;
     }
+
+DLL_STRING_VALUE_FUNC(plateau_vector_tile_downloader_calc_destination_path,
+                      )
 }
