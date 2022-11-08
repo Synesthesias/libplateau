@@ -38,6 +38,7 @@ namespace PLATEAU.Test.Basemap
             for (int i = 0; i < tileCount; i++)
             {
                 downloader.Download(i, out var _, out string path);
+                Assert.AreEqual(path, downloader.CalcDestPath(i));
             }
 
             string[] filesShouldExist =

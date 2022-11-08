@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
 using PLATEAU.Util;
@@ -41,6 +42,18 @@ namespace PLATEAU.Basemap
             string pathStr = DLLUtil.ReadUtf8Str(pathStrPtr, sizeOfImagePath);
             Marshal.FreeCoTaskMem(pathStrPtr);
             imagePath = pathStr;
+        }
+
+        public string CalcDestPath(int index)
+        {
+            string path = DLLUtil.GetNativeStringByValue(Handle,
+                (IntPtr handle, out int outStrSize) =>
+                    NativeMethods.plateau_vector_tile_downloader_calc_destination_path_size(handle, out outStrSize,
+                        index),
+                (handle, strPtr) =>
+                    NativeMethods.plateau_vector_tile_downloader_calc_destination_path(handle, strPtr, index)
+            );
+            return path;
         }
 
         protected override void DisposeNative()

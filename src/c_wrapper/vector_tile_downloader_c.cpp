@@ -70,6 +70,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-DLL_STRING_VALUE_FUNC(plateau_vector_tile_downloader_calc_destination_path,
-                      )
+    DLL_STRING_VALUE_FUNC(plateau_vector_tile_downloader_calc_destination_path,
+                          VectorTileDownloader,
+                          handle->calcDestinationPath(index).string(),
+                          ,int index)
 }

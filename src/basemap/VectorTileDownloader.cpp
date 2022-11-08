@@ -17,6 +17,7 @@ VectorTileDownloader::VectorTileDownloader(
     , extent_(extent)
     , zoom_level_(zoom_level)
     , tiles_(TileProjection::getTileCoordinates(extent, zoom_level)) {
+    setExtent(extent);
 }
 
 
@@ -61,13 +62,6 @@ void VectorTileDownloader::download(
             return true; // return 'false' if you want to cancel the request.
         });
 
-//    const std::string extension = ".png";
-//    auto folder_path =
-//        fs::u8path(destination)
-//        .append(std::to_string(coordinate.zoom_level))
-//        .append(std::to_string(coordinate.column));
-//    create_directories(folder_path);
-//    auto file_path = folder_path.append(std::to_string(coordinate.row) + extension);
     auto file_path = calcDestinationPath(coordinate, destination);
     create_directories(file_path.parent_path());
     std::fstream fs(file_path, std::ios::out | std::ios::binary | std::ios::trunc);

@@ -2,6 +2,7 @@
 
 #include <plateau/basemap/VectorTileDownloader.h>
 #include <plateau/basemap/TileProjection.h>
+#include "../src/c_wrapper/vector_tile_downloader_c.cpp"
 #include <filesystem>
 
 
@@ -38,6 +39,8 @@ TEST_F(VectorTileTest, VectorTileTest) {
     ASSERT_EQ(tile.coordinate.column, 29106);
     ASSERT_EQ(tile.coordinate.row, 12918);
     ASSERT_EQ(tile.image_path, std::filesystem::u8path(destination).append("15").append("29106").append("12918.png").u8string());
+    ASSERT_EQ(tile.image_path, downloader.calcDestinationPath(0));
+
     ASSERT_TRUE(std::filesystem::exists(tile.image_path));
     std::filesystem::remove_all(destination);
 
