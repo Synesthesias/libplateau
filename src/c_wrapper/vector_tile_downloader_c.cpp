@@ -8,9 +8,10 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_vector_tile_downloader(
             VectorTileDownloader** out_vector_tile_downloader,
             const char* destination,
-            Extent extent
+            Extent extent,
+            int zoom_level
     ) {
-        *out_vector_tile_downloader = new VectorTileDownloader(destination, extent);
+        *out_vector_tile_downloader = new VectorTileDownloader(destination, extent, zoom_level);
         return APIResult::Success;
     }
 

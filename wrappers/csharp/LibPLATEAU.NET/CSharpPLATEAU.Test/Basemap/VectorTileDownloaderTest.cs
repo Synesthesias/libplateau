@@ -32,7 +32,7 @@ namespace PLATEAU.Test.Basemap
                 new GeoCoordinate(35.6345, 139.80, 9999)
             );
             using var downloader = VectorTileDownloader.Create(
-                TestDestDir, extent);
+                TestDestDir, extent, 15);
             int tileCount = downloader.TileCount;
             Assert.AreEqual(4, tileCount);
             for (int i = 0; i < tileCount; i++)
