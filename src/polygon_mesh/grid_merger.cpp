@@ -180,7 +180,7 @@ namespace plateau::polygonMesh {
             auto group_id = group.first;
             const auto& group_objs = group.second;
             // グループ内でマージする Mesh の新規作成
-            auto group_mesh = Mesh("group" + std::to_string(group_id));
+            Mesh group_mesh;
             // グループ内の各オブジェクトのループ
             for (const auto& city_obj: group_objs) {
                 auto polygons = MeshMerger::findAllPolygons(*city_obj.getCityObject(), lod);

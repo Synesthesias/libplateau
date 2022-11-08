@@ -24,7 +24,7 @@ extern "C"{
             const int end_index,
             const char* const texture_path
     ) {
-        *out_sub_mesh_ptr = new SubMesh(start_index, end_index, std::string(texture_path));
+        *out_sub_mesh_ptr = new SubMesh(start_index, end_index, texture_path);
         return APIResult::Success;
     }
 

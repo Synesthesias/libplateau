@@ -29,8 +29,12 @@ namespace plateau::polygonMesh {
         Model(Model&& model) = default;
         Model& operator=(Model&& model) = default;
 
+        static std::shared_ptr<Model> createModel();
+
         /// 作った Node は move で渡すことを想定しています。
         void addNode(Node&& node);
+
+        Node& addEmptyNode(const std::string& name);
 
         size_t getRootNodeCount() const;
 

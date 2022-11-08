@@ -9,7 +9,7 @@
 namespace plateau::polygonMesh {
     using namespace citygml;
 
-    Mesh::Mesh(const std::string& id) :
+    Mesh::Mesh() :
             vertices_(),
             uv1_(UV()),
             uv2_(UV()),
@@ -17,9 +17,8 @@ namespace plateau::polygonMesh {
             sub_meshes_() {
     }
 
-    Mesh::Mesh(const std::string& id, std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
-               std::vector<SubMesh>&& sub_meshes) :
-            Mesh(id) {
+    Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+               std::vector<SubMesh>&& sub_meshes) {
         vertices_ = vertices;
         indices_ = indices;
         uv1_ = uv_1;
