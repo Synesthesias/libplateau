@@ -53,7 +53,7 @@ namespace plateau::polygonMesh {
                             // 範囲外ならスキップします。
                             if (shouldSkipCityObj(*primary_obj, options)) continue;
                             // 主要地物のメッシュを作ります。
-                            auto mesh = Mesh(primary_obj->getId());
+                            Mesh mesh;
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, geo_reference,
                                                                       TVec2f{0, 0},
@@ -83,7 +83,7 @@ namespace plateau::polygonMesh {
                             auto primary_mesh = std::optional<Mesh>(std::nullopt);
 
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
-                                primary_mesh = Mesh(primary_obj->getId());
+                                primary_mesh = Mesh();
                                 MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options,
                                                                       geo_reference,
                                                                       TVec2f{0, 0},
@@ -94,7 +94,7 @@ namespace plateau::polygonMesh {
                             auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj);
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
-                                auto atomic_mesh = Mesh(atomic_obj->getId());
+                                auto atomic_mesh = Mesh();
                                 MeshMerger::mergePolygonsInCityObject(atomic_mesh, *atomic_obj, lod, options,
                                                                       geo_reference,
                                                                       TVec2f{0, 0},
@@ -119,10 +119,9 @@ namespace plateau::polygonMesh {
 
     std::shared_ptr<Model> MeshExtractor::extract(const citygml::CityModel& city_model,
                                                   const MeshExtractOptions& options) {
-        auto model_ptr = new Model();
-        extract(*model_ptr, city_model, options);
-        auto shared_model = std::shared_ptr<Model>(model_ptr);
-        return shared_model;
+        auto result = std::make_shared<Model>();
+        extract(*result, city_model, options);
+        return result;
     }
 
     void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model,
