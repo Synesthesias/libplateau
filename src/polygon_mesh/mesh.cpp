@@ -165,4 +165,12 @@ namespace plateau::polygonMesh {
             sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index);
         }
     }
+
+    void Mesh::debugString(std::stringstream& ss, int indent) const {
+        for (int i = 0; i < indent; i++) ss << "    ";
+        ss << "Mesh: ( " << vertices_.size() << " vertices, " << indices_.size() << " indices )" << std::endl;
+        for (const auto& sub_mesh: sub_meshes_) {
+            sub_mesh.debugString(ss, indent + 1);
+        }
+    }
 }

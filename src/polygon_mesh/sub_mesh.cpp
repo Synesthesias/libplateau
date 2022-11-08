@@ -1,6 +1,7 @@
 #include<plateau/polygon_mesh/sub_mesh.h>
 #include <utility>
 #include <stdexcept>
+#include <sstream>
 
 namespace plateau::polygonMesh {
 
@@ -29,5 +30,11 @@ namespace plateau::polygonMesh {
 
     void SubMesh::setEndIndex(int end_index) {
         end_index_ = end_index;
+    }
+
+    void SubMesh::debugString(std::stringstream& ss, int indent) const {
+        for (int i = 0; i < indent; i++) ss << "    ";
+        ss << "SubMesh: [" << start_index_ << ", " << end_index_ << "] texturePath = '" << texture_path_ << "'"
+           << std::endl;
     }
 }

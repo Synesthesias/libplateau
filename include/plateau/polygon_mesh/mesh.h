@@ -78,6 +78,8 @@ namespace plateau::polygonMesh {
          */
         void extendLastSubMesh(size_t sub_mesh_end_index);
 
+        /// メッシュとサブメッシュに関する情報を stringstream に書き込みます。
+        void debugString(std::stringstream& ss, int indent) const;
     private:
         std::vector<TVec3d> vertices_;
         std::vector<unsigned> indices_;

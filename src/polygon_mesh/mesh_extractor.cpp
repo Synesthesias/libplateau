@@ -113,6 +113,7 @@ namespace plateau::polygonMesh {
 
                 out_model.addNode(std::move(lod_node));
             }
+            out_model.eraseEmptyNodes();
         }
     }
 
