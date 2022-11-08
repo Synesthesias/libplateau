@@ -47,7 +47,7 @@ namespace plateau::polygonMesh {
         void eraseEmptyChildren();
 
         /// このノードがメッシュを持ち、かつそのメッシュがポリゴンを持つときに true を返します。
-        bool doPolygonExists();
+        bool polygonExists();
 
         /// Node 以下の階層構造を stringstream に書き込みます。
         void debugString(std::stringstream& ss, int indent) const;
