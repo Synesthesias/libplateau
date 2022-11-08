@@ -54,7 +54,7 @@ namespace PLATEAU.Test.Udx
             var gmlArray = collection.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmlArray)
             {
-                collection.Fetch(testDir.FullName, GmlFileInfo.Create(gml));
+                UdxFileCollection.Fetch(testDir.FullName, GmlFileInfo.Create(gml));
             }
 
             var shouldExists = new[]
@@ -65,7 +65,8 @@ namespace PLATEAU.Test.Udx
             };
             foreach (var filePath in shouldExists)
             {
-                Assert.IsTrue(File.Exists( "temp_test_dir/data/" + filePath));
+                var resultPath = "temp_test_dir/data/" + filePath;
+                Assert.IsTrue(File.Exists(resultPath), $"{resultPath} does not exist");
             }
             Directory.Delete(testDir.FullName, true);
         }

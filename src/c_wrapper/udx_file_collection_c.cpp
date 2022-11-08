@@ -85,13 +85,13 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_udx_file_collection_fetch(
-            UdxFileCollection* handle,
             char* destination_root_path_chars,
-            const GmlFileInfo* const gml_file_info
+            const GmlFileInfo* const gml_file_info,
+            GmlFileInfo* const out_gml_file_info
             ){
         API_TRY{
-            auto destination_root_path = std::string(destination_root_path_chars);
-            handle->fetch(destination_root_path, *gml_file_info);
+            const auto destination_root_path = std::string(destination_root_path_chars);
+            UdxFileCollection::fetch(destination_root_path, *gml_file_info, *out_gml_file_info);
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;

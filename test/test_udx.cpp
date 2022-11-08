@@ -67,7 +67,7 @@ TEST_F(UdxTest, fetch_generates_files){
     fs::remove_all(temp_test_dir);
 //    const auto& test_gml_info = udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFileInfo("../data/udx/bldg/53392642_bldg_6697_op2.gml");
-    udx_file_collection_.fetch(temp_test_dir, test_gml_info);
+    UdxFileCollection::fetch(temp_test_dir, test_gml_info);
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();

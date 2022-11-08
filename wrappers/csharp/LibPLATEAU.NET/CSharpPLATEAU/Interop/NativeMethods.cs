@@ -1118,9 +1118,9 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_udx_file_collection_fetch(
-            [In] IntPtr handle,
             [In] string destinationRootPath,
-            [In] IntPtr gmlFileInfoPtr);
+            [In] IntPtr gmlFileInfoPtr,
+            [In, Out] IntPtr outGmlFileInfoPtr);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_udx_file_collection_get_packages(
