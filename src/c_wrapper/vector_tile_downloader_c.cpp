@@ -74,4 +74,10 @@ extern "C" {
                           VectorTileDownloader,
                           handle->calcDestinationPath(index).string(),
                           ,int index)
+
+    DLL_VALUE_FUNC(plateau_vector_tile_downloader_get_tile,
+                   VectorTileDownloader,
+                   TileCoordinate,
+                   handle->getTile(index),
+                   ,int index)
 }

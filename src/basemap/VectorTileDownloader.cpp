@@ -106,7 +106,7 @@ TileCoordinate VectorTileDownloader::getTile(int index) const {
     if (tiles_ == nullptr)
         return {};
 
-    return (*tiles_)[index];
+    return (*tiles_).at(index);
 }
 
 std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) const {

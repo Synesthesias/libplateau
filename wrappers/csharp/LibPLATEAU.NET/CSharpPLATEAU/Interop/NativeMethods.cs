@@ -1394,7 +1394,13 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_vector_tile_downloader_calc_destination_path(
             [In] IntPtr handle,
-            [In, Out] IntPtr outStrPtr,
+            [In, Out] IntPtr strPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_tile_downloader_get_tile(
+            [In] IntPtr handle,
+            out TileCoordinate outTileCoordinate,
             int index);
     }
 }

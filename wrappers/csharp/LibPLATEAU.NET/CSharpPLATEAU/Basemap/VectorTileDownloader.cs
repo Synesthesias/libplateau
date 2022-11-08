@@ -56,6 +56,12 @@ namespace PLATEAU.Basemap
             return path;
         }
 
+        public TileCoordinate GetTileCoordinate(int index)
+        {
+            return DLLUtil.GetNativeValue<TileCoordinate>(Handle, index,
+                NativeMethods.plateau_vector_tile_downloader_get_tile);
+        }
+
         protected override void DisposeNative()
         {
             var result = NativeMethods.plateau_delete_vector_tile_downloader(Handle);
