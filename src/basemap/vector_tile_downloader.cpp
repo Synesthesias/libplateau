@@ -1,19 +1,19 @@
-#include <plateau/basemap/VectorTileDownloader.h>
-#include <plateau/basemap/TileProjection.h>
+#include <plateau/basemap/vector_tile_downloader.h>
+#include <plateau/basemap/tile_projection.h>
 
 #include <httplib.h>
 #include <filesystem>
 #include <fstream>
-#include <utility>
+
 
 namespace fs = std::filesystem;
 
 VectorTileDownloader::VectorTileDownloader(
-    std::string destination,
+    const std::string& destination,
     const plateau::geometry::Extent& extent,
     const int zoom_level)
     : url_(default_url_)
-    , destination_(std::move(destination))
+    , destination_(destination)
     , extent_(extent)
     , zoom_level_(zoom_level)
     , tiles_(TileProjection::getTileCoordinates(extent, zoom_level)) {

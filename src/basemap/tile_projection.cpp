@@ -1,6 +1,7 @@
-#include <plateau/basemap/TileProjection.h>
+#include <plateau/basemap/tile_projection.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+
 
 namespace {
     int long2tileX(double longitude, int z) {
