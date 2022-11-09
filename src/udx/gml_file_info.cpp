@@ -9,7 +9,8 @@ namespace plateau::udx {
     namespace fs = std::filesystem;
 
     GmlFileInfo::GmlFileInfo(const std::string& path)
-        : path_(path) {
+        : path_(path),
+        is_valid_(false){
         applyPath();
     }
 
@@ -65,8 +66,8 @@ namespace plateau::udx {
             current += character;
         }
         try {
-            code_ = filename_parts.empty() ? "" : filename_parts[0];
-            feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts[1];
+            code_ = filename_parts.empty() ? "" : filename_parts.at(0);
+            feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts.at(1);
             is_valid_ = true;
         }
         catch (...) {

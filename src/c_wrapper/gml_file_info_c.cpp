@@ -11,8 +11,16 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file_info(
         GmlFileInfo** gml_file_info_ptr, const char* path
     ) {
-        *gml_file_info_ptr = new GmlFileInfo(path);
-        return APIResult::Success;
+        API_TRY{
+            const auto gml_file_info = new GmlFileInfo(path);
+            if(gml_file_info->isValid()){
+                *gml_file_info_ptr = gml_file_info;
+                return APIResult::Success;
+            }else{
+                return APIResult::ErrorInvalidArgument;
+            }
+        }API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file_info(

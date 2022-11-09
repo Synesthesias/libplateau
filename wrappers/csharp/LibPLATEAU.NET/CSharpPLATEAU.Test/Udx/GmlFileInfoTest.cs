@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Udx
         public void GetPath_Returns_Path()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            var info = GmlFileInfo.Create(path);
+            using var info = GmlFileInfo.Create(path);
             Assert.AreEqual(path, info.Path);
         }
 
@@ -18,7 +18,7 @@ namespace PLATEAU.Test.Udx
         public void FeatureType()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            var info = GmlFileInfo.Create(path);
+            using var info = GmlFileInfo.Create(path);
             Assert.AreEqual("bldg", info.FeatureType);
         }
         
