@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include <plateau/basemap/VectorTileDownloader.h>
-#include <plateau/basemap/TileProjection.h>
+#include <plateau/basemap/vector_tile_downloader.h>
+#include <plateau/basemap/tile_projection.h>
 #include "../src/c_wrapper/vector_tile_downloader_c.cpp"
 #include <filesystem>
 

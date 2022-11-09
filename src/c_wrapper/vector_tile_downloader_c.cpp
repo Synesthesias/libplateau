@@ -1,5 +1,5 @@
 #include "libplateau_c.h"
-#include <plateau/basemap/VectorTileDownloader.h>
+#include <plateau/basemap/vector_tile_downloader.h>
 
 extern "C" {
 using namespace libplateau;

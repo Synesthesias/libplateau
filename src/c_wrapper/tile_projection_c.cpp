@@ -1,5 +1,5 @@
 #include "libplateau_c.h"
-#include <plateau/basemap/TileProjection.h>
+#include <plateau/basemap/tile_projection.h>
 
 extern "C" {
 using namespace libplateau;

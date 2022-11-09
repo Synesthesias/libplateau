@@ -1,4 +1,4 @@
 target_sources(plateau PRIVATE
-        "TileProjection.cpp"
-        "VectorTileDownloader.cpp"
+        "tile_projection.cpp"
+        "vector_tile_downloader.cpp"
         )

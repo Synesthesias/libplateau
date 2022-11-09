@@ -1,5 +1,5 @@
-#include <plateau/basemap/VectorTileDownloader.h>
-#include <plateau/basemap/TileProjection.h>
+#include <plateau/basemap/vector_tile_downloader.h>
+#include <plateau/basemap/tile_projection.h>
 
 #include <httplib.h>
 #include <filesystem>
