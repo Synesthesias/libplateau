@@ -102,9 +102,9 @@ int VectorTileDownloader::getTileCount() const {
     return static_cast<int>(tiles_->size());
 }
 
-TileCoordinate VectorTileDownloader::getTile(int index) const {
+TileCoordinate VectorTileDownloader::getTile(int index) {
     if (tiles_ == nullptr)
-        return {};
+        updateTileCoordinates();
 
     return (*tiles_).at(index);
 }

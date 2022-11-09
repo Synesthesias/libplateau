@@ -63,7 +63,7 @@ public:
     void setUrl(const std::string& value);
     void setExtent(const plateau::geometry::Extent& extent);
     int getTileCount() const;
-    TileCoordinate getTile(int index) const;
+    TileCoordinate getTile(int index);
     static const std::string& getDefaultUrl();
 
 private:
