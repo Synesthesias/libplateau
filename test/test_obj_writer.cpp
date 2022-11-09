@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <fstream>
 #include <gtest/gtest.h>
 
 #include <citygml/citygml.h>
@@ -21,8 +22,9 @@ namespace plateau::meshWriter {
         const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
         std::string output_directory_ = ".";
         std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
-        fs::path expected_output_obj_ = fs::path(output_directory_).append(basename_ + ".obj");
-        fs::path expected_output_mtl_ = fs::path(output_directory_).append(basename_ + ".mtl");
+        fs::path output_obj_ = fs::path(output_directory_).append(basename_ + ".obj");
+        fs::path expected_output_obj_ = fs::path(output_directory_).append(basename_ + "_LOD1.obj");
+        fs::path expected_output_mtl_ = fs::path(output_directory_).append(basename_ + "_LOD1.mtl");
 
         plateau::polygonMesh::MeshExtractOptions options;
 
@@ -39,7 +41,7 @@ namespace plateau::meshWriter {
         fs::remove(expected_output_obj_);
         fs::remove(expected_output_mtl_);
 
-        auto result = ObjWriter().write(expected_output_obj_.string(), *model_);
+        auto result = ObjWriter().write(output_obj_.string(), *model_);
 
         ASSERT_TRUE(result);
         assertFileExists(expected_output_obj_);
@@ -50,9 +52,10 @@ namespace plateau::meshWriter {
         fs::remove_all(u8"./tempTestDestDir");
         auto output_dir = fs::u8path(u8"./tempTestDestDir/日本語パス対応テスト/");
         fs::create_directories(output_dir);
-        auto expected_output_obj = fs::path(output_dir).append(basename_ + ".obj");
-        auto expected_output_mtl = fs::path(output_dir).append(basename_ + ".mtl");
-        auto result = ObjWriter().write(expected_output_obj.u8string(), *model_);
+        auto output_obj = fs::path(output_dir).append(basename_ + ".obj");
+        auto expected_output_obj = fs::path(output_dir).append(basename_ + "_LOD1.obj");
+        auto expected_output_mtl = fs::path(output_dir).append(basename_ + "_LOD1.mtl");
+        auto result = ObjWriter().write(output_obj.u8string(), *model_);
         ASSERT_TRUE(result);
         assertFileExists(expected_output_obj);
         assertFileExists(expected_output_mtl);
