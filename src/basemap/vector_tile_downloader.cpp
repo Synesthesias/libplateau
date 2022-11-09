@@ -17,6 +17,7 @@ VectorTileDownloader::VectorTileDownloader(
     , extent_(extent)
     , zoom_level_(zoom_level)
     , tiles_(TileProjection::getTileCoordinates(extent, zoom_level)) {
+    setExtent(extent);
 }
 
 
@@ -61,17 +62,27 @@ void VectorTileDownloader::download(
             return true; // return 'false' if you want to cancel the request.
         });
 
-    const std::string extension = ".png";
-    auto folder_path =
-        fs::u8path(destination)
-        .append(std::to_string(coordinate.zoom_level))
-        .append(std::to_string(coordinate.column));
-    create_directories(folder_path);
-    auto file_path = folder_path.append(std::to_string(coordinate.row) + extension);
+    auto file_path = calcDestinationPath(coordinate, destination);
+    create_directories(file_path.parent_path());
     std::fstream fs(file_path, std::ios::out | std::ios::binary | std::ios::trunc);
     fs.write(body.c_str(), body.length());
 
     out_vector_tile.image_path = file_path.u8string();
+}
+
+fs::path VectorTileDownloader::calcDestinationPath(const TileCoordinate& coord, const std::string& destination) {
+    const std::string extension = ".png";
+    auto folder_path =
+            fs::u8path(destination)
+                    .append(std::to_string(coord.zoom_level))
+                    .append(std::to_string(coord.column));
+    create_directories(folder_path);
+    auto file_path = folder_path.append(std::to_string(coord.row) + extension);
+    return file_path;
+}
+
+std::filesystem::path VectorTileDownloader::calcDestinationPath(int index) const{
+    return calcDestinationPath((*tiles_).at(index), destination_);
 }
 
 void VectorTileDownloader::updateTileCoordinates() {
@@ -95,7 +106,7 @@ TileCoordinate VectorTileDownloader::getTile(int index) const {
     if (tiles_ == nullptr)
         return {};
 
-    return (*tiles_)[index];
+    return (*tiles_).at(index);
 }
 
 std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) const {

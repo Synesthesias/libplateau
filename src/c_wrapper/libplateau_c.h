@@ -85,8 +85,8 @@ using dll_str_size_t = int;
  */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
-            HANDLE_TYPE* const handle, \
-            RETURN_VALUE_TYPE* const out\
+            HANDLE_TYPE* const handle, /* C# では引数   [In] IntPtr handle に対応します。 */ \
+            RETURN_VALUE_TYPE* const out /* C# では引数 out OutType ret に対応します。 */ \
             __VA_ARGS__ \
             ){ \
         API_TRY{ \
@@ -145,11 +145,11 @@ using dll_str_size_t = int;
 /// 関数2つ目は FUNC_NAME という名称で、与えられたアドレスに文字列のコピーを書き込みます。
 /// DLL_STRING_PTR_FUNC との違いは、文字列のポインタではなく実体のコピーを渡すので
 /// C++側での文字列の寿命が短い場合でも利用できる点です。
-#define DLL_STRING_VALUE_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER) \
-    DLL_VALUE_FUNC(FUNC_NAME ## _size, TARGET_TYPE, int, (int)(STRING_GETTER).length()+1) /* +1 はnull終端文字列の分 */ \
+#define DLL_STRING_VALUE_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
+    DLL_VALUE_FUNC(FUNC_NAME ## _size, TARGET_TYPE, int, (int)(STRING_GETTER).length()+1, __VA_ARGS__ ) /* +1 はnull終端文字列の分 */ \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE* const handle, \
-            char* const out_str_ptr){ \
+            char* const out_str_ptr __VA_ARGS__){ \
         API_TRY{ \
             auto str = (STRING_GETTER); \
             auto chars = str.c_str(); \
@@ -289,6 +289,7 @@ namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
     // このenumを戻り値にすると良いです。
     enum APIResult {
-        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds, ErrorFileSystem
+        Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds, ErrorFileSystem,
+        ErrorInvalidArgument
     };
 }
