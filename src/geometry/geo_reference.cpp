@@ -5,13 +5,14 @@
 namespace plateau::geometry {
     GeoReference::GeoReference(int coordinate_zone_id, const TVec3d& reference_point, float unit_scale,
                                CoordinateSystem coordinate_system) :
-            reference_point_(reference_point),
-            coordinate_system_(coordinate_system),
-            unit_scale_(unit_scale),
-            zone_id_(coordinate_zone_id) {}
+        reference_point_(reference_point),
+        coordinate_system_(coordinate_system),
+        unit_scale_(unit_scale),
+        zone_id_(coordinate_zone_id) {
+    }
 
     TVec3d GeoReference::project(const GeoCoordinate& point) const {
-        double lat_lon[3] = {point.latitude, point.longitude, point.height};
+        double lat_lon[3] = { point.latitude, point.longitude, point.height };
         return project(lat_lon);
     }
 
@@ -34,34 +35,36 @@ namespace plateau::geometry {
 
     TVec3d GeoReference::convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex) {
         switch (axis) {
-            case CoordinateSystem::ENU:
-                return vertex; // 変換なし
-            case CoordinateSystem::WUN:
-                return {-vertex.x, vertex.z, vertex.y};
-            case CoordinateSystem::EUN:
-                return {vertex.x, vertex.z, vertex.y};
-            case CoordinateSystem::NWU:
-                return {vertex.y, -vertex.x, vertex.z};
-            default:
-                throw std::out_of_range("Invalid argument");
+        case CoordinateSystem::ENU:
+            return vertex; // 変換なし
+        case CoordinateSystem::WUN:
+            return { -vertex.x, vertex.z, vertex.y };
+        case CoordinateSystem::ESU:
+            return { vertex.x, -vertex.y, vertex.z };
+        case CoordinateSystem::EUN:
+            return { vertex.x, vertex.z, vertex.y };
+        case CoordinateSystem::NWU:
+            return { vertex.y, -vertex.x, vertex.z };
+        default:
+            throw std::out_of_range("Invalid argument");
         }
     }
 
     TVec3d GeoReference::convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex) {
         switch (axis) {
-            case CoordinateSystem::ENU:
-                return vertex; // 変換なし
-            case CoordinateSystem::WUN:
-                // WUN → ENU の式は 逆変換 ENU → WUN と同じです。
-                return {-vertex.x, vertex.z, vertex.y};
-            case CoordinateSystem::EUN:
-                // EUN → ENU の式は 逆変換 ENU → EUN と同じです。
-                return {vertex.x, vertex.z, vertex.y};
-            case CoordinateSystem::NWU:
-                // NWU → ENU の式は 逆変換 ENU → NWU とは異なります。
-                return {-vertex.y, vertex.x, vertex.z};
-            default:
-                throw std::out_of_range("Invalid argument");
+        case CoordinateSystem::ENU:
+            return vertex; // 変換なし
+        case CoordinateSystem::WUN:
+            return { -vertex.x, vertex.z, vertex.y };
+        case CoordinateSystem::ESU:
+            return { vertex.x, -vertex.y, vertex.z };
+        case CoordinateSystem::EUN:
+            return { vertex.x, vertex.z, vertex.y };
+        case CoordinateSystem::NWU:
+            // NWU → ENU の式は 逆変換 ENU → NWU とは異なります。
+            return { -vertex.y, vertex.x, vertex.z };
+        default:
+            throw std::out_of_range("Invalid argument");
         }
     }
 

@@ -46,8 +46,9 @@ namespace plateau::geometry {
         //! PLATEAUでの座標系
         ENU,
         WUN,
-        //! Unreal Engineでの座標系
         NWU,
+        //! Unreal Engineでの座標系
+        ESU,
         //! Unityでの座標系
         EUN
     };
