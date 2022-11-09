@@ -28,7 +28,7 @@ add_executable(plateau_test
     "test_udx.cpp"
     "test_obj_writer.cpp"
     "test_gltf_writer.cpp"
-    )
+    "test_network_client.cpp")
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
