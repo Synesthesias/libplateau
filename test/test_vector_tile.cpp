@@ -19,7 +19,7 @@ TEST_F(VectorTileTest, VectorTileTest) {
     VectorTileDownloader downloader(destination, extent);
 
     ASSERT_EQ(downloader.getTileCount(), 4);
-    
+
     auto coordinate = downloader.getTile(0);
 
     ASSERT_EQ(coordinate.zoom_level, 15);
@@ -45,7 +45,7 @@ TEST_F(VectorTileTest, VectorTileTest) {
     std::filesystem::remove_all(destination);
 
     auto actual_extent = TileProjection::unproject(tile.coordinate);
-    
+
     ASSERT_LE(abs(actual_extent.min.latitude - 35.5414), 0.001);
     ASSERT_LE(abs(actual_extent.min.longitude - 139.768), 0.001);
     ASSERT_LE(abs(actual_extent.max.latitude - 35.5501), 0.001);

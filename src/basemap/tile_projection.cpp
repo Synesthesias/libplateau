@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+
 namespace {
     int long2tileX(double longitude, int z) {
         return static_cast<int>(floor((longitude + 180.0) / 360.0 * (1 << z)));
