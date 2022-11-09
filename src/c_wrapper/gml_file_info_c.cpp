@@ -9,22 +9,22 @@ using namespace plateau::udx;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file_info(
-        GmlFileInfo** gml_file_info_ptr, const char* path
+            GmlFileInfo** gml_file_info_ptr, const char* path
     ) {
-        API_TRY{
+        API_TRY {
             const auto gml_file_info = new GmlFileInfo(path);
-            if(gml_file_info->isValid()){
+            if (gml_file_info->isValid()) {
                 *gml_file_info_ptr = gml_file_info;
                 return APIResult::Success;
-            }else{
+            } else {
                 return APIResult::ErrorInvalidArgument;
             }
-        }API_CATCH;
+        } API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file_info(
-        const GmlFileInfo* gml_file_info
+            const GmlFileInfo* gml_file_info
     ) {
         delete gml_file_info;
         return APIResult::Success;
@@ -34,14 +34,14 @@ extern "C" {
                         GmlFileInfo,
                         handle->getPath())
 
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_set_path(
-        GmlFileInfo* gml_file_info,
-        char* path
-        ){
-        API_TRY{
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_set_path(
+            GmlFileInfo* gml_file_info,
+            char* path
+    ) {
+        API_TRY {
             gml_file_info->setPath(std::string(path));
             return APIResult::Success;
-        }API_CATCH;
+        } API_CATCH;
         return APIResult::ErrorUnknown;
     }
 

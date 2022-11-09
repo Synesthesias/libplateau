@@ -2,7 +2,7 @@
 #include <plateau/udx/gml_file_info.h>
 #include "plateau/udx/udx_file_collection.h"
 
-namespace plateau::udx{
+namespace plateau::udx {
     class GmlFileInfoTest : public ::testing::Test {
 
     };
