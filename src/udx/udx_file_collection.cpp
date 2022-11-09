@@ -326,12 +326,30 @@ namespace plateau::udx {
         }
     } // fetch で使う無名関数
 
-    void UdxFileCollection::fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file) const {
-        const auto root_folder_name = fs::u8path(udx_path_).parent_path().filename().string();
+    std::shared_ptr<GmlFileInfo> UdxFileCollection::fetch(const std::string& destination_root_path,
+        const GmlFileInfo& gml_file) {
+        auto result = std::make_shared<GmlFileInfo>("");
+        fetch(destination_root_path, gml_file, *result);
+        return result;
+    }
+
+    void UdxFileCollection::fetch(
+        const std::string& destination_root_path, const GmlFileInfo& gml_file,
+        GmlFileInfo& copied_gml_file) {
+
+        const auto udx_path_len = gml_file.getPath().rfind("udx") + 3;
+        if (udx_path_len == std::string::npos) {
+            throw std::runtime_error("Invalid gml path. Could not find udx folder");
+        }
+
+        const auto udx_path = gml_file.getPath().substr(0, udx_path_len);
+        const auto gml_relative_path = fs::relative(fs::u8path(gml_file.getPath()).make_preferred(), fs::u8path(udx_path)).make_preferred().string();
+
+        const auto root_folder_name = fs::u8path(udx_path).parent_path().filename().string();
         auto destination_root = fs::u8path(destination_root_path);
         const auto destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
         fs::path gml_destination_path(destination_udx_path);
-        gml_destination_path.append(getRelativePath(gml_file.getPath()));
+        gml_destination_path.append(gml_relative_path);
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = gml_file.getPath();
         try {
@@ -354,9 +372,12 @@ namespace plateau::udx {
 
         // テクスチャとコードリストファイルをコピーします。
         auto gml_dir_path = fs::path(gml_file_path).parent_path();
-        auto app_destination_path = fs::path(destination_udx_path).append(getRelativePath(gml_dir_path.string()));
+        auto relative_gml_dir_path = fs::path(gml_relative_path).parent_path().u8string();
+        auto app_destination_path = fs::path(destination_udx_path).append(relative_gml_dir_path);
         copyFiles(image_paths, gml_dir_path, app_destination_path);
         copyFiles(codelist_paths, gml_dir_path, app_destination_path);
+
+        copied_gml_file.setPath(gml_destination_path.u8string());
     }
 
     std::string UdxFileCollection::getU8RelativePath(const std::string& path) const {

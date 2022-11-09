@@ -5,10 +5,19 @@
 namespace plateau::polygonMesh {
 
     Model::Model() :
-            root_nodes_() {}
+        root_nodes_() {
+    }
+
+    std::shared_ptr<Model> Model::createModel() {
+        return std::make_shared<Model>();
+    }
 
     void Model::addNode(Node&& node) {
         root_nodes_.push_back(std::move(node));
+    }
+
+    Node& Model::addEmptyNode(const std::string& name) {
+        return root_nodes_.emplace_back(name);
     }
 
     size_t Model::getRootNodeCount() const {
@@ -26,7 +35,7 @@ namespace plateau::polygonMesh {
     void Model::eraseEmptyNodes() {
         auto new_end = std::remove_if(root_nodes_.begin(), root_nodes_.end(), [](Node& node) {
             node.eraseEmptyChildren();
-            if (node.getChildCount() == 0 && (!node.doPolygonExists())) return true;
+            if (node.getChildCount() == 0 && (!node.polygonExists())) return true;
             return false;
         });
         root_nodes_.erase(new_end, root_nodes_.end());

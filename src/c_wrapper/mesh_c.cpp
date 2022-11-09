@@ -7,10 +7,9 @@ using namespace plateau::polygonMesh;
 extern "C"{
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_mesh(
-            Mesh** out_mesh_ptr,
-            const char* mesh_id
+            Mesh** out_mesh_ptr
     ) {
-        *out_mesh_ptr = new Mesh(std::string(mesh_id));
+        *out_mesh_ptr = new Mesh();
         return APIResult::Success;
     }
 
@@ -60,7 +59,7 @@ extern "C"{
             int sub_mesh_end_index
     ) {
         API_TRY {
-            mesh->addSubMesh(std::string(texture_path), sub_mesh_start_index, sub_mesh_end_index);
+            mesh->addSubMesh(texture_path, sub_mesh_start_index, sub_mesh_end_index);
             return APIResult::Success;
         } API_CATCH
         return APIResult::ErrorUnknown;

@@ -10,20 +10,7 @@ namespace plateau::udx {
 
     GmlFileInfo::GmlFileInfo(const std::string& path)
         : path_(path) {
-        const auto filename = fs::u8path(path).filename().u8string();
-        std::vector<std::string> filename_parts;
-        std::string current;
-        current.reserve(filename.size());
-        for (const auto character : filename) {
-            if (character == '_') {
-                filename_parts.push_back(current);
-                current = "";
-                continue;
-            }
-            current += character;
-        }
-        code_ = filename_parts.empty() ? "" : filename_parts[0];
-        feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts[1];
+        applyPath();
     }
 
     const std::string& GmlFileInfo::getPath() const {
@@ -32,9 +19,10 @@ namespace plateau::udx {
 
     void GmlFileInfo::setPath(const std::string& path) {
         path_ = path;
+        applyPath();
     }
 
-     MeshCode GmlFileInfo::getMeshCode() const {
+    MeshCode GmlFileInfo::getMeshCode() const {
         return MeshCode(code_);
     }
 
@@ -57,5 +45,32 @@ namespace plateau::udx {
         }
         appearance_path += "appearance";
         return appearance_path;
+    }
+
+    bool GmlFileInfo::isValid() const {
+        return is_valid_;
+    }
+
+    void GmlFileInfo::applyPath() {
+        const auto filename = fs::u8path(path_).filename().u8string();
+        std::vector<std::string> filename_parts;
+        std::string current;
+        current.reserve(filename.size());
+        for (const auto character : filename) {
+            if (character == '_') {
+                filename_parts.push_back(current);
+                current = "";
+                continue;
+            }
+            current += character;
+        }
+        try {
+            code_ = filename_parts.empty() ? "" : filename_parts[0];
+            feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts[1];
+            is_valid_ = true;
+        }
+        catch (...) {
+            is_valid_ = false;
+        }
     }
 }

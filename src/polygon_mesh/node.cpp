@@ -4,23 +4,30 @@
 
 namespace plateau::polygonMesh {
 
-    Node::Node(std::string name) :
-            name_(std::move(name)),
-            child_nodes_(),
-            mesh_(std::nullopt) {}
+    Node::Node(const std::string& name) :
+        name_(name),
+        child_nodes_(),
+        mesh_(std::nullopt) {
+    }
 
     Node::Node(std::string name, Mesh&& mesh) :
-            name_(std::move(name)),
-            child_nodes_(),
-            mesh_(std::move(mesh)) {}
+        name_(std::move(name)),
+        child_nodes_(),
+        mesh_(std::move(mesh)) {
+    }
 
     Node::Node(std::string name, std::optional<Mesh>&& optional_mesh) :
-            name_(std::move(name)),
-            child_nodes_(),
-            mesh_(std::move(optional_mesh)) {}
+        name_(std::move(name)),
+        child_nodes_(),
+        mesh_(std::move(optional_mesh)) {
+    }
 
     void Node::addChildNode(Node&& node) {
         child_nodes_.push_back(std::forward<Node>(node));
+    }
+
+    Node& Node::addEmptyChildNode(const std::string& name) {
+        return child_nodes_.emplace_back(name);
     }
 
     const std::string& Node::getName() const {
@@ -54,13 +61,13 @@ namespace plateau::polygonMesh {
     void Node::eraseEmptyChildren() {
         auto new_end = std::remove_if(child_nodes_.begin(), child_nodes_.end(), [](Node& child) {
             child.eraseEmptyChildren();
-            if (child.getChildCount() == 0 && (!child.doPolygonExists())) return true;
+            if (child.getChildCount() == 0 && (!child.polygonExists())) return true;
             return false;
         });
         child_nodes_.erase(new_end, child_nodes_.end());
     }
 
-    bool Node::doPolygonExists() {
+    bool Node::polygonExists() {
         const auto& mesh_optional = getMesh();
         if (!mesh_optional.has_value()) return false;
         const auto& mesh = mesh_optional.value();

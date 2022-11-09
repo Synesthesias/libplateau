@@ -9,7 +9,7 @@ extern "C" {
             Node** out_node_ptr,
             char* id
     ) {
-        *out_node_ptr = new Node(std::string(id));
+        *out_node_ptr = new Node(id);
         return APIResult::Success;
     }
 

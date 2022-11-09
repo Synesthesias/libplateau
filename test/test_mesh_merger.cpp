@@ -70,7 +70,7 @@ TEST_F(MeshMergerTest, mesh_merger_info) {
     std::vector<SubMesh> sub_meshes = {
             SubMesh(0, 2, "")
     };
-    auto mesh = Mesh("testMesh");
+    auto mesh = Mesh();
     // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
     MeshMerger::mergeMeshInfo(mesh, std::move(vertices), std::move(indices), std::move(uv_1),
                               std::move(sub_meshes), CoordinateSystem::ENU, CoordinateSystem::ENU, true);
