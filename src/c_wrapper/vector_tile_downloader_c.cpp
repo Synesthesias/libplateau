@@ -42,6 +42,9 @@ extern "C" {
             ){
         API_TRY{
             auto tile = VectorTile();
+            if(index >= downloader->getTileCount()){
+                return APIResult::ErrorIndexOutOfBounds;
+            }
             downloader->download(index, tile);
             *tile_coordinate = tile.coordinate;
             const auto& image_path = tile.image_path;
