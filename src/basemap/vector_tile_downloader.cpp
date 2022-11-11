@@ -76,7 +76,6 @@ fs::path VectorTileDownloader::calcDestinationPath(const TileCoordinate& coord, 
             fs::u8path(destination)
                     .append(std::to_string(coord.zoom_level))
                     .append(std::to_string(coord.column));
-    create_directories(folder_path);
     auto file_path = folder_path.append(std::to_string(coord.row) + extension);
     return file_path;
 }
