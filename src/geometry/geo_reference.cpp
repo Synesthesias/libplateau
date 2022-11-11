@@ -43,8 +43,6 @@ namespace plateau::geometry {
             return { vertex.x, -vertex.y, vertex.z };
         case CoordinateSystem::EUN:
             return { vertex.x, vertex.z, vertex.y };
-        case CoordinateSystem::NWU:
-            return { vertex.y, -vertex.x, vertex.z };
         default:
             throw std::out_of_range("Invalid argument");
         }
@@ -53,16 +51,17 @@ namespace plateau::geometry {
     TVec3d GeoReference::convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex) {
         switch (axis) {
         case CoordinateSystem::ENU:
-            return vertex; // 変換なし
+            // 変換なし
+            return vertex;
         case CoordinateSystem::WUN:
+            // WUN → ENU の式は 逆変換 ENU → WUN と同じです。
             return { -vertex.x, vertex.z, vertex.y };
         case CoordinateSystem::ESU:
+            // EUN → ESU の式は 逆変換 ESU → EUN と同じです。
             return { vertex.x, -vertex.y, vertex.z };
         case CoordinateSystem::EUN:
+            // EUN → ENU の式は 逆変換 ENU → EUN と同じです。
             return { vertex.x, vertex.z, vertex.y };
-        case CoordinateSystem::NWU:
-            // NWU → ENU の式は 逆変換 ENU → NWU とは異なります。
-            return { -vertex.y, vertex.x, vertex.z };
         default:
             throw std::out_of_range("Invalid argument");
         }

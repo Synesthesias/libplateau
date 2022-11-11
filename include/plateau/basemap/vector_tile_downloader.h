@@ -42,11 +42,20 @@ public:
     /**
     * \brief 地理院地図のタイル情報から画像をダウンロードし，destinationに保存します。保存されたタイルについての情報はout_vector_tileに格納されます。
     * \param url 地理院地図のurl 種類の詳細はこちらを参照してください　https://maps.gsi.go.jp/development/ichiran.html
-    *        destination タイル画像の保存先
-    *        coordinate ダウンロードするタイル情報
-    *        out_vector_tile ダウンロードされたタイル情報と保存先のパスの格納先
+    * \param destination タイル画像の保存先
+    * \param coordinate ダウンロードするタイル情報
+    * \param out_vector_tile ダウンロードされたタイル情報と保存先のパスの格納先
     */
     static void download(const std::string& url, const std::string& destination, const TileCoordinate& coordinate, VectorTile& out_vector_tile);
+
+    /**
+    * \brief 地理院地図のタイル情報から画像をダウンロードし，destinationに保存します。保存されたタイルについての情報はout_vector_tileに格納されます。
+    * \param url 地理院地図のurl 種類の詳細はこちらを参照してください　https://maps.gsi.go.jp/development/ichiran.html
+    * \param destination タイル画像の保存先
+    * \param coordinate ダウンロードするタイル情報
+    * \return ダウンロードされたタイル情報と保存先のパスの格納先
+    */
+    static std::shared_ptr<VectorTile> download(const std::string& url, const std::string& destination, const TileCoordinate& coordinate);
 
     /**
     * \brief インデックスに対応したタイル情報から画像をダウンロードします。
