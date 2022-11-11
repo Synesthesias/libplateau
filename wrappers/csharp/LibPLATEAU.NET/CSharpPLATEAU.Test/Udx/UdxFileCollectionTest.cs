@@ -109,12 +109,12 @@ namespace PLATEAU.Test.Udx
 
         private static bool DoResultOfFilterByMeshCodesContainsMeshCode(UdxFileCollection collection, string meshCode)
         {
-            var filtered = collection.FilterByMeshCodes(new []{ MeshCode.Parse(meshCode)});
+            var filtered = collection.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
-                if(gml.Contains(meshCode))
+                if (gml.Contains(meshCode))
                 {
                     contains = true;
                 }

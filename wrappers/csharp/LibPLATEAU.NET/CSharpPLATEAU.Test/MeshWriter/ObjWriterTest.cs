@@ -16,11 +16,11 @@ namespace PLATEAU.Test.MeshWriter
             var model = TestGeometryUtil.ExtractModel();
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             var objFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".obj";
+            var expectedObjFileName = Path.GetFileNameWithoutExtension(gmlPath) + "_LOD2.obj";
 
-            var obj_writer = new ObjWriter();
-            File.Delete(objFileName);
-            var flg = obj_writer.Write(objFileName, model);
-            Assert.IsTrue(File.Exists(objFileName), "変換後ファイルが実在する");
+            File.Delete(expectedObjFileName);
+            new ObjWriter().Write(objFileName, model);
+            Assert.IsTrue(File.Exists(expectedObjFileName), $"{expectedObjFileName} does not exist.");
         }
 
     }
