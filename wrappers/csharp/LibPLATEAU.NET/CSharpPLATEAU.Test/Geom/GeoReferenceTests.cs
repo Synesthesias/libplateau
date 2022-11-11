@@ -68,21 +68,23 @@ namespace PLATEAU.Test.Geom
             //check CoordinateSystem
             CheckUnproject(new PlateauVector3d(8221.96099653525, 0.0, -41667.536332340445), new GeoCoordinate(35.62439457074015, 139.74256342432295, 0.0),
                 new PlateauVector3d(0, 0, 0), 1f, CoordinateSystem.WUN, 9);
-            CheckUnproject(new PlateauVector3d(-41667.536332340445, 8221.96099653525, 0.0), new GeoCoordinate(35.62439457074015, 139.74256342432295, 0.0),
-                new PlateauVector3d(0, 0, 0), 1f, CoordinateSystem.NWU, 9);
+            CheckUnproject(new PlateauVector3d(-8221.96099653525, 41667.536332340445, 0.0),
+                new GeoCoordinate(35.62439457074015, 139.74256342432295, 0.0),
+                new PlateauVector3d(0, 0, 0), 1f, CoordinateSystem.ESU, 9);
 
             //check UnitScale
-            CheckUnproject(new PlateauVector3d(-8221.96099653525 / 2, -41667.536332340445 / 2, 0.0), new GeoCoordinate(35.62439457074015, 139.74256342432295, 0.0),
+            CheckUnproject(new PlateauVector3d(-8221.96099653525 / 2, -41667.536332340445 / 2, 0.0),
+                new GeoCoordinate(35.62439457074015, 139.74256342432295, 0.0),
                 new PlateauVector3d(0, 0, 0), 2.0f, CoordinateSystem.ENU, 9);
         }
 
-        private static void CheckUnproject(PlateauVector3d point, GeoCoordinate target_lat_lon, PlateauVector3d reference_point, float unit_scale, CoordinateSystem coordinate_system, int zone_id)
+        private static void CheckUnproject(PlateauVector3d point, GeoCoordinate targetLatLon, PlateauVector3d referencePoint, float unit_scale, CoordinateSystem coordinateSystem, int zoneID)
         {
-            using var geoReference = new GeoReference(reference_point, unit_scale, coordinate_system, zone_id);
+            using var geoReference = new GeoReference(referencePoint, unit_scale, coordinateSystem, zoneID);
 
-            var lat_lon = geoReference.Unproject(point);
-            Assert.IsTrue(Math.Abs(lat_lon.Latitude - target_lat_lon.Latitude) < 0.00000001);//およそ1mm相当の誤差以内か
-            Assert.IsTrue(Math.Abs(lat_lon.Longitude - target_lat_lon.Longitude) < 0.00000001);//およそ1mm相当の誤差以内か
+            var latLon = geoReference.Unproject(point);
+            Assert.IsTrue(Math.Abs(latLon.Latitude - targetLatLon.Latitude) < 0.00000001);//およそ1mm相当の誤差以内か
+            Assert.IsTrue(Math.Abs(latLon.Longitude - targetLatLon.Longitude) < 0.00000001);//およそ1mm相当の誤差以内か
         }
 
         [TestMethod]
@@ -90,7 +92,7 @@ namespace PLATEAU.Test.Geom
         {
             CheckProjectUnproject(new PlateauVector3d(0, 0, 0), 1f, CoordinateSystem.ENU, 9);
             CheckProjectUnproject(new PlateauVector3d(10, 10, 10), 2f, CoordinateSystem.WUN, 9);
-            CheckProjectUnproject(new PlateauVector3d(100, 100, 100), 3f, CoordinateSystem.NWU, 9);
+            CheckProjectUnproject(new PlateauVector3d(100, 100, 100), 3f, CoordinateSystem.ESU, 9);
             CheckProjectUnproject(new PlateauVector3d(-100, -100, -100), 4f, CoordinateSystem.EUN, 9);
         }
 
