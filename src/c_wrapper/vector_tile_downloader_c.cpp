@@ -27,18 +27,9 @@ using namespace plateau::geometry;
                    int,
                    handle->getTileCount())
 
-    std::string plateau_vector_downloader_c_last_downloaded_image_path;
-
-
-    /**
-     * image_path を取得するためには、このメソッドを呼んだ後に
-     * plateau_vector_tile_downloader_download_last_image_path を呼んでください。
-     */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_vector_tile_downloader_download(
             const VectorTileDownloader* const downloader,
-            int index,
-            TileCoordinate* const tile_coordinate,
-            int* size_of_image_path
+            int index
     ) {
         API_TRY {
             auto tile = VectorTile();
@@ -46,29 +37,6 @@ using namespace plateau::geometry;
                 return APIResult::ErrorIndexOutOfBounds;
             }
             downloader->download(index, tile);
-            *tile_coordinate = tile.coordinate;
-            const auto& image_path = tile.image_path;
-            plateau_vector_downloader_c_last_downloaded_image_path = image_path;
-            *size_of_image_path = (int) image_path.size();
-            return APIResult::Success;
-        } API_CATCH
-        return APIResult::ErrorUnknown;
-    }
-
-    /**
-     * plateau_vector_tile_downloader_download のあとに呼ぶべきメソッドで、download の結果である image_path を取得します。
-     * C++ のstringを C#側にコピーするためには、文字列長を取得 → 文字列をコピー の2段構成となります。
-     * このメソッドは2段構成の2段目の部分です。
-     */
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_vector_tile_downloader_last_image_path(
-            char* const out_url_str_ptr
-    ) {
-        API_TRY {
-            const auto& str = plateau_vector_downloader_c_last_downloaded_image_path;
-            auto chars = str.c_str();
-            auto len = (dll_str_size_t) (str.length());
-            strncpy(out_url_str_ptr, chars, len);
-            out_url_str_ptr[len] = '\0'; // null終端
             return APIResult::Success;
         } API_CATCH
         return APIResult::ErrorUnknown;
