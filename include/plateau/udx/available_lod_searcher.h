@@ -11,7 +11,7 @@ namespace plateau::udx{
      */
     class LIBPLATEAU_EXPORT AvailableLodSearcher{
     public:
-        plateau::udx::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
+        static plateau::udx::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
 
 
     };

@@ -2,7 +2,6 @@
 #include <fstream>
 #include <regex>
 #include <stdexcept>
-#include <iostream>
 #include <sstream>
 
 using namespace plateau::udx;
