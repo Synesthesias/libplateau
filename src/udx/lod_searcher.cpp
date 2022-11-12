@@ -1,4 +1,4 @@
-#include <plateau/udx/available_lod_searcher.h>
+#include <plateau/udx/lod_searcher.h>
 #include <fstream>
 #include <regex>
 #include <stdexcept>
@@ -48,7 +48,7 @@ namespace{
     }
 }
 
-LodFlag AvailableLodSearcher::searchLodsInFile(const fs::path& file_path) {
+LodFlag LodSearcher::searchLodsInFile(const fs::path& file_path) {
     auto ifs = std::ifstream (file_path);
     if(!ifs){
         throw std::runtime_error("Failed to read file.");

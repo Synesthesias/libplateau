@@ -9,7 +9,7 @@ namespace plateau::udx{
      * \brief GMLファイルに含まれるLOD番号を検索します。
      * ファイルの中身を文字列検索し、":lod(番号)" にヒット
      */
-    class LIBPLATEAU_EXPORT AvailableLodSearcher{
+    class LIBPLATEAU_EXPORT LodSearcher{
     public:
         static plateau::udx::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
 

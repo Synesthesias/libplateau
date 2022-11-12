@@ -3,7 +3,7 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Editor.CityImport.AreaSelector
 {
-    public static class AvailableLodSearcher
+    public static class LodSearcher
     {
         /// <summary>
         /// GMLファイルの中に存在するLODを検索してリストで返します。
@@ -12,7 +12,7 @@ namespace PLATEAU.Editor.CityImport.AreaSelector
         public static IEnumerable<uint> SearchLodsInFile(string filePath)
         {
             var filePathUtf8 = DLLUtil.StrToUtf8Bytes(filePath);
-            NativeMethods.plateau_available_lod_searcher_search_lods_in_file(filePathUtf8, out uint lodFlags);
+            NativeMethods.plateau_lod_searcher_search_lods_in_file(filePathUtf8, out uint lodFlags);
             var lods = new List<uint>();
             uint l = 0;
             while (lodFlags != 0)

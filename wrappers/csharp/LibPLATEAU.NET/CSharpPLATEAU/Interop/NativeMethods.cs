@@ -1449,7 +1449,7 @@ namespace PLATEAU.Interop
         // ***************
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_available_lod_searcher_search_lods_in_file(
+        internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
             [In] byte[] filePathUtf8,
             out uint outLodFlags);
     }
