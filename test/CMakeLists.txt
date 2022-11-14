@@ -35,7 +35,7 @@ add_executable(plateau_test
     "test_lod_searcher.cpp"
     "test_network_client.cpp")
 
-target_link_libraries(plateau_test gtest gtest_main plateau citygml)
+target_link_libraries(plateau_test gtest gtest_main plateau citygml ssl crypto)
 
 set_target_properties(plateau_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
