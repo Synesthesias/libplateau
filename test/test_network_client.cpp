@@ -13,7 +13,7 @@ namespace plateau::network {
             client.setApiServerUrl("https://9tkm2n.deta.dev");
         }
 
-        Client client;
+        Client client = Client();
     };
 
     TEST_F(ClientTest, GetMetadata) {
