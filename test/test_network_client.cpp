@@ -9,7 +9,7 @@ namespace plateau::network {
 
     class ClientTest : public ::testing::Test {
     protected:
-        void SetUp() override {
+        virtual void SetUp() override {
             client.setApiServerUrl("https://9tkm2n.deta.dev");
         }
 
