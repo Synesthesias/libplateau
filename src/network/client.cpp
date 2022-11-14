@@ -1,4 +1,3 @@
-#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <plateau/network/client.h>
 #include <iostream>
 #include <filesystem>
