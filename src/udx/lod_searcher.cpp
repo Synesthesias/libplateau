@@ -3,8 +3,6 @@
 #include <regex>
 #include <stdexcept>
 #include <sstream>
-#include <functional>
-
 
 using namespace plateau::udx;
 namespace fs = std::filesystem;
@@ -22,21 +20,21 @@ namespace{
         const auto str_size = str.size();
         // 検索を始めます。
         auto lod_flag = LodFlag();
-        std::boyer_moore_searcher searcher {lod_mark.cbegin(), lod_mark.cend()};
-        auto search_start_iter = str.cbegin();
-//        auto pos = str.find(lod_mark);
-        auto result = searcher(search_start_iter, str.cend());
+        auto pos = str.find(lod_mark);
 
-        while(result.first != result.second){ // 検索結果があるとき
+        while(pos != std::string::npos){
             // ":lod" の次の文字の場所
-            auto reg_search_begin_iter = result.second;
-            // ":lod" の次から数字の桁数だけ正規表現で検索、その範囲の終了場所
-            auto reg_search_end_iter = std::min(
-                    reg_search_begin_iter + (long long)max_lod_digits_in_decimal + 1,
-                    str.cend()
+            auto reg_search_begin_pos = std::min(
+                    pos + lod_mark_size,
+                    str_size
                     );
-//            auto reg_search_begin_iter = str.begin() + (long long)reg_search_begin_pos;
-//            auto reg_search_end_iter = str.begin() + (long long)reg_search_end_pos;
+            // ":lod" の次から数字の桁数だけ正規表現で検索、その範囲の終了場所
+            auto reg_search_end_pos = std::min(
+                    reg_search_begin_pos + max_lod_digits_in_decimal + 1,
+                    str_size
+                    );
+            auto reg_search_begin_iter = str.begin() + (long long)reg_search_begin_pos;
+            auto reg_search_end_iter = str.begin() + (long long)reg_search_end_pos;
             auto reg_results = std::smatch();
             if(std::regex_search(reg_search_begin_iter, reg_search_end_iter, reg_results, reg_lod_num)){
                 unsigned lod = (unsigned)std::stoi(reg_results.str());
@@ -44,9 +42,7 @@ namespace{
                     lod_flag.setFlag(lod);
                 }
             }
-//            pos = str.find(lod_mark, pos + lod_mark_size);
-            search_start_iter = result.second;
-            result = searcher(search_start_iter, str.cend());
+            pos = str.find(lod_mark, pos + lod_mark_size);
         }
         return lod_flag;
     }
