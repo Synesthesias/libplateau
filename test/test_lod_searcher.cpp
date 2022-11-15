@@ -11,8 +11,7 @@ namespace plateau::udx {
     };
 
     TEST_F(LodSearcherTest, searchLodsInFile_returns_gml_lods){ // NOLINT
-        LodSearcher searcher;
-        auto lod_flag = searcher.searchLodsInFile(fs::u8path(gml_path));
+        auto lod_flag = LodSearcher::searchLodsInFile(fs::u8path(gml_path));
         ASSERT_EQ(lod_flag.getFlag(), (unsigned)0b111);
     }
 }
