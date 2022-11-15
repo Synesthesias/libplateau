@@ -164,13 +164,9 @@ namespace plateau::meshWriter {
         material.metallicRoughness.roughnessFactor = 1.0f;
         impl->default_material_id_ = document.materials.Append(material, gltf::AppendIdPolicy::GenerateOnEmpty).id;
 
-        auto& root_node = model.getRootNodeAt(0);
-        auto num_root_child = root_node.getChildCount();
-        if (0 < num_root_child) {
-            for (int lod = 0; lod < num_root_child; lod++) {
-                auto& lod_node = root_node.getChildAt(lod);
-                impl->precessNodeRecursive(lod_node, document, bufferBuilder);
-            }
+        for (int i = 0; i < model.getRootNodeCount(); i++) {
+            auto& root_node = model.getRootNodeAt(i);
+            impl->precessNodeRecursive(root_node, document, bufferBuilder);
         }
 
         document.SetDefaultScene(std::move(impl->scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
@@ -254,7 +250,7 @@ namespace plateau::meshWriter {
                     auto ed = sub_mesh.getEndIndex();
                     std::vector<int> indices(all_indices.begin() + st, all_indices.begin() + ed + 1);
 
-                    auto accessorIdIndices = bufferBuilder.AddAccessor(indices, { gltf::TYPE_SCALAR, gltf::COMPONENT_UNSIGNED_INT }).id;
+                    auto& accessorIdIndices = bufferBuilder.AddAccessor(indices, { gltf::TYPE_SCALAR, gltf::COMPONENT_UNSIGNED_INT }).id;
 
                     //texture
                     auto& texUrl = sub_mesh.getTexturePath();
@@ -270,8 +266,7 @@ namespace plateau::meshWriter {
             }
         }
 
-        auto num_child = node.getChildCount();
-        for (int i = 0; i < num_child; i++) {
+        for (size_t i = 0; i < node.getChildCount(); i++) {
             precessNodeRecursive(node.getChildAt(i), document, bufferBuilder);
         }
     }

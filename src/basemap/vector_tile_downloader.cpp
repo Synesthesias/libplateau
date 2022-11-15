@@ -70,17 +70,25 @@ void VectorTileDownloader::download(
     out_vector_tile.image_path = file_path.u8string();
 }
 
+std::shared_ptr<VectorTile> VectorTileDownloader::download(const std::string& url, const std::string& destination,
+    const TileCoordinate& coordinate) {
+    auto result = std::make_shared<VectorTile>();
+    download(url, destination, coordinate, *result);
+    return result;
+}
+
 fs::path VectorTileDownloader::calcDestinationPath(const TileCoordinate& coord, const std::string& destination) {
     const std::string extension = ".png";
     auto folder_path =
-            fs::u8path(destination)
-                    .append(std::to_string(coord.zoom_level))
-                    .append(std::to_string(coord.column));
+        fs::u8path(destination)
+        .append(std::to_string(coord.zoom_level))
+        .append(std::to_string(coord.column));
+    create_directories(folder_path);
     auto file_path = folder_path.append(std::to_string(coord.row) + extension);
     return file_path;
 }
 
-std::filesystem::path VectorTileDownloader::calcDestinationPath(int index) const{
+std::filesystem::path VectorTileDownloader::calcDestinationPath(int index) const {
     return calcDestinationPath(tiles_->at(index), destination_);
 }
 

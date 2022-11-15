@@ -256,8 +256,8 @@ namespace plateau::polygonMesh {
         switch (sys) {
         case CoordinateSystem::ENU:
         case CoordinateSystem::WUN:
-        case CoordinateSystem::NWU:
             return false;
+        case CoordinateSystem::ESU:
         case CoordinateSystem::EUN:
             return true;
         default:

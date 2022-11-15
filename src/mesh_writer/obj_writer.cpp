@@ -8,6 +8,7 @@
 
 #include <plateau/mesh_writer/obj_writer.h>
 #include <cassert>
+#include <fstream>
 
 namespace fs = std::filesystem;
 using namespace citygml;
@@ -79,32 +80,47 @@ namespace {
 
 namespace plateau::meshWriter {
     bool ObjWriter::write(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
-
         // 内部状態初期化
-        v_offset_ = 0;
-        uv_offset_ = 0;
         required_materials_.clear();
 
         std::filesystem::path path = std::filesystem::u8path(obj_file_path_utf8);
         if (path.is_relative()) {
-            auto pathCurrent = std::filesystem::current_path();
-            pathCurrent /= path;
-            pathCurrent.swap(path);
+            auto current_path = std::filesystem::current_path();
+            current_path /= path;
+            current_path.swap(path);
         }
 
-        writeObj(path.u8string(), model);
+        for (size_t i = 0; i < model.getRootNodeCount(); ++i) {
+            // 内部状態初期化
+            v_offset_ = 0;
+            uv_offset_ = 0;
+
+            auto& root_node = model.getRootNodeAt(i);
+
+            // ファイル名設定
+            std::stringstream oss;
+            oss << "_" << root_node.getName() << ".obj";
+            const auto filename_without_ext = fs::u8path(obj_file_path_utf8).filename().replace_extension("").u8string();
+            const auto& file_path =
+                fs::u8path(obj_file_path_utf8)
+                .parent_path()
+                .append(filename_without_ext + oss.str())
+                .u8string();
+
+            writeObj(file_path, root_node);
+
+            writeMtl(file_path);
+        }
 
         // テクスチャファイルコピー
         for (const auto& [_, texture_url] : required_materials_) {
             copyTexture(fs::absolute(path).u8string(), texture_url);
         }
 
-        writeMtl(obj_file_path_utf8);
-
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
+    void ObjWriter::writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Node& node) {
         auto ofs = std::ofstream(fs::u8path(obj_file_path_utf8));
         if (!ofs.is_open()) {
             throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path_utf8);
@@ -115,21 +131,13 @@ namespace plateau::meshWriter {
         const auto mtl_file_name = fs::u8path(obj_file_path_utf8).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
-        auto& root_node = model.getRootNodeAt(0);
-        auto num_root_child = root_node.getChildCount();
-        if (0 < num_root_child) {
-            for (int lod = 0; lod < num_root_child; lod++) {
-                auto& lod_node = root_node.getChildAt(lod);
-                writeCityObjectRecursive(ofs, lod_node);
-            }
-        }
+        writeCityObjectRecursive(ofs, node);
     }
 
     void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
         writeCityObject(ofs, node);
 
-        auto num_child = node.getChildCount();
-        for (int i = 0; i < num_child; i++) {
+        for (size_t i = 0; i < node.getChildCount(); i++) {
             writeCityObjectRecursive(ofs, node.getChildAt(i));
         }
     }
@@ -159,7 +167,7 @@ namespace plateau::meshWriter {
                     std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
                     for (const auto& uv : uvs) {
                         auto t = uv;
-                        t.y = (float)1.0 - uv.y;
+                        t.y = 1.0f - uv.y;
                         texcoords.push_back(t);
                     }
                     writeUVs(ofs, uvs);
@@ -186,7 +194,7 @@ namespace plateau::meshWriter {
     }
 
     void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
-        for (TVec3d vertex : vertices) {
+        for (const auto& vertex : vertices) {
             ofs << generateVertex(vertex);
         }
     }
