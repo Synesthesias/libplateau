@@ -39,18 +39,22 @@ namespace{
                         pos_ptr + lod_mark_size,
                         chunk + read_size - 1
                 );
-                // ":lod" の次から数字の桁数だけ正規表現で検索、その範囲の終了場所
-                auto reg_search_end_ptr = std::min(
-                        reg_search_begin_ptr + max_lod_digits_in_decimal + 1,
-                        chunk + read_size - 1
-                );
-                auto reg_results = std::smatch();
-                auto reg_str = std::string(reg_search_begin_ptr, std::distance(reg_search_begin_ptr, reg_search_end_ptr));
-                if(std::regex_search(reg_str.cbegin(), reg_str.cend(), reg_results, reg_lod_num)){
-                    unsigned lod = (unsigned)std::stoi(reg_results.str());
-                    if(lod <= LodFlag::max_lod_){
-                        lod_flag.setFlag(lod);
-                    }
+//                // ":lod" の次から数字の桁数だけ正規表現で検索、その範囲の終了場所
+//                auto reg_search_end_ptr = std::min(
+//                        reg_search_begin_ptr + max_lod_digits_in_decimal + 1,
+//                        chunk + read_size - 1
+//                );
+//                auto reg_results = std::smatch();
+//                auto reg_str = std::string(reg_search_begin_ptr, std::distance(reg_search_begin_ptr, reg_search_end_ptr));
+//                if(std::regex_search(reg_str.cbegin(), reg_str.cend(), reg_results, reg_lod_num)){
+//                    unsigned lod = (unsigned)std::stoi(reg_results.str());
+//                    if(lod <= LodFlag::max_lod_){
+//                        lod_flag.setFlag(lod);
+//                    }
+//                }
+                int lod_num = *reg_search_begin_ptr - u8'0';
+                if(0 <= lod_num && lod_num <= 9){
+                    lod_flag.setFlag(lod_num);
                 }
                 // チャンク内の次の ":lod" を探します。
                 auto next_pos = std::min(pos_ptr + lod_mark_size, chunk + chunk_size - 1);
