@@ -7,7 +7,7 @@ namespace plateau::udx{
     struct LIBPLATEAU_EXPORT LodFlag;
     /**
      * \brief GMLファイルに含まれるLOD番号を検索します。
-     * ファイルの中身を文字列検索し、":lod(番号)" にヒット
+     * ファイルの中身を文字列検索し、":lod(番号)" にヒットした番号をフラグ形式で返します。
      */
     class LIBPLATEAU_EXPORT LodSearcher{
     public:
@@ -25,7 +25,9 @@ namespace plateau::udx{
         /// 下から n ビット目を0にします。
         void unsetFlag(unsigned digit);
         unsigned getFlag() const;
-        static const int max_lod_ = std::numeric_limits<unsigned>::digits - 1;
+
+        /// searchLodsInFile の実装の都合上、LODは1桁とします。
+        static const int max_lod_ = 9;
 
     private:
         /// lod n が含まれるとき、flags の下から n ビット目が立ちます。
