@@ -1,15 +1,20 @@
 #include <plateau/udx/lod_searcher.h>
 #include <fstream>
 #include <stdexcept>
+#include <cstring>
 
 using namespace plateau::udx;
 namespace fs = std::filesystem;
 
 namespace {
     LodFlag searchLods(std::ifstream& ifs) {
+        // 注意:
+        // この関数は実行速度にこだわる必要があります。
+        // 用途はPLATEAUデータのインポートにおける範囲選択画面で、多くのGMLファイルについて利用可能なLODを検索します。
+
         // 文字列検索で ":lod" にヒットした直後の数値をLODとします。
-        const static auto lod_mark = u8":lod";
-        const static auto lod_mark_size = strlen(lod_mark);
+        const static auto lod_pattern = u8":lod";
+        const static auto lod_pattern_size = strlen(lod_pattern);
 
         auto lod_flag = LodFlag();
 
@@ -24,13 +29,13 @@ namespace {
         while (!ifs.eof()) {
             const char* const chunk_last = chunk_const + read_size - 1; // チャンク内の最後の文字のポインタ
             // チャンク内での文字列検索を始めます。 ":lod" を探します。
-            const char* pos_ptr = strstr(chunk, lod_mark);
+            const char* found_ptr = strstr(chunk, lod_pattern);
 
             // ":lod" がヒットするたびに、その直後の数字をLODとみなして取得します。
-            while (pos_ptr) {
-                // ":lod" の次の文字の場所を指すポインタであり、LODの番号を指すことを期待します。
+            while (found_ptr) {
+                // ":lod" の次の文字を指すポインタです。そこはLODの番号を指すことを期待します。
                 auto lod_num_ptr = std::min(
-                        pos_ptr + lod_mark_size,
+                        found_ptr + lod_pattern_size,
                         chunk_last
                 );
 
@@ -41,8 +46,8 @@ namespace {
                 }
 
                 // チャンク内の次の ":lod" を探します。
-                auto next_pos = std::min(pos_ptr + lod_mark_size, chunk_last);
-                pos_ptr = strstr(next_pos, lod_mark);
+                auto next_pos = std::min(found_ptr + lod_pattern_size, chunk_last);
+                found_ptr = strstr(next_pos, lod_pattern);
             }
             // 次のチャンクに移ります。
             ifs.read(chunk, sizeof chunk);
