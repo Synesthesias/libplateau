@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 namespace{
     LodFlag searchLods(std::ifstream& ifs){
         // 文字列検索で ":lod" にヒットした直後の数値をLODとします。
-        const static auto lod_pattern = std::string(u8"\t\t\t\t\t<bldg:lod");
+        const static auto lod_pattern = std::string(u8":lod");
         const static auto lod_pattern_size = lod_pattern.size();
 
         auto lod_flag = LodFlag();
