@@ -16,7 +16,6 @@ namespace plateau::udx {
         static plateau::udx::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
     };
 
-
     /// どのLODが含まれるかをフラグ(unsigned)で表現します。
     struct LIBPLATEAU_EXPORT LodFlag {
     public:
@@ -25,13 +24,11 @@ namespace plateau::udx {
         /// 下から n ビット目を0にします。
         void unsetFlag(unsigned digit);
         unsigned getFlag() const;
-
         /// searchLodsInFile の実装の都合上、LODは1桁とします。
         static const int max_lod_ = 9;
 
     private:
         /// lod n が含まれるとき、flags の下から n ビット目が立ちます。
         unsigned flags_ = 0;
-
     };
 }

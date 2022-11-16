@@ -11,8 +11,8 @@ namespace plateau::udx {
 //        const std::string gml_path = u8"../data/udx/bldg/53393690_bldg_6697_2_op.gml";
     };
 
-    TEST_F(LodSearcherTest, searchLodsInFile_returns_gml_lods){ // NOLINT
+    TEST_F(LodSearcherTest, searchLodsInFile_returns_gml_lods) { // NOLINT
         auto lod_flag = LodSearcher::searchLodsInFile(fs::u8path(gml_path));
-        ASSERT_EQ(lod_flag.getFlag(), (unsigned)0b111);
+        ASSERT_EQ(lod_flag.getFlag(), (unsigned) 0b111);
     }
 }
