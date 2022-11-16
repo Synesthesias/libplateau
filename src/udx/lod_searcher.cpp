@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
-#include "plateau/udx/boyer_moore.h"
 
 using namespace plateau::udx;
 namespace fs = std::filesystem;
@@ -11,8 +10,9 @@ namespace fs = std::filesystem;
 namespace{
     LodFlag searchLods(std::ifstream& ifs){
         // 文字列検索で ":lod" にヒットした直後の数値をLODとします。
-        const static auto lod_pattern = std::string(u8":lod");
-        const static auto lod_pattern_size = lod_pattern.size();
+        const static auto lod_mark = std::string(u8":lod");
+        const static auto lod_mark_size = lod_mark.size();
+
 
         auto lod_flag = LodFlag();
 
@@ -21,20 +21,17 @@ namespace{
         constexpr int chunk_size = 16 * 1024;
         char chunk[chunk_size];
 
-        auto searcher = BoyerMoore(lod_pattern);
-
         ifs.read(chunk, sizeof chunk);
         auto read_size = ifs.gcount();
         while((!ifs.eof()) && read_size > 0){
             // チャンク内での文字列検索を始めます。 ":lod" を探します。
-//            auto pos_ptr = strstr(chunk, lod_pattern.c_str());
-            auto pos_ptr = searcher.match(chunk, chunk + read_size);
+            auto pos_ptr = strstr(chunk, lod_mark.c_str());
 
             // ":lod" がヒットするたびに、その直後の数字をLODとみなして取得します。
-            while(pos_ptr < chunk + read_size){
+            while(pos_ptr){
                 // ":lod" の次の文字の場所を指すポインタであり、LODの番号を指すことを期待します。
                 auto lod_num_ptr = std::min(
-                        pos_ptr + lod_pattern_size,
+                        pos_ptr + lod_mark_size,
                         chunk + read_size - 1
                 );
 
@@ -45,9 +42,8 @@ namespace{
                 }
 
                 // チャンク内の次の ":lod" を探します。
-                auto next_pos = std::min(pos_ptr + lod_pattern_size, chunk + read_size - 1);
-//                pos_ptr = strstr(next_pos, lod_pattern.c_str());
-                pos_ptr = searcher.match(next_pos, chunk + read_size);
+                auto next_pos = std::min(pos_ptr + lod_mark_size, chunk + chunk_size - 1);
+                pos_ptr = strstr(next_pos, lod_mark.c_str());
             }
             // 次のチャンクに移ります。
             ifs.read(chunk, sizeof chunk);
