@@ -89,7 +89,7 @@ fs::path VectorTileDownloader::calcDestinationPath(const TileCoordinate& coord, 
 }
 
 std::filesystem::path VectorTileDownloader::calcDestinationPath(int index) const {
-    return calcDestinationPath((*tiles_).at(index), destination_);
+    return calcDestinationPath(tiles_->at(index), destination_);
 }
 
 void VectorTileDownloader::updateTileCoordinates() {
@@ -109,11 +109,11 @@ int VectorTileDownloader::getTileCount() const {
     return static_cast<int>(tiles_->size());
 }
 
-TileCoordinate VectorTileDownloader::getTile(int index) const {
+TileCoordinate VectorTileDownloader::getTile(int index) {
     if (tiles_ == nullptr)
-        return {};
+        updateTileCoordinates();
 
-    return (*tiles_).at(index);
+    return tiles_->at(index);
 }
 
 std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) const {
@@ -121,16 +121,19 @@ std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) cons
         return nullptr;
 
     const auto result = std::make_shared<VectorTile>();
-    download(url_, destination_, (*tiles_)[index], *result);
+    download(url_, destination_, tiles_->at(index), *result);
 
     return result;
 }
 
-void VectorTileDownloader::download(int index, VectorTile& out_vector_tile) const {
-    if (tiles_ == nullptr)
+bool VectorTileDownloader::download(int index, VectorTile& out_vector_tile) const {
+    if (tiles_ == nullptr){
         out_vector_tile = {};
+        return false;
+    }
 
-    download(url_, destination_, (*tiles_)[index], out_vector_tile);
+    download(url_, destination_, tiles_->at(index), out_vector_tile);
+    return true;
 }
 
 const std::string& VectorTileDownloader::getUrl() {

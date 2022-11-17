@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
@@ -279,6 +280,30 @@ namespace PLATEAU.Interop
                 Math.Max(op1.Height, op2.Height)
             );
         }
+        
+        public static GeoCoordinate operator +(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                op1.Latitude + op2.Latitude,
+                op1.Longitude + op2.Longitude,
+                op1.Height + op2.Height
+            );
+        }
+
+        public static GeoCoordinate operator -(GeoCoordinate op1, GeoCoordinate op2)
+        {
+            return new GeoCoordinate(
+                op1.Latitude - op2.Latitude,
+                op1.Longitude - op2.Longitude,
+                op1.Height - op2.Height
+            );
+        }
+
+        /// <summary>
+        /// 緯度、経度の値を2次元ベクトルとして見たときのベクトルの長さの2乗です。
+        /// 高さは無視されます。
+        /// </summary>
+        public double SqrMagnitudeLatLon => this.Latitude * this.Latitude + this.Longitude * this.Longitude;
     }
 
     /// <summary>
@@ -301,6 +326,27 @@ namespace PLATEAU.Interop
             (this.Min.Longitude + this.Max.Longitude) * 0.5,
             (this.Min.Height + this.Max.Height) * 0.5);
 
+         /// <summary>
+         /// 共通部分を返します。
+         /// なければ (-99, -99, -99), (-99, -99, -99)を返します。
+         /// </summary>
+         public static Extent Intersection(Extent op1, Extent op2)
+         {
+             var max = GeoCoordinate.Max(op1.Max, op2.Max);
+             var min = GeoCoordinate.Min(op1.Min, op2.Min);
+             var intersectSize = op1.Size() + op2.Size() - (max - min);
+             if (intersectSize.Latitude <= 0 || intersectSize.Latitude <= 0 || intersectSize.Height <= 0)
+                 return new Extent(new GeoCoordinate(-99,-99,-99), new GeoCoordinate(-99, -99, -99));
+             var minMax = GeoCoordinate.Min(op1.Max, op2.Max);
+             var maxMin = GeoCoordinate.Max(op1.Min, op2.Min);
+             return new Extent(maxMin, minMax);
+         }
+
+         public GeoCoordinate Size()
+         {
+             return this.Max - this.Min;
+         }
+         
         public override string ToString()
         {
             return $"Extent: (Min={this.Min}, Max={this.Max})";
@@ -1369,13 +1415,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_vector_tile_downloader_download(
             [In] IntPtr handle,
-            int index,
-            out TileCoordinate tileCoordinate,
-            out int sizeOfImagePath);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_vector_tile_downloader_last_image_path(
-            [In] IntPtr strPtr);
+            int index);
 
         // ***************
         //  vector_tile_downloader_c.cpp
@@ -1409,5 +1449,14 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out TileCoordinate outTileCoordinate,
             int index);
+        
+        // ***************
+        //  available_lod_searcher_c.cpp
+        // ***************
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
+            [In] byte[] filePathUtf8,
+            out uint outLodFlags);
     }
 }

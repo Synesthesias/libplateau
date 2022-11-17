@@ -41,6 +41,7 @@ add_library(c_wrapper OBJECT
   "mesh_merger_c.cpp"
   "vector_tile_downloader_c.cpp"
   "tile_projection_c.cpp"
+  "lod_searcher_c.cpp"
   )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
