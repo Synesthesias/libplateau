@@ -84,19 +84,6 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_local_dataset_accessor_fetch(
-            char* destination_root_path_chars,
-            const GmlFileInfo* const gml_file_info,
-            GmlFileInfo* const out_gml_file_info
-    ) {
-        API_TRY {
-            const auto destination_root_path = std::string(destination_root_path_chars);
-            LocalDatasetAccessor::fetch(destination_root_path, *gml_file_info, *out_gml_file_info);
-            return APIResult::Success;
-        } API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
-
     DLL_VALUE_FUNC(plateau_local_dataset_accessor_get_packages,
                    LocalDatasetAccessor,
                    PredefinedCityModelPackage,

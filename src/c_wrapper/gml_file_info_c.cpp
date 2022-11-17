@@ -49,4 +49,17 @@ extern "C" {
                         GmlFileInfo,
                         handle->getFeatureType())
 
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_fetch(
+            const GmlFileInfo* const gml_file_info,
+            char* destination_root_path_chars,
+            GmlFileInfo* const out_gml_file_info
+    ) {
+        API_TRY {
+            const auto destination_root_path = std::string(destination_root_path_chars);
+            gml_file_info->fetch(destination_root_path, *out_gml_file_info);
+            return APIResult::Success;
+        } API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
 }

@@ -77,22 +77,6 @@ namespace plateau::udx {
         static void find(const std::string& source, LocalDatasetAccessor& collection);
 
         /**
-         * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
-         * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
-         * \param gml_file コピーするCityGMLファイル
-         * \param copied_gml_file コピーされたCityGMLファイル
-         */
-        static std::shared_ptr<GmlFileInfo> fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file);
-
-        /**
-         * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
-         * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
-         * \param gml_file コピーするCityGMLファイル
-         * \param copied_gml_file コピーされたCityGMLファイル
-         */
-        static void fetch(const std::string& destination_root_path, const GmlFileInfo& gml_file, GmlFileInfo& copied_gml_file);
-
-        /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
          * \param extent 座標範囲
          * \return フィルタリングされた都市モデルデータ

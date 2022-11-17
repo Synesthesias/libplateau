@@ -16,6 +16,20 @@ namespace plateau::udx {
         std::string getAppearanceDirectoryPath() const;
         bool isValid() const;
 
+        /**
+         * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
+         * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
+         * \returns コピー先されたCityGMLファイルの情報を返します。
+         */
+        std::shared_ptr<GmlFileInfo> fetch(const std::string& destination_root_path) const;
+
+        /**
+         * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
+         * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
+         * \param copied_gml_file コピーされたCityGMLファイル
+         */
+        void fetch(const std::string& destination_root_path, GmlFileInfo& copied_gml_file) const;
+
     private:
         std::string path_;
         std::string code_;

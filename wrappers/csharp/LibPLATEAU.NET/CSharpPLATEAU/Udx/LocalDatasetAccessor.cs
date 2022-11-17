@@ -107,23 +107,6 @@ namespace PLATEAU.Udx
         }
 
         /// <summary>
-        /// GMLファイルとその関連ファイルをコピーします。
-        /// 関連ファイルを探すために、GMLファイルの中身に対して文字列検索（テクスチャパスなどの記載を探す）が行われるため、
-        /// GMLファイルの容量が増えるほど処理時間が増えます。
-        /// </summary>
-        /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
-        /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>
-        public static GmlFileInfo Fetch(string destinationRootPath, GmlFileInfo gmlFileInfo)
-        {
-            var result = GmlFileInfo.Create("");
-            var apiResult = NativeMethods.plateau_local_dataset_accessor_fetch(
-                destinationRootPath, gmlFileInfo.Handle, result.Handle
-            );
-            DLLUtil.CheckDllError(apiResult);
-            return result;
-        }
-
-        /// <summary>
         /// GMLファイルのうち、引数で与えられたパッケージ種に該当するもののパスを string の配列で返します。
         /// </summary>
         public string[] GetGmlFiles(PredefinedCityModelPackage package)

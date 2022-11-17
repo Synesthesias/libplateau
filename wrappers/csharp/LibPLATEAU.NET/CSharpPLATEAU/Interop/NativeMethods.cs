@@ -1221,12 +1221,6 @@ namespace PLATEAU.Interop
             IntPtr collectionPtrForResult
         );
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_local_dataset_accessor_fetch(
-            [In] string destinationRootPath,
-            [In] IntPtr gmlFileInfoPtr,
-            [In, Out] IntPtr outGmlFileInfoPtr);
-
         [DllImport(DllName)]
         internal static extern APIResult plateau_local_dataset_accessor_get_packages(
             [In] IntPtr handle, out PredefinedCityModelPackage packages);
@@ -1291,6 +1285,12 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+        
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_gml_file_info_fetch(
+            [In] IntPtr gmlFileInfoPtr,
+            [In] string destinationRootPath,
+            [In, Out] IntPtr outGmlFileInfoPtr);
             
         // ***************
         //  city_model_package_info_c.cpp
