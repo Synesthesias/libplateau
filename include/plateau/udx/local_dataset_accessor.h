@@ -1,17 +1,7 @@
 ﻿#pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-#include <memory>
-#include <set>
-
-#include <libplateau_api.h>
-#include <plateau/udx/gml_file_info.h>
-#include <plateau/udx/city_model_package.h>
-#include <plateau/udx/mesh_code.h>
-#include <plateau/geometry/geo_coordinate.h>
 #include "plateau/geometry/geo_reference.h"
+#include <plateau/udx/i_dataset_accessor.h>
 
 namespace plateau::udx {
     /**
@@ -70,7 +60,7 @@ namespace plateau::udx {
     /**
      * \brief PLATEAUの3D都市モデルデータ製品へのアクセスを提供します。
      */
-    class LIBPLATEAU_EXPORT LocalDatasetAccessor {
+    class LIBPLATEAU_EXPORT LocalDatasetAccessor : public IDatasetAccessor {
     public:
 
         /**
@@ -158,7 +148,7 @@ namespace plateau::udx {
         /**
          * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。
          */
-        std::set<MeshCode>& getMeshCodes();
+        std::set<MeshCode>& getMeshCodes() override;
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
