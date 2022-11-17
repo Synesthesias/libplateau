@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <utility>
 
-#include <plateau/udx/udx_file_collection.h>
+#include <plateau/udx/local_dataset_accessor.h>
 #include <fstream>
 #include <queue>
 #include <set>
@@ -31,8 +31,8 @@ namespace plateau::udx {
         return CityModelPackageInfo::getPredefined(getPackage(folder_name));
     }
 
-    std::shared_ptr<UdxFileCollection> UdxFileCollection::find(const std::string& source) {
-        auto result = std::make_shared<UdxFileCollection>();
+    std::shared_ptr<LocalDatasetAccessor> LocalDatasetAccessor::find(const std::string& source) {
+        auto result = std::make_shared<LocalDatasetAccessor>();
         find(source, *result);
         return result;
     }
@@ -75,7 +75,7 @@ namespace plateau::udx {
         }
     }
 
-    void UdxFileCollection::find(const std::string& source, UdxFileCollection& collection) {
+    void LocalDatasetAccessor::find(const std::string& source, LocalDatasetAccessor& collection) {
         collection.udx_path_ = fs::u8path(source).append(u"udx").make_preferred().u8string();
         // udxフォルダ内の各フォルダについて
         for (const auto& entry : fs::directory_iterator(collection.udx_path_)) {
@@ -91,13 +91,13 @@ namespace plateau::udx {
         }
     }
 
-    std::shared_ptr<UdxFileCollection> UdxFileCollection::filter(const geometry::Extent& extent) const {
-        auto result = std::make_shared<UdxFileCollection>();
+    std::shared_ptr<LocalDatasetAccessor> LocalDatasetAccessor::filter(const geometry::Extent& extent) const {
+        auto result = std::make_shared<LocalDatasetAccessor>();
         filter(extent, *result);
         return result;
     }
 
-    void UdxFileCollection::filter(const geometry::Extent& extent, UdxFileCollection& collection) const {
+    void LocalDatasetAccessor::filter(const geometry::Extent& extent, LocalDatasetAccessor& collection) const {
         std::vector<MeshCode> mesh_codes;
         MeshCode::getThirdMeshes(extent, mesh_codes);
         std::set<std::string> second_mesh_strings;
@@ -114,8 +114,8 @@ namespace plateau::udx {
         filterByMeshCodes(mesh_codes, collection);
     }
 
-    void UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
-                                              UdxFileCollection& collection) const {
+    void LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
+                                                 LocalDatasetAccessor& collection) const {
         // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
         collection.setUdxPath(udx_path_);
         // 検索用に、引数の mesh_codes を文字列のセットにします。
@@ -133,14 +133,14 @@ namespace plateau::udx {
         }
     }
 
-    std::shared_ptr<UdxFileCollection>
-        UdxFileCollection::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
-        auto result = std::make_shared<UdxFileCollection>();
+    std::shared_ptr<LocalDatasetAccessor>
+        LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
+        auto result = std::make_shared<LocalDatasetAccessor>();
         filterByMeshCodes(mesh_codes, *result);
         return result;
     }
 
-    PredefinedCityModelPackage UdxFileCollection::getPackages() {
+    PredefinedCityModelPackage LocalDatasetAccessor::getPackages() {
         auto result = PredefinedCityModelPackage::None;
         for (const auto& [key, _] : files_) {
             result = result | key;
@@ -148,11 +148,11 @@ namespace plateau::udx {
         return result;
     }
 
-    const std::string& UdxFileCollection::getGmlFilePath(PredefinedCityModelPackage package, int index) {
+    const std::string& LocalDatasetAccessor::getGmlFilePath(PredefinedCityModelPackage package, int index) {
         return getGmlFileInfo(package, index).getPath();
     }
 
-    const GmlFileInfo& UdxFileCollection::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
+    const GmlFileInfo& LocalDatasetAccessor::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
@@ -162,14 +162,14 @@ namespace plateau::udx {
         return files_[package][index];
     }
 
-    int UdxFileCollection::getGmlFileCount(PredefinedCityModelPackage package) {
+    int LocalDatasetAccessor::getGmlFileCount(PredefinedCityModelPackage package) {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
         return (int)files_[package].size();
     }
 
-    std::shared_ptr<std::vector<std::string>> UdxFileCollection::getGmlFiles(PredefinedCityModelPackage package) {
+    std::shared_ptr<std::vector<std::string>> LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package) {
         const auto result = std::make_shared<std::vector<std::string>>();
 
         if (files_.find(package) == files_.end())
@@ -326,14 +326,14 @@ namespace plateau::udx {
         }
     } // fetch で使う無名関数
 
-    std::shared_ptr<GmlFileInfo> UdxFileCollection::fetch(const std::string& destination_root_path,
-        const GmlFileInfo& gml_file) {
+    std::shared_ptr<GmlFileInfo> LocalDatasetAccessor::fetch(const std::string& destination_root_path,
+                                                             const GmlFileInfo& gml_file) {
         auto result = std::make_shared<GmlFileInfo>("");
         fetch(destination_root_path, gml_file, *result);
         return result;
     }
 
-    void UdxFileCollection::fetch(
+    void LocalDatasetAccessor::fetch(
         const std::string& destination_root_path, const GmlFileInfo& gml_file,
         GmlFileInfo& copied_gml_file) {
 
@@ -380,11 +380,11 @@ namespace plateau::udx {
         copied_gml_file.setPath(gml_destination_path.u8string());
     }
 
-    std::string UdxFileCollection::getU8RelativePath(const std::string& path) const {
+    std::string LocalDatasetAccessor::getU8RelativePath(const std::string& path) const {
         return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).u8string();
     }
 
-    TVec3d UdxFileCollection::calculateCenterPoint(const geometry::GeoReference& geo_reference) {
+    TVec3d LocalDatasetAccessor::calculateCenterPoint(const geometry::GeoReference& geo_reference) {
         const auto& mesh_codes = getMeshCodes();
         double lat_sum = 0;
         double lon_sum = 0;
@@ -401,11 +401,11 @@ namespace plateau::udx {
         return euclid_average;
     }
 
-    std::string UdxFileCollection::getRelativePath(const std::string& path) const {
+    std::string LocalDatasetAccessor::getRelativePath(const std::string& path) const {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::set<MeshCode>& UdxFileCollection::getMeshCodes() {
+    std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
         if (!mesh_codes_.empty())
             return mesh_codes_;
 
@@ -417,14 +417,14 @@ namespace plateau::udx {
         return mesh_codes_;
     }
 
-    void UdxFileCollection::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {
+    void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {
         if (files_.count(sub_folder) <= 0) {
             files_.emplace(sub_folder, std::vector<GmlFileInfo>());
         }
         files_.at(sub_folder).push_back(gml_file_info);
     }
 
-    void UdxFileCollection::setUdxPath(std::string udx_path) {
+    void LocalDatasetAccessor::setUdxPath(std::string udx_path) {
         udx_path_ = std::move(udx_path);
     }
 }

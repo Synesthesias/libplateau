@@ -70,21 +70,21 @@ namespace plateau::udx {
     /**
      * \brief PLATEAUの3D都市モデルデータ製品へのアクセスを提供します。
      */
-    class LIBPLATEAU_EXPORT UdxFileCollection {
+    class LIBPLATEAU_EXPORT LocalDatasetAccessor {
     public:
 
         /**
          * \brief source内に含まれる3D都市モデルデータを全て取得します。
          * \param source 3D都市モデルデータ製品のルートフォルダ(udx, codelists等のフォルダを含むフォルダ)へのパス
          */
-        static std::shared_ptr<UdxFileCollection> find(const std::string& source);
+        static std::shared_ptr<LocalDatasetAccessor> find(const std::string& source);
 
         /**
          * \brief source内に含まれる3D都市モデルデータを全て取得します。
          * \param source 3D都市モデルデータ製品のルートフォルダ(udx, codelists等のフォルダを含むフォルダ)へのパス
          * \param collection 取得されたデータの格納先
          */
-        static void find(const std::string& source, UdxFileCollection& collection);
+        static void find(const std::string& source, LocalDatasetAccessor& collection);
 
         /**
          * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
@@ -107,26 +107,26 @@ namespace plateau::udx {
          * \param extent 座標範囲
          * \return フィルタリングされた都市モデルデータ
          */
-        std::shared_ptr<UdxFileCollection> filter(const geometry::Extent& extent) const;
+        std::shared_ptr<LocalDatasetAccessor> filter(const geometry::Extent& extent) const;
 
         /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
          * \param extent 座標範囲
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
-        void filter(const geometry::Extent& extent, UdxFileCollection& collection) const;
+        void filter(const geometry::Extent& extent, LocalDatasetAccessor& collection) const;
 
         /**
          * \brief メッシュコードで都市モデルデータをフィルタリングします。
          * \param mesh_codes 欲しい地域IDのvector
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
-        void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, UdxFileCollection& collection) const;
+        void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, LocalDatasetAccessor& collection) const;
 
         /**
          * \brief 上の filterByMeshCodes 関数について、shared_ptr で返す版です。
          */
-        std::shared_ptr<UdxFileCollection> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const;
+        std::shared_ptr<LocalDatasetAccessor> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const;
         
         /**
          * \brief 存在する都市モデルパッケージをマスクとして取得します。

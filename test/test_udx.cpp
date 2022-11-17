@@ -3,7 +3,7 @@
 
 #include <citygml/citygml.h>
 
-#include <plateau/udx/udx_file_collection.h>
+#include <plateau/udx/local_dataset_accessor.h>
 
 using namespace citygml;
 using namespace plateau::udx;
@@ -13,7 +13,7 @@ class UdxTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
         source_path_ = "../data";
-        UdxFileCollection::find(source_path_, udx_file_collection_);
+        LocalDatasetAccessor::find(source_path_, udx_file_collection_);
     }
 
     static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFileInfo>& actual) {
@@ -36,7 +36,7 @@ protected:
     }
 
     std::string source_path_;
-    UdxFileCollection udx_file_collection_;
+    LocalDatasetAccessor udx_file_collection_;
 };
 
 TEST_F(UdxTest, getAllGmls) {
@@ -67,7 +67,7 @@ TEST_F(UdxTest, fetch_generates_files){
     fs::remove_all(temp_test_dir);
 //    const auto& test_gml_info = udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFileInfo("../data/udx/bldg/53392642_bldg_6697_op2.gml");
-    UdxFileCollection::fetch(temp_test_dir, test_gml_info);
+    LocalDatasetAccessor::fetch(temp_test_dir, test_gml_info);
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
@@ -108,7 +108,7 @@ TEST_F(UdxTest, fetch_generates_files){
 
 namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。
     bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
-                                                     const UdxFileCollection& udx_file_collection,
+                                                     const LocalDatasetAccessor& udx_file_collection,
                                                      const PredefinedCityModelPackage sub_folder) {
         auto mesh_code = std::vector<MeshCode>{MeshCode(mesh_code_str)};
         auto filtered_collection = udx_file_collection.filterByMeshCodes(mesh_code);
@@ -220,7 +220,7 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //        MeshCode("53392642"),
 //        MeshCode("533925")
 //    };
-//    auto filtered = UdxFileCollection::filter(udx_file_collection_, mesh_codes);
+//    auto filtered = LocalDatasetAccessor::filter(udx_file_collection_, mesh_codes);
 //
 //    const auto files = filtered.getAllGmlFiles();
 //
@@ -240,7 +240,7 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //    }
 //    checkFiles(expected, *files);
 //
-//    filtered = UdxFileCollection::filter(udx_file_collection_, {});
+//    filtered = LocalDatasetAccessor::filter(udx_file_collection_, {});
 //    auto codes = filtered.getMeshCodes();
 //    std::cout << codes->size();
 //

@@ -8,12 +8,12 @@ using PLATEAU.Udx;
 namespace PLATEAU.Test.Udx
 {
     [TestClass]
-    public class UdxFileCollectionTest
+    public class LocalDatasetAccessorTest
     {
         [TestMethod]
         public void Can_Get_All_Mesh_Codes()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             Assert.AreEqual(1, collection.MeshCodes.Count);
         }
 
@@ -25,7 +25,7 @@ namespace PLATEAU.Test.Udx
                 Max = new GeoCoordinate(35.53725521, 139.77699279, 0),
                 Min = new GeoCoordinate(35.53725511, 139.77699239, 0)
             };
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             var filteredCollection = collection.Filter(extent);
             Assert.AreEqual(1, filteredCollection.MeshCodes.Count);
             Assert.AreEqual("53392642", filteredCollection.MeshCodes[0].ToString());
@@ -34,7 +34,7 @@ namespace PLATEAU.Test.Udx
         [TestMethod]
         public void Packages_Getter_Returns_All_Packages()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             var expected = PredefinedCityModelPackage.Building;
             Assert.AreEqual(expected, collection.Packages);
         }
@@ -42,19 +42,19 @@ namespace PLATEAU.Test.Udx
         [TestMethod]
         public void Get_Gml_Files_Returns_All_Files()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             Assert.AreEqual(Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"), Path.GetFullPath(collection.GetGmlFiles(PredefinedCityModelPackage.Building)[0]));
         }
 
         [TestMethod]
         public void Fetch_Copies_Relative_Files()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             var testDir = Directory.CreateDirectory("temp_test_dir");
             var gmlArray = collection.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmlArray)
             {
-                UdxFileCollection.Fetch(testDir.FullName, GmlFileInfo.Create(gml));
+                LocalDatasetAccessor.Fetch(testDir.FullName, GmlFileInfo.Create(gml));
             }
 
             var shouldExists = new[]
@@ -74,7 +74,7 @@ namespace PLATEAU.Test.Udx
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(collection, validMeshCode));
@@ -85,7 +85,7 @@ namespace PLATEAU.Test.Udx
         [TestMethod]
         public void CalcCenterPoint_Returns_Position_Of_Test_Data()
         {
-            var collection = UdxFileCollection.Find("data");
+            var collection = LocalDatasetAccessor.Find("data");
             foreach (var meshCode in collection.MeshCodes)
             {
                 var extent = meshCode.Extent;
@@ -107,7 +107,7 @@ namespace PLATEAU.Test.Udx
             Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
 
-        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(UdxFileCollection collection, string meshCode)
+        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(LocalDatasetAccessor collection, string meshCode)
         {
             var filtered = collection.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);

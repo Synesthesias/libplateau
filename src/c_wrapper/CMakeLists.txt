@@ -31,7 +31,7 @@ add_library(c_wrapper OBJECT
   "node_c.cpp"
   "geometry_utils_c.cpp"
   "geo_reference_c.cpp"
-  "udx_file_collection_c.cpp"
+  "local_dataset_accessor_c.cpp"
   "mesh_code_c.cpp"
   "gml_file_info_c.cpp"
   "city_model_package_info_c.cpp"

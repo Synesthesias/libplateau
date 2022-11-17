@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
 
-#include <plateau/udx/udx_file_collection.h>
+#include <plateau/udx/local_dataset_accessor.h>
 
 #include "citygml/address.h"
 
