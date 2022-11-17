@@ -118,7 +118,7 @@ TileCoordinate VectorTileDownloader::getTile(int index) {
 
 std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) const {
     if (tiles_ == nullptr)
-        throw std::logic_error("tiles_ is nullptr.");
+        return nullptr;
 
     const auto result = std::make_shared<VectorTile>();
     download(url_, destination_, tiles_->at(index), *result);
@@ -126,11 +126,14 @@ std::shared_ptr<VectorTile> VectorTileDownloader::download(const int index) cons
     return result;
 }
 
-void VectorTileDownloader::download(int index, VectorTile& out_vector_tile) const {
-    if (tiles_ == nullptr)
-        throw std::logic_error("tiles_ is nullptr");
+bool VectorTileDownloader::download(int index, VectorTile& out_vector_tile) const {
+    if (tiles_ == nullptr){
+        out_vector_tile = {};
+        return false;
+    }
 
     download(url_, destination_, tiles_->at(index), out_vector_tile);
+    return true;
 }
 
 const std::string& VectorTileDownloader::getUrl() {

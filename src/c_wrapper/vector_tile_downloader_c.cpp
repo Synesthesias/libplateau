@@ -36,7 +36,8 @@ using namespace plateau::geometry;
             if (index >= downloader->getTileCount()) {
                 return APIResult::ErrorIndexOutOfBounds;
             }
-            downloader->download(index, tile);
+            auto result = downloader->download(index, tile);
+            if(!result) return APIResult::ErrorValueNotFound;
             return APIResult::Success;
         } API_CATCH
         return APIResult::ErrorUnknown;
