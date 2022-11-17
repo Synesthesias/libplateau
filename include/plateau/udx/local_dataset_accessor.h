@@ -77,6 +77,11 @@ namespace plateau::udx {
         static void find(const std::string& source, LocalDatasetAccessor& collection);
 
         /**
+         * \brief Extent と Package で絞り込んだ GmlInfo の vector を返します。
+         */
+        std::vector<GmlFileInfo> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
+
+        /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
          * \param extent 座標範囲
          * \return フィルタリングされた都市モデルデータ

@@ -1193,6 +1193,35 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_mesh_code_get_extent(
             [In] MeshCode meshCode,
             [In, Out] ref Extent outExtent);
+        
+        // ***************
+        //  dataset_accessor_p_invoke_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_accessor_p_invoke(
+            [In] IntPtr innerAccessorPtr,
+            out IntPtr outSelfAccessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_accessor_p_invoke(
+            [In] IntPtr accessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_get_gml_files(
+            [In] IntPtr accessorPtr,
+            Extent extent,
+            PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
+            [In] IntPtr accessorPtr,
+            out IntPtr outGmlFileInfoPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
+            [In] IntPtr accessorPtr,
+            out int outCount);
 
         // ***************
         //  local_dataset_accessor_c.cpp

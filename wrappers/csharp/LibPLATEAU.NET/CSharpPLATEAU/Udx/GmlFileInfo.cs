@@ -19,21 +19,34 @@ namespace PLATEAU.Udx
 
         public string Path
         {
-            get => DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
+            get
+            {
+                ThrowIfDisposed();
+                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
+            }
             set
             {
+                ThrowIfDisposed();
                 var result = NativeMethods.plateau_gml_file_info_set_path(
                     Handle, value);
                 DLLUtil.CheckDllError(result);
             }
         }
 
-        public string FeatureType =>
-            DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
-        
+        public string FeatureType
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
+            }
+        }
+
+
         public PredefinedCityModelPackage Package {
             get
             {
+                ThrowIfDisposed();
                 var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
@@ -49,6 +62,7 @@ namespace PLATEAU.Udx
         /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>
         public GmlFileInfo Fetch(string destinationRootPath)
         {
+            ThrowIfDisposed();
             var result = Create("");
             var apiResult = NativeMethods.plateau_gml_file_info_fetch(
                 Handle, destinationRootPath, result.Handle

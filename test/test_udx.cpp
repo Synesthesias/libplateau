@@ -13,7 +13,7 @@ class UdxTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
         source_path_ = "../data";
-        LocalDatasetAccessor::find(source_path_, udx_file_collection_);
+        LocalDatasetAccessor::find(source_path_, local_dataset_accessor);
     }
 
     static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFileInfo>& actual) {
@@ -36,7 +36,7 @@ protected:
     }
 
     std::string source_path_;
-    LocalDatasetAccessor udx_file_collection_;
+    LocalDatasetAccessor local_dataset_accessor;
 };
 
 TEST_F(UdxTest, getAllGmls) {
@@ -44,11 +44,11 @@ TEST_F(UdxTest, getAllGmls) {
     { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
     std::vector<std::string> actual_files;
 
-    checkVectors(expected_bldg_files, *udx_file_collection_.getGmlFiles(PredefinedCityModelPackage::Building));
+    checkVectors(expected_bldg_files, *local_dataset_accessor.getGmlFiles(PredefinedCityModelPackage::Building));
 }
 
 TEST_F(UdxTest, getAllMeshCodes) {
-    const auto mesh_codes = udx_file_collection_.getMeshCodes();
+    const auto mesh_codes = local_dataset_accessor.getMeshCodes();
     ASSERT_EQ(mesh_codes.size(), 1);
 }
 
@@ -65,7 +65,7 @@ TEST_F(UdxTest, fetch_generates_files){
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
-//    const auto& test_gml_info = udx_file_collection_.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
+//    const auto& test_gml_info = local_dataset_accessor.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFileInfo("../data/udx/bldg/53392642_bldg_6697_op2.gml");
     test_gml_info.fetch(temp_test_dir);
     // gmlファイルがコピー先に存在します。
@@ -124,14 +124,14 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
 } // テスト filterByMeshCodes で使う無名名前空間の関数です。
 
 TEST_F(UdxTest, filter_by_mesh_codes) {
-    ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", udx_file_collection_,
+    ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", local_dataset_accessor,
                                                             PredefinedCityModelPackage::Building));
-    ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", udx_file_collection_,
+    ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", local_dataset_accessor,
                                                              PredefinedCityModelPackage::Building));
 }
 
 //TEST_F(UdxTest, getAllSubFolders) {
-//    const auto sub_folders = udx_file_collection_.getSubFolders();
+//    const auto sub_folders = local_dataset_accessor.getSubFolders();
 //    std::vector<std::string> sub_folder_names;
 //    std::transform(sub_folders->begin(), sub_folders->end(), std::back_inserter(sub_folder_names),
 //    [](const UdxSubFolder& sub_folder) { return sub_folder; });
@@ -150,8 +150,8 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //
 //TEST_F(UdxTest, copyAllRelatedFiles) {
 //    const auto destination = "test_dir";
-//    udx_file_collection_.copyAllFiles(destination);
-//    udx_file_collection_.copyCodelistFiles(destination);
+//    local_dataset_accessor.copyAllFiles(destination);
+//    local_dataset_accessor.copyCodelistFiles(destination);
 //    EXPECT_TRUE(fs::exists(destination + std::string("/data/udx/bldg/53392642_bldg_6697_op2.gml")));
 //    EXPECT_TRUE(fs::exists(destination + std::string("/data/udx/bldg/53392642_bldg_6697_appearance/hnap0276.tif")));
 //    EXPECT_TRUE(fs::exists(destination + std::string("/data/udx/luse/533925_luse_6697_park_op.gml")));
@@ -160,7 +160,7 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //
 //TEST_F(UdxTest, copyAllRelatedFilesInSubFolder) {
 //    const auto destination = "test_dir";
-//    const auto result = udx_file_collection_.copyFiles(destination, UdxSubFolder("brid"));
+//    const auto result = local_dataset_accessor.copyFiles(destination, UdxSubFolder("brid"));
 //    EXPECT_FALSE(fs::exists(destination + std::string("/data/udx/bldg/53392642_bldg_6697_op2.gml")));
 //    EXPECT_TRUE(fs::exists(destination + std::string("/data/udx/brid/53394525_brid_6697_op.gml")));
 //    fs::remove_all(destination);
@@ -196,12 +196,12 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //    const auto destination = fs::path("テスト").u8string();
 //
 //    std::cout << destination;
-//    const auto result = udx_file_collection_.copyFiles(destination, UdxSubFolder("brid"));
+//    const auto result = local_dataset_accessor.copyFiles(destination, UdxSubFolder("brid"));
 //    fs::remove_all(fs::u8path(destination));
 //}
 //
 //TEST_F(UdxTest, getMeshCode) {
-//    const auto mesh_codes = udx_file_collection_.getMeshCodes();
+//    const auto mesh_codes = local_dataset_accessor.getMeshCodes();
 //    std::vector<std::string> mesh_code_names;
 //    std::transform(mesh_codes->begin(), mesh_codes->end(), std::back_inserter(mesh_code_names),
 //    [](const MeshCode& mesh_code) { return mesh_code.get(); });
@@ -220,7 +220,7 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //        MeshCode("53392642"),
 //        MeshCode("533925")
 //    };
-//    auto filtered = LocalDatasetAccessor::filter(udx_file_collection_, mesh_codes);
+//    auto filtered = LocalDatasetAccessor::filter(local_dataset_accessor, mesh_codes);
 //
 //    const auto files = filtered.getAllGmlFiles();
 //
@@ -240,7 +240,7 @@ TEST_F(UdxTest, filter_by_mesh_codes) {
 //    }
 //    checkFiles(expected, *files);
 //
-//    filtered = LocalDatasetAccessor::filter(udx_file_collection_, {});
+//    filtered = LocalDatasetAccessor::filter(local_dataset_accessor, {});
 //    auto codes = filtered.getMeshCodes();
 //    std::cout << codes->size();
 //

@@ -225,7 +225,7 @@ namespace plateau::udx {
 
     std::shared_ptr<GmlFileInfo> GmlFileInfo::fetch(const std::string& destination_root_path) const {
         auto result = std::make_shared<GmlFileInfo>("");
-        fetch(destination_root_path);
+        fetch(destination_root_path, *result);
         return result;
     }
 

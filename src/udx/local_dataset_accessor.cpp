@@ -10,6 +10,7 @@
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
+    using namespace geometry;
 
     PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name) {
         if (folder_name == bldg) return PredefinedCityModelPackage::Building;
@@ -89,6 +90,17 @@ namespace plateau::udx {
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path().string(), gml_files);
         }
+    }
+
+    std::vector<GmlFileInfo> LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package){
+        auto filtered = LocalDatasetAccessor();
+        filter(extent, filtered);
+        auto count = filtered.getGmlFileCount(package);
+        auto ret = std::vector<GmlFileInfo>();
+        for(int i=0; i<count; i++){
+            ret.push_back(filtered.getGmlFileInfo(package, i));
+        }
+        return ret;
     }
 
     std::shared_ptr<LocalDatasetAccessor> LocalDatasetAccessor::filter(const geometry::Extent& extent) const {

@@ -1,0 +1,26 @@
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Interop;
+using PLATEAU.Udx;
+
+namespace PLATEAU.Test.Udx
+{
+    [TestClass]
+    public class DatasetAccessorTest
+    {
+        [TestMethod]
+        public void GetGmlFiles()
+        {
+            var localAccessor = LocalDatasetAccessor.Find("data");
+            // TODO localAccessor を直接渡せるようにする
+            var accessor = DatasetAccessor.Create(localAccessor.Handle);
+            var gmls = accessor.GetGmlFiles(
+                new Extent(
+                    new GeoCoordinate(35.53, 139.77, -9999),
+                    new GeoCoordinate(35.54, 139.78, 9999)
+                ),
+                PredefinedCityModelPackage.Building);
+            Assert.AreEqual(1, gmls.Length);
+        }
+    }
+}
