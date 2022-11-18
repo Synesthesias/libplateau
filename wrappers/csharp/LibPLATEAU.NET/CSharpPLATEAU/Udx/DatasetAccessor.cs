@@ -19,7 +19,7 @@ namespace PLATEAU.Udx
             return new DatasetAccessor(selfAccessorPtr);
         }
 
-        public GmlFileInfo[] GetGmlFiles(Extent extent, PredefinedCityModelPackage package)
+        public GmlFile[] GetGmlFiles(Extent extent, PredefinedCityModelPackage package)
         {
             if ((extent.Max - extent.Min).SqrMagnitudeLatLon >= 1)
             {
@@ -32,12 +32,12 @@ namespace PLATEAU.Udx
             DLLUtil.CheckDllError(resultG);
             int count = DLLUtil.GetNativeValue<int>(Handle,
                 NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count);
-            var ret = new GmlFileInfo[count];
+            var ret = new GmlFile[count];
             for (int i = 0; i < count; i++)
             {
                     var gmlFileInfoPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, i,
                         NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files);
-                    ret[i] = new GmlFileInfo(gmlFileInfoPtr);
+                    ret[i] = new GmlFile(gmlFileInfoPtr);
             }
             return ret;
         }

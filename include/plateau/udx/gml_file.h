@@ -5,9 +5,9 @@
 
 namespace plateau::udx {
 
-    class LIBPLATEAU_EXPORT GmlFileInfo {
+    class LIBPLATEAU_EXPORT GmlFile {
     public:
-        explicit GmlFileInfo(const std::string& path);
+        explicit GmlFile(const std::string& path);
 
         const std::string& getPath() const;
         void setPath(const std::string& path);
@@ -21,14 +21,14 @@ namespace plateau::udx {
          * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
          * \returns コピー先されたCityGMLファイルの情報を返します。
          */
-        std::shared_ptr<GmlFileInfo> fetch(const std::string& destination_root_path) const;
+        std::shared_ptr<GmlFile> fetch(const std::string& destination_root_path) const;
 
         /**
          * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
          * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
          * \param copied_gml_file コピーされたCityGMLファイル
          */
-        void fetch(const std::string& destination_root_path, GmlFileInfo& copied_gml_file) const;
+        void fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const;
 
     private:
         std::string path_;

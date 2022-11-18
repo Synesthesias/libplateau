@@ -39,7 +39,7 @@ extern "C" {
 
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_dataset_accessor_p_invoke_result_of_get_gml_files,
                                   DatasetAccessorPInvoke,
-                                  GmlFileInfo,
+                                  GmlFile,
                                   handle->resultOfGetGmlFiles(index),
                                   index > (handle->resultOfGetGmlFilesCount()))
 

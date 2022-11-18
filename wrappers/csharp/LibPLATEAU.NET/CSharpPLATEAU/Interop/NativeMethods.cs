@@ -1302,36 +1302,36 @@ namespace PLATEAU.Interop
 
 
         // ***************
-        //  gml_file_info_c.cpp
+        //  gml_file_c.cpp
         // ***************
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_create_gml_file_info(
+        internal static extern APIResult plateau_create_gml_file(
             out IntPtr outGmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_gml_file_info(
+        internal static extern APIResult plateau_delete_gml_file(
             [In] IntPtr handle);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_gml_file_info_get_path(
+        internal static extern APIResult plateau_gml_file_get_path(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_set_path(
+        internal static extern APIResult plateau_gml_file_set_path(
             [In] IntPtr gmlFileInfoPtr,
             [In] string path);
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_get_feature_type_str(
+        internal static extern APIResult plateau_gml_file_get_feature_type_str(
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_gml_file_info_fetch(
+        internal static extern APIResult plateau_gml_file_fetch(
             [In] IntPtr gmlFileInfoPtr,
             [In] string destinationRootPath,
             [In, Out] IntPtr outGmlFileInfoPtr);

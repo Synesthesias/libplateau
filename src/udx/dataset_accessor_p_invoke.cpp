@@ -12,7 +12,7 @@ namespace plateau::udx {
         result_of_get_gml_files_ = accessor_->getGmlFiles(extent, package);
     }
 
-    const GmlFileInfo* DatasetAccessorPInvoke::resultOfGetGmlFiles(int index) const {
+    const GmlFile* DatasetAccessorPInvoke::resultOfGetGmlFiles(int index) const {
         if(index >= result_of_get_gml_files_.size() || index < 0){
             throw std::out_of_range("index is out of range.");
         }

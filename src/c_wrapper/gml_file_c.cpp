@@ -8,11 +8,11 @@ using namespace libplateau;
 using namespace plateau::udx;
 
 extern "C" {
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file_info(
-            GmlFileInfo** gml_file_info_ptr, const char* path
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file(
+            GmlFile** gml_file_info_ptr, const char* path
     ) {
         API_TRY {
-            const auto gml_file_info = new GmlFileInfo(path);
+            const auto gml_file_info = new GmlFile(path);
             if (gml_file_info->isValid()) {
                 *gml_file_info_ptr = gml_file_info;
                 return APIResult::Success;
@@ -23,19 +23,19 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file_info(
-            const GmlFileInfo* gml_file_info
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file(
+            const GmlFile* gml_file_info
     ) {
         delete gml_file_info;
         return APIResult::Success;
     }
 
-    DLL_STRING_PTR_FUNC(plateau_gml_file_info_get_path,
-                        GmlFileInfo,
+    DLL_STRING_PTR_FUNC(plateau_gml_file_get_path,
+                        GmlFile,
                         handle->getPath())
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_set_path(
-            GmlFileInfo* gml_file_info,
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_set_path(
+            GmlFile* gml_file_info,
             char* path
     ) {
         API_TRY {
@@ -45,14 +45,14 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    DLL_STRING_PTR_FUNC(plateau_gml_file_info_get_feature_type_str,
-                        GmlFileInfo,
+    DLL_STRING_PTR_FUNC(plateau_gml_file_get_feature_type_str,
+                        GmlFile,
                         handle->getFeatureType())
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_info_fetch(
-            const GmlFileInfo* const gml_file_info,
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
+            const GmlFile* const gml_file_info,
             char* destination_root_path_chars,
-            GmlFileInfo* const out_gml_file_info
+            GmlFile* const out_gml_file_info
     ) {
         API_TRY {
             const auto destination_root_path = std::string(destination_root_path_chars);

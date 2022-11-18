@@ -16,10 +16,10 @@ protected:
         LocalDatasetAccessor::find(source_path_, local_dataset_accessor);
     }
 
-    static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFileInfo>& actual) {
+    static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFile>& actual) {
         std::vector<std::string> actual_file_names;
         std::transform(actual.begin(), actual.end(), std::back_inserter(actual_file_names),
-            [](const GmlFileInfo& file_info) { return file_info.getPath(); });
+            [](const GmlFile& file_info) { return file_info.getPath(); });
         checkVectors(expected, actual_file_names);
     }
 
@@ -66,7 +66,7 @@ TEST_F(UdxTest, fetch_generates_files){
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
 //    const auto& test_gml_info = local_dataset_accessor.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
-    const auto& test_gml_info = GmlFileInfo("../data/udx/bldg/53392642_bldg_6697_op2.gml");
+    const auto& test_gml_info = GmlFile("../data/udx/bldg/53392642_bldg_6697_op2.gml");
     test_gml_info.fetch(temp_test_dir);
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");

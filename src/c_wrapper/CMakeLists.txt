@@ -33,7 +33,7 @@ add_library(c_wrapper OBJECT
   "geo_reference_c.cpp"
   "local_dataset_accessor_c.cpp"
   "mesh_code_c.cpp"
-  "gml_file_info_c.cpp"
+  "gml_file_c.cpp"
   "city_model_package_info_c.cpp"
   "mesh_extract_options_c.cpp"
   "gltf_writer_c.cpp" 

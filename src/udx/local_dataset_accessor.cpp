@@ -48,7 +48,7 @@ namespace plateau::udx {
          * @param result 結果はこの vector に追加されます。
          * @return GMLファイルのパスの vector です。
          */
-        void findGMLsBFS(const std::string& dir_path, std::vector<GmlFileInfo>& result) {
+        void findGMLsBFS(const std::string& dir_path, std::vector<GmlFile>& result) {
             auto queue = std::queue<std::string>();
             queue.push(dir_path);
             bool push_more_dir = true;
@@ -85,18 +85,18 @@ namespace plateau::udx {
             const auto package = udx_sub_folder.getPackage(udx_sub_folder.getName());
             auto& file_map = collection.files_;
             if (file_map.count(package) == 0) {
-                file_map.emplace(package, std::vector<GmlFileInfo>());
+                file_map.emplace(package, std::vector<GmlFile>());
             }
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path().string(), gml_files);
         }
     }
 
-    std::vector<GmlFileInfo> LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package){
+    std::vector<GmlFile> LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package){
         auto filtered = LocalDatasetAccessor();
         filter(extent, filtered);
         auto count = filtered.getGmlFileCount(package);
-        auto ret = std::vector<GmlFileInfo>();
+        auto ret = std::vector<GmlFile>();
         for(int i=0; i<count; i++){
             ret.push_back(filtered.getGmlFileInfo(package, i));
         }
@@ -164,7 +164,7 @@ namespace plateau::udx {
         return getGmlFileInfo(package, index).getPath();
     }
 
-    const GmlFileInfo& LocalDatasetAccessor::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
+    const GmlFile& LocalDatasetAccessor::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 
@@ -237,9 +237,9 @@ namespace plateau::udx {
         return vector_mesh_codes;
     }
 
-    void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {
+    void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
         if (files_.count(sub_folder) <= 0) {
-            files_.emplace(sub_folder, std::vector<GmlFileInfo>());
+            files_.emplace(sub_folder, std::vector<GmlFile>());
         }
         files_.at(sub_folder).push_back(gml_file_info);
     }

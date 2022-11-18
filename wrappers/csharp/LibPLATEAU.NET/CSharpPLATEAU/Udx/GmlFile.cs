@@ -3,18 +3,18 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Udx
 {
-    public class GmlFileInfo : PInvokeDisposable
+    public class GmlFile : PInvokeDisposable
     {
-        public GmlFileInfo(IntPtr handle) : base(handle)
+        public GmlFile(IntPtr handle) : base(handle)
         {
             
         }
 
-        public static GmlFileInfo Create(string path)
+        public static GmlFile Create(string path)
         {
-            var apiResult = NativeMethods.plateau_create_gml_file_info(out IntPtr outPtr, path);
+            var apiResult = NativeMethods.plateau_create_gml_file(out IntPtr outPtr, path);
             DLLUtil.CheckDllError(apiResult);
-            return new GmlFileInfo(outPtr);
+            return new GmlFile(outPtr);
         }
 
         public string Path
@@ -22,12 +22,12 @@ namespace PLATEAU.Udx
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_path);
+                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
             }
             set
             {
                 ThrowIfDisposed();
-                var result = NativeMethods.plateau_gml_file_info_set_path(
+                var result = NativeMethods.plateau_gml_file_set_path(
                     Handle, value);
                 DLLUtil.CheckDllError(result);
             }
@@ -38,7 +38,7 @@ namespace PLATEAU.Udx
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_info_get_feature_type_str);
+                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_feature_type_str);
             }
         }
 
@@ -59,12 +59,12 @@ namespace PLATEAU.Udx
         /// GMLファイルの容量が増えるほど処理時間が増えます。
         /// </summary>
         /// <param name="destinationRootPath">コピー先のルートフォルダのパスです。</param>
-        /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFileInfo"/> です。</param>
-        public GmlFileInfo Fetch(string destinationRootPath)
+        /// <param name="gmlFileInfo">コピー元のGMLファイルの <see cref="GmlFile"/> です。</param>
+        public GmlFile Fetch(string destinationRootPath)
         {
             ThrowIfDisposed();
             var result = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_info_fetch(
+            var apiResult = NativeMethods.plateau_gml_file_fetch(
                 Handle, destinationRootPath, result.Handle
             );
             DLLUtil.CheckDllError(apiResult);
@@ -73,7 +73,7 @@ namespace PLATEAU.Udx
 
         protected override void DisposeNative()
         {
-            NativeMethods.plateau_delete_gml_file_info(Handle);
+            NativeMethods.plateau_delete_gml_file(Handle);
         }
     }
 }

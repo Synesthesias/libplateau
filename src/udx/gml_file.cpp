@@ -3,37 +3,37 @@
 #include <regex>
 #include <fstream>
 #include <set>
-#include <plateau/udx/gml_file_info.h>
+#include <plateau/udx/gml_file.h>
 #include <plateau/udx/mesh_code.h>
 
 namespace plateau::udx {
 
     namespace fs = std::filesystem;
 
-    GmlFileInfo::GmlFileInfo(const std::string& path)
+    GmlFile::GmlFile(const std::string& path)
         : path_(path),
         is_valid_(false){
         applyPath();
     }
 
-    const std::string& GmlFileInfo::getPath() const {
+    const std::string& GmlFile::getPath() const {
         return path_;
     }
 
-    void GmlFileInfo::setPath(const std::string& path) {
+    void GmlFile::setPath(const std::string& path) {
         path_ = path;
         applyPath();
     }
 
-    MeshCode GmlFileInfo::getMeshCode() const {
+    MeshCode GmlFile::getMeshCode() const {
         return MeshCode(code_);
     }
 
-    const std::string& GmlFileInfo::getFeatureType() const {
+    const std::string& GmlFile::getFeatureType() const {
         return feature_type_;
     }
 
-    std::string GmlFileInfo::getAppearanceDirectoryPath() const {
+    std::string GmlFile::getAppearanceDirectoryPath() const {
         const auto filename = fs::u8path(path_).filename().u8string();
         auto appearance_path = fs::u8path(path_).parent_path().append("").u8string();
         std::string current;
@@ -50,11 +50,11 @@ namespace plateau::udx {
         return appearance_path;
     }
 
-    bool GmlFileInfo::isValid() const {
+    bool GmlFile::isValid() const {
         return is_valid_;
     }
 
-    void GmlFileInfo::applyPath() {
+    void GmlFile::applyPath() {
         const auto filename = fs::u8path(path_).filename().u8string();
         std::vector<std::string> filename_parts;
         std::string current;
@@ -223,13 +223,13 @@ namespace plateau::udx {
         }
     } // fetch で使う無名関数
 
-    std::shared_ptr<GmlFileInfo> GmlFileInfo::fetch(const std::string& destination_root_path) const {
-        auto result = std::make_shared<GmlFileInfo>("");
+    std::shared_ptr<GmlFile> GmlFile::fetch(const std::string& destination_root_path) const {
+        auto result = std::make_shared<GmlFile>("");
         fetch(destination_root_path, *result);
         return result;
     }
 
-    void GmlFileInfo::fetch(const std::string& destination_root_path, GmlFileInfo& copied_gml_file) const {
+    void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
 
         const auto udx_path_len = getPath().rfind("udx") + 3;
         if (udx_path_len == std::string::npos) {

@@ -5,13 +5,13 @@ using PLATEAU.Udx;
 namespace PLATEAU.Test.Udx
 {
     [TestClass]
-    public class GmlFileInfoTest
+    public class GmlFileTest
     {
         [TestMethod]
         public void GetPath_Returns_Path()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            using var info = GmlFileInfo.Create(path);
+            using var info = GmlFile.Create(path);
             Assert.AreEqual(path, info.Path);
         }
 
@@ -19,14 +19,14 @@ namespace PLATEAU.Test.Udx
         public void FeatureType()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            using var info = GmlFileInfo.Create(path);
+            using var info = GmlFile.Create(path);
             Assert.AreEqual("bldg", info.FeatureType);
         }
         
         [TestMethod]
         public void DirNameToPackage_Returns_Gml_Package()
         {
-            using var gmlInfo = GmlFileInfo.Create("foobar/udx/bldg/53392546_bldg_6697_2_op.gml");
+            using var gmlInfo = GmlFile.Create("foobar/udx/bldg/53392546_bldg_6697_2_op.gml");
             Assert.AreEqual(PredefinedCityModelPackage.Building, gmlInfo.Package);
         }
         
@@ -38,7 +38,7 @@ namespace PLATEAU.Test.Udx
             var gmlArray = collection.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmlArray)
             {
-                GmlFileInfo.Create(gml).Fetch(testDir.FullName);
+                GmlFile.Create(gml).Fetch(testDir.FullName);
             }
 
             var shouldExists = new[]

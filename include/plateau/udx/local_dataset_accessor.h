@@ -79,7 +79,7 @@ namespace plateau::udx {
         /**
          * \brief Extent と Package で絞り込んだ GmlInfo の vector を返します。
          */
-        std::vector<GmlFileInfo> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
+        std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
 
         /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
@@ -118,7 +118,7 @@ namespace plateau::udx {
          * \param gml_files 取得結果の格納先
          */
         const std::string& getGmlFilePath(PredefinedCityModelPackage package, int index);
-        const GmlFileInfo& getGmlFileInfo(PredefinedCityModelPackage package, int index);
+        const GmlFile& getGmlFileInfo(PredefinedCityModelPackage package, int index);
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。
@@ -149,9 +149,9 @@ namespace plateau::udx {
 
     private:
         std::string udx_path_;
-        std::map<PredefinedCityModelPackage, std::vector<GmlFileInfo>> files_;
+        std::map<PredefinedCityModelPackage, std::vector<GmlFile>> files_;
         std::set<MeshCode> mesh_codes_;
-        void addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info);
+        void addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info);
         void setUdxPath(std::string udx_path);
     };
 }

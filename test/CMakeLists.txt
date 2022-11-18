@@ -31,7 +31,7 @@ add_executable(plateau_test
     "test_gltf_writer.cpp"
     "test_mesh_merger.cpp"
     "test_model.cpp"
-    "test_gml_file_info.cpp"
+    "test_gml_file.cpp"
     "test_lod_searcher.cpp"
     "test_dataset_accessor_p_invoke.cpp"
     )
