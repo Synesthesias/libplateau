@@ -22,4 +22,17 @@ namespace plateau::udx {
     int DatasetAccessorPInvoke::resultOfGetGmlFilesCount() const {
         return (int)result_of_get_gml_files_.size();
     }
+
+    void DatasetAccessorPInvoke::getMeshCodes() {
+        result_of_get_mesh_codes_ = accessor_->getMeshCodes();
+    }
+
+    MeshCode DatasetAccessorPInvoke::resultOfGetMeshCodes(int index) const {
+        if(index >= result_of_get_mesh_codes_.size()) throw std::out_of_range("index is out of range.");
+        return result_of_get_mesh_codes_.at(index);
+    }
+
+    int DatasetAccessorPInvoke::resultOfGetMeshCodesCount() const {
+        return (int)result_of_get_mesh_codes_.size();
+    }
 }

@@ -20,8 +20,13 @@ namespace plateau::udx{
         const GmlFileInfo* resultOfGetGmlFiles(int index) const;
         int resultOfGetGmlFilesCount() const;
 
+        void getMeshCodes();
+        MeshCode resultOfGetMeshCodes(int index) const;
+        int resultOfGetMeshCodesCount() const;
+
     private:
         std::shared_ptr<IDatasetAccessor> accessor_;
         std::vector<GmlFileInfo> result_of_get_gml_files_;
+        std::vector<MeshCode> result_of_get_mesh_codes_;
     };
 }

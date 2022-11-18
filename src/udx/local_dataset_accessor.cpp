@@ -220,16 +220,21 @@ namespace plateau::udx {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
-        if (!mesh_codes_.empty())
-            return mesh_codes_;
-
-        for (const auto& [_, files] : files_) {
-            for (const auto& file : files) {
-                mesh_codes_.insert(file.getMeshCode());
+    std::vector<MeshCode> LocalDatasetAccessor::getMeshCodes() {
+        if (mesh_codes_.empty()){
+            for (const auto& [_, files] : files_) {
+                for (const auto& file : files) {
+                    mesh_codes_.insert(file.getMeshCode());
+                }
             }
         }
-        return mesh_codes_;
+
+        // set を vector に変換します。
+        auto vector_mesh_codes = std::vector<MeshCode>();
+        for(const auto& mesh_code : mesh_codes_){
+            vector_mesh_codes.push_back(mesh_code);
+        }
+        return vector_mesh_codes;
     }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFileInfo& gml_file_info) {

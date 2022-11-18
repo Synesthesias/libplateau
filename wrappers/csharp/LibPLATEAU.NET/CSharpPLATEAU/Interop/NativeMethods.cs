@@ -1223,6 +1223,21 @@ namespace PLATEAU.Interop
             [In] IntPtr accessorPtr,
             out int outCount);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_get_mesh_codes(
+            [In] IntPtr accessorPtr);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes(
+            [In] IntPtr accessorPtr,
+            out MeshCode outMeshCode,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes_count(
+            [In] IntPtr accessorPtr,
+            out int outCount);
+
         // ***************
         //  local_dataset_accessor_c.cpp
         // ***************

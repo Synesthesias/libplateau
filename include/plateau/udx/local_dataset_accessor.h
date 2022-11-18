@@ -137,7 +137,7 @@ namespace plateau::udx {
         /**
          * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。
          */
-        std::set<MeshCode>& getMeshCodes() override;
+        std::vector<MeshCode> getMeshCodes() override;
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;

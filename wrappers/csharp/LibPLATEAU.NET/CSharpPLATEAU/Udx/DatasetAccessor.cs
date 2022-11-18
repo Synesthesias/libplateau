@@ -42,6 +42,26 @@ namespace PLATEAU.Udx
             return ret;
         }
 
+        public MeshCode[] MeshCodes
+        {
+            get
+            {
+                var result = NativeMethods.plateau_dataset_accessor_p_invoke_get_mesh_codes(Handle);
+                DLLUtil.CheckDllError(result);
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes_count);
+                var ret = new MeshCode[count];
+                for (int i = 0; i < count; i++)
+                {
+                    var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle, i,
+                        NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes);
+                    ret[i] = meshCode;
+                }
+
+                return ret;
+            }
+        }
+
         protected override void DisposeNative()
         {
             var result = NativeMethods.plateau_delete_dataset_accessor_p_invoke(Handle);

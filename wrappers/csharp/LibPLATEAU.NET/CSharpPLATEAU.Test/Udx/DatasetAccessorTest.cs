@@ -9,7 +9,7 @@ namespace PLATEAU.Test.Udx
     public class DatasetAccessorTest
     {
         [TestMethod]
-        public void GetGmlFiles()
+        public void TestGetGmlFiles()
         {
             var localAccessor = LocalDatasetAccessor.Find("data");
             // TODO localAccessor を直接渡せるようにする
@@ -21,6 +21,15 @@ namespace PLATEAU.Test.Udx
                 ),
                 PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
+        }
+
+        [TestMethod]
+        public void TestMeshCodesGetter()
+        {
+            var localAccessor = LocalDatasetAccessor.Find("data");
+            var accessor = DatasetAccessor.Create(localAccessor.Handle);
+            var meshCodes = accessor.MeshCodes;
+            Assert.AreEqual(1, meshCodes.Length);
         }
     }
 }
