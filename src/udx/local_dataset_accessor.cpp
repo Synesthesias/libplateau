@@ -189,7 +189,7 @@ namespace plateau::udx {
 
     int LocalDatasetAccessor::getGmlFileCount(PredefinedCityModelPackage package) {
         if (files_.find(package) == files_.end())
-            throw std::out_of_range("Key not found");
+            return 0;
 
         return (int)files_[package].size();
     }

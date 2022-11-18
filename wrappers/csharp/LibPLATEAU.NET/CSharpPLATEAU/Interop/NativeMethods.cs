@@ -299,6 +299,21 @@ namespace PLATEAU.Interop
             );
         }
 
+        public static GeoCoordinate operator *(GeoCoordinate geo, double scalar)
+        {
+            return new GeoCoordinate(
+                geo.Latitude * scalar,
+                geo.Longitude * scalar,
+                geo.Height * scalar
+            );
+        }
+
+        public static GeoCoordinate operator /(GeoCoordinate geo, double scalar)
+        {
+            if (Math.Abs(scalar) <= double.Epsilon) throw new DivideByZeroException();
+            return geo * (1.0 / scalar);
+        }
+
         /// <summary>
         /// 緯度、経度の値を2次元ベクトルとして見たときのベクトルの長さの2乗です。
         /// 高さは無視されます。
