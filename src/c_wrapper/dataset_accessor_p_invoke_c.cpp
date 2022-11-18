@@ -20,9 +20,9 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_dataset_accessor_p_invoke(
-            IDatasetAccessor* accessor
+            DatasetAccessorPInvoke* accessor_p_invoke
     ) {
-        delete accessor;
+        delete accessor_p_invoke;
         return APIResult::Success;
     }
 

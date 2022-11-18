@@ -3,4 +3,5 @@ target_sources(plateau PRIVATE
     "local_dataset_accessor.cpp"
     "mesh_code.cpp"
     "lod_searcher.cpp"
-    "dataset_accessor_p_invoke.cpp")
+    "dataset_accessor_p_invoke.cpp"
+    "dataset_source.cpp")

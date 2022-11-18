@@ -1306,6 +1306,24 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_udx_sub_folder_get_package(
             string dirName,
             out PredefinedCityModelPackage outPackage);
+        
+        // ***************
+        //  dataset_source_c.cpp
+        // ***************
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_source_local(
+            out IntPtr outDatasetSource,
+            [In] byte[] sourcePathUtf8);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_source(
+            [In] IntPtr datasetSourcePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_source_get_accessor(
+            [In] IntPtr datasetSourcePtr,
+            out IntPtr newDatasetAccessorPInvokePtr);
 
 
         // ***************

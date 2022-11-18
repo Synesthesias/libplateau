@@ -13,7 +13,7 @@ namespace PLATEAU.Test.Udx
         {
             var localAccessor = LocalDatasetAccessor.Find("data");
             // TODO localAccessor を直接渡せるようにする
-            var accessor = DatasetAccessor.Create(localAccessor.Handle);
+            using var accessor = DatasetAccessor.CreateByInnerPtr(localAccessor.Handle);
             var gmls = accessor.GetGmlFiles(
                 new Extent(
                     new GeoCoordinate(35.53, 139.77, -9999),
@@ -27,7 +27,7 @@ namespace PLATEAU.Test.Udx
         public void TestMeshCodesGetter()
         {
             var localAccessor = LocalDatasetAccessor.Find("data");
-            var accessor = DatasetAccessor.Create(localAccessor.Handle);
+            using var accessor = DatasetAccessor.CreateByInnerPtr(localAccessor.Handle);
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
         }
@@ -36,7 +36,7 @@ namespace PLATEAU.Test.Udx
         public void TestGetMaxLod()
         {
             var localAccessor = LocalDatasetAccessor.Find("data");
-            var accessor = DatasetAccessor.Create(localAccessor.Handle);
+            using var accessor = DatasetAccessor.CreateByInnerPtr(localAccessor.Handle);
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
             int maxLod = accessor.MaxLod(meshCodes[0], PredefinedCityModelPackage.Building);

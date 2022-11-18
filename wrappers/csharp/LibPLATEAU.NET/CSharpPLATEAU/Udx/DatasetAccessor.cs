@@ -11,7 +11,12 @@ namespace PLATEAU.Udx
         {
         }
 
-        public static DatasetAccessor Create(IntPtr innerAccessorPtr)
+        public static DatasetAccessor CreateBySelfPtr(IntPtr selfAccessorPtr)
+        {
+            return new DatasetAccessor(selfAccessorPtr);
+        }
+
+        public static DatasetAccessor CreateByInnerPtr(IntPtr innerAccessorPtr)
         {
             var result = NativeMethods.plateau_create_dataset_accessor_p_invoke(
                 innerAccessorPtr, out var selfAccessorPtr);
