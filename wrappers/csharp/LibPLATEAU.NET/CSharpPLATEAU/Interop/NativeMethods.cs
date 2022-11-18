@@ -346,6 +346,11 @@ namespace PLATEAU.Interop
          {
              return this.Max - this.Min;
          }
+
+         public static readonly Extent All =
+             new Extent(
+                 new GeoCoordinate(-90, -180, -9999),
+                 new GeoCoordinate(90, 180, 9999));
          
         public override string ToString()
         {
@@ -1354,6 +1359,11 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out IntPtr strPtr,
             out int strLength);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_get_mesh_code(
+            [In] IntPtr gmlFilePtr,
+            out MeshCode outMeshCode);
         
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_fetch(

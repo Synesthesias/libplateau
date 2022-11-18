@@ -22,6 +22,14 @@ namespace PLATEAU.Test.Udx
             using var info = GmlFile.Create(path);
             Assert.AreEqual("bldg", info.FeatureType);
         }
+
+        [TestMethod]
+        public void TestMeshCode()
+        {
+            string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
+            using var info = GmlFile.Create(path);
+            Assert.AreEqual("53392642", info.MeshCode.ToString());
+        }
         
         [TestMethod]
         public void DirNameToPackage_Returns_Gml_Package()
