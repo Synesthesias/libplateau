@@ -4,7 +4,7 @@
 
 namespace plateau::udx{
     /**
-     * \brief IDatasetAccessor を P/Invoke で扱うためのクラスです。
+     * \brief IDatasetAccessor を P/Invoke で扱うためのラッパークラスです。
      * vector を返す関数などはそのままだと P/Invoke で扱えないため、
      * 関数の戻り値を保持しておいて、インデックスで1つづつ P/Invoke でアクセスできるようにします。
      */
@@ -23,6 +23,8 @@ namespace plateau::udx{
         void getMeshCodes();
         MeshCode resultOfGetMeshCodes(int index) const;
         int resultOfGetMeshCodesCount() const;
+
+        int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package);
 
     private:
         std::shared_ptr<IDatasetAccessor> accessor_;

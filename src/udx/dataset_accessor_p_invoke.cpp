@@ -35,4 +35,8 @@ namespace plateau::udx {
     int DatasetAccessorPInvoke::resultOfGetMeshCodesCount() const {
         return (int)result_of_get_mesh_codes_.size();
     }
+
+    int DatasetAccessorPInvoke::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
+        return accessor_->getMaxLod(mesh_code, package);
+    }
 }

@@ -65,7 +65,7 @@ TEST_F(UdxTest, fetch_generates_files){
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
-//    const auto& test_gml_info = local_dataset_accessor.getGmlFileInfo(PredefinedCityModelPackage::Building, 0);
+//    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFile("../data/udx/bldg/53392642_bldg_6697_op2.gml");
     test_gml_info.fetch(temp_test_dir);
     // gmlファイルがコピー先に存在します。

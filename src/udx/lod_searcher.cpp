@@ -86,6 +86,16 @@ void LodFlag::unsetFlag(unsigned digit) {
     flags_ &= ~(1 << digit);
 }
 
+int LodFlag::getMax() const {
+    auto flag = flags_;
+    int i = -1;
+    while(flag > 0){
+        ++i;
+        flag >>= 1;
+    }
+    return i;
+}
+
 unsigned LodFlag::getFlag() const {
     return flags_;
 }

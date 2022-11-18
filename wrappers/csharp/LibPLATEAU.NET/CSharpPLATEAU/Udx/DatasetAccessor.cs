@@ -62,6 +62,19 @@ namespace PLATEAU.Udx
             }
         }
 
+        /// <summary>
+        /// ファイルに含まれる最大LODを検索します。
+        /// GMLファイルの全文を文字列検索するので時間がかかります。
+        /// 対応LODがなければ -1 を返します。
+        /// </summary>
+        public int MaxLod(MeshCode meshCode, PredefinedCityModelPackage package)
+        {
+            var result = NativeMethods.plateau_dataset_accessor_p_invoke_get_max_lod(
+                Handle, meshCode, package, out int maxLod);
+            DLLUtil.CheckDllError(result);
+            return maxLod;
+        }
+
         protected override void DisposeNative()
         {
             var result = NativeMethods.plateau_delete_dataset_accessor_p_invoke(Handle);

@@ -24,6 +24,9 @@ namespace plateau::udx {
         /// 下から n ビット目を0にします。
         void unsetFlag(unsigned digit);
         unsigned getFlag() const;
+        /// 立っているフラグのうちもっとも上位のものが何ビット目かを返します。
+        /// フラグがどれも0なら-1を返します。
+        int getMax() const;
         /// searchLodsInFile の実装の都合上、LODは1桁とします。
         static const int max_lod_ = 9;
 

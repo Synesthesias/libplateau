@@ -15,7 +15,7 @@ namespace plateau::udx {
         virtual std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) = 0;
         virtual std::vector<MeshCode> getMeshCodes() = 0;
 //        virtual DatasetMetadata getMetadata(MeshCode mesh_code) = 0;
-//        virtual int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) = 0;
+        virtual int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) = 0;
         virtual ~IDatasetAccessor() = default;
     };
 }

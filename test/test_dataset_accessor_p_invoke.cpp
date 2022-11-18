@@ -7,7 +7,7 @@ namespace plateau::udx{
 
     };
 
-    TEST_F(DatasetAccessorPInvokeTest, aaa){
+    TEST_F(DatasetAccessorPInvokeTest, get_gml_files_returns_valid_value){ // NOLINT
         auto local = LocalDatasetAccessor::find("../data");
         auto accessor = DatasetAccessorPInvoke(local);
         accessor.getGmlFiles(Extent(

@@ -7,6 +7,7 @@
 #include <set>
 #include <regex>
 #include "plateau/geometry/geo_reference.h"
+#include "plateau/udx/lod_searcher.h"
 
 namespace plateau::udx {
     namespace fs = std::filesystem;
@@ -98,9 +99,21 @@ namespace plateau::udx {
         auto count = filtered.getGmlFileCount(package);
         auto ret = std::vector<GmlFile>();
         for(int i=0; i<count; i++){
-            ret.push_back(filtered.getGmlFileInfo(package, i));
+            ret.push_back(filtered.getGmlFile(package, i));
         }
         return ret;
+    }
+
+    int LocalDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
+        auto mesh_code_filtered = filterByMeshCodes({mesh_code});
+        auto count = mesh_code_filtered->getGmlFileCount(package);
+        int max_lod = -1;
+        for(auto i=0; i<count; i++){
+            const auto& gml = mesh_code_filtered->getGmlFile(package, i);
+            auto lods = LodSearcher::searchLodsInFile(fs::u8path(gml.getPath()));
+            max_lod = std::max(max_lod, lods.getMax());
+        }
+        return max_lod;
     }
 
     std::shared_ptr<LocalDatasetAccessor> LocalDatasetAccessor::filter(const geometry::Extent& extent) const {
@@ -161,10 +174,10 @@ namespace plateau::udx {
     }
 
     const std::string& LocalDatasetAccessor::getGmlFilePath(PredefinedCityModelPackage package, int index) {
-        return getGmlFileInfo(package, index).getPath();
+        return getGmlFile(package, index).getPath();
     }
 
-    const GmlFile& LocalDatasetAccessor::getGmlFileInfo(PredefinedCityModelPackage package, int index) {
+    const GmlFile& LocalDatasetAccessor::getGmlFile(PredefinedCityModelPackage package, int index) {
         if (files_.find(package) == files_.end())
             throw std::out_of_range("Key not found");
 

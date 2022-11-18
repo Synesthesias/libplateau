@@ -82,6 +82,12 @@ namespace plateau::udx {
         std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
 
         /**
+         * 引数に該当するGMLファイルの中身を文字列検索し、最大LODを求めます。
+         * どのLODにも未対応であれば -1 を返します。
+         */
+        int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) override;
+
+        /**
          * \brief 座標範囲で都市モデルデータをフィルタリングします。
          * \param extent 座標範囲
          * \return フィルタリングされた都市モデルデータ
@@ -118,7 +124,7 @@ namespace plateau::udx {
          * \param gml_files 取得結果の格納先
          */
         const std::string& getGmlFilePath(PredefinedCityModelPackage package, int index);
-        const GmlFile& getGmlFileInfo(PredefinedCityModelPackage package, int index);
+        const GmlFile& getGmlFile(PredefinedCityModelPackage package, int index);
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。
