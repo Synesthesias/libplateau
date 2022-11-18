@@ -122,21 +122,21 @@ namespace plateau::udx {
         return result;
     }
 
-    void LocalDatasetAccessor::filter(const geometry::Extent& extent, LocalDatasetAccessor& collection) const {
-        std::vector<MeshCode> mesh_codes;
-        MeshCode::getThirdMeshes(extent, mesh_codes);
-        std::set<std::string> second_mesh_strings;
-
-        // 2次メッシュのリスト取得
-        for (const auto& mesh_code : mesh_codes) {
-            second_mesh_strings.insert(mesh_code.asSecond().get());
+    void LocalDatasetAccessor::filter(const geometry::Extent& extent_filter, LocalDatasetAccessor& collection) const {
+        collection.setUdxPath(udx_path_);
+        for(const auto& [package, files] : files_){
+            for(const auto& file : files){
+                auto extent = file.getMeshCode().getExtent();
+                if(
+                        extent_filter.contains(GeoCoordinate(extent.min.latitude, extent.min.longitude, 0)) ||
+                        extent_filter.contains(GeoCoordinate(extent.max.latitude, extent.max.longitude, 0)) ||
+                        extent_filter.contains(GeoCoordinate(extent.min.latitude, extent.max.longitude, 0)) ||
+                        extent_filter.contains(GeoCoordinate(extent.max.latitude, extent.min.longitude, 0))
+                        ){
+                    collection.addFile(package, file);
+                }
+            }
         }
-
-        for (const auto& second_mesh_string : second_mesh_strings) {
-            mesh_codes.emplace_back(second_mesh_string);
-        }
-
-        filterByMeshCodes(mesh_codes, collection);
     }
 
     void LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,

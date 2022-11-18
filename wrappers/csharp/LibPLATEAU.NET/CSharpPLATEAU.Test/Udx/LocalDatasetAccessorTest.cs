@@ -22,8 +22,8 @@ namespace PLATEAU.Test.Udx
         {
             var extent = new Extent
             {
-                Max = new GeoCoordinate(35.53725521, 139.77699279, 0),
-                Min = new GeoCoordinate(35.53725511, 139.77699239, 0)
+                Max = new GeoCoordinate(35.54, 139.78, 999),
+                Min = new GeoCoordinate(35.53, 139.77, -999)
             };
             var collection = LocalDatasetAccessor.Find("data");
             var filteredCollection = collection.Filter(extent);
