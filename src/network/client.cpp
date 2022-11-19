@@ -19,6 +19,7 @@ namespace plateau::network {
 
     std::vector<DatasetMetadataGroup> Client::getMetadata() {
         httplib::Client cli(server_url_);
+        cli.enable_server_certificate_verification(false);
         auto res = cli.Get("/api/sdk/data");
 
         std::vector<DatasetMetadataGroup> dataset_meta_data_group_vec;
@@ -53,6 +54,7 @@ namespace plateau::network {
         auto mesh_code_ptr = std::make_shared<std::vector<plateau::udx::MeshCode>>();
         
         httplib::Client cli(server_url_);
+        cli.enable_server_certificate_verification(false);
         auto res = cli.Get("/api/sdk/codes/"+id);
 
         if (res && res->status == 200) {
@@ -71,6 +73,7 @@ namespace plateau::network {
         auto file_urls = std::make_shared<std::map<std::string, std::vector<std::string>>>();
         
         httplib::Client cli(server_url_);
+        cli.enable_server_certificate_verification(false);
         std::string code_str = mesh_codes[0].get();
         for(int i = 1; i < mesh_codes.size(); i++) code_str = code_str + "," + mesh_codes[i].get();
         auto res = cli.Get("/api/sdk/files?codes=" + code_str);
@@ -97,6 +100,7 @@ namespace plateau::network {
         }
         
         httplib::Client cli(server_url_);
+        cli.enable_server_certificate_verification(false);
         auto res = cli.Get(url.substr(url.substr(8).find("/") + 8));
         if (res && res->status == 200) {
             ofs << res->body;
