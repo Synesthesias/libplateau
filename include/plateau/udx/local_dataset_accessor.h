@@ -117,7 +117,7 @@ namespace plateau::udx {
         /**
          * \brief 存在する都市モデルパッケージをマスクとして取得します。
          */
-        PredefinedCityModelPackage getPackages();
+        PredefinedCityModelPackage getPackages() override;
 
         /**
          * \brief packageに該当するCityGMLファイルを取得します。

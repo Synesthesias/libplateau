@@ -78,9 +78,9 @@ namespace PLATEAU.Test.Geom
                 new PlateauVector3d(0, 0, 0), 2.0f, CoordinateSystem.ENU, 9);
         }
 
-        private static void CheckUnproject(PlateauVector3d point, GeoCoordinate targetLatLon, PlateauVector3d referencePoint, float unit_scale, CoordinateSystem coordinateSystem, int zoneID)
+        private static void CheckUnproject(PlateauVector3d point, GeoCoordinate targetLatLon, PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID)
         {
-            using var geoReference = new GeoReference(referencePoint, unit_scale, coordinateSystem, zoneID);
+            using var geoReference = new GeoReference(referencePoint, unitScale, coordinateSystem, zoneID);
 
             var latLon = geoReference.Unproject(point);
             Assert.IsTrue(Math.Abs(latLon.Latitude - targetLatLon.Latitude) < 0.00000001);//およそ1mm相当の誤差以内か
@@ -110,16 +110,16 @@ namespace PLATEAU.Test.Geom
             Assert.AreEqual(CoordinateSystem.ENU, geoReference.CoordinateSystem);
         }
 
-        private static void CheckProjectUnproject(PlateauVector3d reference_point, float unit_scale, CoordinateSystem coordinate_system, int zone_id)
+        private static void CheckProjectUnproject(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID)
         {
-            using var geoReference = new GeoReference(reference_point, unit_scale, coordinate_system, zone_id);
+            using var geoReference = new GeoReference(referencePoint, unitScale, coordinateSystem, zoneID);
             var latitude = 35.62439457074015;
             var longitude = 139.74256342432295;
             var xyz = geoReference.Project(new GeoCoordinate(latitude, longitude, 0.0));
-            var lat_lon = geoReference.Unproject(xyz);
-            Console.WriteLine($"lat diff = {lat_lon.Latitude - latitude}, lon diff = {lat_lon.Longitude - longitude}");
-            Assert.IsTrue(Math.Abs(lat_lon.Latitude - latitude) < 0.00000001);//およそ1mm相当の誤差以内か
-            Assert.IsTrue(Math.Abs(lat_lon.Longitude - longitude) < 0.00000001);//およそ1mm相当の誤差以内か
+            var lat = geoReference.Unproject(xyz);
+            Console.WriteLine($"lat diff = {lat.Latitude - latitude}, lon diff = {lat.Longitude - longitude}");
+            Assert.IsTrue(Math.Abs(lat.Latitude - latitude) < 0.00000001);//およそ1mm相当の誤差以内か
+            Assert.IsTrue(Math.Abs(lat.Longitude - longitude) < 0.00000001);//およそ1mm相当の誤差以内か
         }
     }
 }

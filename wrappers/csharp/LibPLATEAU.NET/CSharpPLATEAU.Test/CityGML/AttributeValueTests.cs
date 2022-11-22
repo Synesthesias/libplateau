@@ -13,8 +13,8 @@ namespace PLATEAU.Test.CityGML
         public AttributeValueTests()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var city_object_ = cityModel.RootCityObjects[0];
-            this.attrMap = city_object_.AttributesMap;
+            var cityObject = cityModel.RootCityObjects[0];
+            this.attrMap = cityObject.AttributesMap;
         }
 
         [DataTestMethod]

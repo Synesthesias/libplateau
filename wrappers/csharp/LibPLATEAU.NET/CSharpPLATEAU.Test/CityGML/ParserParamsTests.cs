@@ -9,7 +9,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void When_IgnoreGeometries_Is_False_Then_Geometry_Exists()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, true, false);
+            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS);
             var geom = allCityObjects.SelectMany(co => co.Geometries);
             Assert.IsTrue(geom.Any());

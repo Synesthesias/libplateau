@@ -12,8 +12,8 @@ namespace PLATEAU.Test.CityGML
         public AddressTests()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var city_object_ = cityModel.RootCityObjects[0];
-            this.address = city_object_.Address;
+            var cityObject = cityModel.RootCityObjects[0];
+            this.address = cityObject.Address;
         }
 
         [TestMethod]

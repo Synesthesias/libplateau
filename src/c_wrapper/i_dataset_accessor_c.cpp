@@ -35,4 +35,9 @@ extern "C" {
                    int,
                    handle->getMaxLod(mesh_code, package),
                    ,MeshCode mesh_code, PredefinedCityModelPackage package)
+
+    DLL_VALUE_FUNC(plateau_i_dataset_accessor_get_packages,
+                  IDatasetAccessor,
+                  PredefinedCityModelPackage,
+                  handle->getPackages())
 }

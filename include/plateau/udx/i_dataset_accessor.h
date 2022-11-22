@@ -20,6 +20,9 @@ namespace plateau::udx {
         /// 上記メソッドのP/Invoke版です。
         virtual void getMeshCodes(std::vector<MeshCode>& mesh_code) = 0;
 
+        /// 含まれるパッケージ種をフラグで返します。
+        virtual PredefinedCityModelPackage getPackages() = 0;
+
 //        virtual DatasetMetadata getMetadata(MeshCode mesh_code) = 0;
         virtual int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) = 0;
         virtual ~IDatasetAccessor() = default;

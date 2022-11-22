@@ -15,10 +15,10 @@ namespace PLATEAU.Test.CityGML
         public AttributesMapTests()
         {
             var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var city_object_ = cityModel.RootCityObjects
+            var cityObject = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .First(co => co.ID == "BLD_ae7f1207-dd09-45bc-8881-40533f3700bb");
-            this.attrMap = city_object_.AttributesMap;
+            this.attrMap = cityObject.AttributesMap;
         }
         
         [TestMethod]
