@@ -1,0 +1,5 @@
+﻿project(https_mock_test)
+add_executable (https_mock_test "https_mock_test.cpp")
+target_link_libraries(https_mock_test PRIVATE plateau citygml)
+include_directories("${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
+set_target_properties(https_mock_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${LIBPLATEAU_BINARY_DIR})

@@ -58,6 +58,7 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(-fPIC COMPILER_SUPPORTS_PIC)
 if(COMPILER_SUPPORTS_PIC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 endif()
 
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
@@ -94,12 +95,16 @@ set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTF
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
+## openssl
+add_subdirectory("3rdparty/openssl-cmake")
+
 # libplateau をビルドします。
 add_subdirectory("src")
 ## Examples
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 add_subdirectory("examples/export_gltf")
+add_subdirectory("examples/https_mock_test")
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)

@@ -33,7 +33,7 @@ add_executable(plateau_test
     "test_model.cpp"
     "test_gml_file_info.cpp"
     "test_lod_searcher.cpp"
-    )
+    "test_network_client.cpp")
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
