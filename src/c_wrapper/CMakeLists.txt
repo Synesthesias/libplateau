@@ -42,8 +42,7 @@ add_library(c_wrapper OBJECT
   "vector_tile_downloader_c.cpp"
   "tile_projection_c.cpp"
   "lod_searcher_c.cpp"
-  "dataset_accessor_p_invoke_c.cpp"
-  "dataset_source_c.cpp"
+        "dataset_source_c.cpp"
   "vector_c.cpp"
   "i_dataset_accessor_c.cpp"
   )

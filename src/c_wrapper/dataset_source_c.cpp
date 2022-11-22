@@ -1,6 +1,5 @@
 #include "libplateau_c.h"
 #include <plateau/udx/dataset_source.h>
-#include <plateau/udx/dataset_accessor_p_invoke.h>
 
 extern "C"{
     using namespace libplateau;
