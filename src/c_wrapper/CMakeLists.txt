@@ -44,6 +44,7 @@ add_library(c_wrapper OBJECT
   "lod_searcher_c.cpp"
   "dataset_accessor_p_invoke_c.cpp"
   "dataset_source_c.cpp"
+  "vector_c.cpp"
   )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

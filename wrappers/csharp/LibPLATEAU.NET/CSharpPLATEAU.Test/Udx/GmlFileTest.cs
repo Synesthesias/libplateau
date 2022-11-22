@@ -11,7 +11,7 @@ namespace PLATEAU.Test.Udx
         public void GetPath_Returns_Path()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            using var info = GmlFile.Create(path);
+            /*using*/ var info = GmlFile.Create(path);
             Assert.AreEqual(path, info.Path);
         }
 
@@ -19,7 +19,7 @@ namespace PLATEAU.Test.Udx
         public void FeatureType()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            using var info = GmlFile.Create(path);
+            /*using */var info = GmlFile.Create(path);
             Assert.AreEqual("bldg", info.FeatureType);
         }
 
@@ -27,14 +27,14 @@ namespace PLATEAU.Test.Udx
         public void TestMeshCode()
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
-            using var info = GmlFile.Create(path);
+            /*using */var info = GmlFile.Create(path);
             Assert.AreEqual("53392642", info.MeshCode.ToString());
         }
         
         [TestMethod]
         public void DirNameToPackage_Returns_Gml_Package()
         {
-            using var gmlInfo = GmlFile.Create("foobar/udx/bldg/53392546_bldg_6697_2_op.gml");
+            /*using */var gmlInfo = GmlFile.Create("foobar/udx/bldg/53392546_bldg_6697_2_op.gml");
             Assert.AreEqual(PredefinedCityModelPackage.Building, gmlInfo.Package);
         }
         

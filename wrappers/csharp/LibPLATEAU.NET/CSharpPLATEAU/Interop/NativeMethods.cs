@@ -1554,5 +1554,27 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_lod_searcher_search_lods_in_file(
             [In] byte[] filePathUtf8,
             out uint outLodFlags);
+        
+        // ***************
+        //  vector_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_gml_file(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_gml_file(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_gml_file_get_gml_file(
+            [In] IntPtr vectorPtr,
+            out IntPtr outGmlFilePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_gml_file_count(
+            [In] IntPtr handle,
+            out int outCount);
     }
 }
