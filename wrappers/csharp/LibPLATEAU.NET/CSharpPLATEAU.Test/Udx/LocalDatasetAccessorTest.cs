@@ -26,25 +26,33 @@ namespace PLATEAU.Test.Udx
                 Max = new GeoCoordinate(35.54, 139.78, 999),
                 Min = new GeoCoordinate(35.53, 139.77, -999)
             };
-            var accessor = LocalDatasetAccessor.Find("data");
-            var filteredCollection = accessor.Filter(extent);
-            Assert.AreEqual(1, filteredCollection.MeshCodes.Count);
-            Assert.AreEqual("53392642", filteredCollection.MeshCodes[0].ToString());
+            using var datasetSource = DatasetSource.CreateLocal("data");
+            var accessor = datasetSource.Accessor;
+            var gmls = accessor.GetGmlFiles(extent, PredefinedCityModelPackage.Building);
+            Assert.AreEqual(1, gmls.Length);
+            Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
         }
 
         [TestMethod]
         public void Packages_Getter_Returns_All_Packages()
         {
-            var collection = LocalDatasetAccessor.Find("data");
+            using var datasetSource = DatasetSource.CreateLocal("data");
+            var accessor = datasetSource.Accessor;
             var expected = PredefinedCityModelPackage.Building;
-            Assert.AreEqual(expected, collection.Packages);
+            Assert.AreEqual(expected, accessor.Packages);
         }
 
         [TestMethod]
         public void Get_Gml_Files_Returns_All_Files()
         {
-            var collection = LocalDatasetAccessor.Find("data");
-            Assert.AreEqual(Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"), Path.GetFullPath(collection.GetGmlFiles(PredefinedCityModelPackage.Building)[0]));
+            using var datasetSource = DatasetSource.CreateLocal("data");
+            var accessor = datasetSource.Accessor;
+            Assert.AreEqual(
+                Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"),
+                Path.GetFullPath(
+                    accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building)
+                        .At(0).Path)
+            );
         }
 
         [TestMethod]
