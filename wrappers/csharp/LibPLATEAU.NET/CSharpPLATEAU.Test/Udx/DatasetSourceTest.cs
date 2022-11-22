@@ -13,7 +13,17 @@ namespace PLATEAU.Test.Udx
         {
             using var source = DatasetSource.CreateLocal("data");
             var accessor = source.Accessor;
-            Assert.AreEqual(accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building).Get(0).MeshCode.ToString(), "53392642");
+            Assert.AreEqual(accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
+        }
+
+        [TestMethod]
+        public void Accessor_From_Local_Source_Can_Search_MaxLod()
+        {
+            using var source = DatasetSource.CreateLocal("data");
+            var accessor = source.Accessor;
+            var meshCode = accessor.MeshCodes.At(0);
+            var package = PredefinedCityModelPackage.Building;
+            Assert.AreEqual(2, accessor.GetMaxLod(meshCode, package));
         }
     }
 }

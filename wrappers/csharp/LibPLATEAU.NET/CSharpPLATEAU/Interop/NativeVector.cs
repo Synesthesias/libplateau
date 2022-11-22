@@ -16,7 +16,7 @@ namespace PLATEAU.Interop
             return new NativeVectorGmlFile(ptr);
         }
 
-        public GmlFile Get(int index)
+        public GmlFile At(int index)
         {
             ThrowIfDisposed();
             var gmlFilePtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
@@ -56,7 +56,7 @@ namespace PLATEAU.Interop
             return new NativeVectorMeshCode(ptr);
         }
 
-        public MeshCode Get(int index)
+        public MeshCode At(int index)
         {
             ThrowIfDisposed();
             var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle, index,

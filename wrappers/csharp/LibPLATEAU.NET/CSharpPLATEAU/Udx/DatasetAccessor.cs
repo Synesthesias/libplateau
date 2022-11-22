@@ -3,6 +3,12 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Udx
 {
+    /// <summary>
+    /// GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。
+    /// C++側では、IDatasetAccessorは LocalDatasetAccessor と ServerDatasetAccessor の
+    /// 基底クラスになっています。
+    /// このクラスは IDatasetAccessor のポインタを保持します。
+    /// </summary>
     public class DatasetAccessor
     {
         public IntPtr Handle { get; private set; }
@@ -31,6 +37,14 @@ namespace PLATEAU.Udx
                 DLLUtil.CheckDllError(result);
                 return meshCodes;
             }
+        }
+
+        public int GetMaxLod(MeshCode meshCode, PredefinedCityModelPackage package)
+        {
+            var result = NativeMethods.plateau_i_dataset_accessor_get_max_lod(
+                Handle, out int maxLod, meshCode, package);
+            DLLUtil.CheckDllError(result);
+            return maxLod;
         }
 
         

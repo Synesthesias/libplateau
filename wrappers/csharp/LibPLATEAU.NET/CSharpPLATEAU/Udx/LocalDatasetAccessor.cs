@@ -10,6 +10,7 @@ namespace PLATEAU.Udx
     /// PLATEAUのデータファイルから、GMLファイル群を検索し、結果を保持します。
     /// 条件によりGMLファイルを絞り込む機能と、GMLと関連ファイルをコピーする機能があります。
     /// </summary>
+    [Obsolete("C++側の基底クラスDatasetAccessor に移行する")]
     public class LocalDatasetAccessor// : IDisposable
     {
         public IntPtr Handle { get; private set; }
