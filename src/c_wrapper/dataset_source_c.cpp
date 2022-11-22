@@ -30,12 +30,10 @@ extern "C"{
      */
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_source_get_accessor(
             DatasetSource* dataset_source,
-            DatasetAccessorPInvoke** out_dataset_accessor_p_invoke
+            IDatasetAccessor** out_dataset_accessor
     ){
         API_TRY{
-            auto accessor = dataset_source->getAccessor();
-            auto accessor_p_invoke = new DatasetAccessorPInvoke(accessor);
-            *out_dataset_accessor_p_invoke = accessor_p_invoke;
+            *out_dataset_accessor = dataset_source->getAccessor().get();
             return APIResult::Success;
         }API_CATCH;
         return APIResult::ErrorUnknown;

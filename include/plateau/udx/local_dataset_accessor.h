@@ -80,6 +80,7 @@ namespace plateau::udx {
          * \brief Extent と Package で絞り込んだ GmlInfo の vector を返します。
          */
         std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
+        void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package, std::vector<GmlFile>& out_gml_files) override;
 
         /**
          * 引数に該当するGMLファイルの中身を文字列検索し、最大LODを求めます。

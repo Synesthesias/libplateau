@@ -1215,8 +1215,19 @@ namespace PLATEAU.Interop
             [In, Out] ref Extent outExtent);
         
         // ***************
+        //  i_dataset_accessor_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_gml_files(
+            [In] IntPtr accessorPtr,
+            Extent extent,
+            PredefinedCityModelPackage package,
+            [In] IntPtr refVectorGmlFilePtr);
+        
+        // ***************
         //  dataset_accessor_p_invoke_c.cpp
         // ***************
+        // TODO あとで消す
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_dataset_accessor_p_invoke(
             [In] IntPtr innerAccessorPtr,
@@ -1345,7 +1356,7 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_source_get_accessor(
             [In] IntPtr datasetSourcePtr,
-            out IntPtr newDatasetAccessorPInvokePtr);
+            out IntPtr accessorPtr);
 
 
         // ***************

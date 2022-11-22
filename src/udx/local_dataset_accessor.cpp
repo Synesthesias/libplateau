@@ -104,6 +104,10 @@ namespace plateau::udx {
         return ret;
     }
 
+    void LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package, std::vector<GmlFile>& gml_files){
+        gml_files = getGmlFiles(extent, package);
+    }
+
     int LocalDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
         auto mesh_code_filtered = filterByMeshCodes({mesh_code});
         auto count = mesh_code_filtered->getGmlFileCount(package);
