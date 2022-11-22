@@ -22,15 +22,15 @@ namespace PLATEAU.Test.Udx
             Assert.AreEqual(1, gmls.Length);
         }
 
-        // [TestMethod]
-        // public void TestMeshCodesGetter()
-        // {
-        //     var localAccessor = LocalDatasetAccessor.Find("data");
-        //     using var accessor = DatasetAccessorPInvoke.CreateByInnerPtr(localAccessor.Handle);
-        //     var meshCodes = accessor.MeshCodes;
-        //     Assert.AreEqual(1, meshCodes.Length);
-        // }
-        //
+        [TestMethod]
+        public void TestMeshCodesGetter()
+        {
+            using var datasetSource = DatasetSource.CreateLocal("data");
+            var accessor = datasetSource.Accessor;
+            var meshCodes = accessor.MeshCodes;
+            Assert.AreEqual(1, meshCodes.Length);
+        }
+        // TODO
         // [TestMethod]
         // public void TestGetMaxLod()
         // {

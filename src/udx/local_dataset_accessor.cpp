@@ -253,6 +253,9 @@ namespace plateau::udx {
         }
         return vector_mesh_codes;
     }
+    void LocalDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
+        mesh_codes = getMeshCodes();
+    }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
         if (files_.count(sub_folder) <= 0) {

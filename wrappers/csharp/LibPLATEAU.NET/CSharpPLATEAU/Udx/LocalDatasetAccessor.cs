@@ -24,8 +24,7 @@ namespace PLATEAU.Udx
                 if (this.meshCodes != null)
                     return Array.AsReadOnly(this.meshCodes);
 
-                int count = 0;
-                var result = NativeMethods.plateau_local_dataset_accessor_get_mesh_code_count(Handle, ref count);
+                var result = NativeMethods.plateau_local_dataset_accessor_get_mesh_code_count(Handle, out int count);
                 DLLUtil.CheckDllError(result);
                 this.meshCodes = new MeshCode[count];
                 result = NativeMethods.plateau_local_dataset_accessor_get_mesh_codes(Handle, this.meshCodes, count);

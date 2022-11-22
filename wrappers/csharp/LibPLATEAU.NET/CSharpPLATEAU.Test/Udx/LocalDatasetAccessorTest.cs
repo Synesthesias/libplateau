@@ -13,8 +13,9 @@ namespace PLATEAU.Test.Udx
         [TestMethod]
         public void Can_Get_All_Mesh_Codes()
         {
-            var collection = LocalDatasetAccessor.Find("data");
-            Assert.AreEqual(1, collection.MeshCodes.Count);
+            var source = DatasetSource.CreateLocal("data");
+            var accessor = source.Accessor;
+            Assert.AreEqual(1, accessor.MeshCodes.Length);
         }
 
         [TestMethod]
@@ -25,8 +26,8 @@ namespace PLATEAU.Test.Udx
                 Max = new GeoCoordinate(35.54, 139.78, 999),
                 Min = new GeoCoordinate(35.53, 139.77, -999)
             };
-            var collection = LocalDatasetAccessor.Find("data");
-            var filteredCollection = collection.Filter(extent);
+            var accessor = LocalDatasetAccessor.Find("data");
+            var filteredCollection = accessor.Filter(extent);
             Assert.AreEqual(1, filteredCollection.MeshCodes.Count);
             Assert.AreEqual("53392642", filteredCollection.MeshCodes[0].ToString());
         }

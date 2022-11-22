@@ -18,4 +18,15 @@ extern "C" {
         }API_CATCH
         return APIResult::ErrorUnknown;
     }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_i_dataset_accessor_get_mesh_codes(
+            IDatasetAccessor* accessor,
+            std::vector<MeshCode>* out_mesh_codes
+            ){
+        API_TRY{
+            accessor->getMeshCodes(*out_mesh_codes);
+            return APIResult::Success;
+        }API_CATCH
+        return APIResult::ErrorUnknown;
+    }
 }

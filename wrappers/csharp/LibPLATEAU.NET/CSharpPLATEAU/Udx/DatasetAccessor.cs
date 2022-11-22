@@ -21,6 +21,18 @@ namespace PLATEAU.Udx
             return gmlFiles;
         }
 
+        public NativeVectorMeshCode MeshCodes
+        {
+            get
+            {
+                var meshCodes = NativeVectorMeshCode.Create();
+                var result = NativeMethods.plateau_i_dataset_accessor_get_mesh_codes(
+                    Handle, meshCodes.Handle);
+                DLLUtil.CheckDllError(result);
+                return meshCodes;
+            }
+        }
+
         
     }
 }

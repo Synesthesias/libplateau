@@ -1223,6 +1223,11 @@ namespace PLATEAU.Interop
             Extent extent,
             PredefinedCityModelPackage package,
             [In] IntPtr refVectorGmlFilePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_get_mesh_codes(
+            [In] IntPtr handle,
+            [In,Out] IntPtr refVectorMeshCodePtr);
         
         // ***************
         //  dataset_accessor_p_invoke_c.cpp
@@ -1311,7 +1316,7 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_local_dataset_accessor_get_mesh_code_count(
-            [In] IntPtr handle, [In, Out] ref int count);
+            [In] IntPtr handle, out int count);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_local_dataset_accessor_get_mesh_codes(
@@ -1578,13 +1583,32 @@ namespace PLATEAU.Interop
             [In] IntPtr vectorPtr);
 
         [DllImport(DllName)]
-        internal static extern APIResult plateau_vector_gml_file_get_gml_file(
+        internal static extern APIResult plateau_vector_gml_file_get_pointer(
             [In] IntPtr vectorPtr,
             out IntPtr outGmlFilePtr,
             int index);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_vector_gml_file_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_mesh_code(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_mesh_code(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_get_value(
+            [In] IntPtr vectorPtr,
+            out MeshCode outMeshCode,
+            int index);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_count(
             [In] IntPtr handle,
             out int outCount);
     }
