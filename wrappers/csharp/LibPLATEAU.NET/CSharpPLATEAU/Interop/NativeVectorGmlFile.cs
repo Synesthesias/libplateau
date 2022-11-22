@@ -18,9 +18,21 @@ namespace PLATEAU.Interop
 
         public GmlFile Get(int index)
         {
+            ThrowIfDisposed();
             var gmlFilePtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_vector_gml_file_get_gml_file);
             return new GmlFile(gmlFilePtr);
+        }
+
+        public int Length
+        {
+            get
+            {
+                ThrowIfDisposed();
+                int count = DLLUtil.GetNativeValue<int>(Handle,
+                    NativeMethods.plateau_vector_gml_file_count);
+                return count;
+            }
         }
 
 
