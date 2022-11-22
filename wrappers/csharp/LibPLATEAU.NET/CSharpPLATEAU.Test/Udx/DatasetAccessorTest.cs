@@ -29,17 +29,17 @@ namespace PLATEAU.Test.Udx
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
         }
-        // TODO
-        // [TestMethod]
-        // public void TestGetMaxLod()
-        // {
-        //     var localAccessor = LocalDatasetAccessor.Find("data");
-        //     using var accessor = DatasetAccessorPInvoke.CreateByInnerPtr(localAccessor.Handle);
-        //     var meshCodes = accessor.MeshCodes;
-        //     Assert.AreEqual(1, meshCodes.Length);
-        //     int maxLod = accessor.MaxLod(meshCodes[0], PredefinedCityModelPackage.Building);
-        //     Assert.AreEqual(2, maxLod);
-        // }
+        
+        [TestMethod]
+        public void TestGetMaxLod()
+        {
+            using var datasetSource = DatasetSource.CreateLocal("data");
+            var accessor = datasetSource.Accessor;
+            var meshCodes = accessor.MeshCodes;
+            Assert.AreEqual(1, meshCodes.Length);
+            int maxLod = accessor.GetMaxLod(meshCodes.At(0), PredefinedCityModelPackage.Building);
+            Assert.AreEqual(2, maxLod);
+        }
         
     }
 }

@@ -66,5 +66,4 @@ extern "C" {
         } API_CATCH;
         return APIResult::ErrorUnknown;
     }
-
 }

@@ -1,7 +1,7 @@
 #include "libplateau_c.h"
 #include <plateau/udx/dataset_source.h>
 
-extern "C"{
+extern "C" {
     using namespace libplateau;
     using namespace plateau::udx;
     namespace fs = std::filesystem;
@@ -9,17 +9,18 @@ extern "C"{
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_dataset_source_local(
             DatasetSource** out_dataset_source,
             const char* const source_path_utf8
-            ){
+    ) {
         API_TRY{
-            *out_dataset_source = new DatasetSource(fs::u8path(source_path_utf8));
-            return APIResult::Success;
-        }API_CATCH;
+                *out_dataset_source = new DatasetSource(fs::u8path(source_path_utf8));
+                return APIResult::Success;
+        }
+        API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_dataset_source(
             DatasetSource* dataset_source
-            ){
+    ) {
         delete dataset_source;
         return APIResult::Success;
     }
@@ -30,11 +31,12 @@ extern "C"{
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_source_get_accessor(
             DatasetSource* dataset_source,
             IDatasetAccessor** out_dataset_accessor
-    ){
+    ) {
         API_TRY{
-            *out_dataset_accessor = dataset_source->getAccessor().get();
-            return APIResult::Success;
-        }API_CATCH;
+                *out_dataset_accessor = dataset_source->getAccessor().get();
+                return APIResult::Success;
+        }
+        API_CATCH;
         return APIResult::ErrorUnknown;
     }
 }

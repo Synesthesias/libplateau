@@ -1239,60 +1239,6 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_i_dataset_accessor_get_packages(
             [In] IntPtr accessorPtr,
             out PredefinedCityModelPackage outPackageFlags);
-        
-        // ***************
-        //  dataset_accessor_p_invoke_c.cpp
-        // ***************
-        // TODO あとで消す
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_create_dataset_accessor_p_invoke(
-        //     [In] IntPtr innerAccessorPtr,
-        //     out IntPtr outSelfAccessorPtr);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_delete_dataset_accessor_p_invoke(
-        //     [In] IntPtr accessorPtr);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_gml_files(
-        //     [In] IntPtr accessorPtr,
-        //     Extent extent,
-        //     PredefinedCityModelPackage package);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
-        //     [In] IntPtr accessorPtr,
-        //     out IntPtr outGmlFileInfoPtr,
-        //     PredefinedCityModelPackage package,
-        //     int index);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
-        //     [In] IntPtr accessorPtr,
-        //     out int outCount,
-        //     PredefinedCityModelPackage package);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_mesh_codes(
-        //     [In] IntPtr accessorPtr);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes(
-        //     [In] IntPtr accessorPtr,
-        //     out MeshCode outMeshCode,
-        //     int index);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_mesh_codes_count(
-        //     [In] IntPtr accessorPtr,
-        //     out int outCount);
-        //
-        // [DllImport(DllName)]
-        // internal static extern APIResult plateau_dataset_accessor_p_invoke_get_max_lod(
-        //     [In] IntPtr accessorPtr,
-        //     MeshCode meshCode,
-        //     PredefinedCityModelPackage package,
-        //     out int outMaxLod);
 
         // ***************
         //  local_dataset_accessor_c.cpp

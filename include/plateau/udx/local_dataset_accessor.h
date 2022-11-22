@@ -10,7 +10,7 @@ namespace plateau::udx {
     class LIBPLATEAU_EXPORT UdxSubFolder {
     public:
         UdxSubFolder(std::string name)
-            : name_(std::move(name)) {
+                : name_(std::move(name)) {
         }
 
         //! 建築物、建築物部分、建築物付属物及びこれらの境界面
@@ -45,7 +45,7 @@ namespace plateau::udx {
             return name_;
         }
 
-        operator std::string& () {
+        operator std::string&() {
             return name_;
         }
 
@@ -58,7 +58,7 @@ namespace plateau::udx {
     };
 
     /**
-     * \brief PLATEAUの3D都市モデルデータ製品へのアクセスを提供します。
+     * \brief ローカルPCに存在するPLATEAUの3D都市モデルデータ製品へのアクセスを提供します。
      */
     class LIBPLATEAU_EXPORT LocalDatasetAccessor : public IDatasetAccessor {
     public:
@@ -80,7 +80,8 @@ namespace plateau::udx {
          * \brief Extent と Package で絞り込んだ GmlInfo の vector を返します。
          */
         std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
-        void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package, std::vector<GmlFile>& out_gml_files) override;
+        void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
+                         std::vector<GmlFile>& out_gml_files) override;
 
         /**
          * 引数に該当するGMLファイルの中身を文字列検索し、最大LODを求めます。
@@ -113,7 +114,7 @@ namespace plateau::udx {
          * \brief 上の filterByMeshCodes 関数について、shared_ptr で返す版です。
          */
         std::shared_ptr<LocalDatasetAccessor> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const;
-        
+
         /**
          * \brief 存在する都市モデルパッケージをマスクとして取得します。
          */

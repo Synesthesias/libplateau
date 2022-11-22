@@ -5,6 +5,9 @@
 
 namespace plateau::udx {
 
+    /**
+     * \brief GMLファイルに関する情報を保持するクラスです。
+     */
     class LIBPLATEAU_EXPORT GmlFile {
     public:
         explicit GmlFile(const std::string& path);

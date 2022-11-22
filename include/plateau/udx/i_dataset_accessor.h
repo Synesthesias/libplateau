@@ -3,19 +3,22 @@
 #include <libplateau_api.h>
 #include <plateau/udx/gml_file.h>
 #include <plateau/udx/city_model_package.h>
-//#include <plateau/udx/mesh_code.h>
-//#include <plateau/geometry/geo_coordinate.h>
-//#include "plateau/geometry/geo_reference.h"
 #include <set>
 
 namespace plateau::udx {
     class LIBPLATEAU_EXPORT IDatasetAccessor {
     public:
-        // TODO
+        /**
+         * \brief GMLファイル群のうち、範囲が extent の内部であり、パッケージ種が package であるものを vector で返します。
+         */
         virtual std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) = 0;
         /// 上記メソッドのP/Invoke版です。
-        virtual void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package, std::vector<GmlFile>& out_vector) = 0;
+        virtual void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
+                                 std::vector<GmlFile>& out_vector) = 0;
 
+        /**
+         * \brief 利用可能な MeshCode を検索して vector で返します。
+         */
         virtual std::vector<MeshCode> getMeshCodes() = 0;
         /// 上記メソッドのP/Invoke版です。
         virtual void getMeshCodes(std::vector<MeshCode>& mesh_code) = 0;

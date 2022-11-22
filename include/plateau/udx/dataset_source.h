@@ -3,7 +3,11 @@
 #include "i_dataset_accessor.h"
 
 namespace plateau::udx {
-    class LIBPLATEAU_EXPORT DatasetSource{
+    /**
+     * PLATEAUデータ一式を表現したクラスです。
+     * 保持している IDatasetAccessor によってGMLファイルの検索ができます。
+     */
+    class LIBPLATEAU_EXPORT DatasetSource {
     public:
         /**
          * ローカルPC内のデータを指す DatasetSource を作ります。
