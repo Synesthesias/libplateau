@@ -14,7 +14,7 @@ namespace plateau::udx{
                 GeoCoordinate(35.53, 139.77, -9999),
                 GeoCoordinate(35.54,139.78,9999)),
                              PredefinedCityModelPackage::Building);
-        ASSERT_EQ(accessor.resultOfGetGmlFilesCount(), 1);
-        ASSERT_EQ(accessor.resultOfGetGmlFiles(0)->isValid(), true);
+        ASSERT_EQ(accessor.resultOfGetGmlFilesCount(PredefinedCityModelPackage::Building), 1);
+        ASSERT_EQ(accessor.resultOfGetGmlFiles(PredefinedCityModelPackage::Building, 0)->isValid(), true);
     }
 }

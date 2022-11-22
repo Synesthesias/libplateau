@@ -1236,12 +1236,14 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
             [In] IntPtr accessorPtr,
             out IntPtr outGmlFileInfoPtr,
+            PredefinedCityModelPackage package,
             int index);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
             [In] IntPtr accessorPtr,
-            out int outCount);
+            out int outCount,
+            PredefinedCityModelPackage package);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_accessor_p_invoke_get_mesh_codes(

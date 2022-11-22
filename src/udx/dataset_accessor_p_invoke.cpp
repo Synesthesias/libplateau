@@ -9,18 +9,25 @@ namespace plateau::udx {
     }
 
     void DatasetAccessorPInvoke::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) {
-        result_of_get_gml_files_ = accessor_->getGmlFiles(extent, package);
+        result_of_get_gml_files_[package] = std::vector<GmlFile*>();
+        auto gml_files = accessor_->getGmlFiles(extent, package);
+        // GmlFile の delete は DLL利用者の責任とするため、ヒープに移します。
+        for(auto& gml : gml_files){
+            auto heap_gml = new GmlFile(std::move(gml));
+            result_of_get_gml_files_.at(package).push_back(heap_gml);
+        }
     }
 
-    const GmlFile* DatasetAccessorPInvoke::resultOfGetGmlFiles(int index) const {
-        if(index >= result_of_get_gml_files_.size() || index < 0){
+    const GmlFile* DatasetAccessorPInvoke::resultOfGetGmlFiles(PredefinedCityModelPackage package, int index) const {
+        const auto& package_files = result_of_get_gml_files_.at(package);
+        if(index >= package_files.size() || index < 0){
             throw std::out_of_range("index is out of range.");
         }
-        return &(result_of_get_gml_files_.at(index));
+        return package_files.at(index);
     }
 
-    int DatasetAccessorPInvoke::resultOfGetGmlFilesCount() const {
-        return (int)result_of_get_gml_files_.size();
+    int DatasetAccessorPInvoke::resultOfGetGmlFilesCount(PredefinedCityModelPackage package) const {
+        return (int)result_of_get_gml_files_.at(package).size();
     }
 
     void DatasetAccessorPInvoke::getMeshCodes() {

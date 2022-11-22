@@ -29,15 +29,18 @@ namespace PLATEAU.Udx
             var resultG = NativeMethods.plateau_dataset_accessor_p_invoke_get_gml_files(
                 Handle, extent, package);
             DLLUtil.CheckDllError(resultG);
-            int count = DLLUtil.GetNativeValue<int>(Handle,
-                NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count);
+            var resultC = NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
+                Handle, out int count, package);
+            DLLUtil.CheckDllError(resultC);
             var ret = new GmlFile[count];
             for (int i = 0; i < count; i++)
             {
-                    var gmlFileInfoPtr = DLLUtil.GetNativeValue<IntPtr>(Handle, i,
-                        NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files);
-                    ret[i] = new GmlFile(gmlFileInfoPtr);
+                var result = NativeMethods.plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
+                    Handle, out var gmlFileInfoPtr, package, i);
+                DLLUtil.CheckDllError(result);
+                ret[i] = new GmlFile(gmlFileInfoPtr);
             }
+
             return ret;
         }
 

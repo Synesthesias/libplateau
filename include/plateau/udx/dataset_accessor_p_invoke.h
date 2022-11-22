@@ -17,8 +17,8 @@ namespace plateau::udx{
         explicit DatasetAccessorPInvoke(std::shared_ptr<IDatasetAccessor> accessor);
 
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package);
-        const GmlFile* resultOfGetGmlFiles(int index) const;
-        int resultOfGetGmlFilesCount() const;
+        const GmlFile* resultOfGetGmlFiles(PredefinedCityModelPackage package, int index) const;
+        int resultOfGetGmlFilesCount(PredefinedCityModelPackage package) const;
 
         void getMeshCodes();
         MeshCode resultOfGetMeshCodes(int index) const;
@@ -28,7 +28,7 @@ namespace plateau::udx{
 
     private:
         std::shared_ptr<IDatasetAccessor> accessor_;
-        std::vector<GmlFile> result_of_get_gml_files_;
+        std::map<PredefinedCityModelPackage, std::vector<GmlFile*>> result_of_get_gml_files_;
         std::vector<MeshCode> result_of_get_mesh_codes_;
     };
 }

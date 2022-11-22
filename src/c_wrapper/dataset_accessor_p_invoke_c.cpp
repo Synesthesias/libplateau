@@ -38,17 +38,37 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_accessor_p_invoke_result_of_get_gml_files(
+        DatasetAccessorPInvoke* accessor,
+        const GmlFile** out_gml_file_ptr,
+        PredefinedCityModelPackage package,
+        int index
+) {
+    API_TRY {
+        *out_gml_file_ptr = accessor->resultOfGetGmlFiles(package, index);
+        return APIResult::Success;
+    } catch (const std::out_of_range& e){
+        return APIResult::ErrorIndexOutOfBounds;
+    } catch(...){
+        return APIResult::ErrorUnknown;
+    }
+}
 
-    DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_dataset_accessor_p_invoke_result_of_get_gml_files,
-                                  DatasetAccessorPInvoke,
-                                  GmlFile,
-                                  handle->resultOfGetGmlFiles(index),
-                                  index > (handle->resultOfGetGmlFilesCount()))
 
-    DLL_VALUE_FUNC(plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count,
-                   DatasetAccessorPInvoke,
-                   int,
-                   handle->resultOfGetGmlFilesCount())
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_accessor_p_invoke_result_of_get_gml_files_count(
+            DatasetAccessorPInvoke* accessor,
+            int* out_gml_files_count,
+            PredefinedCityModelPackage package
+    ) {
+        API_TRY {
+            *out_gml_files_count = accessor->resultOfGetGmlFilesCount(package);
+            return APIResult::Success;
+        } catch (const std::out_of_range& e){
+            return APIResult::ErrorIndexOutOfBounds;
+        } catch(...){
+            return APIResult::ErrorUnknown;
+        }
+    }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_accessor_p_invoke_get_mesh_codes(
             DatasetAccessorPInvoke* accessor
