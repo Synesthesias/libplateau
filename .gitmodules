@@ -13,6 +13,12 @@
 [submodule "3rdparty/glTF-SDK/glTF-SDK"]
 	path = 3rdparty/glTF-SDK/glTF-SDK
 	url = https://github.com/microsoft/glTF-SDK
+[submodule "3rdparty/openssl-cmake"]
+	path = 3rdparty/openssl-cmake
+	url = https://github.com/janbar/openssl-cmake
 [submodule "3rdparty/cpp-httplib"]
 	path = 3rdparty/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "3rdparty/json"]
+	path = 3rdparty/json
+	url = https://github.com/nlohmann/json.git

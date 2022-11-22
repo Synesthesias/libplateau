@@ -1,6 +1,6 @@
 #include <plateau/basemap/vector_tile_downloader.h>
 #include <plateau/basemap/tile_projection.h>
-
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib.h>
 #include <filesystem>
 #include <fstream>
