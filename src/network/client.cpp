@@ -1,6 +1,7 @@
 #include <plateau/network/client.h>
 #include <iostream>
 #include <filesystem>
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../3rdparty/cpp-httplib/httplib.h"
 #include "../../3rdparty/json/single_include/nlohmann/json.hpp"
 

@@ -1,5 +1,4 @@
 #pragma once
-#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <string>
 #include <vector>
 #include <plateau/udx/mesh_code.h>

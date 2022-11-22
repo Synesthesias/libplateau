@@ -1,6 +1,5 @@
 #include <filesystem>
 #include <fstream>
-#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <gtest/gtest.h>
 #include <plateau/network/client.h>
 
