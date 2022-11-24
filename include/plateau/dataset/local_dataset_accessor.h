@@ -3,7 +3,7 @@
 #include "plateau/geometry/geo_reference.h"
 #include <plateau/dataset/i_dataset_accessor.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     /**
      * \brief PLATEAUの3D都市モデルのフォルダ階層でudxの直下にあるフォルダを表します。
      */

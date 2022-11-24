@@ -6,7 +6,7 @@
 #include <plateau/dataset/mesh_code.h>
 
 using namespace citygml;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 using namespace plateau::geometry;
 
 TEST(MeshCode, extentIsProperCoordinate) {

@@ -9,7 +9,7 @@
 #include "plateau/geometry/geo_reference.h"
 #include "plateau/dataset/lod_searcher.h"
 
-namespace plateau::udx {
+namespace plateau::dataset {
     namespace fs = std::filesystem;
     using namespace geometry;
 

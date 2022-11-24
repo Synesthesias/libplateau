@@ -2,7 +2,7 @@
 #include <plateau/dataset/i_dataset_accessor.h>
 
 extern "C" {
-    using namespace plateau::udx;
+    using namespace plateau::dataset;
     using namespace plateau::geometry;
     using namespace libplateau;
 

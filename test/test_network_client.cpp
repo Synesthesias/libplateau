@@ -33,9 +33,9 @@ namespace plateau::network {
     }
 
     TEST_F(ClientTest, GetFiles) {
-        std::vector<plateau::udx::MeshCode> set_mesh_codes;
-        set_mesh_codes.push_back(plateau::udx::MeshCode("53392642"));
-        set_mesh_codes.push_back(plateau::udx::MeshCode("53392670"));
+        std::vector<plateau::dataset::MeshCode> set_mesh_codes;
+        set_mesh_codes.push_back(plateau::dataset::MeshCode("53392642"));
+        set_mesh_codes.push_back(plateau::dataset::MeshCode("53392670"));
         auto file_urls = client.getFiles(set_mesh_codes);
         ASSERT_NE(file_urls->size(), 0);
         if (file_urls->size() != 0) {

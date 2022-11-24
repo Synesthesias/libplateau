@@ -5,7 +5,7 @@
 #include "citygml/address.h"
 
 using namespace libplateau;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file(

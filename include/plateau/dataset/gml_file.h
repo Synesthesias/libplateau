@@ -3,7 +3,7 @@
 #include <libplateau_api.h>
 #include <plateau/dataset/mesh_code.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
 
     /**
      * \brief GMLファイルに関する情報を保持するクラスです。

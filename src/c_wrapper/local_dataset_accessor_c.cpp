@@ -4,7 +4,7 @@
 #include <filesystem>
 
 using namespace libplateau;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 using namespace plateau::geometry;
 namespace fs = std::filesystem;
 

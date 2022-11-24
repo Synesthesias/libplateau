@@ -3,7 +3,7 @@
 #include <plateau/dataset/gml_file.h>
 extern "C"{
     using namespace libplateau;
-    using namespace plateau::udx;
+    using namespace plateau::dataset;
 
 /**
  * vector<任意の型> を P/Invoke で扱うための5つのメソッドを生成するマクロです。

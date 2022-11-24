@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <plateau/dataset/dataset_source.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     class DatasetSourceTest : public ::testing::Test {
 
     };

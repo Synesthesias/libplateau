@@ -3,7 +3,7 @@
 #include <plateau/dataset/lod_searcher.h>
 
 extern "C" {
-    using namespace plateau::udx;
+    using namespace plateau::dataset;
     using namespace libplateau;
     namespace fs = std::filesystem;
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_lod_searcher_search_lods_in_file(

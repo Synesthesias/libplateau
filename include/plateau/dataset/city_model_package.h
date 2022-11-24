@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     /**
      * @enum PredefinedCityModelPackage
      *

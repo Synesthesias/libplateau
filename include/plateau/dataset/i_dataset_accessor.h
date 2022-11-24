@@ -5,7 +5,7 @@
 #include <plateau/dataset/city_model_package.h>
 #include <set>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     class LIBPLATEAU_EXPORT IDatasetAccessor {
     public:
         /**

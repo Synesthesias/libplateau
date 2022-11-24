@@ -3,7 +3,7 @@
 
 extern "C" {
     using namespace libplateau;
-    using namespace plateau::udx;
+    using namespace plateau::dataset;
     namespace fs = std::filesystem;
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_dataset_source_local(

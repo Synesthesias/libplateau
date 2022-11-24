@@ -2,7 +2,7 @@
 #include <plateau/dataset/gml_file.h>
 #include "plateau/dataset/local_dataset_accessor.h"
 
-namespace plateau::udx {
+namespace plateau::dataset {
     class GmlFileTest : public ::testing::Test {
 
     };

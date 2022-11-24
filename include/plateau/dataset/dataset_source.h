@@ -2,7 +2,7 @@
 #include <filesystem>
 #include "i_dataset_accessor.h"
 
-namespace plateau::udx {
+namespace plateau::dataset {
     /**
      * PLATEAUデータ一式を表現したクラスです。
      * 保持している IDatasetAccessor によってGMLファイルの検索ができます。

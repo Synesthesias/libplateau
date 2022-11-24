@@ -6,7 +6,7 @@
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/mesh_code.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
 
     namespace fs = std::filesystem;
 

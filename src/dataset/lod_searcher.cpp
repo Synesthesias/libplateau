@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cstring>
 
-using namespace plateau::udx;
+using namespace plateau::dataset;
 namespace fs = std::filesystem;
 
 namespace {

@@ -6,7 +6,7 @@
 #include <libplateau_api.h>
 #include "plateau/geometry/geo_coordinate.h"
 
-namespace plateau::udx {
+namespace plateau::dataset {
     class LIBPLATEAU_EXPORT MeshCode {
     public:
         explicit MeshCode(const std::string& code);

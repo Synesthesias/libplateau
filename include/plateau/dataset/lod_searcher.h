@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <libplateau_api.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
 
     struct LIBPLATEAU_EXPORT LodFlag;
 
@@ -13,7 +13,7 @@ namespace plateau::udx {
      */
     class LIBPLATEAU_EXPORT LodSearcher {
     public:
-        static plateau::udx::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
+        static plateau::dataset::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
     };
 
     /// どのLODが含まれるかをフラグ(unsigned)で表現します。

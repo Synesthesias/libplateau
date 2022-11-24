@@ -30,9 +30,9 @@ int main(void) {
     std::cout << std::endl;
 
     // check Client::getFiles
-    std::vector<plateau::udx::MeshCode> set_mesh_codes;
-    set_mesh_codes.push_back(plateau::udx::MeshCode("53392642"));
-    set_mesh_codes.push_back(plateau::udx::MeshCode("53392670"));
+    std::vector<plateau::dataset::MeshCode> set_mesh_codes;
+    set_mesh_codes.push_back(plateau::dataset::MeshCode("53392642"));
+    set_mesh_codes.push_back(plateau::dataset::MeshCode("53392670"));
     auto file_urls = client.getFiles(set_mesh_codes);
     for (auto itr = file_urls->begin(); itr != file_urls->end(); ++itr) {
         std::cout << itr->first << " : ";

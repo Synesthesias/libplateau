@@ -6,7 +6,7 @@
 #include <plateau/dataset/local_dataset_accessor.h>
 
 using namespace citygml;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 namespace fs = std::filesystem;
 
 class UdxTest : public ::testing::Test {

@@ -4,7 +4,7 @@
 
 #include <plateau/dataset/mesh_code.h>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     namespace {
         constexpr int second_division_count = 8;
         constexpr int third_division_count = 10;
