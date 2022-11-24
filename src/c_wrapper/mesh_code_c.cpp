@@ -1,9 +1,9 @@
 #include "libplateau_c.h"
 
-#include <plateau/udx/udx_file_collection.h>
+#include <plateau/dataset/local_dataset_accessor.h>
 
 using namespace libplateau;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT MeshCode LIBPLATEAU_C_API plateau_mesh_code_parse(

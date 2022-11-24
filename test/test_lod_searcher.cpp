@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include <plateau/udx/lod_searcher.h>
+#include <plateau/dataset/lod_searcher.h>
 #include <filesystem>
 
-namespace plateau::udx {
+namespace plateau::dataset {
     namespace fs = std::filesystem;
 
     class LodSearcherTest : public ::testing::Test {

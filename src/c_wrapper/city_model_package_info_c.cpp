@@ -1,8 +1,8 @@
 #include "libplateau_c.h"
-#include <plateau/udx/city_model_package.h>
+#include <plateau/dataset/city_model_package.h>
 
 using namespace libplateau;
-using namespace plateau::udx;
+using namespace plateau::dataset;
 
 extern "C" {
 

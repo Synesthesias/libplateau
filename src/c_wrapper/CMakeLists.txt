@@ -31,9 +31,9 @@ add_library(c_wrapper OBJECT
   "node_c.cpp"
   "geometry_utils_c.cpp"
   "geo_reference_c.cpp"
-  "udx_file_collection_c.cpp"
+  "local_dataset_accessor_c.cpp"
   "mesh_code_c.cpp"
-  "gml_file_info_c.cpp"
+  "gml_file_c.cpp"
   "city_model_package_info_c.cpp"
   "mesh_extract_options_c.cpp"
   "gltf_writer_c.cpp" 
@@ -42,6 +42,9 @@ add_library(c_wrapper OBJECT
   "vector_tile_downloader_c.cpp"
   "tile_projection_c.cpp"
   "lod_searcher_c.cpp"
+        "dataset_source_c.cpp"
+  "vector_c.cpp"
+  "i_dataset_accessor_c.cpp"
   )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
