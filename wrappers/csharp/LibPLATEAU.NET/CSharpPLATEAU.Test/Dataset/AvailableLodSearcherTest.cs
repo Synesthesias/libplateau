@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Editor.CityImport.AreaSelector;
+using PLATEAU.Dataset;
 
 namespace PLATEAU.Test.Dataset
 {
