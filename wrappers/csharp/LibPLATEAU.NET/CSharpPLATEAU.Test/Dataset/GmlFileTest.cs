@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Dataset;
 using PLATEAU.Interop;
-using PLATEAU.Udx;
 
-namespace PLATEAU.Test.Udx
+namespace PLATEAU.Test.Dataset
 {
     [TestClass]
     public class GmlFileTest

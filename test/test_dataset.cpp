@@ -9,7 +9,7 @@ using namespace citygml;
 using namespace plateau::dataset;
 namespace fs = std::filesystem;
 
-class UdxTest : public ::testing::Test {
+class DatasetTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
         source_path_ = "../data";
@@ -39,7 +39,7 @@ protected:
     LocalDatasetAccessor local_dataset_accessor;
 };
 
-TEST_F(UdxTest, getAllGmls) {
+TEST_F(DatasetTest, getAllGmls) {
     const std::vector expected_bldg_files =
     { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
     std::vector<std::string> actual_files;
@@ -47,7 +47,7 @@ TEST_F(UdxTest, getAllGmls) {
     checkVectors(expected_bldg_files, *local_dataset_accessor.getGmlFiles(PredefinedCityModelPackage::Building));
 }
 
-TEST_F(UdxTest, getAllMeshCodes) {
+TEST_F(DatasetTest, getAllMeshCodes) {
     const auto mesh_codes = local_dataset_accessor.getMeshCodes();
     ASSERT_EQ(mesh_codes.size(), 1);
 }
@@ -61,7 +61,7 @@ namespace{
     }
 }
 
-TEST_F(UdxTest, fetch_generates_files){
+TEST_F(DatasetTest, fetch_generates_files){
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
@@ -123,7 +123,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
     }
 } // テスト filterByMeshCodes で使う無名名前空間の関数です。
 
-TEST_F(UdxTest, filter_by_mesh_codes) {
+TEST_F(DatasetTest, filter_by_mesh_codes) {
     ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", local_dataset_accessor,
                                                             PredefinedCityModelPackage::Building));
     ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", local_dataset_accessor,

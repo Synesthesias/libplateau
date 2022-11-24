@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Udx;
+using PLATEAU.Dataset;
 
-namespace PLATEAU.Test.Udx
+namespace PLATEAU.Test.Dataset
 {
     [TestClass]
     public class CityModelPackageInfoTest

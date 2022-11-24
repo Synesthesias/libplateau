@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using PLATEAU.CityGML;
 using PLATEAU.Geometries;
 using PLATEAU.PolygonMesh;
-using PLATEAU.Udx;
+using PLATEAU.Dataset;
 
 // 文字列のサイズをDLLでやりとりする時の型を決めます。
 using DllStrSizeT = System.Int32;

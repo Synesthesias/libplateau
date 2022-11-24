@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Editor.CityImport.AreaSelector;
 
-namespace PLATEAU.Test.Udx
+namespace PLATEAU.Test.Dataset
 {
     [TestClass]
     public class LodSearcherTest

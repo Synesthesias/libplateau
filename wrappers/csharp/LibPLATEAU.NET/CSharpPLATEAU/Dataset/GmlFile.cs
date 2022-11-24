@@ -1,7 +1,7 @@
 using System;
 using PLATEAU.Interop;
 
-namespace PLATEAU.Udx
+namespace PLATEAU.Dataset
 {
     /// <summary>
     /// GMLファイルに関する情報を保持します。

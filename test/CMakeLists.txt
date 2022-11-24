@@ -25,7 +25,7 @@ add_executable(plateau_test
     "test_mesh_extractor.cpp"
     "test_grid_merger.cpp"
     "test_mesh_code.cpp"
-    "test_udx.cpp"
+    "test_dataset.cpp"
     "test_vector_tile.cpp"
     "test_obj_writer.cpp"
     "test_gltf_writer.cpp"
@@ -34,7 +34,9 @@ add_executable(plateau_test
     "test_gml_file.cpp"
     "test_lod_searcher.cpp"
     "test_network_client.cpp"
-    "test_dataset_source.cpp")
+    "test_dataset.cpp"
+    "test_dataset_source.cpp"
+    )
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
