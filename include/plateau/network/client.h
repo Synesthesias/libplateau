@@ -18,7 +18,18 @@ namespace plateau::network {
         std::string title;
         std::vector<DatasetMetadata> datasets;
     };
-    
+
+    /**
+     * サーバー上にあるPLATEAU都市データについて、
+     * どのようなデータがあるのかをクエリで問い合わせます。
+     * またファイルをダウンロードします。
+     *
+     * 処理の流れ:
+     * ・ getMetadata でデータセットの一覧を取得し、そのうちの1つをユーザーが選択します。例: 東京23区、横浜市
+     * ・ 選択したデータセットのIDについて getMeshCodes で地域メッシュコードIDの一覧を取得し、それをもとにユーザーが範囲選択します。
+     * ・ 選択した範囲について、 getFiles でファイルの一覧を取得します。
+     * ・ ファイルを download します。
+     */
     class LIBPLATEAU_EXPORT Client {
     public:
         Client() : server_url_("") {
