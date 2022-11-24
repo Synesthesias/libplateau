@@ -48,6 +48,15 @@ namespace PLATEAU.Dataset
             }
         }
 
+        public NativeVectorGmlFile GetGmlFiles(Extent extent, PredefinedCityModelPackage package)
+        {
+            var gmlFiles = NativeVectorGmlFile.Create();
+            var result = NativeMethods.plateau_server_dataset_accessor_get_gml_files(
+                Handle, gmlFiles.Handle, extent, package);
+            DLLUtil.CheckDllError(result);
+            return gmlFiles;
+        }
+
         public void Dispose()
         {
             // TODO ExecNativeVoidFunc を適用できる箇所は他にもあるので置き換える

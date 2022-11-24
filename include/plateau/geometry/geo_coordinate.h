@@ -75,6 +75,12 @@ namespace plateau::geometry {
         bool contains(const citygml::CityObject& city_obj) const;
 
         /**
+         * other と交わる箇所があるかどうかを返します。
+         * ただし other の高さは無視して 0 とみなします。
+         */
+        bool intersects2D(const Extent& other) const;
+
+        /**
          * min と max の中点を GeoCoordinate で返します。
          */
         GeoCoordinate centerPoint() const;

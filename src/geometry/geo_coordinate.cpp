@@ -28,6 +28,14 @@ namespace plateau::geometry {
         }
     }
 
+    bool Extent::intersects2D(const Extent& other) const {
+        return
+                contains(GeoCoordinate(other.min.latitude, other.min.longitude, 0)) ||
+                contains(GeoCoordinate(other.max.latitude, other.max.longitude, 0)) ||
+                contains(GeoCoordinate(other.min.latitude, other.max.longitude, 0)) ||
+                contains(GeoCoordinate(other.max.latitude, other.min.longitude, 0));
+    }
+
     GeoCoordinate Extent::centerPoint() const {
         auto ret = GeoCoordinate(
                 (min.latitude + max.latitude) * 0.5,

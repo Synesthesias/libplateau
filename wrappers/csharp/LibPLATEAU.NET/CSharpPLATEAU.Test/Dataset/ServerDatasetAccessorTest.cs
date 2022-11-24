@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
+using PLATEAU.Interop;
 
 namespace PLATEAU.Test.Dataset
 {
@@ -32,6 +33,15 @@ namespace PLATEAU.Test.Dataset
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(2, meshCodes.Length);
             Assert.AreEqual("53392642", meshCodes.At(0).ToString());
+            accessor.Dispose();
+        }
+
+        [TestMethod]
+        public void GetGmlFiles_Works()
+        {
+            var accessor = ServerDatasetAccessor.Create();
+            accessor.SetDatasetID("23ku");
+            var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             accessor.Dispose();
         }
     }

@@ -1687,12 +1687,19 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_server_dataset_accessor_set_dataset_id(
-            [In] IntPtr handle,
+            [In] IntPtr accessorPtr,
             string datasetId);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_server_dataset_accessor_get_mesh_codes(
-            [In] IntPtr handle,
+            [In] IntPtr accessorPtr,
             [In, Out] IntPtr refNativeVectorMeshCodePtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_gml_files(
+            [In] IntPtr accessorPtr,
+            [In,Out] IntPtr refNativeVectorGmlFilePtr,
+            Extent extent,
+            PredefinedCityModelPackage package);
     }
 }
