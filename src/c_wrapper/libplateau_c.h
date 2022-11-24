@@ -44,7 +44,7 @@ using dll_str_size_t = int;
 #define DLL_PTR_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */ \
-            const RETURN_VALUE_TYPE** out /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */\
+            const RETURN_VALUE_TYPE** out /* C#での "out IntPtr outPtr" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */\
             __VA_ARGS__ \
             ){ \
         API_TRY{ \

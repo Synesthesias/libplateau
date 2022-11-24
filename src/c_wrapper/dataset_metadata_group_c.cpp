@@ -19,4 +19,9 @@ DLL_STRING_PTR_FUNC(plateau_dataset_metadata_group_get_title,
                     DatasetMetadataGroup,
                     handle->title)
 
+DLL_PTR_FUNC(plateau_dataset_metadata_group_get_datasets,
+             DatasetMetadataGroup,
+             std::vector<DatasetMetadata>,
+             &(handle->datasets))
+
 }

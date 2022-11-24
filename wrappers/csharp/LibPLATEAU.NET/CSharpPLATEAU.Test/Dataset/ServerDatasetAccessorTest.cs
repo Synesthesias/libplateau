@@ -10,11 +10,16 @@ namespace PLATEAU.Test.Dataset
         public void GetMetadataGroup_Returns_Array_Of_MetadataGroup()
         {
             var accessor = ServerDatasetAccessor.Create();
-            var metadataGroup = accessor.GetMetadataGroup();
-            Assert.AreEqual(2, metadataGroup.Length);
-            var metadata = metadataGroup.At(0);
-            Assert.AreEqual("tokyo", metadata.ID);
-            Assert.AreEqual("東京都", metadata.Title);
+            var metadataGroups = accessor.GetMetadataGroup();
+            Assert.AreEqual(2, metadataGroups.Length);
+            var metadataGroup = metadataGroups.At(0);
+            Assert.AreEqual("tokyo", metadataGroup.ID);
+            Assert.AreEqual("東京都", metadataGroup.Title);
+            var datasets = metadataGroup.Datasets;
+            var dataset = datasets.At(0);
+            Assert.AreEqual("23ku", dataset.ID);
+            Assert.AreEqual("23区", dataset.Title);
+            Assert.AreEqual("xxxx", dataset.Description);
             accessor.Dispose();
         }
     }
