@@ -3,7 +3,7 @@
 
 #include <citygml/citygml.h>
 
-#include <plateau/udx/local_dataset_accessor.h>
+#include <plateau/dataset/local_dataset_accessor.h>
 
 using namespace citygml;
 using namespace plateau::udx;

@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <sstream>
 
-#include <plateau/udx/mesh_code.h>
+#include <plateau/dataset/mesh_code.h>
 
 namespace plateau::udx {
     namespace {

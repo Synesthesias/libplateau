@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
 
-#include <plateau/udx/local_dataset_accessor.h>
+#include <plateau/dataset/local_dataset_accessor.h>
 #include <filesystem>
 
 using namespace libplateau;

@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
 #include <filesystem>
-#include <plateau/udx/lod_searcher.h>
+#include <plateau/dataset/lod_searcher.h>
 
 extern "C" {
     using namespace plateau::udx;

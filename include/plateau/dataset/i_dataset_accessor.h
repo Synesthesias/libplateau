@@ -1,8 +1,8 @@
 #pragma once
 
 #include <libplateau_api.h>
-#include <plateau/udx/gml_file.h>
-#include <plateau/udx/city_model_package.h>
+#include <plateau/dataset/gml_file.h>
+#include <plateau/dataset/city_model_package.h>
 #include <set>
 
 namespace plateau::udx {

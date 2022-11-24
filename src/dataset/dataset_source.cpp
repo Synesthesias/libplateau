@@ -1,5 +1,5 @@
-#include <plateau/udx/dataset_source.h>
-#include <plateau/udx/local_dataset_accessor.h>
+#include <plateau/dataset/dataset_source.h>
+#include <plateau/dataset/local_dataset_accessor.h>
 
 namespace plateau::udx{
     namespace fs = std::filesystem;

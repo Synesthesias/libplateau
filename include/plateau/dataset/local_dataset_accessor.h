@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "plateau/geometry/geo_reference.h"
-#include <plateau/udx/i_dataset_accessor.h>
+#include <plateau/dataset/i_dataset_accessor.h>
 
 namespace plateau::udx {
     /**

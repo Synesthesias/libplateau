@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
 #include <vector>
-#include <plateau/udx/gml_file.h>
+#include <plateau/dataset/gml_file.h>
 extern "C"{
     using namespace libplateau;
     using namespace plateau::udx;

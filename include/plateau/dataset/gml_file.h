@@ -1,7 +1,7 @@
 #pragma once
 
 #include <libplateau_api.h>
-#include <plateau/udx/mesh_code.h>
+#include <plateau/dataset/mesh_code.h>
 
 namespace plateau::udx {
 

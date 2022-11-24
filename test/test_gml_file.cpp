@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <plateau/udx/gml_file.h>
-#include "plateau/udx/local_dataset_accessor.h"
+#include <plateau/dataset/gml_file.h>
+#include "plateau/dataset/local_dataset_accessor.h"
 
 namespace plateau::udx {
     class GmlFileTest : public ::testing::Test {

@@ -3,7 +3,7 @@
 #include <citygml/citygml.h>
 
 #include <plateau/geometry/geo_coordinate.h>
-#include <plateau/udx/mesh_code.h>
+#include <plateau/dataset/mesh_code.h>
 
 using namespace citygml;
 using namespace plateau::udx;

@@ -1,13 +1,13 @@
 #include <filesystem>
 #include <utility>
 
-#include <plateau/udx/local_dataset_accessor.h>
+#include <plateau/dataset/local_dataset_accessor.h>
 #include <fstream>
 #include <queue>
 #include <set>
 #include <regex>
 #include "plateau/geometry/geo_reference.h"
-#include "plateau/udx/lod_searcher.h"
+#include "plateau/dataset/lod_searcher.h"
 
 namespace plateau::udx {
     namespace fs = std::filesystem;

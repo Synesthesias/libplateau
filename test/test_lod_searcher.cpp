@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <plateau/udx/lod_searcher.h>
+#include <plateau/dataset/lod_searcher.h>
 #include <filesystem>
 
 namespace plateau::udx {

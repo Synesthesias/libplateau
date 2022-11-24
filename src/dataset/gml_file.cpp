@@ -3,8 +3,8 @@
 #include <regex>
 #include <fstream>
 #include <set>
-#include <plateau/udx/gml_file.h>
-#include <plateau/udx/mesh_code.h>
+#include <plateau/dataset/gml_file.h>
+#include <plateau/dataset/mesh_code.h>
 
 namespace plateau::udx {
 
