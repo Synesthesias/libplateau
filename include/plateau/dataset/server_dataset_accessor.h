@@ -9,6 +9,10 @@ namespace plateau::dataset{
     class LIBPLATEAU_EXPORT ServerDatasetAccessor : public IDatasetAccessor{
     public:
         ServerDatasetAccessor();
+        std::vector<network::DatasetMetadataGroup> getDatasetMetadataGroup() const;
+        /// 上記メソッドのP/Invoke版
+        void getDatasetMetadataGroup(std::vector<network::DatasetMetadataGroup>& out_group) const;
+
         std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
                          std::vector<GmlFile>& out_gml_files) override;

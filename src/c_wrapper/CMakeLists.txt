@@ -45,6 +45,8 @@ add_library(c_wrapper OBJECT
         "dataset_source_c.cpp"
   "vector_c.cpp"
   "i_dataset_accessor_c.cpp"
+  "dataset_metadata_group_c.cpp"
+  "server_dataset_accessor_c.cpp"
   )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

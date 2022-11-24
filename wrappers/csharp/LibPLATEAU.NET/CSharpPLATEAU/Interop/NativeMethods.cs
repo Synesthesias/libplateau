@@ -1568,5 +1568,63 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_vector_mesh_code_count(
             [In] IntPtr handle,
             out int outCount);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_dataset_metadata_group(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_dataset_metadata_group(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_group_get_pointer(
+            [In] IntPtr vectorPtr,
+            out IntPtr outGmlFilePtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_dataset_metadata_group_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        // ***************
+        //  dataset_metadata_group_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_metadata_group(
+            out IntPtr outDatasetMetadataGroupPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_dataset_metadata_group(
+            [In] IntPtr datasetMetadataGroupPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_group_get_id(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_group_get_title(
+            [In] IntPtr handle,
+            out IntPtr outStrPtr,
+            out int strLength);
+        
+        // ***************
+        //  server_dataset_accessor_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_server_dataset_accessor(
+            out IntPtr outAccessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_server_dataset_accessor(
+            [In] IntPtr accessorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_dataset_metadata_group(
+            [In] IntPtr accessorPtr,
+            [In, Out] IntPtr nativeVectorDatasetMetadataGroupPtr);
     }
 }

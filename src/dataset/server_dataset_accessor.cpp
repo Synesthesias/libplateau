@@ -9,6 +9,14 @@ namespace plateau::dataset {
         client_.setApiServerUrl("https://9tkm2n.deta.dev");
     }
 
+    std::vector<DatasetMetadataGroup> ServerDatasetAccessor::getDatasetMetadataGroup() const{
+        return client_.getMetadata();
+    }
+
+    void ServerDatasetAccessor::getDatasetMetadataGroup(std::vector<network::DatasetMetadataGroup>& out_group) const{
+        out_group = getDatasetMetadataGroup();
+    }
+
     std::vector<GmlFile>
     ServerDatasetAccessor::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) {
         // TODO 未実装
@@ -38,11 +46,6 @@ namespace plateau::dataset {
     void ServerDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
         // TODO 未実装
     }
-
-//    void ServerDatasetAccessor::getDatasetMetadataGroup(){
-//        auto dataset_metadata_group = client_.getMetadata();
-//
-//    }
 
 
 }

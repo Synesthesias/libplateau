@@ -125,7 +125,7 @@ using dll_str_size_t = int;
 #define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
         TARGET_TYPE* const handle,/* C#では "[In] IntPtr handle" に対応します。 */ \
-        const char** const out_chars_ptr, /* C#では "out IntPtr strPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
+        const char** const out_chars_ptr, /* C#では "out IntPtr outStrPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
         dll_str_size_t* out_str_length /* C#では "out int strLength" に対応します。*/\
         __VA_ARGS__ \
     ){ \
@@ -284,6 +284,48 @@ using dll_str_size_t = int;
         API_CATCH\
         return APIResult::ErrorUnknown;\
     }
+
+/**
+ * CREATE_TYPE を new し、そのアドレスを引数の out_ptr に書き込む関数を生成するマクロです。
+ */
+#define DLL_CREATE_FUNC(FUNC_NAME, CREATE_TYPE) \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+            CREATE_TYPE ** out_ptr /* C# では out IntPtr outPtr に対応します。*/ \
+    ) { \
+        API_TRY { \
+            *out_ptr = new CREATE_TYPE (); \
+            return libplateau::APIResult::Success;                                            \
+        }API_CATCH \
+        return libplateau::APIResult::ErrorUnknown; \
+    }
+
+/**
+ * DELETE_TYPE を delete する関数を生成するマクロです。
+ */
+#define DLL_DELETE_FUNC(FUNC_NAME, DELETE_TYPE) \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+            DELETE_TYPE ** ptr /* C# では [In] IntPtr ptr に対応します。 */ \
+    ) { \
+        delete ptr; \
+        return libplateau::APIResult::Success; \
+    }
+
+
+/**
+ * TARGET_TYPE と ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は const TARGET_TYPE* const handle と ARG_TYPE* const arg を使って記述します。
+ */
+#define DLL_1_ARG_FUNC(FUNC_NAME, TARGET_TYPE, ARG_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        const TARGET_TYPE * const handle, \
+        ARG_TYPE * const arg \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return APIResult::Success; \
+    }API_CATCH \
+    return APIResult::ErrorUnknown; \
+}
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、

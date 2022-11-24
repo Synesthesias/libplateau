@@ -18,7 +18,7 @@ namespace plateau::network {
         server_url_ = url;
     }
 
-    std::vector<DatasetMetadataGroup> Client::getMetadata() {
+    std::vector<DatasetMetadataGroup> Client::getMetadata() const {
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
         auto res = cli.Get("/api/sdk/data");
