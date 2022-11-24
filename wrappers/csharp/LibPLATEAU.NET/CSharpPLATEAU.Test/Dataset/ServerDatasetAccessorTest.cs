@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 
 namespace PLATEAU.Test.Dataset
@@ -20,6 +21,17 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual("23ku", dataset.ID);
             Assert.AreEqual("23区", dataset.Title);
             Assert.AreEqual("xxxx", dataset.Description);
+            accessor.Dispose();
+        }
+
+        [TestMethod]
+        public void GetMeshCodes_Returns_MeshCodes()
+        {
+            var accessor = ServerDatasetAccessor.Create();
+            accessor.SetDatasetID("23ku");
+            var meshCodes = accessor.MeshCodes;
+            Assert.AreEqual(2, meshCodes.Length);
+            Assert.AreEqual("53392642", meshCodes.At(0).ToString());
             accessor.Dispose();
         }
     }

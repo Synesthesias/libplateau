@@ -26,7 +26,7 @@ int main(void) {
     // check Client::getMeshCodes
     auto get_mesh_codes = client.getMeshCodes("23ku");
     std::cout << "mesh codes : ";
-    for(int i = 0; i<get_mesh_codes->size(); i++) std::cout << get_mesh_codes->at(i).get() << ", ";
+    for(int i = 0; i<get_mesh_codes.size(); i++) std::cout << get_mesh_codes.at(i).get() << ", ";
     std::cout << std::endl;
 
     // check Client::getFiles

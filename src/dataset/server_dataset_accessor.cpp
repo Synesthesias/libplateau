@@ -17,6 +17,22 @@ namespace plateau::dataset {
         out_group = getDatasetMetadataGroup();
     }
 
+    void ServerDatasetAccessor::setDatasetID(const std::string& dataset_id) {
+        dataset_id_ = dataset_id;
+    }
+
+    std::vector<MeshCode> ServerDatasetAccessor::getMeshCodes() {
+        if(dataset_id_.empty()){
+            return {};
+        }
+        auto mesh_codes = client_.getMeshCodes(dataset_id_);
+        return mesh_codes;
+    }
+
+    void ServerDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
+        mesh_codes = getMeshCodes();
+    }
+
     std::vector<GmlFile>
     ServerDatasetAccessor::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) {
         // TODO 未実装
@@ -36,15 +52,6 @@ namespace plateau::dataset {
     PredefinedCityModelPackage ServerDatasetAccessor::getPackages() {
         // TODO 未実装
         return PredefinedCityModelPackage::Road;
-    }
-
-    std::vector<MeshCode> ServerDatasetAccessor::getMeshCodes() {
-        // TODO 未実装
-        return std::vector<MeshCode>();
-    }
-
-    void ServerDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
-        // TODO 未実装
     }
 
 

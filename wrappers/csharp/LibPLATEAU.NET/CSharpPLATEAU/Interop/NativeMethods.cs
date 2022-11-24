@@ -1684,5 +1684,15 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_server_dataset_accessor_get_dataset_metadata_group(
             [In] IntPtr accessorPtr,
             [In, Out] IntPtr nativeVectorDatasetMetadataGroupPtr);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_server_dataset_accessor_set_dataset_id(
+            [In] IntPtr handle,
+            string datasetId);
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_mesh_codes(
+            [In] IntPtr handle,
+            [In, Out] IntPtr refNativeVectorMeshCodePtr);
     }
 }

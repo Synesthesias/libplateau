@@ -313,11 +313,11 @@ using dll_str_size_t = int;
 
 /**
  * TARGET_TYPE と ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
- * PREDICATE は const TARGET_TYPE* const handle と ARG_TYPE* const arg を使って記述します。
+ * PREDICATE は TARGET_TYPE* const handle と ARG_TYPE* const arg を使って記述します。
  */
 #define DLL_1_ARG_FUNC(FUNC_NAME, TARGET_TYPE, ARG_TYPE, PREDICATE) \
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ( \
-        const TARGET_TYPE * const handle, \
+        TARGET_TYPE * const handle, \
         ARG_TYPE * const arg \
 ){ \
     API_TRY{ \

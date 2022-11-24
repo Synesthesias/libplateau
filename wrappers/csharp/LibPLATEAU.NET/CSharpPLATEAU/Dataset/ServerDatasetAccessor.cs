@@ -28,6 +28,26 @@ namespace PLATEAU.Dataset
             return ret;
         }
 
+        public void SetDatasetID(string datasetID)
+        {
+            var result = NativeMethods.plateau_server_dataset_accessor_set_dataset_id(Handle, datasetID);
+            DLLUtil.CheckDllError(result);
+        }
+
+        /// <summary>
+        /// 実行前に SetDatasetID が実行されていることが前提です。
+        /// </summary>
+        public NativeVectorMeshCode MeshCodes
+        {
+            get
+            {
+                var meshCodes = NativeVectorMeshCode.Create();
+                var result = NativeMethods.plateau_server_dataset_accessor_get_mesh_codes(Handle, meshCodes.Handle);
+                DLLUtil.CheckDllError(result);
+                return meshCodes;
+            }
+        }
+
         public void Dispose()
         {
             // TODO ExecNativeVoidFunc を適用できる箇所は他にもあるので置き換える

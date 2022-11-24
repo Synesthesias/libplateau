@@ -26,9 +26,9 @@ namespace plateau::network {
 
     TEST_F(ClientTest, GetMeshCodes) {
         auto get_mesh_codes = client.getMeshCodes("23ku");
-        ASSERT_NE(get_mesh_codes->size(), 0);
-        if (get_mesh_codes->size() != 0) {
-            ASSERT_EQ(get_mesh_codes->at(0).get(), "53392642");
+        ASSERT_NE(get_mesh_codes.size(), 0);
+        if (get_mesh_codes.size() != 0) {
+            ASSERT_EQ(get_mesh_codes.at(0).get(), "53392642");
         }
     }
 

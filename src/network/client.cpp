@@ -51,8 +51,8 @@ namespace plateau::network {
     }
 
     
-    std::shared_ptr<std::vector<plateau::dataset::MeshCode>> Client::getMeshCodes(const std::string& id) {
-        auto mesh_code_ptr = std::make_shared<std::vector<plateau::dataset::MeshCode>>();
+    std::vector<plateau::dataset::MeshCode> Client::getMeshCodes(const std::string& id) {
+        auto ret_mesh_codes = std::vector<plateau::dataset::MeshCode>();
         
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
@@ -64,10 +64,10 @@ namespace plateau::network {
             for (int i = 0; i < jres["codes"].size(); i++) {
                 std::string code = jres["codes"][i];
                 plateau::dataset::MeshCode mesh_code(code);
-                mesh_code_ptr->push_back(mesh_code);
+                ret_mesh_codes.push_back(mesh_code);
             }
         }
-        return mesh_code_ptr;
+        return ret_mesh_codes;
     }
     
     std::shared_ptr<std::map<std::string, std::vector<std::string>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {

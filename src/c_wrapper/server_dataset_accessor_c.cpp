@@ -18,4 +18,14 @@ DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_dataset_metadata_group,
                ServerDatasetAccessor,
                std::vector<DatasetMetadataGroup>,
                handle->getDatasetMetadataGroup(*arg))
+
+DLL_1_ARG_FUNC(plateau_server_dataset_accessor_set_dataset_id,
+               ServerDatasetAccessor,
+               const char,
+               handle->setDatasetID(arg))
+
+DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_mesh_codes,
+               ServerDatasetAccessor,
+               std::vector<MeshCode>,
+               handle->getMeshCodes(*arg))
 }
