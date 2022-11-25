@@ -10,14 +10,16 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AppearanceTargetTests
     {
-        private readonly AppearanceTarget appTargetWithTexTheme;
+        private CityModel cityModel;
+        private AppearanceTarget appTargetWithTexTheme;
         // private readonly AppearanceTarget appTargetWithMatTheme;
 
         // 初期化
-        public AppearanceTargetTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
             // テスト対象として適切なものを検索します。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.appTargetWithTexTheme = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
@@ -35,6 +37,12 @@ namespace PLATEAU.Test.CityGML
             //     .First(geom => geom.MaterialThemesCount(true) > 0);
             // .SelectMany(geom => geom.Polygons)
             // .First(poly => poly.MaterialThemesCount(true) > 0);
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

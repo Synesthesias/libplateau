@@ -8,11 +8,18 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class CityModelTests
     {
-        private readonly CityModel cityModel;
+        private CityModel cityModel;
 
-        public CityModelTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
             this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

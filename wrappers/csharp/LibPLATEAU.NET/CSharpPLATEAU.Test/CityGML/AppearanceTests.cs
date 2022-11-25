@@ -9,12 +9,14 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AppearanceTests
     {
+        private CityModel cityModel;
         private Appearance appearance;
 
-        public AppearanceTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
             // 探索して最初に見つかった Appearance をテスト対象にします。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.appearance = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
@@ -24,6 +26,12 @@ namespace PLATEAU.Test.CityGML
                 .Select(poly => poly.GetTextureTargetDefinition(poly.TextureThemeNames(true)[0], true))
                 .Select(ttd => ttd.Appearance)
                 .First();
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

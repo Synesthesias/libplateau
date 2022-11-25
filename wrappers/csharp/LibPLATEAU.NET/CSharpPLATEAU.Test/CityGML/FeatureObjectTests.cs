@@ -8,12 +8,20 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class FeatureObjectTests
     {
+        private CityModel cityModel;
         private FeatureObject featureObject;
 
-        public FeatureObjectTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.featureObject = cityModel.RootCityObjects[0];
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

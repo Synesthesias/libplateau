@@ -8,12 +8,13 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class LinearRingTests
     {
-        private readonly LinearRing exteriorRing;
-        
-        // 前処理
-        public LinearRingTests()
+        private CityModel cityModel;
+        private LinearRing exteriorRing;
+
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             
             // 頂点数が 1 以上である ExteriorRing を検索し、最初に見つかったものをテスト対象とします。
             this.exteriorRing = cityModel.RootCityObjects
@@ -22,6 +23,12 @@ namespace PLATEAU.Test.CityGML
                 .SelectMany(geom => geom.Polygons)
                 .First(poly => poly.ExteriorRing.VertexCount > 0)
                 .ExteriorRing;
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
         
         [TestMethod]

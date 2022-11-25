@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.CityGML;
 using Object = PLATEAU.CityGML.Object;
 
 namespace PLATEAU.Test.CityGML
@@ -6,12 +7,20 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class ObjectTests
     {
+        private CityModel cityModel;
         private Object plateauObject;
 
-        public ObjectTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.plateauObject = cityModel.RootCityObjects[0];
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

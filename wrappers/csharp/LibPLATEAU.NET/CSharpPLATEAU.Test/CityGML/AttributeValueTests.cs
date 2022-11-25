@@ -7,14 +7,21 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AttributeValueTests
     {
+        private CityModel cityModel;
         private AttributesMap attrMap;
         
-        /// <summary> テストの前準備です。 </summary>
-        public AttributeValueTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.attrMap = cityObject.AttributesMap;
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [DataTestMethod]

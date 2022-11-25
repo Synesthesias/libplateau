@@ -9,14 +9,15 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class TextureCoordinatesTests
     {
+        private CityModel cityModel;
         private TextureCoordinates texCoords;
         private LinearRing targetRing;
 
-        // 前準備
-        public TextureCoordinatesTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
             // 探索して最初に見つかった TextureCoordinates をテスト対象にします。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             var texTarget = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
@@ -36,6 +37,12 @@ namespace PLATEAU.Test.CityGML
                 .SelectMany(geom => geom.Polygons)
                 .Select(poly => poly.ExteriorRing)
                 .First(ring => ring.ID == targetRingId);
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

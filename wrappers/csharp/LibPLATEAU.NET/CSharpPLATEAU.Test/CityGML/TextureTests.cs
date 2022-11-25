@@ -9,12 +9,13 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class TextureTests
     {
+        private CityModel cityModel;
         private Texture texture;
 
-        // 前準備
-        public TextureTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.texture = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
@@ -24,6 +25,12 @@ namespace PLATEAU.Test.CityGML
                 .Select(poly => poly.GetTextureTargetDefinition(0))
                 .Select(ttd => ttd.Appearance)
                 .First();
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

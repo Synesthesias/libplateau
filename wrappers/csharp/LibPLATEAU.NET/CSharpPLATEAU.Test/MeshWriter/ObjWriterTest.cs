@@ -13,7 +13,7 @@ namespace PLATEAU.Test.MeshWriter
         [TestMethod]
         public void Generates_Obj_File_And_Check_Generated_File_Name()
         {
-            var model = TestGeometryUtil.ExtractModel();
+            using var model = TestGeometryUtil.ExtractModel();
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             var objFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".obj";
             var expectedObjFileName = Path.GetFileNameWithoutExtension(gmlPath) + "_LOD2.obj";

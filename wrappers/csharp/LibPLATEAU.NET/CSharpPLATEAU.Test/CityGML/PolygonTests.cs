@@ -12,14 +12,16 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class PolygonTests
     {
+        private CityModel cityModelWithTessellate;
         private CityModel cityModelWithoutTesselate;
         private Polygon polyWithVerts;
 
         private Polygon polyWithInteriorRings;
-        // 前処理
-        public PolygonTests()
+        
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            CityModel cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
@@ -37,6 +39,13 @@ namespace PLATEAU.Test.CityGML
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
                 .First(poly => poly.InteriorRingCount > 0);
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModelWithTessellate.Dispose();
+            this.cityModelWithoutTesselate.Dispose();
         }
 
         [TestMethod]

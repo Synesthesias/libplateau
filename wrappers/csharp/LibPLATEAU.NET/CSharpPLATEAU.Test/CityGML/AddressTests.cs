@@ -8,12 +8,20 @@ namespace PLATEAU.Test.CityGML
     public class AddressTests
     {
         private Address address;
-        // 前準備
-        public AddressTests()
+        private CityModel cityModel;
+
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
             this.address = cityObject.Address;
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

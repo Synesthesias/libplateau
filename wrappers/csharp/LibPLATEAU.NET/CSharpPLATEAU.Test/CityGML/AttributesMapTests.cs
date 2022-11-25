@@ -9,16 +9,23 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AttributesMapTests
     {
+        private CityModel cityModel;
         private AttributesMap attrMap;
         
-        /// <summary> テストの前準備です。 </summary>
-        public AttributesMapTests()
+        [ClassInitialize]
+        public void ClassInitialize()
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .First(co => co.ID == "BLD_ae7f1207-dd09-45bc-8881-40533f3700bb");
             this.attrMap = cityObject.AttributesMap;
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
         
         [TestMethod]

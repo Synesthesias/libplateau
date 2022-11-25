@@ -7,12 +7,20 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class CityObjectTests
     {
-        private readonly CityObject cityObject;
+        private CityModel cityModel;
+        private CityObject cityObject;
 
-        public CityObjectTests() {
+        [ClassInitialize]
+        public void ClassInitialize() {
             // Load処理が重いため最初のみ実行して使いまわす。
-            CityModel cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             this.cityObject = cityModel.RootCityObjects[0];
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]

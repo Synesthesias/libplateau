@@ -8,12 +8,13 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class GeometryTests
     {
-        private readonly CityModel cityModel;
-        private readonly Geometry geomWithPolygon;
+        private CityModel cityModel;
+        private Geometry geomWithPolygon;
 
-        private readonly Geometry geomWithChildren;
-        // 初期化
-        public GeometryTests()
+        private Geometry geomWithChildren;
+        
+        [ClassInitialize]
+        public void ClassInitialize()
         {
             // テスト対象として適切なものを検索し、最初にヒットした物をテストに利用します。
             // 具体的には Polygon を1つ以上含む Geometry と、 Children を1つ以上含む Geometry を検索します。
@@ -22,6 +23,12 @@ namespace PLATEAU.Test.CityGML
             this.geomWithPolygon = allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.PolygonCount > 0);
             this.geomWithChildren =
                 allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.ChildGeometryCount > 0);
+        }
+
+        [ClassCleanup]
+        public void ClassCleanup()
+        {
+            this.cityModel.Dispose();
         }
 
         [TestMethod]
