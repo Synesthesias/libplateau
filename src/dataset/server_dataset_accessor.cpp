@@ -68,6 +68,7 @@ namespace plateau::dataset {
 
     std::vector<GmlFile> ServerDatasetAccessor::getGmlFiles(
             geometry::Extent extent, PredefinedCityModelPackage package) {
+        // extent と交わるメッシュコードを求めます。
         auto all_mesh_codes = getMeshCodes();
         auto target_mesh_codes = std::vector<MeshCode>();
         for(const auto& mesh_code : all_mesh_codes){
