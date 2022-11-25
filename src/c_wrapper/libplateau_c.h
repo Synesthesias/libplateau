@@ -84,17 +84,17 @@ using dll_str_size_t = int;
  * DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
  */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME( \
             HANDLE_TYPE* const handle, /* C# では引数   [In] IntPtr handle に対応します。 */ \
             RETURN_VALUE_TYPE* const out /* C# では引数 out OutType ret に対応します。 */ \
             __VA_ARGS__ \
             ){ \
         API_TRY{ \
             *out = GETTER; /* 渡したい値を out に書き込みます。*/ \
-            return APIResult::Success; \
+            return libplateau::APIResult::Success; \
         } \
         API_CATCH \
-        return APIResult::ErrorUnknown; \
+        return libplateau::APIResult::ErrorUnknown; \
     }
 
 
@@ -147,7 +147,7 @@ using dll_str_size_t = int;
 /// C++側での文字列の寿命が短い場合でも利用できる点です。
 #define DLL_STRING_VALUE_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
     DLL_VALUE_FUNC(FUNC_NAME ## _size, TARGET_TYPE, int, (int)(STRING_GETTER).length()+1, __VA_ARGS__ ) /* +1 はnull終端文字列の分 */ \
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE* const handle, \
             char* const out_str_ptr __VA_ARGS__){ \
         API_TRY{ \
@@ -156,10 +156,10 @@ using dll_str_size_t = int;
             auto len = (dll_str_size_t) (str.length()); \
             strncpy(out_str_ptr, chars, len); \
             out_str_ptr[len] = '\0'; /* 最後はnull終端文字*/ \
-            return APIResult::Success; \
+            return libplateau::APIResult::Success; \
         } \
         API_CATCH \
-        return APIResult::ErrorUnknown; \
+        return libplateau::APIResult::ErrorUnknown; \
     }
 
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。

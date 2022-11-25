@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 namespace plateau::network {
 
-    std::string Client::getApiServerUrl() {
+    std::string Client::getApiServerUrl() const {
         return server_url_;
     }
 
@@ -50,7 +50,7 @@ namespace plateau::network {
         return dataset_meta_data_group_vec;
     }
 
-    void Client::getMetadata(std::vector<DatasetMetadataGroup> out_metadata_groups) const {
+    void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
         out_metadata_groups = getMetadata();
     }
 

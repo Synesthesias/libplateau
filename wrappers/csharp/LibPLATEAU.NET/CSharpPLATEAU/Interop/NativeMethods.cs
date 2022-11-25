@@ -1723,5 +1723,21 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_client_get_metadata(
             [In] IntPtr clientPtr,
             [In, Out] IntPtr refNativeArrayDatasetMetadataGroupPtr);
+
+        [DllImport(DllName, CharSet = CharSet.Ansi)]
+        internal static extern APIResult plateau_set_api_server_url(
+            [In] IntPtr handle,
+            [In] string url);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_get_api_server_url_size(
+            [In] IntPtr handle,
+            out int outUrlSize);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_get_api_server_url(
+            [In] IntPtr handle,
+            [In,Out] IntPtr outStrPtr );
+        
     }
 }
