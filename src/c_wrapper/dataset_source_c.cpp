@@ -18,25 +18,14 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_dataset_source(
-            DatasetSource* dataset_source
-    ) {
-        delete dataset_source;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_dataset_source,
+                    DatasetSource)
 
     /**
      * DatasetAccessorPInvoke の delete は DLL利用者の責任とします。
      */
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_source_get_accessor(
-            DatasetSource* dataset_source,
-            IDatasetAccessor** out_dataset_accessor
-    ) {
-        API_TRY{
-                *out_dataset_accessor = dataset_source->getAccessor().get();
-                return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+DLL_1_ARG_FUNC(plateau_dataset_source_get_accessor,
+               DatasetSource,
+               IDatasetAccessor*,
+               *arg = handle->getAccessor().get())
 }

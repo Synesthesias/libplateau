@@ -23,12 +23,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file(
-            const GmlFile* gml_file_info
-    ) {
-        delete gml_file_info;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_gml_file,
+                    GmlFile)
 
     DLL_STRING_PTR_FUNC(plateau_gml_file_get_path,
                         GmlFile,

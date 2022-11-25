@@ -18,21 +18,9 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gltf_writer(GltfWriter** gltf_writer) {
-        API_TRY{
-            *gltf_writer = new GltfWriter;
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_CREATE_FUNC(plateau_create_gltf_writer,
+                    GltfWriter)
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gltf_writer(GltfWriter* gltf_writer) {
-        API_TRY{
-            delete gltf_writer;
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_DELETE_FUNC(plateau_delete_gltf_writer,
+                    GltfWriter)
 }

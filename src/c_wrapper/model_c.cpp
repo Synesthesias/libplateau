@@ -4,19 +4,11 @@ using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C" {
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_model(
-            Model** out_model_ptr
-            ){
-        *out_model_ptr = new Model();
-        return APIResult::Success;
-    }
+    DLL_CREATE_FUNC(plateau_create_model,
+                    Model)
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_model(
-            Model* model_ptr
-            ){
-        delete model_ptr;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_model,
+                    Model)
 
     DLL_VALUE_FUNC(plateau_model_get_root_nodes_count,
                    Model,

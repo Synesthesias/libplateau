@@ -15,21 +15,9 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_obj_writer(ObjWriter** obj_writer) {
-        API_TRY{
-            *obj_writer = new ObjWriter;
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_CREATE_FUNC(plateau_create_obj_writer,
+                    ObjWriter)
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_obj_writer(ObjWriter* obj_writer) {
-        API_TRY{
-            delete obj_writer;
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_DELETE_FUNC(plateau_delete_obj_writer,
+                    ObjWriter)
 }

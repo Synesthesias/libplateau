@@ -4,6 +4,7 @@
 
 using namespace libplateau;
 using namespace plateau::dataset;
+using namespace plateau::geometry;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT MeshCode LIBPLATEAU_C_API plateau_mesh_code_parse(
@@ -13,7 +14,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_code_get_extent(
-        const MeshCode mesh_code, plateau::geometry::Extent* extent
+        const MeshCode mesh_code, Extent* extent
     ) {
         API_TRY{
             *extent = mesh_code.getExtent();

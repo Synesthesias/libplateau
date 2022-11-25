@@ -6,18 +6,11 @@ using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C"{
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_mesh(
-            Mesh** out_mesh_ptr
-    ) {
-        *out_mesh_ptr = new Mesh();
-        return APIResult::Success;
-    }
+    DLL_CREATE_FUNC(plateau_create_mesh,
+                    Mesh)
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_mesh(const Mesh* mesh){
-        delete mesh;
-        return APIResult::Success;
-    }
-
+    DLL_DELETE_FUNC(plateau_delete_mesh,
+                    Mesh)
 
     DLL_VALUE_FUNC(plateau_mesh_get_vertices_count,
                        Mesh,

@@ -304,7 +304,7 @@ using dll_str_size_t = int;
  */
 #define DLL_DELETE_FUNC(FUNC_NAME, DELETE_TYPE) \
     LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
-            DELETE_TYPE ** ptr /* C# では [In] IntPtr ptr に対応します。 */ \
+            const DELETE_TYPE * ptr /* C# では [In] IntPtr ptr に対応します。 */ \
     ) { \
         delete ptr; \
         return libplateau::APIResult::Success; \

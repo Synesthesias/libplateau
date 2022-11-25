@@ -13,12 +13,8 @@ extern "C" {
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_node(
-            Node* node_ptr
-    ) {
-        delete node_ptr;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_node,
+                    Node)
 
     DLL_STRING_PTR_FUNC(plateau_node_get_name,
                         Node,

@@ -18,15 +18,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_geo_reference(
-            GeoReference* geo_reference
-            ){
-        API_TRY{
-            delete geo_reference;
-            return APIResult::Success;
-        }API_CATCH
-        return APIResult::ErrorUnknown;
-    }
+    DLL_DELETE_FUNC(plateau_delete_geo_reference,
+                    GeoReference)
 
     DLL_VALUE_FUNC(plateau_geo_reference_project,
                    GeoReference,
