@@ -19,10 +19,10 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    DLL_1_ARG_FUNC(plateau_i_dataset_accessor_get_mesh_codes,
-                   IDatasetAccessor,
-                   std::vector<MeshCode>,
-                   handle->getMeshCodes(*arg))
+    DLL_2_ARG_FUNC(plateau_i_dataset_accessor_get_mesh_codes,
+                   IDatasetAccessor* const,
+                   std::vector<MeshCode>* const,
+                   arg_1->getMeshCodes(*arg_2))
 
     DLL_VALUE_FUNC(plateau_i_dataset_accessor_get_max_lod,
                    IDatasetAccessor,

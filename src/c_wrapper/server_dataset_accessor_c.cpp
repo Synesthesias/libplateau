@@ -16,20 +16,20 @@ DLL_DELETE_FUNC(plateau_delete_server_dataset_accessor,
 
 
 // TODO DLL_1_ARG_FUNC というマクロをせっかく作ったので、他の所で同マクロに置き換え可能な箇所を置き換えたい
-DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_dataset_metadata_group,
-               ServerDatasetAccessor,
-               std::vector<DatasetMetadataGroup>,
-               handle->getDatasetMetadataGroup(*arg))
+DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_dataset_metadata_group,
+               const ServerDatasetAccessor* const,
+               std::vector<DatasetMetadataGroup>* const,
+               arg_1->getDatasetMetadataGroup(*arg_2))
 
-DLL_1_ARG_FUNC(plateau_server_dataset_accessor_set_dataset_id,
-               ServerDatasetAccessor,
-               const char,
-               handle->setDatasetID(arg))
+DLL_2_ARG_FUNC(plateau_server_dataset_accessor_set_dataset_id,
+               ServerDatasetAccessor* const,
+               const char* const,
+               arg_1->setDatasetID(arg_2))
 
-DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_mesh_codes,
-               ServerDatasetAccessor,
-               std::vector<MeshCode>,
-               handle->getMeshCodes(*arg))
+DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_mesh_codes,
+               ServerDatasetAccessor* const,
+               std::vector<MeshCode>* const,
+               arg_1->getMeshCodes(*arg_2))
 
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_get_gml_files(
        ServerDatasetAccessor* const accessor,
@@ -44,8 +44,8 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_g
     return APIResult::ErrorUnknown;
 }
 
-DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
-               ServerDatasetAccessor,
-               PredefinedCityModelPackage,
-               *arg = handle->getPackages())
+DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
+               ServerDatasetAccessor* const,
+               PredefinedCityModelPackage* const,
+               *arg_2 = arg_1->getPackages())
 }
