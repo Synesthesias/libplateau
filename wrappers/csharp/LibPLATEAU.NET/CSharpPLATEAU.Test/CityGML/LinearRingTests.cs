@@ -8,16 +8,16 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class LinearRingTests
     {
-        private CityModel cityModel;
-        private LinearRing exteriorRing;
+        private static CityModel cityModel;
+        private static LinearRing exteriorRing;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             
             // 頂点数が 1 以上である ExteriorRing を検索し、最初に見つかったものをテスト対象とします。
-            this.exteriorRing = cityModel.RootCityObjects
+            exteriorRing = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
@@ -26,22 +26,22 @@ namespace PLATEAU.Test.CityGML
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
         
         [TestMethod]
         public void ExteriorRing_Is_Not_Null()
         {
-            Console.WriteLine(this.exteriorRing.Handle.ToInt64());
-            Assert.IsNotNull(this.exteriorRing);
+            Console.WriteLine(exteriorRing.Handle.ToInt64());
+            Assert.IsNotNull(exteriorRing);
         }
         
         [TestMethod]
         public void VerticesCount_Returns_Positive_Number()
         {
-            int verticesCount = this.exteriorRing.VertexCount;
+            int verticesCount = exteriorRing.VertexCount;
             Console.WriteLine($"Vertices Count: {verticesCount}");
             Assert.IsTrue(verticesCount > 0);
         }
@@ -49,7 +49,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetVertex_Returns_Non_Zero()
         {
-            var vert = this.exteriorRing.GetVertex(this.exteriorRing.VertexCount - 1);
+            var vert = exteriorRing.GetVertex(exteriorRing.VertexCount - 1);
             Console.WriteLine($"Vertex: {vert}");
             Assert.IsTrue(vert.IsNotZero());
         }

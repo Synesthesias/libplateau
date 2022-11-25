@@ -12,29 +12,27 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class PolygonTests
     {
-        private CityModel cityModelWithTessellate;
-        private CityModel cityModelWithoutTesselate;
-        private Polygon polyWithVerts;
-
-        private Polygon polyWithInteriorRings;
+        private static CityModel cityModelWithTessellate;
+        private static CityModel cityModelWithoutTessellate;
+        private static Polygon polyWithVerts;
+        private static Polygon polyWithInteriorRings;
         
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
-            this.cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.cityModelWithoutTesselate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
+            cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            cityModelWithoutTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
 
             // テスト対象として適切な Polygon を検索し、最初にヒットしたものをテストに利用します。
             // 具体的には VertexCount が 1以上である Polygon を探します。
-            this.polyWithVerts = cityModelWithTessellate.RootCityObjects
+            polyWithVerts = cityModelWithTessellate.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geo => geo.GeometryDescendantsDFS)
                 .SelectMany(geo => geo.Polygons)
                 .First(poly => poly.VertexCount > 0);
-            
 
-            this.polyWithInteriorRings = this.cityModelWithoutTesselate.RootCityObjects
+            polyWithInteriorRings = cityModelWithoutTessellate.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.Polygons)
@@ -42,16 +40,16 @@ namespace PLATEAU.Test.CityGML
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModelWithTessellate.Dispose();
-            this.cityModelWithoutTesselate.Dispose();
+            cityModelWithTessellate.Dispose();
+            cityModelWithoutTessellate.Dispose();
         }
 
         [TestMethod]
         public void VertexCount_Returns_Positive_Value()
         {
-            int actualVertCount = this.polyWithVerts.VertexCount;
+            int actualVertCount = polyWithVerts.VertexCount;
             Console.WriteLine($"VertexCount: {actualVertCount}");
             Assert.IsTrue(actualVertCount > 0);
         }
@@ -59,7 +57,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetVertex_Returns_Non_Zero_Position()
         {
-            var vert = this.polyWithVerts.GetVertex(0);
+            var vert = polyWithVerts.GetVertex(0);
             Console.WriteLine($"vertex: {vert}");
             Assert.IsTrue(vert.IsNotZero());
         }
@@ -67,7 +65,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void IndicesCount_Returns_Positive_Value()
         {
-            int indicesCount = this.polyWithVerts.IndicesCount;
+            int indicesCount = polyWithVerts.IndicesCount;
             Console.WriteLine($"indices count: {indicesCount}");
             Assert.IsTrue(indicesCount > 0);
         }
@@ -75,7 +73,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void Indices()
         {
-            int[] indices = this.polyWithVerts.Indices.ToArray();
+            int[] indices = polyWithVerts.Indices.ToArray();
             Console.Write("indices: ");
             foreach (int idx in indices)
             {
@@ -86,8 +84,8 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void InteriorRingsCount_Is_Same_As_Length_Of_InteriorRings()
         {
-            int interiorRingsCount = this.polyWithInteriorRings.InteriorRingCount;
-            int lengthOfInteriorRings = this.polyWithInteriorRings.InteriorRings.Count();
+            int interiorRingsCount = polyWithInteriorRings.InteriorRingCount;
+            int lengthOfInteriorRings = polyWithInteriorRings.InteriorRings.Count();
             Console.WriteLine($"Interior Rings Count: {interiorRingsCount}");
             Assert.AreEqual(interiorRingsCount, lengthOfInteriorRings);
         }
@@ -96,7 +94,7 @@ namespace PLATEAU.Test.CityGML
         public void Do_Exist_InteriorRings_That_Have_Vertices_More_Than_Zero()
         {
             // 頂点数が1以上の InteriorRing を検索して1つでもあれば成功とします。
-            var ring = this.cityModelWithoutTesselate.RootCityObjects
+            var ring = cityModelWithoutTessellate.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -109,20 +107,20 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void DoHaveVertices_Returns_Correct()
         {
-            Assert.IsTrue(this.polyWithVerts.DoHaveVertices);
-            Assert.IsFalse(this.polyWithInteriorRings.DoHaveVertices);
+            Assert.IsTrue(polyWithVerts.DoHaveVertices);
+            Assert.IsFalse(polyWithInteriorRings.DoHaveVertices);
         }
 
         [TestMethod]
         public void DoHaveRings_Returns_Correct()
         {
-            Assert.IsTrue(this.polyWithInteriorRings.DoHaveRings);
+            Assert.IsTrue(polyWithInteriorRings.DoHaveRings);
         }
 
         [TestMethod]
         public void GetVertex_Throws_Error_When_Out_Of_Range()
         {
-            var poly = this.polyWithVerts;
+            var poly = polyWithVerts;
             // 正常
             poly.GetVertex(poly.VertexCount - 1);
             // 異常

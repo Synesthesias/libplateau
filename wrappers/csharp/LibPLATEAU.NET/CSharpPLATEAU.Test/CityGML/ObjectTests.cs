@@ -7,27 +7,27 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class ObjectTests
     {
-        private CityModel cityModel;
-        private Object plateauObject;
+        private static CityModel cityModel;
+        private static Object plateauObject;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.plateauObject = cityModel.RootCityObjects[0];
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            plateauObject = cityModel.RootCityObjects[0];
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void ID_Returns_GML_ID()
         {
             const string idInGmlFile = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
-            string actualId = this.plateauObject.ID;
+            string actualId = plateauObject.ID;
             Assert.AreEqual(idInGmlFile, actualId);
         }
     }

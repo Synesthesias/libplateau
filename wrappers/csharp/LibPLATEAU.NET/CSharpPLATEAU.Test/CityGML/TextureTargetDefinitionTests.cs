@@ -9,15 +9,15 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class TextureTargetDefinitionTests
     {
-        private CityModel cityModel;
-        private TextureTargetDefinition texTarget;
+        private static CityModel cityModel;
+        private static TextureTargetDefinition texTarget;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
             // 探索して最初に見つかった TextureTargetDefinition をテスト対象にします。
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.texTarget = cityModel.RootCityObjects
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            texTarget = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -28,15 +28,15 @@ namespace PLATEAU.Test.CityGML
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void TextureCoordinatesCount_Returns_Positive_Number()
         {
-            int actualCount = this.texTarget.TexCoordinatesCount;
+            int actualCount = texTarget.TexCoordinatesCount;
             Console.WriteLine($"TextureCoordinatesCount : {actualCount}");
             Assert.IsTrue(actualCount > 0);
         }
@@ -44,7 +44,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetTextureCoordinates_Returns_NotNull()
         {
-            var coords = this.texTarget.GetCoordinate(0);
+            var coords = texTarget.GetCoordinate(0);
             Assert.IsNotNull(coords);
         }
     }

@@ -9,15 +9,15 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AppearanceTargetDefinitionTests
     {
-        private CityModel cityModel;
-        private TextureTargetDefinition texTargetDef;
+        private static CityModel cityModel;
+        private static TextureTargetDefinition texTargetDef;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
             // 探索して最初に見つかった TextureTargetDefinition をテスト対象にします。
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.texTargetDef = cityModel.RootCityObjects
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            texTargetDef = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -28,15 +28,15 @@ namespace PLATEAU.Test.CityGML
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void TargetID_Returns_Not_Empty()
         {
-            string targetID = this.texTargetDef.TargetID;
+            string targetID = texTargetDef.TargetID;
             Console.WriteLine($"targetID = {targetID}");
             Assert.IsTrue(targetID.Length > 0);
         }
@@ -44,7 +44,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void Appearance_Returns_NotNull()
         {
-            var appearance = this.texTargetDef.Appearance;
+            var appearance = texTargetDef.Appearance;
             Assert.IsNotNull(appearance);
         }
     }

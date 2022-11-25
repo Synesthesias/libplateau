@@ -8,32 +8,32 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class FeatureObjectTests
     {
-        private CityModel cityModel;
-        private FeatureObject featureObject;
+        private static CityModel cityModel;
+        private static FeatureObject featureObject;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.featureObject = cityModel.RootCityObjects[0];
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            featureObject = cityModel.RootCityObjects[0];
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void GetEnvelop_Returns_Same_As_Set()
         {
             double[] value = { 1.1, 2.2, 3.3, 4.4, 5.5, 6.6 };
-            this.featureObject.SetEnvelope(
+            featureObject.SetEnvelope(
                 value[0], value[1], value[2],
                 value[3], value[4], value[5]
             );
 
-            double[] getVal = this.featureObject.Envelope;
+            double[] getVal = featureObject.Envelope;
 
             // 参考用に envelope の中身を出力します。
             StringBuilder sb = new StringBuilder();

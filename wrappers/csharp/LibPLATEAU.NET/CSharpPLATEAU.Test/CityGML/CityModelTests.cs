@@ -8,24 +8,24 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class CityModelTests
     {
-        private CityModel cityModel;
+        private static CityModel cityModel;
 
         [ClassInitialize]
-        public void ClassInitialize()
+        public static void ClassInitialize(TestContext _)
         {
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
         }
 
         [ClassCleanup]
-        public void ClassCleanup()
+        public static void ClassCleanup()
         {
-            this.cityModel.Dispose();
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void GetCityObjectsByType_Can_Be_Used_To_Get_All_CityObjects()
         {
-            var allCityObjects = this.cityModel.GetCityObjectsByType(CityObjectType.COT_All);
+            var allCityObjects = cityModel.GetCityObjectsByType(CityObjectType.COT_All);
             Assert.AreEqual(548, allCityObjects.Length);
         }
 
@@ -34,8 +34,8 @@ namespace PLATEAU.Test.CityGML
         {
             var floorType = CityObjectType.COT_FloorSurface;
 
-            var allCityObjects = this.cityModel.GetCityObjectsByType(CityObjectType.COT_All);
-            var floorCityObjects = this.cityModel.GetCityObjectsByType(floorType);
+            var allCityObjects = cityModel.GetCityObjectsByType(CityObjectType.COT_All);
+            var floorCityObjects = cityModel.GetCityObjectsByType(floorType);
 
             foreach (var obj in allCityObjects)
             {
@@ -55,7 +55,7 @@ namespace PLATEAU.Test.CityGML
         {
             // 今回のテストデータには、 COT_Building は含まれますが COT_Door は含まれません。
             var typeFlags = CityObjectType.COT_Building | CityObjectType.COT_Door;
-            var foundCityObjs = this.cityModel.GetCityObjectsByType(typeFlags);
+            var foundCityObjs = cityModel.GetCityObjectsByType(typeFlags);
             foreach (var cityObjs in foundCityObjs)
             {
                 var type = cityObjs.Type;
@@ -70,7 +70,7 @@ namespace PLATEAU.Test.CityGML
         public void GetCityObjectFromId_Returns_CityObj_With_Same_ID()
         {
             const string id = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
-            var found = this.cityModel.GetCityObjectById(id);
+            var found = cityModel.GetCityObjectById(id);
             Assert.AreEqual(id, found.ID);
         }
 
@@ -79,7 +79,7 @@ namespace PLATEAU.Test.CityGML
         {
             Assert.ThrowsException<KeyNotFoundException>(() =>
             {
-                this.cityModel.GetCityObjectById("存在しないID-ダミー012");
+                cityModel.GetCityObjectById("存在しないID-ダミー012");
             });
         }
     }
