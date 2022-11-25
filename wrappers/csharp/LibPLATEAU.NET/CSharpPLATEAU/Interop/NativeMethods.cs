@@ -1320,6 +1320,11 @@ namespace PLATEAU.Interop
             [In] IntPtr datasetSourcePtr,
             out IntPtr accessorPtr);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_dataset_source_server(
+            out IntPtr newDatasetSourcePtr,
+            [In] string datasetID);
+
 
         // ***************
         //  gml_file_c.cpp

@@ -1,14 +1,17 @@
 #include <plateau/dataset/server_dataset_accessor.h>
-#include "plateau/dataset/local_dataset_accessor.h"
+#include <plateau/dataset/local_dataset_accessor.h>
 
 namespace plateau::dataset {
     using namespace plateau::network;
 
     ServerDatasetAccessor::ServerDatasetAccessor() :
-            client_(Client()),
-            cached_mesh_codes_are_valid_(true){
-        // モックサーバーのURL
-        client_.setApiServerUrl("https://9tkm2n.deta.dev");
+            client_(Client("https://9tkm2n.deta.dev")),// モックサーバーのURL
+            cached_mesh_codes_are_valid_(false){
+    }
+
+    ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id) :
+        ServerDatasetAccessor(){
+        setDatasetID(dataset_id);
     }
 
     std::vector<DatasetMetadataGroup> ServerDatasetAccessor::getDatasetMetadataGroup() const{

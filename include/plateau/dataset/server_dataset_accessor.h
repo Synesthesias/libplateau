@@ -9,6 +9,8 @@ namespace plateau::dataset{
     class LIBPLATEAU_EXPORT ServerDatasetAccessor : public IDatasetAccessor{
     public:
         ServerDatasetAccessor();
+        explicit ServerDatasetAccessor(const std::string& dataset_id);
+
         std::vector<network::DatasetMetadataGroup> getDatasetMetadataGroup() const;
         /// 上記メソッドのP/Invoke版です。
         void getDatasetMetadataGroup(std::vector<network::DatasetMetadataGroup>& out_group) const;

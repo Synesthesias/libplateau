@@ -10,6 +10,10 @@ namespace fs = std::filesystem;
 
 namespace plateau::network {
 
+    Client::Client(const std::string& server_url){
+        setApiServerUrl(server_url);
+    }
+
     std::string Client::getApiServerUrl() const {
         return server_url_;
     }

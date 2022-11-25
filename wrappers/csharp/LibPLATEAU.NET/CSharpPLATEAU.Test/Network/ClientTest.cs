@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NuGet.Frameworks;
 using PLATEAU.Network;
 
 namespace PLATEAU.Test.Network

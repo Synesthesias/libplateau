@@ -35,6 +35,8 @@ namespace plateau::network {
         Client() : server_url_("") {
         }
 
+        explicit Client(const std::string& server_url);
+
         std::string getApiServerUrl() const;
         void setApiServerUrl(const std::string& url);
         std::vector<DatasetMetadataGroup> getMetadata() const;

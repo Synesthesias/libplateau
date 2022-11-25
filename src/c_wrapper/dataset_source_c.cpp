@@ -18,14 +18,19 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
+    DLL_2_ARG_FUNC(plateau_create_dataset_source_server,
+                   DatasetSource**, // out_pointer_of_new_instance
+                   const char* const, // dataset_id
+                   *arg_1 = new DatasetSource(std::string(arg_2)))
+
     DLL_DELETE_FUNC(plateau_delete_dataset_source,
                     DatasetSource)
 
     /**
      * DatasetAccessorPInvoke の delete は DLL利用者の責任とします。
      */
-DLL_2_ARG_FUNC(plateau_dataset_source_get_accessor,
-               const DatasetSource* const,
-               const IDatasetAccessor** const,
-               *arg_2 = arg_1->getAccessor().get())
+    DLL_2_ARG_FUNC(plateau_dataset_source_get_accessor,
+                   const DatasetSource* const,
+                   const IDatasetAccessor** const,
+                   *arg_2 = arg_1->getAccessor().get())
 }

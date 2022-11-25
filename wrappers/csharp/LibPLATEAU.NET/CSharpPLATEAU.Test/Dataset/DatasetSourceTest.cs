@@ -24,5 +24,22 @@ namespace PLATEAU.Test.Dataset
             var package = PredefinedCityModelPackage.Building;
             Assert.AreEqual(2, accessor.GetMaxLod(meshCode, package));
         }
+
+        [TestMethod]
+        public void Accessor_From_Server_Works()
+        {
+            using var source = DatasetSource.CreateServer("23ku");
+            var accessor = source.Accessor;
+            Assert.AreEqual("53392642", accessor.MeshCodes.At(0).ToString());
+            var expectedPackages =
+                PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road |
+                PredefinedCityModelPackage.LandUse |
+                PredefinedCityModelPackage.UrbanPlanningDecision;
+            Assert.AreEqual(expectedPackages, accessor.Packages);
+            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            Assert.AreEqual(
+                "https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml", 
+                gmls.At(0).Path);
+        }
     }
 }
