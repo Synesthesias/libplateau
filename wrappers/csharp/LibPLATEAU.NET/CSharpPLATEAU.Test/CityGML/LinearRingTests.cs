@@ -12,7 +12,7 @@ namespace PLATEAU.Test.CityGML
         private static LinearRing exteriorRing;
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             

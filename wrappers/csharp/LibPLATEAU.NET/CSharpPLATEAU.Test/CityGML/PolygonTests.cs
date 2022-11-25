@@ -18,7 +18,7 @@ namespace PLATEAU.Test.CityGML
         private static Polygon polyWithInteriorRings;
         
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             cityModelWithTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             cityModelWithoutTessellate = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);

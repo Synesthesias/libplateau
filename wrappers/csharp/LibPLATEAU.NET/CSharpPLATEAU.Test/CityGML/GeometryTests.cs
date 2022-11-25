@@ -13,7 +13,7 @@ namespace PLATEAU.Test.CityGML
         private static Geometry geomWithChildren;
         
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             // テスト対象として適切なものを検索し、最初にヒットした物をテストに利用します。
             // 具体的には Polygon を1つ以上含む Geometry と、 Children を1つ以上含む Geometry を検索します。

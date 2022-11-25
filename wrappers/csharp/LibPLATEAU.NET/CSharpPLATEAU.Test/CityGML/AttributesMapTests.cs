@@ -13,7 +13,7 @@ namespace PLATEAU.Test.CityGML
         private static AttributesMap attrMap;
         
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects

@@ -13,7 +13,7 @@ namespace PLATEAU.Test.CityGML
         private static Texture texture;
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             texture = cityModel.RootCityObjects

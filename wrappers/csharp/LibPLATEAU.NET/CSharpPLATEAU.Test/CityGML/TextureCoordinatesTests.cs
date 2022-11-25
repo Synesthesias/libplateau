@@ -14,7 +14,7 @@ namespace PLATEAU.Test.CityGML
         private static LinearRing targetRing;
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             // 探索して最初に見つかった TextureCoordinates をテスト対象にします。
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);

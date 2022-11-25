@@ -13,7 +13,7 @@ namespace PLATEAU.Test.CityGML
         private static TextureTargetDefinition texTarget;
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext _)
+        public static void ClassInitialize(TestContext context)
         {
             // 探索して最初に見つかった TextureTargetDefinition をテスト対象にします。
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
