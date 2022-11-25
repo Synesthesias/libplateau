@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpPLATEAU", "CSharpPLATEAU\CSharpPLATEAU.csproj", "{020A3F86-8BDA-4C13-A042-D0A9DF1A645F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpPLATEAU", "CSharpPLATEAU/CSharpPLATEAU.csproj", "{020A3F86-8BDA-4C13-A042-D0A9DF1A645F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpPLATEAU.Test", "CSharpPLATEAU.Test\CSharpPLATEAU.Test.csproj", "{E21BF247-31C5-453F-A1D0-45815EBB0FA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpPLATEAU.Test", "CSharpPLATEAU.Test/CSharpPLATEAU.Test.csproj", "{E21BF247-31C5-453F-A1D0-45815EBB0FA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
