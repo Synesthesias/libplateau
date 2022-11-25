@@ -316,15 +316,15 @@ using dll_str_size_t = int;
  * PREDICATE は TARGET_TYPE* const handle と ARG_TYPE* const arg を使って記述します。
  */
 #define DLL_2_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, PREDICATE) \
-LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
         ARG_1_TYPE arg_1, \
         ARG_2_TYPE arg_2 \
 ){ \
     API_TRY{ \
         { PREDICATE ;} \
-        return APIResult::Success; \
+        return libplateau::APIResult::Success; \
     }API_CATCH \
-    return APIResult::ErrorUnknown; \
+    return libplateau::APIResult::ErrorUnknown; \
 }
 
 namespace libplateau {

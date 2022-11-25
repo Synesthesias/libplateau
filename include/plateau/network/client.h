@@ -38,6 +38,7 @@ namespace plateau::network {
         std::string getApiServerUrl();
         void setApiServerUrl(const std::string& url);
         std::vector<DatasetMetadataGroup> getMetadata() const;
+        void getMetadata(std::vector<DatasetMetadataGroup> out_metadata_groups) const;
         std::vector<plateau::dataset::MeshCode> getMeshCodes(const std::string& id);
         std::shared_ptr<std::map<std::string, std::vector<std::string>>> getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes);
         std::string download(const std::string& destination_directory, const std::string& url);

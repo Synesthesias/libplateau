@@ -50,6 +50,10 @@ namespace plateau::network {
         return dataset_meta_data_group_vec;
     }
 
+    void Client::getMetadata(std::vector<DatasetMetadataGroup> out_metadata_groups) const {
+        out_metadata_groups = getMetadata();
+    }
+
     
     std::vector<plateau::dataset::MeshCode> Client::getMeshCodes(const std::string& id) {
         auto ret_mesh_codes = std::vector<plateau::dataset::MeshCode>();

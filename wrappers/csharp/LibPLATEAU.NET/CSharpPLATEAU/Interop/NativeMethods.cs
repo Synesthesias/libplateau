@@ -1706,5 +1706,22 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_server_dataset_accessor_get_packages(
             [In] IntPtr accessorPtr,
             out PredefinedCityModelPackage package);
+        
+        // ***************
+        //  client_c.cpp
+        // ***************
+        
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_client(
+            out IntPtr newClientPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_client(
+            [In] IntPtr ptr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_client_get_metadata(
+            [In] IntPtr clientPtr,
+            [In, Out] IntPtr refNativeArrayDatasetMetadataGroupPtr);
     }
 }
