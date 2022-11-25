@@ -43,4 +43,9 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_g
     }API_CATCH
     return APIResult::ErrorUnknown;
 }
+
+DLL_1_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
+               ServerDatasetAccessor,
+               PredefinedCityModelPackage,
+               *arg = handle->getPackages())
 }

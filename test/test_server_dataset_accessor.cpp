@@ -12,4 +12,11 @@ namespace plateau::dataset{
         auto gmls = accessor.getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
         ASSERT_EQ(gmls.size(), 1);
     }
+
+    TEST_F(ServerDatasetAccessorTest, getPackages){
+        auto accessor = ServerDatasetAccessor();
+        accessor.setDatasetID("23ku");
+        accessor.getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
+        std::cout << (unsigned long)accessor.getPackages() << std::endl;
+    }
 }

@@ -1701,5 +1701,10 @@ namespace PLATEAU.Interop
             [In,Out] IntPtr refNativeVectorGmlFilePtr,
             Extent extent,
             PredefinedCityModelPackage package);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_server_dataset_accessor_get_packages(
+            [In] IntPtr accessorPtr,
+            out PredefinedCityModelPackage package);
     }
 }

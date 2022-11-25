@@ -57,6 +57,15 @@ namespace PLATEAU.Dataset
             return gmlFiles;
         }
 
+        public PredefinedCityModelPackage Packages
+        {
+            get
+            {
+                return DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
+                    NativeMethods.plateau_server_dataset_accessor_get_packages);
+            }
+        }
+
         public void Dispose()
         {
             // TODO ExecNativeVoidFunc を適用できる箇所は他にもあるので置き換える

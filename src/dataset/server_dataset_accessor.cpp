@@ -94,8 +94,11 @@ namespace plateau::dataset {
     }
 
     PredefinedCityModelPackage ServerDatasetAccessor::getPackages() {
-        // TODO 未実装
-        return PredefinedCityModelPackage::Road;
+        auto result = PredefinedCityModelPackage::None;
+        for (const auto& [key, _] : package_to_gmls_map_) {
+            result = result | key;
+        }
+        return result;
     }
 
 

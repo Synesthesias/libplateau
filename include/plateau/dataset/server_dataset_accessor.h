@@ -29,6 +29,10 @@ namespace plateau::dataset{
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
                          std::vector<GmlFile>& out_gml_files) override;
         int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) override;
+        /**
+         * package_to_gmls_map_ に含まれるパッケージをEnumフラグ形式で返します。
+         * すなわち、getGmlFiles したことのある Extent に関して利用可能なパッケージを返します。
+         */
         PredefinedCityModelPackage getPackages() override;
 
     private:

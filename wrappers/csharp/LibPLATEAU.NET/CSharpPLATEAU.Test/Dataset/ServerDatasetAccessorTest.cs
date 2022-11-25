@@ -69,5 +69,17 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(1, gmlFiles.Length);
             Assert.IsTrue((time1 - time2).TotalMilliseconds > 500, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
         }
+
+        [TestMethod]
+        public void GetPackages_Works()
+        {
+            var accessor = ServerDatasetAccessor.Create();
+            accessor.SetDatasetID("23ku");
+            var buildings = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var roads = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Road);
+            Assert.AreEqual(1, buildings.Length);
+            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse;
+            Assert.AreEqual(expected, accessor.Packages);
+        }
     }
 }
