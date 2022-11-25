@@ -17,6 +17,5 @@ namespace plateau::dataset{
         auto accessor = ServerDatasetAccessor();
         accessor.setDatasetID("23ku");
         accessor.getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
-        std::cout << (unsigned long)accessor.getPackages() << std::endl;
     }
 }

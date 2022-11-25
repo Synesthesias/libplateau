@@ -5,7 +5,6 @@ extern "C" {
 using namespace plateau::network;
 using namespace libplateau;
 
-// TODO CREATE,DELETEのマクロをせっかく作ったので、他のものもそちらに置き換えたい
 DLL_CREATE_FUNC(plateau_create_dataset_metadata_group,
                 DatasetMetadataGroup)
 DLL_DELETE_FUNC(plateau_delete_dataset_metadata_group,
