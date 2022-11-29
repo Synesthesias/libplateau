@@ -71,8 +71,7 @@ namespace plateau::network {
     }
     
     std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {
-        //auto file_url_lod = std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>>(); // doesn't work.
-        std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> file_url_lod(new std::map<std::string, std::vector<std::pair<float, std::string>>>());
+        auto file_url_lod = std::make_shared<std::map<std::string, std::vector<std::pair<float, std::string>>>>();
              
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
