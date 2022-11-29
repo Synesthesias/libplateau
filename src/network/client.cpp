@@ -78,9 +78,9 @@ namespace plateau::network {
         return ret_mesh_codes;
     }
     
-    std::shared_ptr<std::map<std::string, std::vector<std::string>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {
-        auto file_urls = std::make_shared<std::map<std::string, std::vector<std::string>>>();
-        
+    std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {
+        auto file_url_lod = std::make_shared<std::map<std::string, std::vector<std::pair<float, std::string>>>>();
+             
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
         std::string code_str = mesh_codes[0].get();
@@ -89,15 +89,19 @@ namespace plateau::network {
 
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
-            
             for (json::iterator it = jres.begin(); it != jres.end(); ++it) {
                 auto key = it.key();
-                if (key == "input")continue;
-                auto val = it.value();
-                file_urls->emplace(key, val);
+                if (key == "codes") continue;
+                auto vec_dic = it.value();
+                std::vector<std::pair<float, std::string>> vp;
+                for (int i = 0; i < vec_dic.size(); i++) {
+                    std::pair<float, std::string> p = std::make_pair(std::stof((std::string)vec_dic[i]["maxLod"]), vec_dic[i]["url"]);
+                    vp.push_back(p);
+                }
+                file_url_lod->emplace(key, vp);
             }
         }
-        return file_urls;
+        return file_url_lod;
     }
     
     std::string Client::download(const std::string& destination_directory, const std::string& url) {

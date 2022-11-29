@@ -33,10 +33,12 @@ int main(void) {
     std::vector<plateau::dataset::MeshCode> set_mesh_codes;
     set_mesh_codes.push_back(plateau::dataset::MeshCode("53392642"));
     set_mesh_codes.push_back(plateau::dataset::MeshCode("53392670"));
-    auto file_urls = client.getFiles(set_mesh_codes);
-    for (auto itr = file_urls->begin(); itr != file_urls->end(); ++itr) {
-        std::cout << itr->first << " : ";
-        for (int j = 0; j < itr->second.size(); j++) std::cout << itr->second[j] << ", ";
+    auto file_url_lod = client.getFiles(set_mesh_codes);
+    for (auto itr = file_url_lod->begin(); itr != file_url_lod->end(); ++itr) {
+        std::cout << itr->first << " : " << std::endl;
+        for (int j = 0; j < itr->second.size(); j++) {
+            std::cout << "url = " << itr->second[j].second << ", maxLod = " << itr->second[j].first << std::endl;
+        }
         std::cout << std::endl;
     }
 

@@ -31,18 +31,19 @@ namespace plateau::network {
             ASSERT_EQ(get_mesh_codes.at(0).get(), "53392642");
         }
     }
-
+    
     TEST_F(ClientTest, GetFiles) {
         std::vector<plateau::dataset::MeshCode> set_mesh_codes;
         set_mesh_codes.push_back(plateau::dataset::MeshCode("53392642"));
         set_mesh_codes.push_back(plateau::dataset::MeshCode("53392670"));
-        auto file_urls = client.getFiles(set_mesh_codes);
-        ASSERT_NE(file_urls->size(), 0);
-        if (file_urls->size() != 0) {
-            ASSERT_EQ(file_urls->begin()->second.at(0), "https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+        auto file_url_lod = client.getFiles(set_mesh_codes);
+        ASSERT_NE(file_url_lod->size(), 0);
+        if (file_url_lod->size() != 0) {
+            ASSERT_EQ(file_url_lod->begin()->second[0].first, 1);
+            ASSERT_EQ(file_url_lod->begin()->second[0].second, "https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
         }
     }
-
+    
     TEST_F(ClientTest, Download) {
         std::string gml_file_name = "53392642_bldg_6697_2_op.gml";
         fs::remove(gml_file_name);
