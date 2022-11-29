@@ -3,6 +3,7 @@
 #include <regex>
 #include <fstream>
 #include <set>
+#include <utility>
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/mesh_code.h>
 
@@ -10,8 +11,8 @@ namespace plateau::dataset {
 
     namespace fs = std::filesystem;
 
-    GmlFile::GmlFile(const std::string& path)
-        : path_(path),
+    GmlFile::GmlFile(std::string path)
+        : path_(std::move(path)),
         is_valid_(false){
         applyPath();
     }
@@ -224,7 +225,7 @@ namespace plateau::dataset {
     } // fetch で使う無名関数
 
     std::shared_ptr<GmlFile> GmlFile::fetch(const std::string& destination_root_path) const {
-        auto result = std::make_shared<GmlFile>("");
+        auto result = std::make_shared<GmlFile>(std::string(""));
         fetch(destination_root_path, *result);
         return result;
     }

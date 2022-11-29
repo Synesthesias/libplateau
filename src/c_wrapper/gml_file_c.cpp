@@ -12,7 +12,7 @@ extern "C" {
             GmlFile** gml_file_info_ptr, const char* path
     ) {
         API_TRY {
-            const auto gml_file_info = new GmlFile(path);
+            const auto gml_file_info = new GmlFile(std::string(path));
             if (gml_file_info->isValid()) {
                 *gml_file_info_ptr = gml_file_info;
                 return APIResult::Success;

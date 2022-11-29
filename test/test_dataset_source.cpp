@@ -22,6 +22,6 @@ namespace plateau::dataset {
         auto mesh_code_str = accessor->getMeshCodes().at(0).get();
         ASSERT_EQ(mesh_code_str, "53392642");
         auto gml_files = accessor->getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
-        ASSERT_EQ(gml_files.at(0).getMeshCode().get(), "53392642");
+        ASSERT_EQ(gml_files.at(0).getMeshCode().get(), "53392670");
     }
 }

@@ -66,7 +66,7 @@ TEST_F(DatasetTest, fetch_generates_files){
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
 //    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
-    const auto& test_gml_info = GmlFile("../data/udx/bldg/53392642_bldg_6697_op2.gml");
+    const auto& test_gml_info = GmlFile(std::string("../data/udx/bldg/53392642_bldg_6697_op2.gml"));
     test_gml_info.fetch(temp_test_dir);
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");

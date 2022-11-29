@@ -57,7 +57,7 @@ namespace plateau::dataset {
             auto udx_sub_dir_to_urls_map = client_.getFiles({mesh_code});
             for(const auto& [udx_sub_dir, urls] : *udx_sub_dir_to_urls_map){
                 auto package = UdxSubFolder::getPackage(udx_sub_dir);
-                for(const auto& url : urls){
+                for(const auto& [max_lod, url] : urls){
                     if(package_to_gmls_map_.find(package) != package_to_gmls_map_.cend()){
                         package_to_gmls_map_[package] = std::vector<GmlFile>();
                     }

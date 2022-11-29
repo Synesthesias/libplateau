@@ -10,7 +10,7 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT GmlFile {
     public:
-        explicit GmlFile(const std::string& path);
+        explicit GmlFile(std::string path);
 
         const std::string& getPath() const;
         void setPath(const std::string& path);
