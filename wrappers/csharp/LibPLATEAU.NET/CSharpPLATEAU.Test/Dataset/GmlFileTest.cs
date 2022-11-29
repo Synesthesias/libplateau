@@ -83,7 +83,7 @@ namespace PLATEAU.Test.Dataset
                 gml.Fetch(testDir.FullName);
             }
             
-            // Directory.Delete(testDir.FullName, true);
+            Directory.Delete(testDir.FullName, true);
         }
     }
 }

@@ -114,7 +114,8 @@ namespace plateau::network {
         
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get(url_utf8.substr(url_utf8.substr(8).find("/") + 8));
+        auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
+        auto res = cli.Get(path);
         if (res && res->status == 200) {
             ofs << res->body;
         }
