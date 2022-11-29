@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Interop;
@@ -44,9 +45,9 @@ namespace PLATEAU.Test.Dataset
         }
         
         [TestMethod]
-        public void Fetch_Copies_Relative_Files()
+        public void Fetch_Local_Copies_Relative_Files()
         {
-            using var source = DatasetSource.CreateLocal("data");
+            using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
             var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
@@ -67,6 +68,22 @@ namespace PLATEAU.Test.Dataset
                 Assert.IsTrue(File.Exists(resultPath), $"{resultPath} does not exist");
             }
             Directory.Delete(testDir.FullName, true);
+        }
+
+        [TestMethod]
+        public void Fetch_Server_Downloads_Files()
+        {
+            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
+            var accessor = source.Accessor;
+            var testDir = Directory.CreateDirectory("temp_test_dir");
+            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            Console.WriteLine(testDir.FullName);
+            foreach(var gml in gmls)
+            {
+                gml.Fetch(testDir.FullName);
+            }
+            
+            // Directory.Delete(testDir.FullName, true);
         }
     }
 }

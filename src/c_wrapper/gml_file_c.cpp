@@ -50,7 +50,7 @@ extern "C" {
                    MeshCode,
                    handle->getMeshCode())
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch_local(
             const GmlFile* const gml_file_info,
             char* destination_root_path_chars,
             GmlFile* const out_gml_file_info

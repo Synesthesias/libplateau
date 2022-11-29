@@ -47,7 +47,7 @@ namespace plateau::network {
     TEST_F(ClientTest, Download) {
         std::string gml_file_name = "53392642_bldg_6697_2_op.gml";
         fs::remove(gml_file_name);
-        auto fpath = client.download(".", "https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+        auto fpath = client.download(u8".", u8"https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
 
         ASSERT_TRUE(fs::file_size(fpath));
     }

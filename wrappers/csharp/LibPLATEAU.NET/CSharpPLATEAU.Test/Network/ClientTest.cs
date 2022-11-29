@@ -6,7 +6,7 @@ namespace PLATEAU.Test.Network
     [TestClass]
     public class ClientTest
     {
-        private const string MockServerUrl = "https://9tkm2n.deta.dev";
+        public const string MockServerUrl = "https://9tkm2n.deta.dev";
         [TestMethod]
         public void DatasetMetadataGroup()
         {

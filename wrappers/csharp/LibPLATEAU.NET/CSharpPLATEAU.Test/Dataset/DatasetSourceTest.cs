@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Get_Accessor_From_Local_DataSource_Returns_Accessor()
         {
-            using var source = DatasetSource.CreateLocal("data");
+            using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             Assert.AreEqual(accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
@@ -18,7 +18,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Accessor_From_Local_Source_Can_Search_MaxLod()
         {
-            using var source = DatasetSource.CreateLocal("data");
+            using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             var meshCode = accessor.MeshCodes.At(0);
             var package = PredefinedCityModelPackage.Building;
@@ -28,7 +28,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Accessor_From_Server_Works()
         {
-            using var source = DatasetSource.CreateServer("23ku");
+            using var source = DatasetSource.Create(true, "23ku");
             var accessor = source.Accessor;
             Assert.AreEqual("53392642", accessor.MeshCodes.At(0).ToString());
             var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);

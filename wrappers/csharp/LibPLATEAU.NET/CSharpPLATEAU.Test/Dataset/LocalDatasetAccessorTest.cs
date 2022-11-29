@@ -13,7 +13,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Can_Get_All_Mesh_Codes()
         {
-            var source = DatasetSource.CreateLocal("data");
+            var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             Assert.AreEqual(1, accessor.MeshCodes.Length);
         }
@@ -26,7 +26,7 @@ namespace PLATEAU.Test.Dataset
                 Max = new GeoCoordinate(35.54, 139.78, 999),
                 Min = new GeoCoordinate(35.53, 139.77, -999)
             };
-            using var datasetSource = DatasetSource.CreateLocal("data");
+            using var datasetSource = DatasetSource.Create(false, "data");
             var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(extent, PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -36,7 +36,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Packages_Getter_Returns_All_Packages()
         {
-            using var datasetSource = DatasetSource.CreateLocal("data");
+            using var datasetSource = DatasetSource.Create(false, "data");
             var accessor = datasetSource.Accessor;
             var expected = PredefinedCityModelPackage.Building;
             Assert.AreEqual(expected, accessor.Packages);
@@ -45,7 +45,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Get_Gml_Files_Returns_All_Files()
         {
-            using var datasetSource = DatasetSource.CreateLocal("data");
+            using var datasetSource = DatasetSource.Create(false, "data");
             var accessor = datasetSource.Accessor;
             Assert.AreEqual(
                 Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"),

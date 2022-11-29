@@ -43,7 +43,7 @@ namespace plateau::network {
         void getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const;
         std::vector<plateau::dataset::MeshCode> getMeshCodes(const std::string& id);
         std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes);
-        std::string download(const std::string& destination_directory, const std::string& url);
+        std::string download(const std::string& destination_directory_utf8, const std::string& url_utf8) const;
     private:
         std::string server_url_;
     };

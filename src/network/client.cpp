@@ -104,17 +104,17 @@ namespace plateau::network {
         return file_url_lod;
     }
     
-    std::string Client::download(const std::string& destination_directory, const std::string& url) {
-        auto gml_file_name = fs::u8path(url).filename().string();
-        auto gml_file_path = fs::absolute(fs::u8path(destination_directory) / gml_file_name).u8string();
+    std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
+        auto gml_file_name = fs::u8path(url_utf8).filename().string();
+        auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
         auto ofs = std::ofstream(gml_file_path);
         if (!ofs.is_open()) {
-            throw std::string("Failed to open stream of gml path : ") + gml_file_path;
+            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
         }
         
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get(url.substr(url.substr(8).find("/") + 8));
+        auto res = cli.Get(url_utf8.substr(url_utf8.substr(8).find("/") + 8));
         if (res && res->status == 200) {
             ofs << res->body;
         }
