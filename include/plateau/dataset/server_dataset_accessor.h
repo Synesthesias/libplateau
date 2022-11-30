@@ -42,7 +42,7 @@ namespace plateau::dataset {
         /// 上記メソッドのP/Invoke版です。
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
                          std::vector<GmlFile>& out_gml_files) override;
-        
+
         int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) override;
 
         /**

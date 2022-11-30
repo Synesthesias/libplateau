@@ -28,6 +28,5 @@ DLL_VALUE_FUNC(plateau_dataset_metadata_get_max_lod,
                int,
                handle->max_lod)
 
-// TODO feature_typesのP/Invoke
-
+               // TODO feature_typesを取得するP/Invoke
 }
