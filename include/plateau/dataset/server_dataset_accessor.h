@@ -9,7 +9,10 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT ServerDatasetAccessor : public IDatasetAccessor {
     public:
-//        ServerDatasetAccessor();
+        /**
+         * コンストラクト時にデータセットIDを指定します。
+         * このIDはサーバーにデータセット一覧を問い合わせて得られる文字列です。
+         */
         explicit ServerDatasetAccessor(const std::string& dataset_id);
 
         /**
@@ -25,19 +28,21 @@ namespace plateau::dataset {
 
         /**
          * データセットに含まれるメッシュコードの一覧をサーバーに問い合わせて返します。
-         * このメソッドの実行前に、コンストラクタまたは setDatasetID で
-         * データセットIDがセットされていること前提です。
-         * TODO こういう但し書きが必要な時点でスマートでない。コンストラクタで setDatasetIDの指定を強制すれば良いのでは。
+         * 結果はキャッシュに保存されるので、2回目以降はネットワーク通信が省略されます。
          */
         std::vector<MeshCode> getMeshCodes() override;
         /// 上記メソッドのP/Invoke版です。
         void getMeshCodes(std::vector<MeshCode>& mesh_codes) override;
 
-        ///
+        /**
+         * GMLファイルのうち、与えられたパッケージ種かつ範囲内であるものをサーバーに問い合わせて返します。
+         * 結果はキャッシュに保存されるので、2回目以降はネットワーク通信が省略される場合があります。
+         */
         std::vector<GmlFile> getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package) override;
         /// 上記メソッドのP/Invoke版です。
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
                          std::vector<GmlFile>& out_gml_files) override;
+        
         int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) override;
 
         /**

@@ -12,7 +12,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMetadataGroup_Returns_Array_Of_MetadataGroup()
         {
-            var accessor = ServerDatasetAccessor.Create();
+            var accessor = ServerDatasetAccessor.Create("");
             var metadataGroups = accessor.GetMetadataGroup();
             Assert.AreEqual(2, metadataGroups.Length);
             var metadataGroup = metadataGroups.At(0);
@@ -29,8 +29,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodes_Returns_MeshCodes()
         {
-            var accessor = ServerDatasetAccessor.Create();
-            accessor.SetDatasetID("23ku");
+            var accessor = ServerDatasetAccessor.Create("23ku");
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(2, meshCodes.Length);
             Assert.AreEqual("53392642", meshCodes.At(0).ToString());
@@ -40,8 +39,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles_Works()
         {
-            var accessor = ServerDatasetAccessor.Create();
-            accessor.SetDatasetID("23ku");
+            var accessor = ServerDatasetAccessor.Create("23ku");
             var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmlFiles.Length);
             var gml = gmlFiles.At(0);
@@ -52,8 +50,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles_Cache_Works()
         {
-            var accessor = ServerDatasetAccessor.Create();
-            accessor.SetDatasetID("23ku");
+            var accessor = ServerDatasetAccessor.Create("23ku");
             var stopwatch = Stopwatch.StartNew();
             var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmlFiles.Length);
@@ -73,8 +70,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackages_Works()
         {
-            var accessor = ServerDatasetAccessor.Create();
-            accessor.SetDatasetID("23ku");
+            var accessor = ServerDatasetAccessor.Create("23ku");
             var buildings = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             var roads = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Road);
             Assert.AreEqual(1, buildings.Length);

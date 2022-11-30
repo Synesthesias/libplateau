@@ -8,14 +8,15 @@ using namespace plateau::network;
 using namespace plateau::geometry;
 using namespace libplateau;
 
-DLL_CREATE_FUNC(plateau_create_server_dataset_accessor,
-                ServerDatasetAccessor)
+
+DLL_2_ARG_FUNC(plateau_create_server_dataset_accessor,
+               ServerDatasetAccessor**, // out_ptr
+               const char* const, // dataset_id
+               *arg_1 = new ServerDatasetAccessor(arg_2))
 
 DLL_DELETE_FUNC(plateau_delete_server_dataset_accessor,
                 ServerDatasetAccessor)
 
-
-// TODO DLL_1_ARG_FUNC というマクロをせっかく作ったので、他の所で同マクロに置き換え可能な箇所を置き換えたい
 DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_dataset_metadata_group,
                const ServerDatasetAccessor* const,
                std::vector<DatasetMetadataGroup>* const,

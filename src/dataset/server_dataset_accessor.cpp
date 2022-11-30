@@ -4,11 +4,6 @@
 namespace plateau::dataset {
     using namespace plateau::network;
 
-//    ServerDatasetAccessor::ServerDatasetAccessor() :
-//            client_(Client("https://9tkm2n.deta.dev")),// モックサーバーのURL
-//            cached_mesh_codes_are_valid_(false) {
-//    }
-
     ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id) :
             client_(Client("https://9tkm2n.deta.dev")),// モックサーバーのURL
             cached_mesh_codes_are_valid_(false) {

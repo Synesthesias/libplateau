@@ -310,10 +310,24 @@ using dll_str_size_t = int;
         return libplateau::APIResult::Success; \
     }
 
+/**
+ * ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg を使って記述します。
+ */
+#define DLL_1_ARG_FUNC(FUNC_NAME, ARG_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_TYPE arg_1, \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
 
 /**
- * TARGET_TYPE と ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
- * PREDICATE は TARGET_TYPE* const handle と ARG_TYPE* const arg を使って記述します。
+ * ARG_1_TYPE と ARG_2_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2 を使って記述します。
  */
 #define DLL_2_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, PREDICATE) \
 LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
