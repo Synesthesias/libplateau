@@ -114,17 +114,26 @@ namespace PLATEAU.Dataset
 
         private GmlFile FetchServer(string destinationRootPath)
         {
+            // "./udx/" で始まる相対パスです。
+            int udxIdx = Path.LastIndexOf("/udx/", StringComparison.Ordinal);
+            if (udxIdx < 0) throw new InvalidDataException($"Path should contain '/udx/' but it does not. Path = {Path}");
+            string relativePath = "." + Path.Substring(Path.LastIndexOf("/udx/", StringComparison.Ordinal));
+            
+            string destPath = System.IO.Path.Combine(destinationRootPath, relativePath).Replace('\\', '/');
+            string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
+            if (destDirPath == null) throw new InvalidDataException("Invalid path.");
+            Directory.CreateDirectory(destDirPath);
+            
             using (var client = Client.Create())
             {
                 client.Url = APIServerUrl;
-                byte[] destinationDirUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+                byte[] destinationDirUtf8 = DLLUtil.StrToUtf8Bytes(destDirPath);
                 byte[] urlUtf8 = DLLUtil.StrToUtf8Bytes(Path);
                 var result = NativeMethods.plateau_client_download(client.Handle, destinationDirUtf8, urlUtf8);
                 DLLUtil.CheckDllError(result);
-                string downloadedPath = System.IO.Path.Combine(destinationRootPath, System.IO.Path.GetFileName(Path));
-                if (!File.Exists(downloadedPath)) throw new FileLoadException("Failed to download file.");
-                if (new FileInfo(downloadedPath).Length == 0) throw new FileLoadException("Downloaded file size is zero. Maybe client.Url is wrong.");
-                return Create(downloadedPath);
+                if (!File.Exists(destPath)) throw new FileLoadException("Failed to download file.");
+                if (new FileInfo(destPath).Length == 0) throw new FileLoadException("Downloaded file size is zero. Maybe client.Url is wrong.");
+                return Create(destPath);
             }
         }
 
