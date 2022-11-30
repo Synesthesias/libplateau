@@ -28,5 +28,8 @@ DLL_VALUE_FUNC(plateau_dataset_metadata_get_max_lod,
                int,
                handle->max_lod)
 
-               // TODO feature_typesを取得するP/Invoke
+DLL_2_ARG_FUNC(plateau_dataset_metadata_get_feature_types,
+               const DatasetMetadata* const, // meta_data_ptr
+               std::vector<std::string>* const, // feature_types
+               *arg_2 = arg_1->feature_types)
 }

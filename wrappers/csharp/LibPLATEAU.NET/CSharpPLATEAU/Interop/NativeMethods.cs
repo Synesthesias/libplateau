@@ -1612,6 +1612,38 @@ namespace PLATEAU.Interop
             [In] IntPtr handle,
             out int outCount);
         
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_create_vector_string(
+            out IntPtr outVectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_delete_vector_string(
+            [In] IntPtr vectorPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_string_get_pointer(
+            [In] IntPtr vectorPtr,
+            out IntPtr outStringPtr,
+            int index);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_string_count(
+            [In] IntPtr handle,
+            out int outCount);
+        
+        // ***************
+        //  string_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_string_get_size(
+            [In] IntPtr nativeStringPtr,
+            out int outSize);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_string_get_char_ptr(
+            [In] IntPtr nativeStringPtr,
+            out IntPtr outCharPtr);
+        
         // ***************
         //  dataset_metadata_group_c.cpp
         // ***************
@@ -1653,26 +1685,31 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_metadata_get_id(
-            [In] IntPtr handle,
+            [In] IntPtr datasetMetadataPtr,
             out IntPtr outStrPtr,
             out int strLength);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_metadata_get_title(
-            [In] IntPtr handle,
+            [In] IntPtr datasetMetadataPtr,
             out IntPtr outStrPtr,
             out int strLength);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_metadata_get_description(
-            [In] IntPtr handle,
+            [In] IntPtr datasetMetadataPtr,
             out IntPtr outStrPtr,
             out int strLength);
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_dataset_metadata_get_max_lod(
-            [In] IntPtr handle,
+            [In] IntPtr datasetMetadataPtr,
             out int outMaxLod);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_dataset_metadata_get_feature_types(
+            [In] IntPtr datasetMetadataPtr,
+            [In,Out] IntPtr refNativeVectorStringPtr);
         
         // ***************
         //  server_dataset_accessor_c.cpp

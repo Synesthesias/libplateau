@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Interop;
@@ -23,7 +24,18 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual("23ku", dataset.ID);
             Assert.AreEqual("23区", dataset.Title);
             Assert.AreEqual("xxxx", dataset.Description);
+            Assert.AreEqual(3, dataset.MaxLOD);
             accessor.Dispose();
+        }
+
+        [TestMethod]
+        public void MetadataContainsFeatureTypes()
+        {
+            var accessor = ServerDatasetAccessor.Create("");
+            var meta = accessor.GetMetadataGroup().At(0).Datasets.At(1);
+            Assert.AreEqual("八王子市", meta.Title);
+            var featureTypes = meta.FeatureTypes.ToCSharpArray();
+            CollectionAssert.AreEquivalent(new []{"bldg", "dem"},featureTypes);
         }
 
         [TestMethod]

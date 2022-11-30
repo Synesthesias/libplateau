@@ -48,6 +48,18 @@ namespace PLATEAU.Dataset
                 return DLLUtil.GetNativeValue<int>(Handle, NativeMethods.plateau_dataset_metadata_get_max_lod);
             }
         }
+
+        public NativeVectorString FeatureTypes
+        {
+            get
+            {
+                var featureTypes = NativeVectorString.Create();
+                var result = NativeMethods.plateau_dataset_metadata_get_feature_types(
+                    Handle, featureTypes.Handle);
+                DLLUtil.CheckDllError(result);
+                return featureTypes;
+            }
+        }
         
         public void Dispose()
         {

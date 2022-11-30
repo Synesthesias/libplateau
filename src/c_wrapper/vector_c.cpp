@@ -57,4 +57,5 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
     PLATEAU_VECTOR(mesh_code, MeshCode)
     PLATEAU_VECTOR(dataset_metadata_group, DatasetMetadataGroup)
     PLATEAU_VECTOR(dataset_metadata, DatasetMetadata)
+    PLATEAU_VECTOR(string, std::string)
 }

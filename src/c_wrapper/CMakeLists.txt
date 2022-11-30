@@ -49,7 +49,8 @@ add_library(c_wrapper OBJECT
   "dataset_metadata_c.cpp"
   "server_dataset_accessor_c.cpp"
   "client_c.cpp"
-  )
+  "string_c.cpp"
+        )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
