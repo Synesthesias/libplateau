@@ -5,6 +5,9 @@
 
 namespace plateau::network {
 
+    /**
+     * データセットの情報です。
+     */
     struct DatasetMetadata {
         std::string id;
         std::string title;
@@ -12,7 +15,12 @@ namespace plateau::network {
         int max_lod;
         std::vector<std::string> feature_types;
     };
-    
+
+    /**
+     * データセットグループの一覧です。
+     * 通常は都道府県の一覧となります。
+     * 各データセットグループ（都道府県）の下にデータセットの一覧があります。
+     */
     struct DatasetMetadataGroup {
         std::string id;
         std::string title;
