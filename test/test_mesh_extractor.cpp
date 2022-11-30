@@ -154,7 +154,7 @@ namespace plateau::polygonMesh {
         auto options = mesh_extract_options_;
         options.exclude_city_object_outside_extent = false;
         options.exclude_triangles_outside_extent = true;
-        options.extent = Extent(GeoCoordinate(-90, -180, -9999), GeoCoordinate(90, 180, 9999));
+        options.extent = Extent::all();
         foreachMeshGranularityAndLOD(
                 options,
                 [this](Node& node, int lod_num) {

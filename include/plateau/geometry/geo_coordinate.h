@@ -27,9 +27,9 @@ namespace plateau::geometry {
         GeoCoordinate() = default;
 
         GeoCoordinate(double lat, double lon, double height) :
-            latitude(lat),
-            longitude(lon),
-            height(height) {
+                latitude(lat),
+                longitude(lon),
+                height(height) {
         }
     };
 
@@ -85,7 +85,6 @@ namespace plateau::geometry {
          */
         GeoCoordinate centerPoint() const;
 
-        // TODO all に置き換え可能な箇所を all にする
         static Extent all() {
             return {
                     GeoCoordinate(-90, -180, -9999),
