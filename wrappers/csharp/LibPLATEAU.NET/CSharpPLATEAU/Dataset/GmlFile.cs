@@ -37,12 +37,12 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
             }
             set
             {
-                // ThrowIfDisposed();
+                ThrowIfDisposed();
                 var result = NativeMethods.plateau_gml_file_set_path(
                     Handle, value);
                 DLLUtil.CheckDllError(result);
@@ -104,14 +104,24 @@ namespace PLATEAU.Dataset
 
         private GmlFile FetchLocal(string destinationRootPath)
         {
-            var result = Create("");
+            var resultGml = Create("");
             var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, result.Handle
+                Handle, destinationRootPath, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
-            return result;
+            resultGml.Path = resultGml.Path.Replace('\\', '/');
+            return resultGml;
         }
 
+        /// <summary>
+        /// サーバーからGMLファイルをダウンロードします。
+        /// </summary>
+        /// <param name="destinationRootPath">
+        /// ダウンロード先の基準パスです。
+        /// 実際のダウンロード先は、このパスに "/udx/(種別ディレクトリ)/(0個以上のディレクトリ)/(gmlファイル名)" を追加したものになります。
+        /// この追加分のパスは、接続先URLに含まれるものとします。 
+        /// </param>
+        /// <returns>ダウンロード後のGMLファイルの情報を返します。</returns>
         private GmlFile FetchServer(string destinationRootPath)
         {
             // "./udx/" で始まる相対パスです。
