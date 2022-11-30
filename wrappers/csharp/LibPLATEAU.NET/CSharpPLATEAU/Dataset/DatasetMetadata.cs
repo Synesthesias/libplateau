@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -58,6 +60,23 @@ namespace PLATEAU.Dataset
                     Handle, featureTypes.Handle);
                 DLLUtil.CheckDllError(result);
                 return featureTypes;
+            }
+        }
+
+        public PredefinedCityModelPackage PackageFlags
+        {
+            get
+            {
+                var packages = FeatureTypes
+                    .Select(f => DatasetAccessor.FeatureTypeToPackage(f.ToString()))
+                    .Distinct();
+                PredefinedCityModelPackage flags = 0u;
+                foreach (var package in packages)
+                {
+                    flags |= package;
+                }
+
+                return flags;
             }
         }
         

@@ -50,6 +50,7 @@ add_library(c_wrapper OBJECT
   "server_dataset_accessor_c.cpp"
   "client_c.cpp"
   "string_c.cpp"
+  "udx_sub_folder_c.cpp"
         )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

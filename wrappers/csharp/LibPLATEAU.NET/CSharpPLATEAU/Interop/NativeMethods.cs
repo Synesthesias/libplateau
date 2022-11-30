@@ -1303,6 +1303,14 @@ namespace PLATEAU.Interop
             out PredefinedCityModelPackage outPackage);
         
         // ***************
+        //  udx_sub_folder_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_udx_sub_folder_feature_type_to_package(
+            [In] byte[] featureTypeStrUtf8,
+            out PredefinedCityModelPackage outPackage);
+        
+        // ***************
         //  dataset_source_c.cpp
         // ***************
 
