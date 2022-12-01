@@ -2,6 +2,7 @@
 
 #include <libplateau_api.h>
 #include <plateau/dataset/mesh_code.h>
+#include <set>
 
 namespace plateau::dataset {
 
@@ -32,6 +33,16 @@ namespace plateau::dataset {
          * \param copied_gml_file コピーされたCityGMLファイル
          */
         void fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const;
+
+        /**
+         * \brief GMLファイルの全文を検索し、見つかったコードリストパスの一覧を返します。
+         */
+        std::set<std::string> searchAllCodelistPathsInGML() const;
+
+        /**
+         * \brief GMLファイルの全文を検索し、見つかったテクスチャパスの一覧を返します。
+         */
+        std::set<std::string> searchAllImagePathsInGML() const;
 
     private:
         std::string path_;
