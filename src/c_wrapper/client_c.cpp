@@ -28,10 +28,11 @@ DLL_STRING_VALUE_FUNC(plateau_client_get_api_server_url,
 LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API plateau_client_download(
         const Client* const client,
         const char* const destination_directory_utf8,
-        const char* const url_utf8
+        const char* const url_utf8,
+        std::string* const out_downloaded_path
 ) {
     API_TRY {
-        client->download(destination_directory_utf8, url_utf8);
+        *out_downloaded_path = client->download(destination_directory_utf8, url_utf8);
         return APIResult::Success;
     } API_CATCH
     return APIResult::ErrorUnknown;
