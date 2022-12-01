@@ -107,7 +107,8 @@ namespace plateau::network {
     std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
         auto gml_file_name = fs::u8path(url_utf8).filename().string();
         auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
-        auto ofs = std::ofstream(gml_file_path);
+        // 画像をダウンロードすることもあるのでバイナリモードにします。
+        auto ofs = std::ofstream(gml_file_path, std::ios::app | std::ios::binary);
         if (!ofs.is_open()) {
             throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
         }
@@ -117,7 +118,8 @@ namespace plateau::network {
         auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
         auto res = cli.Get(path);
         if (res && res->status == 200) {
-            ofs << res->body;
+            const auto& body = res->body;
+            ofs.write(body.c_str(), body.size());
         }
         return gml_file_path;
     }
