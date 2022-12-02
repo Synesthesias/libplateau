@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <plateau/dataset/server_dataset_accessor.h>
+#include <plateau/dataset/dataset_source.h>
 
 namespace plateau::dataset {
     using namespace plateau::geometry;
@@ -16,6 +17,7 @@ namespace plateau::dataset {
     TEST_F(ServerDatasetAccessorTest, getPackages) { // NOLINT
         auto accessor = ServerDatasetAccessor("23ku");
         accessor.getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
+        // TODO
     }
 
     TEST_F(ServerDatasetAccessorTest, getFeatureTypes) { // NOLINT
@@ -25,5 +27,14 @@ namespace plateau::dataset {
         ASSERT_EQ(dataset.title, u8"八王子市");
         ASSERT_EQ(dataset.feature_types.at(0), u8"bldg");
         ASSERT_EQ(dataset.feature_types.at(1), u8"dem");
+    }
+
+    TEST_F(ServerDatasetAccessorTest, getmaxLod) { // NOLINT
+        auto source = DatasetSource::createServer("23ku");
+        auto accessor = source.getAccessor();
+        int max_lod = accessor->getMaxLod(MeshCode("53392670"), PredefinedCityModelPackage::Building);
+//        ASSERT_EQ(max_lod, 2);
+//        int not_found_lod = accessor->getMaxLod(MeshCode("00000000"), PredefinedCityModelPackage::Unknown);
+//        ASSERT_EQ(not_found_lod, -1);
     }
 }

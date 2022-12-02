@@ -43,6 +43,8 @@ namespace plateau::dataset {
         void getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
                          std::vector<GmlFile>& out_gml_files) override;
 
+        /// 引数で与えられたメッシュコードかつパッケージ種であるGMLファイルについて、そのファイルに含まれる最大LODをサーバーに問い合わせて返します。
+        /// なければ -1 を返します。
         int getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) override;
 
         /**
@@ -55,7 +57,9 @@ namespace plateau::dataset {
     private:
         plateau::network::Client client_;
         std::string dataset_id_;
-        std::map<PredefinedCityModelPackage, std::vector<GmlFile>> package_to_gmls_map_;
+        // vector<pair<最大LOD, GmlFile>>
+        using LodGmlPairs = std::vector<std::pair<float, GmlFile>>;
+        std::map<PredefinedCityModelPackage, LodGmlPairs> package_to_gmls_map_;
         std::vector<MeshCode> cached_mesh_codes_;
         bool cached_mesh_codes_are_valid_;
         /// package_to_gmls_map_ に含まれる MeshCode を覚えておくことで、無駄なネットワーク利用を抑えます。
