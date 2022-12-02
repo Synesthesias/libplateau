@@ -10,7 +10,7 @@ namespace plateau::dataset {
     TEST_F(ServerDatasetAccessorTest, getGmlFiles_returns_value) { // NOLINT
         auto accessor = ServerDatasetAccessor("23ku");
         auto gmls = accessor.getGmlFiles(Extent::all(), PredefinedCityModelPackage::Building);
-        ASSERT_EQ(gmls.size(), 1);
+        ASSERT_EQ(gmls.size(), 2);
     }
 
     TEST_F(ServerDatasetAccessorTest, getPackages) { // NOLINT
