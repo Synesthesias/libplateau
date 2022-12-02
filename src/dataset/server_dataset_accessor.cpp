@@ -76,10 +76,12 @@ namespace plateau::dataset {
                 target_mesh_codes.push_back(mesh_code);
             }
         }
+        // メッシュコードに対応するGMLを問い合わせてキャッシュに追加します。
         addUrls(target_mesh_codes);
         if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
             return {};
         }
+        // キャッシュのうち与えられた Extent内のGMLを返します。
         auto gmls = std::vector<GmlFile>();
         for(const auto& gml : package_to_gmls_map_.at(package)){
             if(gml.getMeshCode().getExtent().intersects2D(extent)){
