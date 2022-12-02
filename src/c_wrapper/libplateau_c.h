@@ -341,6 +341,41 @@ LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
     return libplateau::APIResult::ErrorUnknown; \
 }
 
+/**
+ * ARG_1_TYPE と ARG_2_TYPE, ARG_3_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2, arg_3 を使って記述します。
+ */
+#define DLL_3_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, ARG_3_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_1_TYPE arg_1, \
+        ARG_2_TYPE arg_2, \
+        ARG_3_TYPE arg_3  \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
+
+/**
+ * ARG_1_TYPE と ARG_2_TYPE, ARG_3_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2, arg_3 を使って記述します。
+ */
+#define DLL_4_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, ARG_3_TYPE, ARG_4_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_1_TYPE arg_1, \
+        ARG_2_TYPE arg_2, \
+        ARG_3_TYPE arg_3, \
+        ARG_4_TYPE arg_4 \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
+
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、
     // このenumを戻り値にすると良いです。

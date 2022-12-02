@@ -54,9 +54,9 @@ namespace PLATEAU.Test.Dataset
         {
             var accessor = ServerDatasetAccessor.Create("23ku");
             var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
-            Assert.AreEqual(1, gmlFiles.Length);
+            Assert.AreEqual(2, gmlFiles.Length);
             var gml = gmlFiles.At(0);
-            Assert.AreEqual(NetworkConfig.MockServerURL + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml", gml.Path);
+            Assert.AreEqual(NetworkConfig.MockServerURL + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml", gml.Path);
             accessor.Dispose();
         }
 
@@ -66,7 +66,7 @@ namespace PLATEAU.Test.Dataset
             var accessor = ServerDatasetAccessor.Create("23ku");
             var stopwatch = Stopwatch.StartNew();
             var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
-            Assert.AreEqual(1, gmlFiles.Length);
+            Assert.AreEqual(2, gmlFiles.Length);
             stopwatch.Stop();
             var time1 = stopwatch.Elapsed;
             Console.WriteLine($"{time1} sec");
@@ -76,7 +76,7 @@ namespace PLATEAU.Test.Dataset
             stopwatch.Stop();
             var time2 = stopwatch.Elapsed;
             Console.WriteLine($"{time2} sec");
-            Assert.AreEqual(1, gmlFiles.Length);
+            Assert.AreEqual(2, gmlFiles.Length);
             Assert.IsTrue((time1 - time2).TotalMilliseconds > 500, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
         }
 
@@ -86,9 +86,18 @@ namespace PLATEAU.Test.Dataset
             var accessor = ServerDatasetAccessor.Create("23ku");
             var buildings = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             var roads = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Road);
-            Assert.AreEqual(1, buildings.Length);
+            Assert.AreEqual(2, buildings.Length);
             var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse;
             Assert.AreEqual(expected, accessor.Packages);
+        }
+
+        [TestMethod]
+        public void MaxLod()
+        {
+            var accessor = ServerDatasetAccessor.Create("23ku");
+            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var meshCode = gmls.At(0).MeshCode;
+            Assert.AreEqual(2, accessor.GetMaxLod(meshCode, PredefinedCityModelPackage.Building));
         }
     }
 }

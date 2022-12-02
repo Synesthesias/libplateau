@@ -33,15 +33,15 @@ DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_mesh_codes,
                arg_1->getMeshCodes(*arg_2))
 
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_get_gml_files(
-       ServerDatasetAccessor* const accessor,
-       std::vector<GmlFile>* out_gml_files,
-       Extent extent,
-       PredefinedCityModelPackage package
+        ServerDatasetAccessor* const accessor,
+        std::vector<GmlFile>* out_gml_files,
+        Extent extent,
+        PredefinedCityModelPackage package
 ) {
-    API_TRY{
+    API_TRY {
         accessor->getGmlFiles(extent, package, *out_gml_files);
         return APIResult::Success;
-    }API_CATCH
+    } API_CATCH
     return APIResult::ErrorUnknown;
 }
 
@@ -49,4 +49,11 @@ DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
                ServerDatasetAccessor* const,
                PredefinedCityModelPackage* const,
                *arg_2 = arg_1->getPackages())
+
+DLL_4_ARG_FUNC(plateau_server_dataset_accessor_get_max_lod,
+               ServerDatasetAccessor* const,
+               MeshCode,
+               PredefinedCityModelPackage,
+               int* const, // out_max_lod
+               *arg_4 = arg_1->getMaxLod(arg_2, arg_3))
 }
