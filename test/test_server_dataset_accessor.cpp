@@ -34,8 +34,8 @@ namespace plateau::dataset {
         auto source = DatasetSource::createServer("23ku");
         auto accessor = source.getAccessor();
         int max_lod = accessor->getMaxLod(MeshCode("53392670"), PredefinedCityModelPackage::Building);
-//        ASSERT_EQ(max_lod, 2);
-//        int not_found_lod = accessor->getMaxLod(MeshCode("00000000"), PredefinedCityModelPackage::Unknown);
-//        ASSERT_EQ(not_found_lod, -1);
+        ASSERT_EQ(max_lod, 2);
+        int not_found_lod = accessor->getMaxLod(MeshCode("00000000"), PredefinedCityModelPackage::Unknown);
+        ASSERT_EQ(not_found_lod, -1);
     }
 }
