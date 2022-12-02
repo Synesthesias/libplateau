@@ -53,10 +53,10 @@ namespace plateau::dataset {
             }
 
             auto udx_sub_dir_to_urls_map = client_.getFiles({mesh_code});
-            for (auto [udx_sub_dir, urls]: *udx_sub_dir_to_urls_map) { // TODO const auto &
+            for (const auto& [udx_sub_dir, urls]: *udx_sub_dir_to_urls_map) {
                 auto package = UdxSubFolder::getPackage(udx_sub_dir);
-                for (auto [max_lod, url]: urls) { // TODO const auto &
-                    if (package_to_gmls_map_.find(package) == package_to_gmls_map_.end()) { // TODO cend();
+                for (const auto& [max_lod, url]: urls) {
+                    if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
                         package_to_gmls_map_.insert(std::make_pair(package, LodGmlPairs()));
                     }
                     LodGmlPairs& lod_gml_pairs = package_to_gmls_map_.at(package);
@@ -73,20 +73,20 @@ namespace plateau::dataset {
         // extent と交わるメッシュコードを求めます。
         auto all_mesh_codes = getMeshCodes();
         auto target_mesh_codes = std::vector<MeshCode>();
-        for (auto mesh_code: all_mesh_codes) { // TODO const auto &
+        for (const auto& mesh_code: all_mesh_codes) {
             if (mesh_code.getExtent().intersects2D(extent)) {
                 target_mesh_codes.push_back(mesh_code);
             }
         }
         addUrls(target_mesh_codes);
-        if (package_to_gmls_map_.find(package) == package_to_gmls_map_.end()) { // TODO cend()
+        if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
             return {};
         }
 
         const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
         // pairs のうち GmlFile のみを取り出して戻り値とします。
         auto ret = std::vector<GmlFile>();
-        for(auto [max_lod, gml_file] : pairs){ // TODO const auto &
+        for(const auto& [max_lod, gml_file] : pairs) {
             ret.push_back(gml_file);
         }
         return ret;
@@ -106,10 +106,9 @@ namespace plateau::dataset {
             return -1;
         }
         const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
-        for(auto pair : pairs){ // TODO const auto&
+        for(const auto& pair : pairs){
             max_lod = std::max(max_lod, (int)pair.first);
         }
-        return 2; // TODO
         return max_lod;
     }
 
