@@ -117,7 +117,7 @@ namespace plateau::network {
                 content_type.find("text") != std::string::npos ||
                 content_type.find("json") != std::string::npos;
         auto ofs_mode = is_text ? 0 : std::ios::binary;
-        auto ofs = std::ofstream(gml_file_path, ofs_mode);
+        auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
             throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
         }
