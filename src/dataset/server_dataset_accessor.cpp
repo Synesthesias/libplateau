@@ -1,6 +1,7 @@
 #include <plateau/dataset/server_dataset_accessor.h>
 #include <plateau/dataset/local_dataset_accessor.h>
 #include <plateau/network/network_config.h>
+#include "plateau/geometry/geo_coordinate.h"
 
 namespace plateau::dataset {
     using namespace plateau::network;
@@ -56,9 +57,10 @@ namespace plateau::dataset {
                 auto package = UdxSubFolder::getPackage(udx_sub_dir);
                 for (const auto& [max_lod, url]: urls) {
                     if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
-                        package_to_gmls_map_[package] = std::vector<GmlFile>();
+                        package_to_gmls_map_.insert(std::make_pair(package, LodGmlPairs()));
                     }
-                    package_to_gmls_map_[package].emplace_back(url);
+                    LodGmlPairs& lod_gml_pairs = package_to_gmls_map_.at(package);
+                    lod_gml_pairs.push_back(std::make_pair(max_lod, GmlFile(url)));
                 }
             }
             mesh_codes_included_in_map_.insert(mesh_code);
@@ -81,14 +83,14 @@ namespace plateau::dataset {
         if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
             return {};
         }
-        // キャッシュのうち与えられた Extent内のGMLを返します。
-        auto gmls = std::vector<GmlFile>();
-        for(const auto& gml : package_to_gmls_map_.at(package)){
-            if(gml.getMeshCode().getExtent().intersects2D(extent)){
-                gmls.push_back(gml);
-            }
+
+        const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
+        // pairs のうち GmlFile のみを取り出して戻り値とします。
+        auto ret = std::vector<GmlFile>();
+        for(const auto& [max_lod, gml_file] : pairs) {
+            ret.push_back(gml_file);
         }
-        return gmls;
+        return ret;
     }
 
     void ServerDatasetAccessor::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
@@ -97,8 +99,18 @@ namespace plateau::dataset {
     }
 
     int ServerDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
-        // TODO 未実装
-        return 0;
+        auto center = mesh_code.getExtent().centerPoint();
+        auto center_extent = geometry::Extent(center, center);
+        auto gmls = getGmlFiles(center_extent, package);
+        int max_lod = -1;
+        if(package_to_gmls_map_.find(package) == package_to_gmls_map_.end()){
+            return -1;
+        }
+        const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
+        for(const auto& pair : pairs){
+            max_lod = std::max(max_lod, (int)pair.first);
+        }
+        return max_lod;
     }
 
     PredefinedCityModelPackage ServerDatasetAccessor::getPackages() {
