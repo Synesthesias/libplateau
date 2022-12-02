@@ -80,7 +80,13 @@ namespace plateau::dataset {
         if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
             return {};
         }
-        return package_to_gmls_map_[package];
+        auto gmls = std::vector<GmlFile>();
+        for(const auto& gml : package_to_gmls_map_.at(package)){
+            if(gml.getMeshCode().getExtent().intersects2D(extent)){
+                gmls.push_back(gml);
+            }
+        }
+        return gmls;
     }
 
     void ServerDatasetAccessor::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
