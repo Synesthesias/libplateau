@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Interop;
+using PLATEAU.Network;
 
 namespace PLATEAU.Test.Dataset
 {
@@ -55,7 +56,7 @@ namespace PLATEAU.Test.Dataset
             var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmlFiles.Length);
             var gml = gmlFiles.At(0);
-            Assert.AreEqual("https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml", gml.Path);
+            Assert.AreEqual(NetworkConfig.MockServerURL + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml", gml.Path);
             accessor.Dispose();
         }
 

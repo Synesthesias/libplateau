@@ -6,12 +6,11 @@ namespace PLATEAU.Test.Network
     [TestClass]
     public class ClientTest
     {
-        public const string MockServerUrl = "https://9tkm2n.deta.dev";
         [TestMethod]
         public void DatasetMetadataGroup()
         {
             using var client = Client.Create();
-            client.Url = MockServerUrl;
+            client.Url = NetworkConfig.MockServerURL;
             var metadataGroup = client.GetDatasetMetadataGroup();
             Assert.AreEqual("東京都", metadataGroup.At(0).Title);
             Assert.AreEqual("23区", metadataGroup.At(0).Datasets.At(0).Title);

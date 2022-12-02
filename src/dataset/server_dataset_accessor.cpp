@@ -1,11 +1,12 @@
 #include <plateau/dataset/server_dataset_accessor.h>
 #include <plateau/dataset/local_dataset_accessor.h>
+#include <plateau/network/network_config.h>
 
 namespace plateau::dataset {
     using namespace plateau::network;
 
     ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id) :
-            client_(Client("https://9tkm2n.deta.dev")),// モックサーバーのURL
+            client_(Client(NetworkConfig::mockServerUrl())),
             cached_mesh_codes_are_valid_(false) {
         setDatasetID(dataset_id);
     }

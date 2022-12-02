@@ -316,7 +316,7 @@ using dll_str_size_t = int;
  */
 #define DLL_1_ARG_FUNC(FUNC_NAME, ARG_TYPE, PREDICATE) \
 LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
-        ARG_TYPE arg_1, \
+        ARG_TYPE arg \
 ){ \
     API_TRY{ \
         { PREDICATE ;} \

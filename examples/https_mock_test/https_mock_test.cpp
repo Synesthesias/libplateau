@@ -1,9 +1,10 @@
 ﻿#include <plateau/network/client.h>
+#include <plateau/network/network_config.h>
 
 int main(void) {
     plateau::network::Client client;
 
-    client.setApiServerUrl("https://9tkm2n.deta.dev");
+    client.setApiServerUrl(plateau::network::NetworkConfig::mockServerUrl());
 
     // check Client::getMetadata
     auto meta_data = client.getMetadata();
@@ -43,7 +44,7 @@ int main(void) {
     }
 
     // check Client::download
-    auto fpath = client.download(".", "https://9tkm2n.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+    auto fpath = client.download(".", plateau::network::NetworkConfig::mockServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
     std::cout << "gml @ " << fpath << std::endl;
     
 }
