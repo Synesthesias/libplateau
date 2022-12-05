@@ -1,6 +1,6 @@
 #include <plateau/network/client.h>
-#include <iostream>
 #include <filesystem>
+
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../3rdparty/cpp-httplib/httplib.h"
 #include "../../3rdparty/json/single_include/nlohmann/json.hpp"
@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 
 namespace plateau::network {
 
-    Client::Client(const std::string& server_url){
+    Client::Client(const std::string& server_url) {
         setApiServerUrl(server_url);
     }
 
@@ -22,16 +22,14 @@ namespace plateau::network {
         server_url_ = url;
     }
 
-    std::vector<DatasetMetadataGroup> Client::getMetadata() const {
+    void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
         auto res = cli.Get("/api/sdk/data");
 
-        std::vector<DatasetMetadataGroup> dataset_meta_data_group_vec;
-
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
-            
+
             for (int i = 0; i < jres["data"].size(); i++) {
                 DatasetMetadataGroup dataset_meta_data_group;
                 dataset_meta_data_group.id = jres["data"][i]["id"];
@@ -48,74 +46,59 @@ namespace plateau::network {
                     }
                     dataset_meta_data_group.datasets.push_back(dataset_meta_data);
                 }
-                dataset_meta_data_group_vec.push_back(dataset_meta_data_group);
+                out_metadata_groups.push_back(dataset_meta_data_group);
             }
         }
-        return dataset_meta_data_group_vec;
     }
 
-    void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
-        out_metadata_groups = getMetadata();
+    std::shared_ptr<std::vector<DatasetMetadataGroup>> Client::getMetadata() const {
+        auto result = std::make_shared<std::vector<DatasetMetadataGroup>>();
+        getMetadata(*result);
+        return result;
     }
 
-    
-    std::vector<plateau::dataset::MeshCode> Client::getMeshCodes(const std::string& id) {
-        auto ret_mesh_codes = std::vector<plateau::dataset::MeshCode>();
-        
-        httplib::Client cli(server_url_);
-        cli.enable_server_certificate_verification(false);
-        auto res = cli.Get("/api/sdk/codes/"+id);
-
-        if (res && res->status == 200) {
-            auto jres = json::parse(res->body);
-
-            for (int i = 0; i < jres["codes"].size(); i++) {
-                std::string code = jres["codes"][i];
-                plateau::dataset::MeshCode mesh_code(code);
-                ret_mesh_codes.push_back(mesh_code);
-            }
-        }
-        return ret_mesh_codes;
-    }
-    
-    std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {
+    DatasetFiles Client::getFiles(const std::string& id) const {
         auto file_url_lod = std::make_shared<std::map<std::string, std::vector<std::pair<float, std::string>>>>();
-             
+
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        std::string code_str = mesh_codes[0].get();
-        for(int i = 1; i < mesh_codes.size(); i++) code_str = code_str + "," + mesh_codes[i].get();
-        auto res = cli.Get("/api/sdk/files?codes=" + code_str);
+        auto res = cli.Get("/api/sdk/codes/" + id);
+
+        DatasetFiles dataset_files;
 
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
             for (json::iterator it = jres.begin(); it != jres.end(); ++it) {
-                auto key = it.key();
-                if (key == "codes") continue;
-                auto vec_dic = it.value();
-                std::vector<std::pair<float, std::string>> vp;
-                for (int i = 0; i < vec_dic.size(); i++) {
-                    std::pair<float, std::string> p = std::make_pair(std::stof((std::string)vec_dic[i]["maxLod"]), vec_dic[i]["url"]);
-                    vp.push_back(p);
+                auto& key = it.key();
+                auto& file_items = it.value();
+
+                dataset_files.emplace(key, std::vector<DatasetFileItem>());
+                //for (int i = 0; i < files.size(); i++) {
+                for (const auto& file_item : file_items) {
+                    DatasetFileItem dataset_file;
+                    dataset_file.max_lod = std::stof(std::string(file_item["maxLod"]));
+                    dataset_file.mesh_code = file_item["code"];
+                    dataset_file.url = file_item["url"];
+
+                    dataset_files[key].push_back(dataset_file);
                 }
-                file_url_lod->emplace(key, vp);
             }
         }
-        return file_url_lod;
+        return dataset_files;
     }
-    
+
     std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
         auto gml_file_name = fs::u8path(url_utf8).filename().string();
         auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
-        
+
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
         auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
         auto res = cli.Get(path);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
-                content_type.find("text") != std::string::npos ||
-                content_type.find("json") != std::string::npos;
+            content_type.find("text") != std::string::npos ||
+            content_type.find("json") != std::string::npos;
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
@@ -127,5 +110,4 @@ namespace plateau::network {
         }
         return gml_file_path;
     }
-    
 }

@@ -1,126 +1,148 @@
-#include <plateau/dataset/server_dataset_accessor.h>
-#include <plateau/dataset/local_dataset_accessor.h>
-#include <plateau/network/network_config.h>
-#include "plateau/geometry/geo_coordinate.h"
+#include <plateau/network/client.h>
+#include <plateau/geometry/geo_coordinate.h>
+#include <plateau/geometry/geo_reference.h>
+
+#include "server_dataset_accessor.h"
 
 namespace plateau::dataset {
-    using namespace plateau::network;
+    using namespace network;
 
-    ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id) :
-            client_(Client(NetworkConfig::mockServerUrl())),
-            cached_mesh_codes_are_valid_(false) {
-        setDatasetID(dataset_id);
+    ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id, const Client& client)
+        : client_(client)
+        , dataset_id_(dataset_id) {
     }
 
-    std::vector<DatasetMetadataGroup> ServerDatasetAccessor::getDatasetMetadataGroup() const {
-        return client_.getMetadata();
+    void ServerDatasetAccessor::loadFromServer() {
+        // データセット情報を再取得します。
+        dataset_files_ = client_.getFiles(dataset_id_);
+        mesh_codes_.clear();
     }
 
-    void ServerDatasetAccessor::getDatasetMetadataGroup(std::vector<network::DatasetMetadataGroup>& out_group) const {
-        out_group = getDatasetMetadataGroup();
-    }
-
-    void ServerDatasetAccessor::setDatasetID(const std::string& dataset_id) {
-        // データセットが変わるということは、キャッシュが古くなるということです。
-        if (dataset_id_ != dataset_id) cached_mesh_codes_are_valid_ = false;
-        dataset_id_ = dataset_id;
-    }
-
-    std::vector<MeshCode> ServerDatasetAccessor::getMeshCodes() {
-        if (cached_mesh_codes_are_valid_) {
-            // すでに取得済みの場合
-            return cached_mesh_codes_;
-        }
-        if (dataset_id_.empty()) {
-            return {};
-        }
-        auto mesh_codes = client_.getMeshCodes(dataset_id_);
-        cached_mesh_codes_ = mesh_codes;
-        cached_mesh_codes_are_valid_ = true;
-        return cached_mesh_codes_;
-    }
-
-    void ServerDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
-        mesh_codes = getMeshCodes();
-    }
-
-    void ServerDatasetAccessor::addUrls(const std::vector<MeshCode>& mesh_codes) {
-        for (const auto& mesh_code: mesh_codes) {
-            // 判明済みのメッシュコードはスキップします。
-            if (cached_mesh_codes_are_valid_ &&
-                (mesh_codes_included_in_map_.find(mesh_code) != mesh_codes_included_in_map_.cend())) {
-                continue;
-            }
-
-            auto udx_sub_dir_to_urls_map = client_.getFiles({mesh_code});
-            for (const auto& [udx_sub_dir, urls]: *udx_sub_dir_to_urls_map) {
-                auto package = UdxSubFolder::getPackage(udx_sub_dir);
-                for (const auto& [max_lod, url]: urls) {
-                    if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
-                        package_to_gmls_map_.insert(std::make_pair(package, LodGmlPairs()));
-                    }
-                    LodGmlPairs& lod_gml_pairs = package_to_gmls_map_.at(package);
-                    lod_gml_pairs.push_back(std::make_pair(max_lod, GmlFile(url)));
+    std::set<MeshCode>& ServerDatasetAccessor::getMeshCodes() {
+        if (mesh_codes_.empty()) {
+            for (const auto& [_, files] : dataset_files_) {
+                for (const auto& file : files) {
+                    mesh_codes_.insert(MeshCode(file.mesh_code));
                 }
             }
-            mesh_codes_included_in_map_.insert(mesh_code);
         }
-
+        return mesh_codes_;
     }
 
-    std::vector<GmlFile> ServerDatasetAccessor::getGmlFiles(
-            geometry::Extent extent, PredefinedCityModelPackage package) {
-        // extent と交わるメッシュコードを求めます。
-        auto all_mesh_codes = getMeshCodes();
-        auto target_mesh_codes = std::vector<MeshCode>();
-        for (const auto& mesh_code: all_mesh_codes) {
-            if (mesh_code.getExtent().intersects2D(extent)) {
-                target_mesh_codes.push_back(mesh_code);
+    std::shared_ptr<std::vector<GmlFile>> ServerDatasetAccessor::getGmlFiles(
+        const PredefinedCityModelPackage package) {
+
+        auto result = std::make_shared<std::vector<GmlFile>>();
+        getGmlFiles(package, *result);
+        return result;
+    }
+
+    void ServerDatasetAccessor::getGmlFiles(
+        const PredefinedCityModelPackage package,
+        std::vector<GmlFile>& out_gml_files) {
+
+        for (const auto& [sub_folder, gml_files] : dataset_files_) {
+            if (UdxSubFolder::getPackage(sub_folder) == package) {
+                for (const auto& dataset_file : gml_files) {
+                    out_gml_files.emplace_back(dataset_file.url, dataset_file.max_lod);
+                }
             }
         }
-        // メッシュコードに対応するGMLを問い合わせてキャッシュに追加します。
-        addUrls(target_mesh_codes);
-        if (package_to_gmls_map_.find(package) == package_to_gmls_map_.cend()) {
-            return {};
-        }
-
-        const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
-        // pairs のうち GmlFile のみを取り出して戻り値とします。
-        auto ret = std::vector<GmlFile>();
-        for(const auto& [max_lod, gml_file] : pairs) {
-            ret.push_back(gml_file);
-        }
-        return ret;
     }
 
-    void ServerDatasetAccessor::getGmlFiles(geometry::Extent extent, PredefinedCityModelPackage package,
-                                            std::vector<GmlFile>& out_gml_files) {
-        out_gml_files = getGmlFiles(extent, package);
+    TVec3d ServerDatasetAccessor::calculateCenterPoint(const geometry::GeoReference& geo_reference) {
+
+        double lat_sum = 0;
+        double lon_sum = 0;
+        double height_sum = 0;
+        for (const auto& mesh_code : getMeshCodes()) {
+            const auto& center = mesh_code.getExtent().centerPoint();
+            lat_sum += center.latitude;
+            lon_sum += center.longitude;
+            height_sum += center.height;
+        }
+        auto num = (double)getMeshCodes().size();
+        geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
+        auto euclid_average = geo_reference.project(geo_average);
+        return euclid_average;
     }
 
-    int ServerDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
-        auto center = mesh_code.getExtent().centerPoint();
-        auto center_extent = geometry::Extent(center, center);
-        auto gmls = getGmlFiles(center_extent, package);
-        int max_lod = -1;
-        if(package_to_gmls_map_.find(package) == package_to_gmls_map_.end()){
-            return -1;
-        }
-        const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
-        for(const auto& pair : pairs){
-            max_lod = std::max(max_lod, (int)pair.first);
-        }
-        return max_lod;
-    }
+    //int ServerDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
+    //    auto center = mesh_code.getExtent().centerPoint();
+    //    auto center_extent = geometry::Extent(center, center);
+    //    auto gmls = getGmlFiles(center_extent, package);
+    //    int max_lod = -1;
+    //    if (package_to_gmls_map_.find(package) == package_to_gmls_map_.end()) {
+    //        return -1;
+    //    }
+    //    const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
+    //    for (const auto& pair : pairs) {
+    //        max_lod = std::max(max_lod, (int)pair.first);
+    //    }
+    //    return max_lod;
+    //}
 
     PredefinedCityModelPackage ServerDatasetAccessor::getPackages() {
         auto result = PredefinedCityModelPackage::None;
-        for (const auto& [key, _]: package_to_gmls_map_) {
-            result = result | key;
+        for (const auto& [key, _] : dataset_files_) {
+            result = result | UdxSubFolder::getPackage(key);
         }
         return result;
     }
 
+    void ServerDatasetAccessor::addFile(const std::string& sub_folder, const DatasetFileItem& gml_file_info) {
+        if (dataset_files_.find(sub_folder) == dataset_files_.end()) {
+            dataset_files_.emplace(sub_folder, std::vector<DatasetFileItem>());
+        }
+        dataset_files_[sub_folder].push_back(gml_file_info);
+    }
 
+    std::shared_ptr<IDatasetAccessor> ServerDatasetAccessor::filter(const geometry::Extent& extent) const {
+        auto result = std::make_shared<ServerDatasetAccessor>(dataset_id_, client_);
+        filter(extent, *result);
+        return result;
+    }
+
+    void ServerDatasetAccessor::filter(const geometry::Extent& extent_filter, IDatasetAccessor& collection) const {
+        const auto out_collection_ptr = dynamic_cast<ServerDatasetAccessor*>(&collection);
+        if (out_collection_ptr == nullptr)
+            return;
+
+        for (const auto& [package, files] : dataset_files_) {
+            for (const auto& file : files) {
+                auto extent = MeshCode(file.mesh_code).getExtent();
+                if (extent_filter.intersects2D(extent)) {
+                    out_collection_ptr->addFile(package, file);
+                }
+            }
+        }
+    }
+
+    void ServerDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
+                                                 IDatasetAccessor& collection) const {
+        const auto out_collection_ptr = dynamic_cast<ServerDatasetAccessor*>(&collection);
+        if (out_collection_ptr == nullptr)
+            return;
+
+        // 検索用に、引数の mesh_codes を文字列のセットにします。
+        auto mesh_codes_str_set = std::set<std::string>();
+        for (const auto& mesh_code : mesh_codes) {
+            mesh_codes_str_set.insert(mesh_code.get());
+        }
+        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        for (const auto& [sub_folder, files] : dataset_files_) {
+            for (const auto& file : files) {
+                if (mesh_codes_str_set.find(file.mesh_code) != mesh_codes_str_set.end()) {
+                    out_collection_ptr->addFile(sub_folder, file);
+                }
+            }
+        }
+    }
+
+    std::shared_ptr<IDatasetAccessor>
+        ServerDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
+        auto result = std::make_shared<ServerDatasetAccessor>(dataset_id_, client_);
+        filterByMeshCodes(mesh_codes, *result);
+        return result;
+    }
 }
-

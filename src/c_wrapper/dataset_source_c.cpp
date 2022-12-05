@@ -11,17 +11,18 @@ extern "C" {
             const char* const source_path_utf8
     ) {
         API_TRY{
-                *out_dataset_source = new DatasetSource(DatasetSource::createLocal(fs::u8path(source_path_utf8)));
+                *out_dataset_source = new DatasetSource(DatasetSource::createLocal(source_path_utf8));
                 return APIResult::Success;
         }
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
-    DLL_2_ARG_FUNC(plateau_create_dataset_source_server,
+    DLL_3_ARG_FUNC(plateau_create_dataset_source_server,
                    DatasetSource**, // out_pointer_of_new_instance
                    const char* const, // dataset_id
-                   *arg_1 = new DatasetSource(DatasetSource::createServer(std::string(arg_2))))
+                   plateau::network::Client*,
+                   *arg_1 = new DatasetSource(DatasetSource::createServer(std::string(arg_2), *arg_3)))
 
     DLL_DELETE_FUNC(plateau_delete_dataset_source,
                     DatasetSource)
