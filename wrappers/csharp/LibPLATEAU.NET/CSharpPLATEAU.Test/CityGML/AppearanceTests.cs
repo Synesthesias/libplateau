@@ -9,13 +9,15 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AppearanceTests
     {
-        private Appearance appearance;
+        private static CityModel cityModel;
+        private static Appearance appearance;
 
-        public AppearanceTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext _)
         {
             // 探索して最初に見つかった Appearance をテスト対象にします。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.appearance = cityModel.RootCityObjects
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            appearance = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -26,10 +28,16 @@ namespace PLATEAU.Test.CityGML
                 .First();
         }
 
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
+        }
+
         [TestMethod]
         public void Type_Returns_Not_Empty_String()
         {
-            string type = this.appearance.Type;
+            string type = appearance.Type;
             Console.WriteLine($"type = {type}");
             Assert.IsTrue(type.Length > 0);
         }
@@ -37,19 +45,19 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void IsFront_Returns_Good_Bool()
         {
-            bool isFront = this.appearance.IsFront;
+            bool isFront = appearance.IsFront;
             Assert.AreEqual(true, isFront);
         }
 
         [TestMethod]
         public void Themes_Returns_More_Than_Zero_Themes()
         {
-            foreach (string theme in this.appearance.Themes)
+            foreach (string theme in appearance.Themes)
             {
                 Console.WriteLine($"theme: {theme}");
             }
 
-            Assert.IsTrue(this.appearance.Themes.Length > 0);
+            Assert.IsTrue(appearance.Themes.Length > 0);
         }
     }
 }

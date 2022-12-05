@@ -12,12 +12,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_dll_logger(PlateauDllLogger** logger) {
-        API_TRY{
-            delete logger;
-        }
-        API_CATCH;
-    }
+    DLL_DELETE_FUNC(plateau_delete_dll_logger,
+                    PlateauDllLogger)
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dll_logger_set_callbacks(
             PlateauDllLogger* handle,

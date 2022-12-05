@@ -128,15 +128,10 @@ namespace plateau::dataset {
 
     void LocalDatasetAccessor::filter(const geometry::Extent& extent_filter, LocalDatasetAccessor& collection) const {
         collection.setUdxPath(udx_path_);
-        for(const auto& [package, files] : files_){
-            for(const auto& file : files){
+        for (const auto& [package, files]: files_) {
+            for (const auto& file: files) {
                 auto extent = file.getMeshCode().getExtent();
-                if(
-                        extent_filter.contains(GeoCoordinate(extent.min.latitude, extent.min.longitude, 0)) ||
-                        extent_filter.contains(GeoCoordinate(extent.max.latitude, extent.max.longitude, 0)) ||
-                        extent_filter.contains(GeoCoordinate(extent.min.latitude, extent.max.longitude, 0)) ||
-                        extent_filter.contains(GeoCoordinate(extent.max.latitude, extent.min.longitude, 0))
-                        ){
+                if (extent_filter.intersects2D(extent)) {
                     collection.addFile(package, file);
                 }
             }

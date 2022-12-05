@@ -14,12 +14,9 @@ extern "C" {
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_city_model_package_info(
-            const CityModelPackageInfo* info_ptr
-    ) {
-        delete info_ptr;
-        return APIResult::Success;
-    }
+
+    DLL_DELETE_FUNC(plateau_delete_city_model_package_info,
+                    CityModelPackageInfo)
 
     DLL_VALUE_FUNC(plateau_city_model_package_info_get_has_appearance,
                    CityModelPackageInfo,

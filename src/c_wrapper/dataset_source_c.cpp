@@ -11,32 +11,26 @@ extern "C" {
             const char* const source_path_utf8
     ) {
         API_TRY{
-                *out_dataset_source = new DatasetSource(fs::u8path(source_path_utf8));
+                *out_dataset_source = new DatasetSource(DatasetSource::createLocal(fs::u8path(source_path_utf8)));
                 return APIResult::Success;
         }
         API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_dataset_source(
-            DatasetSource* dataset_source
-    ) {
-        delete dataset_source;
-        return APIResult::Success;
-    }
+    DLL_2_ARG_FUNC(plateau_create_dataset_source_server,
+                   DatasetSource**, // out_pointer_of_new_instance
+                   const char* const, // dataset_id
+                   *arg_1 = new DatasetSource(DatasetSource::createServer(std::string(arg_2))))
+
+    DLL_DELETE_FUNC(plateau_delete_dataset_source,
+                    DatasetSource)
 
     /**
      * DatasetAccessorPInvoke の delete は DLL利用者の責任とします。
      */
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_dataset_source_get_accessor(
-            DatasetSource* dataset_source,
-            IDatasetAccessor** out_dataset_accessor
-    ) {
-        API_TRY{
-                *out_dataset_accessor = dataset_source->getAccessor().get();
-                return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_2_ARG_FUNC(plateau_dataset_source_get_accessor,
+                   const DatasetSource* const,
+                   const IDatasetAccessor** const,
+                   *arg_2 = arg_1->getAccessor().get())
 }

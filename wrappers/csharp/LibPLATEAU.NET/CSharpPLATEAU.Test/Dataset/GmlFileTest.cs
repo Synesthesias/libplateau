@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Interop;
@@ -44,9 +45,9 @@ namespace PLATEAU.Test.Dataset
         }
         
         [TestMethod]
-        public void Fetch_Copies_Relative_Files()
+        public void Fetch_Local_Copies_Relative_Files()
         {
-            using var source = DatasetSource.CreateLocal("data");
+            using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
             var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
@@ -66,6 +67,55 @@ namespace PLATEAU.Test.Dataset
                 string resultPath = "temp_test_dir/data/" + filePath;
                 Assert.IsTrue(File.Exists(resultPath), $"{resultPath} does not exist");
             }
+            Directory.Delete(testDir.FullName, true);
+        }
+
+        [TestMethod]
+        public void SearchCodelistPathsAndTexturePaths()
+        {
+            using var source = DatasetSource.Create(false, "data");
+            var accessor = source.Accessor;
+            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gml = gmls.At(0);
+            var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
+            var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
+            var expectedCodelists = new[]
+            {
+                "../../codelists/Common_districtsAndZonesType.xml",
+                "../../codelists/Common_localPublicAuthorities.xml",
+                "../../codelists/Common_prefecture.xml",
+                "../../codelists/extendedAttribute_key.xml",
+                "../../codelists/extendedAttribute_key106.xml",
+                "../../codelists/extendedAttribute_key2.xml"
+            };
+            var expectedImages = new[]
+            {
+                "53392642_bldg_6697_appearance/hnap0034.tif",
+                "53392642_bldg_6697_appearance/hnap0275.tif",
+                "53392642_bldg_6697_appearance/hnap0276.tif",
+                "53392642_bldg_6697_appearance/hnap0279.tif",
+                "53392642_bldg_6697_appearance/hnap0285.tif",
+                "53392642_bldg_6697_appearance/hnap0286.tif",
+                "53392642_bldg_6697_appearance/hnap0876.tif",
+                "53392642_bldg_6697_appearance/hnap0878.tif"
+            };
+            CollectionAssert.AreEquivalent(expectedCodelists, codelistPaths);
+            CollectionAssert.AreEquivalent(expectedImages, imagePaths);
+        }
+
+        [TestMethod]
+        public void Fetch_Server_Downloads_Files()
+        {
+            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
+            var accessor = source.Accessor;
+            var testDir = Directory.CreateDirectory("temp_test_dir");
+            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            Console.WriteLine(testDir.FullName);
+            foreach(var gml in gmls)
+            {
+                gml.Fetch(testDir.FullName);
+            }
+            
             Directory.Delete(testDir.FullName, true);
         }
     }

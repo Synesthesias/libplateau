@@ -10,7 +10,11 @@ namespace fs = std::filesystem;
 
 namespace plateau::network {
 
-    std::string Client::getApiServerUrl() {
+    Client::Client(const std::string& server_url){
+        setApiServerUrl(server_url);
+    }
+
+    std::string Client::getApiServerUrl() const {
         return server_url_;
     }
 
@@ -18,7 +22,7 @@ namespace plateau::network {
         server_url_ = url;
     }
 
-    std::vector<DatasetMetadataGroup> Client::getMetadata() {
+    std::vector<DatasetMetadataGroup> Client::getMetadata() const {
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
         auto res = cli.Get("/api/sdk/data");
@@ -50,9 +54,13 @@ namespace plateau::network {
         return dataset_meta_data_group_vec;
     }
 
+    void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
+        out_metadata_groups = getMetadata();
+    }
+
     
-    std::shared_ptr<std::vector<plateau::dataset::MeshCode>> Client::getMeshCodes(const std::string& id) {
-        auto mesh_code_ptr = std::make_shared<std::vector<plateau::dataset::MeshCode>>();
+    std::vector<plateau::dataset::MeshCode> Client::getMeshCodes(const std::string& id) {
+        auto ret_mesh_codes = std::vector<plateau::dataset::MeshCode>();
         
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
@@ -64,10 +72,10 @@ namespace plateau::network {
             for (int i = 0; i < jres["codes"].size(); i++) {
                 std::string code = jres["codes"][i];
                 plateau::dataset::MeshCode mesh_code(code);
-                mesh_code_ptr->push_back(mesh_code);
+                ret_mesh_codes.push_back(mesh_code);
             }
         }
-        return mesh_code_ptr;
+        return ret_mesh_codes;
     }
     
     std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> Client::getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes) {
@@ -96,19 +104,26 @@ namespace plateau::network {
         return file_url_lod;
     }
     
-    std::string Client::download(const std::string& destination_directory, const std::string& url) {
-        auto gml_file_name = fs::u8path(url).filename().string();
-        auto gml_file_path = fs::absolute(fs::u8path(destination_directory) / gml_file_name).u8string();
-        auto ofs = std::ofstream(gml_file_path);
-        if (!ofs.is_open()) {
-            throw std::string("Failed to open stream of gml path : ") + gml_file_path;
-        }
+    std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
+        auto gml_file_name = fs::u8path(url_utf8).filename().string();
+        auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
         
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get(url.substr(url.substr(8).find("/") + 8));
+        auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
+        auto res = cli.Get(path);
+        auto content_type = res->get_header_value("Content-Type");
+        bool is_text =
+                content_type.find("text") != std::string::npos ||
+                content_type.find("json") != std::string::npos;
+        auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
+        auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
+        if (!ofs.is_open()) {
+            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
+        }
         if (res && res->status == 200) {
-            ofs << res->body;
+            const auto& body = res->body;
+            ofs.write(body.c_str(), body.size());
         }
         return gml_file_path;
     }

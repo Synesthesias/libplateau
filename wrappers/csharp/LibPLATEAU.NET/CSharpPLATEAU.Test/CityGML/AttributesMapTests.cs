@@ -9,23 +9,30 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AttributesMapTests
     {
-        private AttributesMap attrMap;
+        private static CityModel cityModel;
+        private static AttributesMap attrMap;
         
-        /// <summary> テストの前準備です。 </summary>
-        public AttributesMapTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .First(co => co.ID == "BLD_ae7f1207-dd09-45bc-8881-40533f3700bb");
-            this.attrMap = cityObject.AttributesMap;
+            attrMap = cityObject.AttributesMap;
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
         }
         
         [TestMethod]
         public void Keys_Length_Equals_Map_Count()
         {
-            int keysLength = this.attrMap.Keys.Count();
-            int mapCount = this.attrMap.Count;
+            int keysLength = attrMap.Keys.Count();
+            int mapCount = attrMap.Count;
             Assert.AreEqual(mapCount, keysLength);
         }
 
@@ -33,7 +40,7 @@ namespace PLATEAU.Test.CityGML
         public void Keys_Contains_GML_AttrName()
         {
             const string oneOfAttrNameInGmlFile = "多摩水系多摩川、浅川、大栗川洪水浸水想定区域（想定最大規模）";
-            var keys = this.attrMap.Keys;
+            var keys = attrMap.Keys;
             bool doContainKey = false;
             foreach (var k in keys)
             {
@@ -49,14 +56,14 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void Count_Returns_Positive_Value()
         {
-            Console.WriteLine($"Count = {this.attrMap.Count}");
-            Assert.IsTrue(this.attrMap.Count > 0);
+            Console.WriteLine($"Count = {attrMap.Count}");
+            Assert.IsTrue(attrMap.Count > 0);
         }
 
         [TestMethod]
         public void TryGetValue_When_NotFound_Returns_False_And_Value_Null()
         {
-            bool result = this.attrMap.TryGetValue("DummyNotFound", out AttributeValue value);
+            bool result = attrMap.TryGetValue("DummyNotFound", out AttributeValue value);
             Assert.AreEqual(false, result);
             Assert.IsNull(value);
             
@@ -67,7 +74,7 @@ namespace PLATEAU.Test.CityGML
         {
             const string key = "建物ID";
             const string valueInGmlFile = "13111-bldg-98";
-            bool result = this.attrMap.TryGetValue(key, out AttributeValue value);
+            bool result = attrMap.TryGetValue(key, out AttributeValue value);
             Assert.AreEqual(true, result);
             Assert.IsNotNull(value);
             string actualStr = value.AsString;
@@ -77,7 +84,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void ContainsKey_Returns_False_On_NotFound()
         {
-            bool result = this.attrMap.ContainsKey("DummyNotFound");
+            bool result = attrMap.ContainsKey("DummyNotFound");
             Assert.AreEqual(false, result);
             
         }
@@ -85,29 +92,29 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetValueOrNull_Returns_Value_If_Found()
         {
-            var val = this.attrMap.GetValueOrNull("建物ID");
+            var val = attrMap.GetValueOrNull("建物ID");
             Assert.AreEqual("13111-bldg-98", val.AsString);
         }
 
         [TestMethod]
         public void GetValueOrNull_Returns_Null_If_Not_Found()
         {
-            var val = this.attrMap.GetValueOrNull("DummyNotFound");
+            var val = attrMap.GetValueOrNull("DummyNotFound");
             Assert.IsNull(val);
         }
 
         [TestMethod]
         public void ContainsKey_Returns_True_On_Found()
         {
-            bool result = this.attrMap.ContainsKey("建物ID");
+            bool result = attrMap.ContainsKey("建物ID");
             Assert.AreEqual(true, result);
         }
 
         [TestMethod]
         public void Values_Count_Equals_Map_Count()
         {
-            int valuesCount = this.attrMap.Values.Count();
-            int mapCount = this.attrMap.Count;
+            int valuesCount = attrMap.Values.Count();
+            int mapCount = attrMap.Count;
             Assert.AreEqual(mapCount, valuesCount);
         }
 
@@ -115,7 +122,7 @@ namespace PLATEAU.Test.CityGML
         public void Values_Contains_GML_Value()
         {
             const string oneOfAttrValueInGmlFile = "13111-bldg-98";
-            bool doContainValue = this.attrMap.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
+            bool doContainValue = attrMap.Values.Select(v => v.AsString).Contains(oneOfAttrValueInGmlFile);
             Assert.AreEqual(true, doContainValue);
         }
 
@@ -123,26 +130,26 @@ namespace PLATEAU.Test.CityGML
         public void Map_Can_Be_Iterated_By_Foreach()
         {
             int iterateCount = 0;
-            foreach (var p in this.attrMap)
+            foreach (var p in attrMap)
             {
                 Console.WriteLine($"{p.Key}, {p.Value.AsString}");
                 iterateCount++;
             }
-            Assert.AreEqual(this.attrMap.Count, iterateCount);
+            Assert.AreEqual(attrMap.Count, iterateCount);
         }
 
         [TestMethod]
         [ExpectedException(typeof(KeyNotFoundException))]
         public void Throws_KeyNotFoundException_When_Key_Not_Found()
         {
-            var _ = this.attrMap["DummyNotFound"];
+            var _ = attrMap["DummyNotFound"];
         }
 
         [TestMethod]
         public void Do_CachedKeys_Working()
         {
             // 1回目
-            foreach (var attr in this.attrMap)
+            foreach (var attr in attrMap)
             {
                 if (attr.Key == null)
                 {
@@ -150,7 +157,7 @@ namespace PLATEAU.Test.CityGML
                 }
             }
             // 2回目
-            foreach (var attr in this.attrMap)
+            foreach (var attr in attrMap)
             {
                 if (attr.Key == null)
                 {
@@ -163,7 +170,7 @@ namespace PLATEAU.Test.CityGML
         public void Keys_Not_Contain_Empty()
         {
             int emptyCount = 0;
-            foreach (var pair in this.attrMap)
+            foreach (var pair in attrMap)
             {
                 if (string.IsNullOrEmpty(pair.Key))
                 {
@@ -177,7 +184,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void ToString_Returns_Not_Empty()
         {
-            string str = this.attrMap.ToString();
+            string str = attrMap.ToString();
             Console.WriteLine(str);
             Assert.IsFalse(string.IsNullOrEmpty(str));
         }

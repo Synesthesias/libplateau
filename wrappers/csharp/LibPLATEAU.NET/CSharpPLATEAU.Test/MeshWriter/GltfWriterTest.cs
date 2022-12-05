@@ -14,7 +14,7 @@ namespace PLATEAU.Test.MeshWriter
         [TestMethod]
         public void Generates_Gltf_File_And_Check_Generated_File_Name()
         {
-            var model = TestGeometryUtil.ExtractModel();
+            using var model = TestGeometryUtil.ExtractModel();
             var gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             var gltfFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".glb";
 

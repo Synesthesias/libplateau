@@ -9,19 +9,12 @@ using namespace plateau::geometry;
 namespace fs = std::filesystem;
 
 extern "C" {
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_local_dataset_accessor(
-            LocalDatasetAccessor** out_collection_ptr
-    ) {
-        *out_collection_ptr = new LocalDatasetAccessor();
-        return APIResult::Success;
-    }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_local_dataset_accessor(
-            const LocalDatasetAccessor* collection_ptr
-    ) {
-        delete collection_ptr;
-        return APIResult::Success;
-    }
+    DLL_CREATE_FUNC(plateau_create_local_dataset_accessor,
+                    LocalDatasetAccessor)
+
+    DLL_DELETE_FUNC(plateau_delete_local_dataset_accessor,
+                    LocalDatasetAccessor)
 
     DLL_VALUE_FUNC(plateau_local_dataset_accessor_get_mesh_code_count,
                    LocalDatasetAccessor,

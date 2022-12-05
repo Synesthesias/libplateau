@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.CityGML;
 using Object = PLATEAU.CityGML.Object;
 
 namespace PLATEAU.Test.CityGML
@@ -6,19 +7,27 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class ObjectTests
     {
-        private Object plateauObject;
+        private static CityModel cityModel;
+        private static Object plateauObject;
 
-        public ObjectTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext _)
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.plateauObject = cityModel.RootCityObjects[0];
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            plateauObject = cityModel.RootCityObjects[0];
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void ID_Returns_GML_ID()
         {
             const string idInGmlFile = "BLD_0772bfd9-fa36-4747-ad0f-1e57f883f745";
-            string actualId = this.plateauObject.ID;
+            string actualId = plateauObject.ID;
             Assert.AreEqual(idInGmlFile, actualId);
         }
     }

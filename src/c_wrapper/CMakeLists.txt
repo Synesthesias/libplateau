@@ -42,10 +42,17 @@ add_library(c_wrapper OBJECT
   "vector_tile_downloader_c.cpp"
   "tile_projection_c.cpp"
   "lod_searcher_c.cpp"
-        "dataset_source_c.cpp"
+  "dataset_source_c.cpp"
   "vector_c.cpp"
   "i_dataset_accessor_c.cpp"
-  )
+  "dataset_metadata_group_c.cpp"
+  "dataset_metadata_c.cpp"
+  "server_dataset_accessor_c.cpp"
+  "client_c.cpp"
+  "string_c.cpp"
+  "udx_sub_folder_c.cpp"
+  "network_config_c.cpp"
+        )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")

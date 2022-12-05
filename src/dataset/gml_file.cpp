@@ -3,6 +3,7 @@
 #include <regex>
 #include <fstream>
 #include <set>
+#include <utility>
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/mesh_code.h>
 
@@ -10,8 +11,8 @@ namespace plateau::dataset {
 
     namespace fs = std::filesystem;
 
-    GmlFile::GmlFile(const std::string& path)
-        : path_(path),
+    GmlFile::GmlFile(std::string path)
+        : path_(std::move(path)),
         is_valid_(false){
         applyPath();
     }
@@ -168,6 +169,7 @@ namespace plateau::dataset {
             return found;
         }
 
+        // TODO GMLファイルの全文をメモリにコピーするので重いです。LodSearcher::searchLOD の実装を参考にすると速くなりそうです。
         std::string loadFile(const fs::path& file_path) {
             std::ifstream ifs(file_path.u8string());
             if (!ifs) {
@@ -180,26 +182,6 @@ namespace plateau::dataset {
         }
 
         auto regex_options = std::regex::optimize | std::regex::nosubs;
-
-        std::set<std::string> searchAllImagePathsInGML(const std::string& file_content) {
-            // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
-            static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
-            // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
-            static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
-            static auto tag_hint = std::string("app:imageURI");
-            auto found_url_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, tag_hint, tag_hint, 5, 10);
-            return found_url_strings;
-        }
-
-        std::set<std::string> searchAllCodelistPathsInGML(const std::string& file_content) {
-            // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に半角スペースがあっても良いものとします。
-            static const auto begin_tag = std::regex(R"(codeSpace *= *")", regex_options);
-            // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。
-            static const auto end_tag = std::regex(R"(")", regex_options);
-            static const auto begin_tag_hint = "codeSpace";
-            auto found_strings = searchAllStringsBetween(begin_tag, end_tag, file_content, begin_tag_hint, "\"", 5, 10);
-            return found_strings;
-        }
 
         /**
          * 引数の set の中身を相対パスと解釈し、 setの各要素をコピーします。
@@ -224,7 +206,7 @@ namespace plateau::dataset {
     } // fetch で使う無名関数
 
     std::shared_ptr<GmlFile> GmlFile::fetch(const std::string& destination_root_path) const {
-        auto result = std::make_shared<GmlFile>("");
+        auto result = std::make_shared<GmlFile>(std::string(""));
         fetch(destination_root_path, *result);
         return result;
     }
@@ -253,9 +235,8 @@ namespace plateau::dataset {
         }
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
-        const auto gml_content = loadFile(getPath());
-        auto image_paths = searchAllImagePathsInGML(gml_content);
-        auto codelist_paths = searchAllCodelistPathsInGML(gml_content);
+        auto codelist_paths = searchAllCodelistPathsInGML();
+        auto image_paths = searchAllImagePathsInGML();
 
         for (const auto& path : image_paths) {
             std::cout << path << std::endl;
@@ -272,5 +253,27 @@ namespace plateau::dataset {
         copyFiles(codelist_paths, gml_dir_path, app_destination_path);
 
         copied_gml_file.setPath(gml_destination_path.u8string());
+    }
+
+    std::set<std::string> GmlFile::searchAllCodelistPathsInGML() const {
+        const auto gml_content = loadFile(getPath());
+        // 開始タグは codeSpace=" です。ただし =(イコール), "(ダブルクォーテーション)の前後に半角スペースがあっても良いものとします。
+        static const auto begin_tag = std::regex(R"(codeSpace *= *")", regex_options);
+        // 終了タグは、開始タグの次の "(ダブルクォーテーション)です。
+        static const auto end_tag = std::regex(R"(")", regex_options);
+        static const auto begin_tag_hint = "codeSpace";
+        auto codelist_paths = searchAllStringsBetween(begin_tag, end_tag, gml_content, begin_tag_hint, "\"", 5, 10);
+        return codelist_paths;
+    }
+
+    std::set<std::string> GmlFile::searchAllImagePathsInGML() const {
+        const auto gml_content = loadFile(getPath());
+        // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
+        static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
+        // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
+        static const auto end_tag = std::regex(R"(< */ *app:imageURI *>)", regex_options);
+        static auto tag_hint = std::string("app:imageURI");
+        auto image_paths = searchAllStringsBetween(begin_tag, end_tag, gml_content, tag_hint, tag_hint, 5, 10);
+        return image_paths;
     }
 }

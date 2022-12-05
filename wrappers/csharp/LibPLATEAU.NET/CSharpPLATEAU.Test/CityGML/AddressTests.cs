@@ -7,20 +7,28 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AddressTests
     {
-        private Address address;
-        // 前準備
-        public AddressTests()
+        private static Address address;
+        private static CityModel cityModel;
+
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext _)
         {
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
-            this.address = cityObject.Address;
+            address = cityObject.Address;
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void Country_Returns_GML_Country()
         {
             const string gmlCountry = "日本";
-            string actualCountry = this.address.Country;
+            string actualCountry = address.Country;
             Console.WriteLine(actualCountry);
             Assert.AreEqual(gmlCountry, actualCountry);
         }
@@ -29,7 +37,7 @@ namespace PLATEAU.Test.CityGML
         public void Locality_Returns_GML_Locality()
         {
             const string gmlLocality = "東京都大田区羽田空港二丁目";
-            string actualLocality = this.address.Locality;
+            string actualLocality = address.Locality;
             Console.WriteLine(actualLocality);
             Assert.AreEqual(gmlLocality, actualLocality);
         }
@@ -38,7 +46,7 @@ namespace PLATEAU.Test.CityGML
         public void PostalCode_Returns_GML_PostalCode()
         {
             const string gmlPostalCode = "123-4567";
-            string actualPostalcode = this.address.PostalCode;
+            string actualPostalcode = address.PostalCode;
             Console.WriteLine(actualPostalcode);
             Assert.AreEqual(gmlPostalCode, actualPostalcode);
         }
@@ -47,7 +55,7 @@ namespace PLATEAU.Test.CityGML
         public void ThoroughFareName_Returns_GML_ThoroughFareName()
         {
             const string gmlThoroughFareName = "Test Street テスト丁目";
-            string actualThoroughFareName = this.address.ThoroughFareName;
+            string actualThoroughFareName = address.ThoroughFareName;
             Console.WriteLine(actualThoroughFareName);
             Assert.AreEqual(gmlThoroughFareName, actualThoroughFareName);
         }
@@ -56,7 +64,7 @@ namespace PLATEAU.Test.CityGML
         public void ThoroughFareNumber_Returns_GML_ThoroughFareNumber()
         {
             const string gmlThoroughFareNumber = "Test番地";
-            string actualThoroughFareNumber = this.address.ThoroughFareNumber;
+            string actualThoroughFareNumber = address.ThoroughFareNumber;
             Console.WriteLine(actualThoroughFareNumber);
             Assert.AreEqual(gmlThoroughFareNumber, actualThoroughFareNumber);
         }

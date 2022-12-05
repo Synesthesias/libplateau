@@ -36,6 +36,7 @@ add_executable(plateau_test
     "test_network_client.cpp"
     "test_dataset.cpp"
     "test_dataset_source.cpp"
+    "test_server_dataset_accessor.cpp"
     )
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)

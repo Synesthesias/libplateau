@@ -9,14 +9,15 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class TextureCoordinatesTests
     {
-        private TextureCoordinates texCoords;
-        private LinearRing targetRing;
+        private static CityModel cityModel;
+        private static TextureCoordinates texCoords;
+        private static LinearRing targetRing;
 
-        // 前準備
-        public TextureCoordinatesTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
             // 探索して最初に見つかった TextureCoordinates をテスト対象にします。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple, true, false);
             var texTarget = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
@@ -25,11 +26,11 @@ namespace PLATEAU.Test.CityGML
                 .Where(poly => poly.TextureTargetDefinitionsCount > 0)
                 .Select(poly => poly.GetTextureTargetDefinition(0))
                 .First(ttd => ttd.TexCoordinatesCount > 0);
-            this.texCoords = texTarget.GetCoordinate(0);
+            texCoords = texTarget.GetCoordinate(0);
 
             // texTarget のターゲットと同じIDを持つ LinearRing を探します。
-            string targetRingId = this.texCoords.TargetLinearRingId;
-            this.targetRing = cityModel.RootCityObjects
+            string targetRingId = texCoords.TargetLinearRingId;
+            targetRing = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -38,11 +39,17 @@ namespace PLATEAU.Test.CityGML
                 .First(ring => ring.ID == targetRingId);
         }
 
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
+        }
+
         [TestMethod]
         public void Vec2CoordsCount_Is_Same_As_Linear_Ring_Vertices_Count()
         {
-            int vec2CoordsCount = this.texCoords.Vec2CoordsCount;
-            int ringVerticesCount = this.targetRing.VertexCount;
+            int vec2CoordsCount = texCoords.Vec2CoordsCount;
+            int ringVerticesCount = targetRing.VertexCount;
             Console.WriteLine($"Vec2CoordsCount = {vec2CoordsCount}");
             Console.WriteLine($"RingVerticesCount = {ringVerticesCount}");
             Assert.AreEqual(ringVerticesCount, vec2CoordsCount);
@@ -51,7 +58,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetVec2Coord_Is_Not_Zero()
         {
-            var vec2 = this.texCoords.GetVec2Coord(0);
+            var vec2 = texCoords.GetVec2Coord(0);
             Console.WriteLine($"GetVec2Coord(0) = {vec2}");
             Assert.IsTrue(vec2.IsNotZero());
         }
@@ -59,7 +66,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void TargetLinearRingId_Returns_Not_Empty()
         {
-            string id = this.texCoords.TargetLinearRingId;
+            string id = texCoords.TargetLinearRingId;
             Console.WriteLine($"Target Ring ID : {id}");
             Assert.IsTrue(id.Length > 0);
         }
@@ -67,8 +74,8 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void IsRingTarget_Returns_True_For_Target()
         {
-            Console.WriteLine($"target ring id: {this.targetRing.ID}");
-            bool actual = this.texCoords.IsRingTarget(this.targetRing);
+            Console.WriteLine($"target ring id: {targetRing.ID}");
+            bool actual = texCoords.IsRingTarget(targetRing);
             Assert.IsTrue(actual);
         }
 

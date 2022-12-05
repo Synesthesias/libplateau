@@ -15,12 +15,8 @@ using namespace plateau::geometry;
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_vector_tile_downloader(
-            const VectorTileDownloader* vector_tile_downloader
-    ) {
-        delete vector_tile_downloader;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_vector_tile_downloader,
+                    VectorTileDownloader)
 
     DLL_VALUE_FUNC(plateau_vector_tile_downloader_get_tile_count,
                    VectorTileDownloader,

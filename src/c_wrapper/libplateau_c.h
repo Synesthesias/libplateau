@@ -44,7 +44,7 @@ using dll_str_size_t = int;
 #define DLL_PTR_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const HANDLE_TYPE* const handle,/* C#での "[In] IntPtr handle" に対応します。 */ \
-            const RETURN_VALUE_TYPE** out /* C#での "out IntPtr outTexCoords" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */\
+            const RETURN_VALUE_TYPE** out /* C#での "out IntPtr outPtr" に対応します。 アドレスを参照渡しで渡したいので '*' が2つ付きます。 */\
             __VA_ARGS__ \
             ){ \
         API_TRY{ \
@@ -84,17 +84,17 @@ using dll_str_size_t = int;
  * DLL_PTR_FUNCとの違いは、アドレスを渡す代わりに実体を引数 *out に書き込む点です。
  */
 #define DLL_VALUE_FUNC(FUNC_NAME, HANDLE_TYPE, RETURN_VALUE_TYPE, GETTER, ...) \
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME( \
             HANDLE_TYPE* const handle, /* C# では引数   [In] IntPtr handle に対応します。 */ \
             RETURN_VALUE_TYPE* const out /* C# では引数 out OutType ret に対応します。 */ \
             __VA_ARGS__ \
             ){ \
         API_TRY{ \
             *out = GETTER; /* 渡したい値を out に書き込みます。*/ \
-            return APIResult::Success; \
+            return libplateau::APIResult::Success; \
         } \
         API_CATCH \
-        return APIResult::ErrorUnknown; \
+        return libplateau::APIResult::ErrorUnknown; \
     }
 
 
@@ -125,7 +125,7 @@ using dll_str_size_t = int;
 #define DLL_STRING_PTR_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
         TARGET_TYPE* const handle,/* C#では "[In] IntPtr handle" に対応します。 */ \
-        const char** const out_chars_ptr, /* C#では "out IntPtr strPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
+        const char** const out_chars_ptr, /* C#では "out IntPtr outStrPtr" に対応します。アドレスを参照渡しで渡すので'*'が2つ付きます。 */ \
         dll_str_size_t* out_str_length /* C#では "out int strLength" に対応します。*/\
         __VA_ARGS__ \
     ){ \
@@ -147,7 +147,7 @@ using dll_str_size_t = int;
 /// C++側での文字列の寿命が短い場合でも利用できる点です。
 #define DLL_STRING_VALUE_FUNC(FUNC_NAME, TARGET_TYPE, STRING_GETTER, ...) \
     DLL_VALUE_FUNC(FUNC_NAME ## _size, TARGET_TYPE, int, (int)(STRING_GETTER).length()+1, __VA_ARGS__ ) /* +1 はnull終端文字列の分 */ \
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API FUNC_NAME( \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME( \
             const TARGET_TYPE* const handle, \
             char* const out_str_ptr __VA_ARGS__){ \
         API_TRY{ \
@@ -156,10 +156,10 @@ using dll_str_size_t = int;
             auto len = (dll_str_size_t) (str.length()); \
             strncpy(out_str_ptr, chars, len); \
             out_str_ptr[len] = '\0'; /* 最後はnull終端文字*/ \
-            return APIResult::Success; \
+            return libplateau::APIResult::Success; \
         } \
         API_CATCH \
-        return APIResult::ErrorUnknown; \
+        return libplateau::APIResult::ErrorUnknown; \
     }
 
 /// 文字列のポインタの配列を渡したいときに利用するマクロです。
@@ -284,6 +284,97 @@ using dll_str_size_t = int;
         API_CATCH\
         return APIResult::ErrorUnknown;\
     }
+
+/**
+ * CREATE_TYPE を new し、そのアドレスを引数の out_ptr に書き込む関数を生成するマクロです。
+ */
+#define DLL_CREATE_FUNC(FUNC_NAME, CREATE_TYPE) \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+            CREATE_TYPE ** out_ptr /* C# では out IntPtr outPtr に対応します。*/ \
+    ) { \
+        API_TRY { \
+            *out_ptr = new CREATE_TYPE (); \
+            return libplateau::APIResult::Success;                                            \
+        }API_CATCH \
+        return libplateau::APIResult::ErrorUnknown; \
+    }
+
+/**
+ * DELETE_TYPE を delete する関数を生成するマクロです。
+ */
+#define DLL_DELETE_FUNC(FUNC_NAME, DELETE_TYPE) \
+    LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+            const DELETE_TYPE * ptr /* C# では [In] IntPtr ptr に対応します。 */ \
+    ) { \
+        delete ptr; \
+        return libplateau::APIResult::Success; \
+    }
+
+/**
+ * ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg を使って記述します。
+ */
+#define DLL_1_ARG_FUNC(FUNC_NAME, ARG_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_TYPE arg \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
+
+/**
+ * ARG_1_TYPE と ARG_2_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2 を使って記述します。
+ */
+#define DLL_2_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_1_TYPE arg_1, \
+        ARG_2_TYPE arg_2 \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
+
+/**
+ * ARG_1_TYPE と ARG_2_TYPE, ARG_3_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2, arg_3 を使って記述します。
+ */
+#define DLL_3_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, ARG_3_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_1_TYPE arg_1, \
+        ARG_2_TYPE arg_2, \
+        ARG_3_TYPE arg_3  \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
+
+/**
+ * ARG_1_TYPE と ARG_2_TYPE, ARG_3_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
+ * PREDICATE は arg_1 と arg_2, arg_3 を使って記述します。
+ */
+#define DLL_4_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, ARG_3_TYPE, ARG_4_TYPE, PREDICATE) \
+LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
+        ARG_1_TYPE arg_1, \
+        ARG_2_TYPE arg_2, \
+        ARG_3_TYPE arg_3, \
+        ARG_4_TYPE arg_4 \
+){ \
+    API_TRY{ \
+        { PREDICATE ;} \
+        return libplateau::APIResult::Success; \
+    }API_CATCH \
+    return libplateau::APIResult::ErrorUnknown; \
+}
 
 namespace libplateau {
     // 処理中にエラーが発生する可能性があり、その内容をDLLの呼び出し側に伝えたい場合は、

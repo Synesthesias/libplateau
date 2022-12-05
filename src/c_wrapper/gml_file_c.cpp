@@ -12,7 +12,7 @@ extern "C" {
             GmlFile** gml_file_info_ptr, const char* path
     ) {
         API_TRY {
-            const auto gml_file_info = new GmlFile(path);
+            const auto gml_file_info = new GmlFile(std::string(path));
             if (gml_file_info->isValid()) {
                 *gml_file_info_ptr = gml_file_info;
                 return APIResult::Success;
@@ -23,12 +23,8 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_delete_gml_file(
-            const GmlFile* gml_file_info
-    ) {
-        delete gml_file_info;
-        return APIResult::Success;
-    }
+    DLL_DELETE_FUNC(plateau_delete_gml_file,
+                    GmlFile)
 
     DLL_STRING_PTR_FUNC(plateau_gml_file_get_path,
                         GmlFile,
@@ -54,7 +50,7 @@ extern "C" {
                    MeshCode,
                    handle->getMeshCode())
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch_local(
             const GmlFile* const gml_file_info,
             char* destination_root_path_chars,
             GmlFile* const out_gml_file_info
@@ -66,4 +62,16 @@ extern "C" {
         } API_CATCH;
         return APIResult::ErrorUnknown;
     }
+
+    DLL_2_ARG_FUNC(plateau_gml_file_search_all_codelist_paths_in_gml,
+                   const GmlFile* const,
+                   std::vector<std::string>*, // codelist_paths
+                   auto set = arg_1->searchAllCodelistPathsInGML();
+                   *arg_2 = std::vector<std::string>(set.cbegin(), set.cend());)
+
+    DLL_2_ARG_FUNC(plateau_gml_file_search_all_image_paths_in_gml,
+                   const GmlFile* const,
+                   std::vector<std::string>*, // image_paths
+                   auto set = arg_1->searchAllImagePathsInGML();
+                   *arg_2 = std::vector<std::string>(set.cbegin(), set.cend());)
 }

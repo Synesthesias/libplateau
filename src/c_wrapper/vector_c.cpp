@@ -1,9 +1,11 @@
 #include "libplateau_c.h"
+#include "plateau/network/client.h"
 #include <vector>
 #include <plateau/dataset/gml_file.h>
 extern "C"{
     using namespace libplateau;
     using namespace plateau::dataset;
+    using namespace plateau::network;
 
 /**
  * vector<任意の型> を P/Invoke で扱うための5つのメソッドを生成するマクロです。
@@ -53,4 +55,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
 
     PLATEAU_VECTOR(gml_file, GmlFile)
     PLATEAU_VECTOR(mesh_code, MeshCode)
+    PLATEAU_VECTOR(dataset_metadata_group, DatasetMetadataGroup)
+    PLATEAU_VECTOR(dataset_metadata, DatasetMetadata)
+    PLATEAU_VECTOR(string, std::string)
 }

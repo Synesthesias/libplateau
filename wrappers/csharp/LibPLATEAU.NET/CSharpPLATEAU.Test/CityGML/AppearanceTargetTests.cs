@@ -10,15 +10,17 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class AppearanceTargetTests
     {
-        private readonly AppearanceTarget appTargetWithTexTheme;
+        private static CityModel cityModel;
+        private static AppearanceTarget appTargetWithTexTheme;
         // private readonly AppearanceTarget appTargetWithMatTheme;
 
         // 初期化
-        public AppearanceTargetTests()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext _)
         {
             // テスト対象として適切なものを検索します。
-            var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            this.appTargetWithTexTheme = cityModel.RootCityObjects
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            appTargetWithTexTheme = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)
@@ -37,17 +39,23 @@ namespace PLATEAU.Test.CityGML
             // .First(poly => poly.MaterialThemesCount(true) > 0);
         }
 
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
+        }
+
         [TestMethod]
         public void Do_Exist_AppearanceTarget_That_TextureThemesCount_Is_Positive_Number()
         {
-            Console.Write($"TextureThemesCountOfFront: {this.appTargetWithTexTheme.TextureThemesCountOfFront(true)}");
-            Assert.IsNotNull(this.appTargetWithTexTheme);
+            Console.Write($"TextureThemesCountOfFront: {appTargetWithTexTheme.TextureThemesCountOfFront(true)}");
+            Assert.IsNotNull(appTargetWithTexTheme);
         }
 
         [TestMethod]
         public void TextureThemes_Returns_GML_ThemeName()
         {
-            foreach (string theme in this.appTargetWithTexTheme.TextureThemeNames(true))
+            foreach (string theme in appTargetWithTexTheme.TextureThemeNames(true))
             {
                 Console.WriteLine($"TextureTheme: {theme}");
                 Assert.AreEqual("rgbTexture", theme);
@@ -57,7 +65,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetTextureTargetDefinition_Returns_Not_Null()
         {
-            var ttd = this.appTargetWithTexTheme.GetTextureTargetDefinition("rgbTexture", true);
+            var ttd = appTargetWithTexTheme.GetTextureTargetDefinition("rgbTexture", true);
             Assert.IsNotNull(ttd);
         }
 
@@ -65,14 +73,14 @@ namespace PLATEAU.Test.CityGML
         public void GetTextureTargetDefinition_Throws_Error_When_Not_Found()
         {
             Assert.ThrowsException<KeyNotFoundException>(() =>
-                this.appTargetWithTexTheme.GetTextureTargetDefinition("DummyNotFound", true)
+                appTargetWithTexTheme.GetTextureTargetDefinition("DummyNotFound", true)
             );
         }
 
         [TestMethod]
         public void TextureThemesCount_Returns_Positive_Number()
         {
-            int count = this.appTargetWithTexTheme.TextureTargetDefinitionsCount;
+            int count = appTargetWithTexTheme.TextureTargetDefinitionsCount;
             Console.WriteLine($"TextureThemesCount : {count}");
             Assert.IsTrue(count > 0);
         }
@@ -80,15 +88,15 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void GetTextureTargetDefinition_By_Index_Returns_NotNull()
         {
-            var texTargetDef = this.appTargetWithTexTheme.GetTextureTargetDefinition(0);
+            var texTargetDef = appTargetWithTexTheme.GetTextureTargetDefinition(0);
             Assert.IsNotNull(texTargetDef);
         }
 
         [TestMethod]
         public void TextureTargetDefinitions_Enumerates_Same_Count()
         {
-            int enumerateCount = this.appTargetWithTexTheme.TextureTargetDefinitions.Count();
-            int expectedCount = this.appTargetWithTexTheme.TextureTargetDefinitionsCount;
+            int enumerateCount = appTargetWithTexTheme.TextureTargetDefinitions.Count();
+            int expectedCount = appTargetWithTexTheme.TextureTargetDefinitionsCount;
             Assert.AreEqual(expectedCount, enumerateCount);
         }
 

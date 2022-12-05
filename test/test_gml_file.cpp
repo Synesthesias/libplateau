@@ -8,7 +8,7 @@ namespace plateau::dataset {
     };
 
     TEST_F(GmlFileTest, get_feature_type) { // NOLINT
-        auto info = GmlFile("foobar/udx/bldg/53392546_bldg_6697_2_op.gml");
+        auto info = GmlFile(std::string("foobar/udx/bldg/53392546_bldg_6697_2_op.gml"));
         ASSERT_EQ("bldg", info.getFeatureType());
         ASSERT_EQ(PredefinedCityModelPackage::Building, UdxSubFolder::getPackage("bldg"));
     }

@@ -8,27 +8,33 @@ namespace PLATEAU.Test.CityGML
     [TestClass]
     public class GeometryTests
     {
-        private readonly CityModel cityModel;
-        private readonly Geometry geomWithPolygon;
-
-        private readonly Geometry geomWithChildren;
-        // 初期化
-        public GeometryTests()
+        private static CityModel cityModel;
+        private static Geometry geomWithPolygon;
+        private static Geometry geomWithChildren;
+        
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
             // テスト対象として適切なものを検索し、最初にヒットした物をテストに利用します。
             // 具体的には Polygon を1つ以上含む Geometry と、 Children を1つ以上含む Geometry を検索します。
-            this.cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
-            var allCityObjects = this.cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS).ToArray();
-            this.geomWithPolygon = allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.PolygonCount > 0);
-            this.geomWithChildren =
+            cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
+            var allCityObjects = cityModel.RootCityObjects.SelectMany(co => co.CityObjectDescendantsDFS).ToArray();
+            geomWithPolygon = allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.PolygonCount > 0);
+            geomWithChildren =
                 allCityObjects.SelectMany(co => co.Geometries).First(geo => geo.ChildGeometryCount > 0);
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            cityModel.Dispose();
         }
 
         [TestMethod]
         public void Type_Returns_GML_Type()
         {
             GeometryType gmlType = GeometryType.GT_Roof;
-            GeometryType actualType = this.geomWithPolygon.Type;
+            GeometryType actualType = geomWithPolygon.Type;
             Console.WriteLine(actualType);
             Assert.AreEqual(gmlType, actualType);
         }
@@ -36,7 +42,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void ChildGeometryCount_Returns_Positive_Value()
         {
-            int actualGeomCount = this.geomWithChildren.ChildGeometryCount;
+            int actualGeomCount = geomWithChildren.ChildGeometryCount;
             Console.WriteLine(actualGeomCount);
             Assert.IsTrue(actualGeomCount > 0);
         }
@@ -44,14 +50,14 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void PolygonCount_Returns_Positive_Value()
         {
-            int actualPolyCount = this.geomWithPolygon.PolygonCount;
+            int actualPolyCount = geomWithPolygon.PolygonCount;
             Assert.IsTrue(actualPolyCount > 0);
         }
 
         [TestMethod]
         public void GetChildGeometry_Returns_Not_Null()
         {
-            var actualChild = this.geomWithChildren.GetChildGeometry(0);
+            var actualChild = geomWithChildren.GetChildGeometry(0);
             Console.WriteLine(actualChild);
             Assert.IsNotNull(actualChild);
         }
@@ -59,7 +65,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void LOD_Returns_Zero_Or_Positive()
         {
-            int actualLOD = this.geomWithPolygon.LOD;
+            int actualLOD = geomWithPolygon.LOD;
             Console.WriteLine($"LOD = {actualLOD}");
             Assert.IsTrue(actualLOD >= 0);
         }
@@ -67,14 +73,14 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void LineStringCount_Returns_Zero_Or_Positive_Value()
         {
-            int actualLineStringsCount = this.geomWithPolygon.LineStringCount;
+            int actualLineStringsCount = geomWithPolygon.LineStringCount;
             Assert.IsTrue(actualLineStringsCount >= 0);
         }
 
         [TestMethod]
         public void Do_Exists_Geometry_With_SRSName()
         {
-            var geomWithSRSName = this.cityModel.RootCityObjects
+            var geomWithSRSName = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .SelectMany(co => co.Geometries)
                 .SelectMany(geom => geom.GeometryDescendantsDFS)

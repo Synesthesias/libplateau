@@ -114,6 +114,9 @@ PlateauUnitySDKへの導入については、そちらのREADMEを参照のこ�
 ## テストデータ
 テストデータの詳細については ```data/README.md``` に記載している。
 
+## モックサーバー
+モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照。
+
 # 実装上の注意
 ## 文字コード
 - gmlのパース結果はC++の内部では UTF-8 で保持しています。
