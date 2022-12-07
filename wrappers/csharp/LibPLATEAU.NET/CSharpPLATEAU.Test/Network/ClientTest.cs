@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Network
         public void DatasetMetadataGroup()
         {
             var client = Client.Create();
-            client.Url = NetworkConfig.MockServerURL;
+            client.Url = NetworkConfig.DefaultApiServerUrl;
             var metadataGroup = client.GetDatasetMetadataGroup();
             Assert.AreEqual("東京都", metadataGroup.At(0).Title);
             Assert.AreEqual("23区", metadataGroup.At(0).Datasets.At(0).Title);

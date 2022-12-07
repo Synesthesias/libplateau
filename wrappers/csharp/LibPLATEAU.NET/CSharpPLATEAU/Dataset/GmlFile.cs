@@ -152,7 +152,7 @@ namespace PLATEAU.Dataset
             Directory.CreateDirectory(destDirPath);
 
             var client = Client.Create();
-            client.Url = NetworkConfig.MockServerURL;
+            client.Url = NetworkConfig.DefaultApiServerUrl;
             string downloadedPath = client.Download(destDirPath, Path);
             client.Dispose();
             return Create(downloadedPath);

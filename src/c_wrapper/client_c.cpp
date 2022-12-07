@@ -31,4 +31,8 @@ DLL_4_ARG_FUNC(plateau_client_download,
                const char* const url_utf8,
                std::string* const out_downloaded_path,
                *out_downloaded_path = client->download(destination_directory_utf8, url_utf8) )
+
+DLL_1_ARG_FUNC(plateau_client_get_default_url,
+               std::string* out_default_url,
+               *out_default_url = Client::default_server_url)
 }

@@ -1817,13 +1817,10 @@ namespace PLATEAU.Interop
             [In] byte[] destinationDirectoryUtf8,
             [In] byte[] urlUtf8,
             [In,Out] IntPtr refNativeStringPtr);
-        
-        // ***************
-        //  network_config_c.cpp
-        // ***************
+
         [DllImport(DllName)]
-        internal static extern APIResult plateau_network_config_mock_server_url(
-            [In, Out] IntPtr refNativeStringPtr);
-        
+        internal static extern APIResult plateau_client_get_default_url(
+            [In, Out] IntPtr nativeStrPtr);
+
     }
 }
