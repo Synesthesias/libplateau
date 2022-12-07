@@ -21,14 +21,9 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Filtered_Collection_Contains_All_Files_In_Extent()
         {
-            var extent = new Extent
-            {
-                Max = new GeoCoordinate(35.54, 139.78, 999),
-                Min = new GeoCoordinate(35.53, 139.77, -999)
-            };
             using var datasetSource = DatasetSource.Create(false, "data");
             var accessor = datasetSource.Accessor;
-            var gmls = accessor.GetGmlFiles(extent, PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
         }
@@ -50,7 +45,7 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(
                 Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"),
                 Path.GetFullPath(
-                    accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building)
+                    accessor.GetGmlFiles(PredefinedCityModelPackage.Building)
                         .At(0).Path)
             );
         }

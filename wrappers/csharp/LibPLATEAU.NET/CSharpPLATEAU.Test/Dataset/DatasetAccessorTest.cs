@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
-using PLATEAU.Interop;
 
 namespace PLATEAU.Test.Dataset
 {
@@ -12,12 +11,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var datasetSource = DatasetSource.Create(false, "data");
             var accessor = datasetSource.Accessor;
-            var gmls = accessor.GetGmlFiles(
-                new Extent(
-                    new GeoCoordinate(35.53, 139.77, -9999),
-                    new GeoCoordinate(35.54, 139.78, 9999)
-                ),
-                PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
         }
 

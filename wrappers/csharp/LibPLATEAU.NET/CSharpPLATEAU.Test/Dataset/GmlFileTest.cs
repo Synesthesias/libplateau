@@ -2,7 +2,6 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
-using PLATEAU.Interop;
 
 namespace PLATEAU.Test.Dataset
 {
@@ -50,7 +49,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
-            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmls)
             {
                 gml.Fetch(testDir.FullName);
@@ -75,7 +74,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
-            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
             var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
             var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
@@ -109,7 +108,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
             var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
-            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Console.WriteLine(testDir.FullName);
             foreach(var gml in gmls)
             {

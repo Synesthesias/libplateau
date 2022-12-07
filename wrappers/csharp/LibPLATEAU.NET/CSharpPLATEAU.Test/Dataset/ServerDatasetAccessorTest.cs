@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Interop;
@@ -32,6 +31,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MetadataContainsFeatureTypes()
         {
+            using var source = DatasetSource.Create(true, "");
             var accessor = ServerDatasetAccessor.Create("");
             var meta = accessor.GetMetadataGroup().At(0).Datasets.At(1);
             Assert.AreEqual("八王子市", meta.Title);

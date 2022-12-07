@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
-using PLATEAU.Interop;
 using PLATEAU.Network;
 
 namespace PLATEAU.Test.Dataset
@@ -13,7 +12,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
-            Assert.AreEqual(accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
+            Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
 
         [TestMethod]
@@ -32,7 +31,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(true, "23ku");
             var accessor = source.Accessor;
             Assert.AreEqual("53392642", accessor.MeshCodes.At(0).ToString());
-            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(
                 NetworkConfig.MockServerURL + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",
                 gmls.At(0).Path);
