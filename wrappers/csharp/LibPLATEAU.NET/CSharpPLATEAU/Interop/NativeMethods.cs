@@ -454,7 +454,7 @@ namespace PLATEAU.Interop
             [In] IntPtr cityModel);
 
         [DllImport(DllName)]
-        internal static extern int plateau_delete_city_model(
+        internal static extern APIResult plateau_delete_city_model(
             [In] IntPtr cityModel);
 
         [DllImport(DllName)]

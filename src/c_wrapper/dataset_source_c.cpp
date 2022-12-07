@@ -6,17 +6,10 @@ extern "C" {
     using namespace plateau::dataset;
     namespace fs = std::filesystem;
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_dataset_source_local(
-            DatasetSource** out_dataset_source,
-            const char* const source_path_utf8
-    ) {
-        API_TRY{
-                *out_dataset_source = new DatasetSource(DatasetSource::createLocal(fs::u8path(source_path_utf8)));
-                return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_2_ARG_FUNC(plateau_create_dataset_source_local,
+                   DatasetSource**, // out_dataset_source
+                   const char* const, // source_path_utf8
+                   *arg_1 = new DatasetSource(DatasetSource::createLocal(fs::u8path(arg_2))); )
 
     DLL_2_ARG_FUNC(plateau_create_dataset_source_server,
                    DatasetSource**, // out_pointer_of_new_instance
