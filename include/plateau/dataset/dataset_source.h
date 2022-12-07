@@ -1,6 +1,12 @@
+#pragma once
+
 #include <libplateau_api.h>
 #include <filesystem>
-#include "i_dataset_accessor.h"
+#include <plateau/dataset/i_dataset_accessor.h>
+
+namespace plateau::network {
+    class Client;
+}
 
 namespace plateau::dataset {
     /**
@@ -14,16 +20,16 @@ namespace plateau::dataset {
     public:
 
         /**
-         * ローカルPC内のデータを指す DatasetSource を作ります。
+         * ローカルに存在するDatasetSourceを生成します。
          */
-        static DatasetSource createLocal(const std::filesystem::path& local_source_path);
+        static DatasetSource createLocal(const std::string& local_source_path);
 
         /**
-         * サーバー上のデータを指す DatasetSource を作ります。
-         * 引数に渡すべき dataset_id は、Client::getMetadata を使って
-         * APIサーバーに問い合わせることで得られる Dataset の ID です。
+         * \brief サーバー上に存在するDatasetSourceを生成します。
+         * \param dataset_id Client::getMetadataで取得されるデータセットのID
+         * \param client Clientのインスタンス
          */
-        static DatasetSource createServer(const std::string& dataset_id);
+        static DatasetSource createServer(const std::string& dataset_id, const network::Client& client);
 
         std::shared_ptr<IDatasetAccessor> getAccessor() const;
 

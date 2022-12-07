@@ -102,6 +102,12 @@ namespace plateau::dataset {
         }
     }
 
+    std::shared_ptr<std::vector<MeshCode>> MeshCode::getThirdMeshes(const geometry::Extent& extent) {
+        auto result = std::make_shared<std::vector<MeshCode>>();
+        getThirdMeshes(extent, *result);
+        return result;
+    }
+
     bool MeshCode::isWithin(const MeshCode& other) const {
         if (get() == other.get())
             return true;

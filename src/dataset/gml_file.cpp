@@ -4,16 +4,38 @@
 #include <fstream>
 #include <set>
 #include <utility>
+
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/mesh_code.h>
+#include <plateau/network/client.h>
+
+#include "lod_searcher.h"
+
+namespace {
+    bool checkLocal(const std::string& path) {
+        if (path.size() < 4)
+            return true;
+        return path.substr(0, 4) != "http";
+    }
+}
 
 namespace plateau::dataset {
 
     namespace fs = std::filesystem;
 
-    GmlFile::GmlFile(std::string path)
-        : path_(std::move(path)),
-        is_valid_(false){
+    GmlFile::GmlFile(const std::string& path)
+        : path_(path)
+        , is_valid_(false)
+        , is_local_(true)
+        , max_lod_(-1) {
+        applyPath();
+    }
+
+    GmlFile::GmlFile(const std::string& path, const int max_lod)
+        : path_(path)
+        , is_valid_(false)
+        , is_local_(true)
+        , max_lod_(max_lod) {
         applyPath();
     }
 
@@ -51,11 +73,26 @@ namespace plateau::dataset {
         return appearance_path;
     }
 
+    int GmlFile::getMaxLod() {
+        if (isMaxLodCalculated())
+            return max_lod_;
+
+        auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
+        max_lod_ = lods.getMax();
+        return max_lod_;
+    }
+
     bool GmlFile::isValid() const {
         return is_valid_;
     }
 
+    bool GmlFile::isMaxLodCalculated() const {
+        return max_lod_ >= 0;
+    }
+
     void GmlFile::applyPath() {
+        is_local_ = checkLocal(path_);
+
         const auto filename = fs::u8path(path_).filename().u8string();
         std::vector<std::string> filename_parts;
         std::string current;
@@ -108,7 +145,7 @@ namespace plateau::dataset {
                 if (hint_matched_pos == std::string::npos) return false;
                 // ヒントが検索ヒットしたので、その周囲の指定数のバイト範囲を正規表現の検索範囲にします。
                 auto search_start =
-                        str_begin + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
+                    str_begin + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
                 auto search_end = std::min(str.end(), str_begin + (long long)hint_matched_pos + (long long)hint.size() + search_range_after_hint);
                 // 正規表現でヒットしたら、その結果を引数 matched に格納して返します。
                 bool found = std::regex_search(search_start, search_end, matched, regex);
@@ -149,13 +186,13 @@ namespace plateau::dataset {
             while (true) {
                 // 開始タグを検索します。
                 if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
-                                         search_range_before_hint, search_range_after_hint)) {
+                    search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
                 // 終了タグを検索します。
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
-                                        search_range_before_hint, search_range_after_hint)) {
+                    search_range_before_hint, search_range_after_hint)) {
                     // 開始タグと終了タグに挟まれた文字列を結果として格納します。
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 } else {
@@ -191,10 +228,8 @@ namespace plateau::dataset {
          */
         void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path) {
             for (const auto& path : path_set) {
-                auto src = src_base_path;
-                auto dest = dest_base_path;
-                src.append(path).make_preferred();
-                dest.append(path).make_preferred();
+                auto src = fs::path(src_base_path).append(path).make_preferred();
+                auto dest = fs::path(dest_base_path).append(path).make_preferred();
                 if (!fs::exists(src)) {
                     std::cout << "file not exist : " << src.string() << std::endl;
                     continue;
@@ -229,26 +264,22 @@ namespace plateau::dataset {
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = getPath();
         try {
-            fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
+            if (is_local_)
+                fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
+            else
+                plateau::network::Client().download(gml_destination_path.parent_path().u8string(), path_);
         }
         catch (...) {
         }
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
-        auto codelist_paths = searchAllCodelistPathsInGML();
-        auto image_paths = searchAllImagePathsInGML();
-
-        for (const auto& path : image_paths) {
-            std::cout << path << std::endl;
-        }
-        for (const auto& path : codelist_paths) {
-            std::cout << path << std::endl;
-        }
-
+        const auto codelist_paths = searchAllCodelistPathsInGML();
+        const auto image_paths = searchAllImagePathsInGML();
+        
         // テクスチャとコードリストファイルをコピーします。
-        auto gml_dir_path = fs::path(gml_file_path).parent_path();
-        auto relative_gml_dir_path = fs::path(gml_relative_path).parent_path().u8string();
-        auto app_destination_path = fs::path(destination_udx_path).append(relative_gml_dir_path);
+        const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
+        const auto relative_gml_dir_path = fs::u8path(gml_relative_path).parent_path().u8string();
+        const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
         copyFiles(image_paths, gml_dir_path, app_destination_path);
         copyFiles(codelist_paths, gml_dir_path, app_destination_path);
 

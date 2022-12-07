@@ -11,7 +11,9 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT GmlFile {
     public:
-        explicit GmlFile(std::string path);
+        explicit GmlFile(const std::string& path);
+        explicit GmlFile(const std::string& path, const int max_lod);
+
 
         const std::string& getPath() const;
         void setPath(const std::string& path);
@@ -19,6 +21,14 @@ namespace plateau::dataset {
         const std::string& getFeatureType() const;
         std::string getAppearanceDirectoryPath() const;
         bool isValid() const;
+
+        bool isMaxLodCalculated() const;
+
+        /**
+         * GMLファイルの中身を文字列検索し、最大LODを求めます。
+         * どのLODにも未対応であれば -1 を返します。
+         */
+        int getMaxLod();
 
         /**
          * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
@@ -49,6 +59,8 @@ namespace plateau::dataset {
         std::string code_;
         std::string feature_type_;
         bool is_valid_;
+        bool is_local_;
+        int max_lod_;
 
         void applyPath();
     };

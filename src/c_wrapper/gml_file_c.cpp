@@ -1,6 +1,6 @@
 #include "libplateau_c.h"
 
-#include <plateau/dataset/local_dataset_accessor.h>
+#include <plateau/dataset/i_dataset_accessor.h>
 
 #include "citygml/address.h"
 

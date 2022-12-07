@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <plateau/dataset/gml_file.h>
-#include "plateau/dataset/local_dataset_accessor.h"
+#include "plateau/dataset/i_dataset_accessor.h"
 
 namespace plateau::dataset {
     class GmlFileTest : public ::testing::Test {

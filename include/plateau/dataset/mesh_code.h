@@ -17,6 +17,7 @@ namespace plateau::dataset {
         geometry::Extent getExtent() const;
         static MeshCode getThirdMesh(const geometry::GeoCoordinate& coordinate);
         static void getThirdMeshes(const geometry::Extent& extent, std::vector<MeshCode>& mesh_codes);
+        static std::shared_ptr<std::vector<MeshCode>> getThirdMeshes(const geometry::Extent& extent);
         bool isWithin(const MeshCode& other) const;
         MeshCode asSecond() const;
 
