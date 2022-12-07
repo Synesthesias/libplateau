@@ -12,14 +12,14 @@ DLL_DELETE_FUNC(plateau_delete_client,
                 Client)
 
 DLL_2_ARG_FUNC(plateau_client_get_metadata,
-               const Client* const,
-               std::vector<DatasetMetadataGroup>* const,
-               arg_1->getMetadata(*arg_2))
+               const Client* const client,
+               std::vector<DatasetMetadataGroup>* const out_vector_dataset_metadata_group_ptr,
+               client->getMetadata(*out_vector_dataset_metadata_group_ptr))
 
 DLL_2_ARG_FUNC(plateau_client_set_api_server_url,
-               Client* const,
-               const char* const,
-               arg_1->setApiServerUrl(std::string(arg_2)))
+               Client* const client,
+               const char* const api_server_url,
+               client->setApiServerUrl(std::string(api_server_url)))
 
 DLL_STRING_VALUE_FUNC(plateau_client_get_api_server_url,
                       Client,

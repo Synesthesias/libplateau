@@ -29,7 +29,7 @@ DLL_VALUE_FUNC(plateau_dataset_metadata_get_max_lod,
                handle->max_lod)
 
 DLL_2_ARG_FUNC(plateau_dataset_metadata_get_feature_types,
-               const DatasetMetadata* const, // meta_data_ptr
-               std::vector<std::string>* const, // feature_types
-               *arg_2 = arg_1->feature_types)
+               const DatasetMetadata* const meta_data,
+               std::vector<std::string>* const feature_types,
+               *feature_types = meta_data->feature_types)
 }

@@ -20,9 +20,9 @@ extern "C" {
     }
 
     DLL_2_ARG_FUNC(plateau_i_dataset_accessor_get_mesh_codes,
-                   IDatasetAccessor* const,
-                   std::vector<MeshCode>* const,
-                   arg_1->getMeshCodes(*arg_2))
+                   IDatasetAccessor* const dataset_accessor,
+                   std::vector<MeshCode>* const mesh_codes,
+                   dataset_accessor->getMeshCodes(*mesh_codes))
 
     DLL_VALUE_FUNC(plateau_i_dataset_accessor_get_max_lod,
                    IDatasetAccessor,

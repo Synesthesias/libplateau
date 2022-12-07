@@ -5,6 +5,6 @@ using namespace plateau::network;
 extern "C" {
 
 DLL_1_ARG_FUNC(plateau_network_config_mock_server_url,
-               std::string*,
-               *arg = NetworkConfig::mockServerUrl())
+               std::string* out_mock_server_url,
+               *out_mock_server_url = NetworkConfig::mockServerUrl())
 }

@@ -311,12 +311,11 @@ using dll_str_size_t = int;
     }
 
 /**
- * ARG_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
- * PREDICATE は arg を使って記述します。
+ * ARG_DEF (型 引数名) を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
  */
-#define DLL_1_ARG_FUNC(FUNC_NAME, ARG_TYPE, PREDICATE) \
+#define DLL_1_ARG_FUNC(FUNC_NAME, ARG_DEF, PREDICATE) \
 LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
-        ARG_TYPE arg \
+        ARG_DEF \
 ){ \
     API_TRY{ \
         { PREDICATE ;} \
@@ -326,13 +325,12 @@ LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
 }
 
 /**
- * ARG_1_TYPE と ARG_2_TYPE を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
- * PREDICATE は arg_1 と arg_2 を使って記述します。
+ * ARG_1_DEF と ARG_2_DEF (型　引数名) を引数にとり、 PREDICATE を実行する関数を生成するマクロです。
  */
-#define DLL_2_ARG_FUNC(FUNC_NAME, ARG_1_TYPE, ARG_2_TYPE, PREDICATE) \
+#define DLL_2_ARG_FUNC(FUNC_NAME, ARG_1_DEF, ARG_2_DEF, PREDICATE) \
 LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API FUNC_NAME ( \
-        ARG_1_TYPE arg_1, \
-        ARG_2_TYPE arg_2 \
+        ARG_1_DEF, \
+        ARG_2_DEF \
 ){ \
     API_TRY{ \
         { PREDICATE ;} \

@@ -64,14 +64,14 @@ extern "C" {
     }
 
     DLL_2_ARG_FUNC(plateau_gml_file_search_all_codelist_paths_in_gml,
-                   const GmlFile* const,
-                   std::vector<std::string>*, // codelist_paths
-                   auto set = arg_1->searchAllCodelistPathsInGML();
-                   *arg_2 = std::vector<std::string>(set.cbegin(), set.cend());)
+                   const GmlFile* const gml_file,
+                   std::vector<std::string>* codelist_paths,
+                   auto set = gml_file->searchAllCodelistPathsInGML();
+                   *codelist_paths = std::vector<std::string>(set.cbegin(), set.cend());)
 
     DLL_2_ARG_FUNC(plateau_gml_file_search_all_image_paths_in_gml,
-                   const GmlFile* const,
-                   std::vector<std::string>*, // image_paths
-                   auto set = arg_1->searchAllImagePathsInGML();
-                   *arg_2 = std::vector<std::string>(set.cbegin(), set.cend());)
+                   const GmlFile* const gml_file,
+                   std::vector<std::string>* image_paths,
+                   auto set = gml_file->searchAllImagePathsInGML();
+                   *image_paths = std::vector<std::string>(set.cbegin(), set.cend());)
 }

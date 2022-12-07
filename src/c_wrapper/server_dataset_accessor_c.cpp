@@ -10,27 +10,27 @@ using namespace libplateau;
 
 
 DLL_2_ARG_FUNC(plateau_create_server_dataset_accessor,
-               ServerDatasetAccessor**, // out_ptr
-               const char* const, // dataset_id
-               *arg_1 = new ServerDatasetAccessor(arg_2))
+               ServerDatasetAccessor** out_ptr,
+               const char* const dataset_id,
+               *out_ptr = new ServerDatasetAccessor(dataset_id))
 
 DLL_DELETE_FUNC(plateau_delete_server_dataset_accessor,
                 ServerDatasetAccessor)
 
 DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_dataset_metadata_group,
-               const ServerDatasetAccessor* const,
-               std::vector<DatasetMetadataGroup>* const,
-               arg_1->getDatasetMetadataGroup(*arg_2))
+               const ServerDatasetAccessor* const server_dataset_accessor,
+               std::vector<DatasetMetadataGroup>* const out_metadata_groups,
+               server_dataset_accessor->getDatasetMetadataGroup(*out_metadata_groups))
 
 DLL_2_ARG_FUNC(plateau_server_dataset_accessor_set_dataset_id,
-               ServerDatasetAccessor* const,
-               const char* const,
-               arg_1->setDatasetID(arg_2))
+               ServerDatasetAccessor* const server_dataset_accessor,
+               const char* const dataset_id,
+               server_dataset_accessor->setDatasetID(dataset_id))
 
 DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_mesh_codes,
-               ServerDatasetAccessor* const,
-               std::vector<MeshCode>* const,
-               arg_1->getMeshCodes(*arg_2))
+               ServerDatasetAccessor* const server_dataset_accessor,
+               std::vector<MeshCode>* const out_mesh_codes,
+               server_dataset_accessor->getMeshCodes(*out_mesh_codes))
 
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_get_gml_files(
         ServerDatasetAccessor* const accessor,
@@ -46,9 +46,9 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_server_dataset_accessor_g
 }
 
 DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
-               ServerDatasetAccessor* const,
-               PredefinedCityModelPackage* const,
-               *arg_2 = arg_1->getPackages())
+               ServerDatasetAccessor* const server_dataset_accessor,
+               PredefinedCityModelPackage* const out_packages,
+               *out_packages = server_dataset_accessor->getPackages())
 
 DLL_4_ARG_FUNC(plateau_server_dataset_accessor_get_max_lod,
                ServerDatasetAccessor* const,
