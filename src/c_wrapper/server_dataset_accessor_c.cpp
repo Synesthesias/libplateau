@@ -51,9 +51,9 @@ DLL_2_ARG_FUNC(plateau_server_dataset_accessor_get_packages,
                *out_packages = server_dataset_accessor->getPackages())
 
 DLL_4_ARG_FUNC(plateau_server_dataset_accessor_get_max_lod,
-               ServerDatasetAccessor* const,
-               MeshCode,
-               PredefinedCityModelPackage,
-               int* const, // out_max_lod
-               *arg_4 = arg_1->getMaxLod(arg_2, arg_3))
+               ServerDatasetAccessor* const server_dataset_accessor,
+               MeshCode mesh_code,
+               PredefinedCityModelPackage package,
+               int* const out_max_lod,
+               *out_max_lod = server_dataset_accessor->getMaxLod(mesh_code, package))
 }

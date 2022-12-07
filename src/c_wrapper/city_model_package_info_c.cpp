@@ -7,11 +7,11 @@ using namespace plateau::dataset;
 extern "C" {
 
     DLL_4_ARG_FUNC(plateau_create_city_model_package_info,
-                   CityModelPackageInfo**, // out_info_ptr
-                   bool, // has_appearance
-                   int, // min_lod
-                   int, // max_lod
-                   *arg_1 = new CityModelPackageInfo(arg_2, arg_3, arg_4); )
+                   CityModelPackageInfo** out_info_ptr,
+                   bool has_appearance,
+                   int min_lod,
+                   int max_lod,
+                   *out_info_ptr = new CityModelPackageInfo(has_appearance, min_lod, max_lod); )
 
 
     DLL_DELETE_FUNC(plateau_delete_city_model_package_info,
