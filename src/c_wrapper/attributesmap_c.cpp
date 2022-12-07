@@ -17,24 +17,24 @@ extern "C" {
     /// 結果は out_attribute_value_ptr (arg_3) のメモリ領域に入ります。
     /// key に対応するものがない場合は APIResult::ErrorValueNotFound を返します。
     DLL_3_ARG_FUNC(plateau_attributes_map_get_attribute_value,
-                       const AttributesMap* const, // attributes_map
-                       const char* const, // key_char
-                       const AttributeValue** const, // out_attribute_value_ptr
+                       const AttributesMap* const attributes_map,
+                       const char* const key_char,
+                       const AttributeValue** const out_attribute_value_ptr,
 
-                   const auto key_str = std::string(arg_2);
-                   if (arg_1->count(key_str) <= 0) {
+                   const auto key_str = std::string(key_char);
+                   if (attributes_map->count(key_str) <= 0) {
                        return APIResult::ErrorValueNotFound;
                    }
-                   *arg_3 = &arg_1->at(key_str);
+                   *out_attribute_value_ptr = &attributes_map->at(key_str);
     )
 
     /// attributeMap で key_char (arg_2) に対応するものがあるかをチェックします。
     /// あるなら out_result (arg_3) に true が入り、ないなら false が入ります。
     DLL_3_ARG_FUNC(plateau_attributes_map_do_contains_key,
-                   const AttributesMap* const, // attributes_map
-                   const char* const, // key_char
-                   bool* const, // out_result
-                   *arg_3 = arg_1->count(std::string(arg_2)) > 0;)
+                   const AttributesMap* const attributes_map,
+                   const char* const key_char,
+                   bool* const out_result,
+                   *out_result = attributes_map->count(std::string(key_char)) > 0;)
 
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_attributes_map_to_string_size(
