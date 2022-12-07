@@ -1296,11 +1296,6 @@ namespace PLATEAU.Interop
             out PlateauVector3d outCenterPoint,
             [In] IntPtr geoReferencePtr);
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_udx_sub_folder_get_package(
-            string dirName,
-            out PredefinedCityModelPackage outPackage);
-        
         // ***************
         //  udx_sub_folder_c.cpp
         // ***************

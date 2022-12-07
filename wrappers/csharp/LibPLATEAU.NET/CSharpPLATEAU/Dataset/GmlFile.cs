@@ -62,7 +62,8 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                var apiResult = NativeMethods.plateau_udx_sub_folder_get_package(FeatureType, out var package);
+                var featureTypeUtf8 = DLLUtil.StrToUtf8Bytes(FeatureType);
+                var apiResult = NativeMethods.plateau_udx_sub_folder_feature_type_to_package(featureTypeUtf8, out var package);
                 DLLUtil.CheckDllError(apiResult);
                 return package;
             }
