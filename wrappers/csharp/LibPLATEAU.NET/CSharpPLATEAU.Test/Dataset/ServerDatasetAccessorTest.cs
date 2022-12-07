@@ -28,25 +28,25 @@ namespace PLATEAU.Test.Dataset
             accessor.Dispose();
         }
 
-        [TestMethod]
-        public void MetadataContainsFeatureTypes()
-        {
-            using var source = DatasetSource.Create(true, "");
-            var accessor = ServerDatasetAccessor.Create("");
-            var meta = accessor.GetMetadataGroup().At(0).Datasets.At(1);
-            Assert.AreEqual("八王子市", meta.Title);
-            var featureTypes = meta.FeatureTypes.ToCSharpArray();
-            CollectionAssert.AreEquivalent(new []{"bldg", "dem"},featureTypes);
-        }
+        // [TestMethod]
+        // public void MetadataContainsFeatureTypes()
+        // {
+        //     using var source = DatasetSource.Create(true, "");
+        //     var accessor = ServerDatasetAccessor.Create("");
+        //     var meta = accessor.GetMetadataGroup().At(0).Datasets.At(1);
+        //     Assert.AreEqual("八王子市", meta.Title);
+        //     var featureTypes = meta.FeatureTypes.ToCSharpArray();
+        //     CollectionAssert.AreEquivalent(new []{"bldg", "dem"},featureTypes);
+        // }
 
         [TestMethod]
         public void GetMeshCodes_Returns_MeshCodes()
         {
-            var accessor = ServerDatasetAccessor.Create("23ku");
+            using var source = DatasetSource.Create(true, "23ku");
+            var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(2, meshCodes.Length);
-            Assert.AreEqual("53392642", meshCodes.At(0).ToString());
-            accessor.Dispose();
+            Assert.AreEqual(3, meshCodes.Length);
+            Assert.AreEqual("533926", meshCodes.At(0).ToString());
         }
 
         [TestMethod]
