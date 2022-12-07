@@ -52,12 +52,12 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles_Works()
         {
-            var accessor = ServerDatasetAccessor.Create("23ku");
-            var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            using var source = DatasetSource.Create(true, "23ku");
+            var accessor = source.Accessor;
+            var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
             var gml = gmlFiles.At(0);
             Assert.AreEqual(NetworkConfig.MockServerURL + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml", gml.Path);
-            accessor.Dispose();
         }
 
         [TestMethod]
