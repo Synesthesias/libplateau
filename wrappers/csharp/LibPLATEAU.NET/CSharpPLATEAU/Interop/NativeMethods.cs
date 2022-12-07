@@ -1325,7 +1325,8 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_dataset_source_server(
             out IntPtr newDatasetSourcePtr,
-            [In] string datasetID);
+            [In] string datasetID,
+            [In] IntPtr clientPtr);
 
 
         // ***************

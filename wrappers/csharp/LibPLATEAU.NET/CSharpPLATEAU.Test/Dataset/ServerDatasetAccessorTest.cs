@@ -63,16 +63,17 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles_Cache_Works()
         {
-            var accessor = ServerDatasetAccessor.Create("23ku");
+            using var source = DatasetSource.Create(true, "23ku");
+            var accessor = source.Accessor;
             var stopwatch = Stopwatch.StartNew();
-            var gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
             stopwatch.Stop();
             var time1 = stopwatch.Elapsed;
             Console.WriteLine($"{time1} sec");
             stopwatch.Reset();
             stopwatch.Start();
-            gmlFiles = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             stopwatch.Stop();
             var time2 = stopwatch.Elapsed;
             Console.WriteLine($"{time2} sec");
@@ -83,9 +84,10 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackages_Works()
         {
-            var accessor = ServerDatasetAccessor.Create("23ku");
-            var buildings = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
-            var roads = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Road);
+            using var source = DatasetSource.Create(true, "23ku");
+            var accessor = source.Accessor;
+            var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var roads = accessor.GetGmlFiles(PredefinedCityModelPackage.Road);
             Assert.AreEqual(2, buildings.Length);
             var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse;
             Assert.AreEqual(expected, accessor.Packages);
@@ -94,8 +96,9 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLod()
         {
-            var accessor = ServerDatasetAccessor.Create("23ku");
-            var gmls = accessor.GetGmlFiles(Extent.All, PredefinedCityModelPackage.Building);
+            using var source = DatasetSource.Create(true, "23ku");
+            var accessor = source.Accessor;
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var meshCode = gmls.At(0).MeshCode;
             Assert.AreEqual(2, accessor.GetMaxLod(meshCode, PredefinedCityModelPackage.Building));
         }

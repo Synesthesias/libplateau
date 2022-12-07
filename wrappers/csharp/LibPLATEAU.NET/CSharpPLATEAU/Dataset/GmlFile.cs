@@ -150,13 +150,12 @@ namespace PLATEAU.Dataset
             string destDirPath = new DirectoryInfo(destPath).Parent?.FullName.Replace('\\', '/');
             if (destDirPath == null) throw new InvalidDataException("Invalid path.");
             Directory.CreateDirectory(destDirPath);
-            
-            using (var client = Client.Create())
-            {
-                client.Url = NetworkConfig.MockServerURL;
-                string downloadedPath = client.Download(destDirPath, Path);
-                return Create(downloadedPath);
-            }
+
+            var client = Client.Create();
+            client.Url = NetworkConfig.MockServerURL;
+            string downloadedPath = client.Download(destDirPath, Path);
+            client.Dispose();
+            return Create(downloadedPath);
         }
 
         public void Dispose()
