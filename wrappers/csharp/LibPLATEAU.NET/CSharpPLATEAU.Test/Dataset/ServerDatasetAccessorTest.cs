@@ -51,7 +51,7 @@ namespace PLATEAU.Test.Dataset
             var time2 = stopwatch.Elapsed;
             Console.WriteLine($"{time2} sec");
             Assert.AreEqual(2, gmlFiles.Length);
-            Assert.IsTrue((time1 - time2).TotalMilliseconds > 500, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
+            Assert.IsTrue(time2.TotalMilliseconds < time1.TotalMilliseconds * 0.6, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
         }
 
         [TestMethod]
