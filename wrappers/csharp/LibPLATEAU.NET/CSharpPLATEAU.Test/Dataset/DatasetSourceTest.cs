@@ -20,9 +20,8 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(false, "data");
             var accessor = source.Accessor;
-            var meshCode = accessor.MeshCodes.At(0);
-            var package = PredefinedCityModelPackage.Building;
-            Assert.AreEqual(2, accessor.GetMaxLod(meshCode, package));
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            Assert.AreEqual(2, gmls.At(0).GetMaxLod());
         }
 
         [TestMethod]
