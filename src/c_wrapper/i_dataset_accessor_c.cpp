@@ -6,8 +6,6 @@ extern "C" {
     using namespace plateau::geometry;
     using namespace libplateau;
 
-DLL_CREATE_FUNC(IData)
-
     DLL_3_ARG_FUNC(plateau_i_dataset_accessor_get_gml_files,
                    IDatasetAccessor* accessor,
                    PredefinedCityModelPackage package,
@@ -47,6 +45,10 @@ DLL_CREATE_FUNC(IData)
     DLL_3_ARG_FUNC(plateau_i_dataset_accessor_filter_by_mesh_codes,
                    const IDatasetAccessor* const accessor,
                    const std::vector<MeshCode>* mesh_codes,
-                   IDatasetAccessor* out_dataset_accessor,
-                   accessor->filterByMeshCodes(*mesh_codes, *out_dataset_accessor))
+                   IDatasetAccessor** out_dataset_accessor_ptr,
+                   auto filtered = accessor->create();
+                   accessor->filterByMeshCodes(*mesh_codes, *filtered);
+                   *out_dataset_accessor_ptr = filtered;
+    )
+
 }

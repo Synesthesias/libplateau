@@ -77,6 +77,9 @@ namespace plateau::dataset {
          */
         TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference) override;
 
+        LocalDatasetAccessor* create() const override { return new LocalDatasetAccessor(); }
+        LocalDatasetAccessor* clone() const override { return new LocalDatasetAccessor(*this); }
+
     private:
         std::string udx_path_;
         std::map<PredefinedCityModelPackage, std::vector<GmlFile>> files_;

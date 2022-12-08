@@ -3,7 +3,7 @@
 int main(void) {
     plateau::network::Client client;
 
-    client.setApiServerUrl(plateau::network::Client::default_server_url);
+    client.setApiServerUrl(plateau::network::Client::getDefaultServerUrl());
 
     // check Client::getMetadata
     auto meta_data_ptr = client.getMetadata();
@@ -25,6 +25,6 @@ int main(void) {
     }
 
     // check Client::download
-    auto fpath = client.download(".", plateau::network::Client::default_server_url + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+    auto fpath = client.download(".", plateau::network::Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
     std::cout << "gml @ " << fpath << std::endl;
 }

@@ -1249,7 +1249,7 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_i_dataset_accessor_filter_by_mesh_codes(
             [In] IntPtr accessorPtr,
             [In] IntPtr nativeVectorMeshCodePtr,
-            [In, Out] IntPtr refDatasetAccessorPtr);
+            out IntPtr outFilteredAccessorPtr);
 
         // ***************
         //  local_dataset_accessor_c.cpp

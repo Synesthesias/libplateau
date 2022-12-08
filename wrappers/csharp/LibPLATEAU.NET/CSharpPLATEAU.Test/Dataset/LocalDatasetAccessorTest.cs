@@ -96,12 +96,15 @@ namespace PLATEAU.Test.Dataset
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
-                if (gml.Contains(meshCode))
+                if (gml.MeshCode.ToString() == meshCode)
                 {
                     contains = true;
+                    break;
                 }
             }
 
+            // TODO Dispose,ライフタイム管理
+            // filtered.Dispose();
             return contains;
         }
     }

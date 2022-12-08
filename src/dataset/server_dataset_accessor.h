@@ -35,6 +35,9 @@ namespace plateau::dataset {
         void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, IDatasetAccessor& collection) const override;
         std::shared_ptr<IDatasetAccessor> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const override;
 
+        ServerDatasetAccessor* create() const override { return new ServerDatasetAccessor(dataset_id_, client_); }
+        ServerDatasetAccessor* clone() const override { return new ServerDatasetAccessor(*this); }
+
     private:
         network::Client client_;
         std::string dataset_id_;

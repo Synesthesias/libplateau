@@ -34,5 +34,5 @@ DLL_4_ARG_FUNC(plateau_client_download,
 
 DLL_1_ARG_FUNC(plateau_client_get_default_url,
                std::string* out_default_url,
-               *out_default_url = Client::default_server_url)
+               *out_default_url = Client::getDefaultServerUrl())
 }

@@ -77,7 +77,12 @@ namespace PLATEAU.Dataset
             {
                 nativeMeshCodes.Add(meshCode);
             }
-            var accessor = DatasetAccessor.Cre
+
+            var result = NativeMethods.plateau_i_dataset_accessor_filter_by_mesh_codes(
+                Handle, nativeMeshCodes.Handle, out var filteredPtr);
+            DLLUtil.CheckDllError(result);
+            nativeMeshCodes.Dispose();
+            return new DatasetAccessor(filteredPtr);
         }
 
         /// <summary>
@@ -92,6 +97,5 @@ namespace PLATEAU.Dataset
             DLLUtil.CheckDllError(result);
             return package;
         }
-        
     }
 }
