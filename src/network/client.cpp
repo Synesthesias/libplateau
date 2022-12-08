@@ -9,9 +9,11 @@ using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 namespace plateau::network {
-
     Client::Client(const std::string& server_url) {
-        setApiServerUrl(server_url);
+        if (server_url.empty())
+            setApiServerUrl(getDefaultServerUrl());
+        else
+            setApiServerUrl(server_url);
     }
 
     std::string Client::getApiServerUrl() const {
@@ -109,5 +111,9 @@ namespace plateau::network {
             ofs.write(body.c_str(), body.size());
         }
         return gml_file_path;
+    }
+
+    std::string Client::getDefaultServerUrl() {
+        return "https://plateau-api-mock-v2.deta.dev";
     }
 }
