@@ -21,10 +21,13 @@ extern "C" {
                     DatasetSource)
 
     /**
-     * DatasetAccessorPInvoke の delete は DLL利用者の責任とします。
+     * IDatasetAccessor の delete は DLL利用者の責任とします。
      */
     DLL_2_ARG_FUNC(plateau_dataset_source_get_accessor,
                    const DatasetSource* const dataset_source,
                    const IDatasetAccessor** const out_dataset_accessor_ptr,
-                   *out_dataset_accessor_ptr = dataset_source->getAccessor().get())
+
+                   auto accessor_ptr = dataset_source->getAccessor();
+                   *out_dataset_accessor_ptr = accessor_ptr->clone();
+    )
 }

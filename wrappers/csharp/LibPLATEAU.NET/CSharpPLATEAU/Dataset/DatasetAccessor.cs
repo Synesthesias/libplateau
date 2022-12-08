@@ -12,13 +12,11 @@ namespace PLATEAU.Dataset
     /// <see cref="DatasetSource"/> の初期化時に指定し、
     /// <see cref="DatasetSource.Accessor"/> でその型である DatasetAccessor を取得します。 
     /// </summary>
-    public class DatasetAccessor
+    public class DatasetAccessor : PInvokeDisposable
     {
-        /// <summary> C++側の基底クラス (IDatasetAccessor) のポインタです。 </summary>
-        public IntPtr Handle { get; private set; }
-        public DatasetAccessor(IntPtr handle)
+        /// <summary> handle は C++側の基底クラス (IDatasetAccessor) のポインタです。 </summary>
+        public DatasetAccessor(IntPtr handle) : base(handle)
         {
-            Handle = handle;
         }
 
         public NativeVectorGmlFile GetGmlFiles(PredefinedCityModelPackage package)
@@ -97,6 +95,12 @@ namespace PLATEAU.Dataset
                 featureTypeUtf8, out var package);
             DLLUtil.CheckDllError(result);
             return package;
+        }
+
+        protected override void DisposeNative()
+        {
+            DLLUtil.ExecNativeVoidFunc(Handle,
+                NativeMethods.plateau_delete_i_dataset_accessor);
         }
     }
 }

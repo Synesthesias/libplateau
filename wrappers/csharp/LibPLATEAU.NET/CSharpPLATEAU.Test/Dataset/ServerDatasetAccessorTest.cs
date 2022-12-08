@@ -16,7 +16,7 @@ namespace PLATEAU.Test.Dataset
         public void GetMeshCodes_Returns_MeshCodes()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(3, meshCodes.Length);
             Assert.AreEqual("53392642", meshCodes.At(1).ToString());
@@ -26,7 +26,7 @@ namespace PLATEAU.Test.Dataset
         public void GetGmlFiles_Works()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
             var gml = gmlFiles.At(0);
@@ -37,7 +37,7 @@ namespace PLATEAU.Test.Dataset
         public void GetGmlFiles_Cache_Works()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var stopwatch = Stopwatch.StartNew();
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
@@ -51,14 +51,14 @@ namespace PLATEAU.Test.Dataset
             var time2 = stopwatch.Elapsed;
             Console.WriteLine($"{time2} sec");
             Assert.AreEqual(2, gmlFiles.Length);
-            Assert.IsTrue(time2.TotalMilliseconds < time1.TotalMilliseconds * 0.6, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
+            Assert.IsTrue(time2.TotalMilliseconds < time1.TotalMilliseconds * 0.7, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
         }
 
         [TestMethod]
         public void GetPackages_Works()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var roads = accessor.GetGmlFiles(PredefinedCityModelPackage.Road);
             Assert.AreEqual(2, buildings.Length);
@@ -70,7 +70,7 @@ namespace PLATEAU.Test.Dataset
         public void MaxLod()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var meshCode = gmls.At(0).MeshCode;
             Assert.AreEqual(2, gmls.At(1).GetMaxLod());
@@ -80,8 +80,8 @@ namespace PLATEAU.Test.Dataset
         public void CalcCenterPoint_Returns_Position_Of_Test_Data()
         {
             using var source = DatasetSource.Create(true, "23ku");
-            var collection = source.Accessor;
-            foreach (var meshCode in collection.MeshCodes)
+            using var accessor = source.Accessor;
+            foreach (var meshCode in accessor.MeshCodes)
             {
                 var extent = meshCode.Extent;
                 var min = extent.Min;
@@ -92,7 +92,7 @@ namespace PLATEAU.Test.Dataset
             PlateauVector3d center;
             using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
             {
-                center = collection.CalculateCenterPoint(geoRef);
+                center = accessor.CalculateCenterPoint(geoRef);
             }
             Console.WriteLine(center);
             // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。

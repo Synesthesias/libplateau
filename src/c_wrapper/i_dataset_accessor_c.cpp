@@ -6,6 +6,9 @@ extern "C" {
     using namespace plateau::geometry;
     using namespace libplateau;
 
+    DLL_DELETE_FUNC(plateau_delete_i_dataset_accessor,
+                    IDatasetAccessor)
+
     DLL_3_ARG_FUNC(plateau_i_dataset_accessor_get_gml_files,
                    IDatasetAccessor* accessor,
                    PredefinedCityModelPackage package,

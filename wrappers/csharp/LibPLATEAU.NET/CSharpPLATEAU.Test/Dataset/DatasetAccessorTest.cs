@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Dataset
         public void TestGetGmlFiles()
         {
             using var datasetSource = DatasetSource.Create(false, "data");
-            var accessor = datasetSource.Accessor;
+            using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
         }
@@ -19,7 +19,7 @@ namespace PLATEAU.Test.Dataset
         public void TestMeshCodesGetter()
         {
             using var datasetSource = DatasetSource.Create(false, "data");
-            var accessor = datasetSource.Accessor;
+            using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
         }
@@ -28,7 +28,7 @@ namespace PLATEAU.Test.Dataset
         public void TestGetMaxLod()
         {
             using var datasetSource = DatasetSource.Create(false, "data");
-            var accessor = datasetSource.Accessor;
+            using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
             int maxLod = accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GetMaxLod();

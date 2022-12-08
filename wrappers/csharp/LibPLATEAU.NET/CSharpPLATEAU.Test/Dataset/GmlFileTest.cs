@@ -47,7 +47,7 @@ namespace PLATEAU.Test.Dataset
         public void Fetch_Local_Copies_Relative_Files()
         {
             using var source = DatasetSource.Create(false, "data");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmls)
@@ -74,7 +74,7 @@ namespace PLATEAU.Test.Dataset
         {
             // TODO Serverのときは取得できるのか？
             using var source = DatasetSource.Create(false, "data");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -87,7 +87,7 @@ namespace PLATEAU.Test.Dataset
         public void SearchCodelistPathsAndTexturePaths()
         {
             using var source = DatasetSource.Create(false, "data");
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
             var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
@@ -120,7 +120,7 @@ namespace PLATEAU.Test.Dataset
         public void Fetch_Server_Downloads_Files()
         {
             using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
-            var accessor = source.Accessor;
+            using var accessor = source.Accessor;
             var testDir = Directory.CreateDirectory("temp_test_dir");
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Console.WriteLine(testDir.FullName);
