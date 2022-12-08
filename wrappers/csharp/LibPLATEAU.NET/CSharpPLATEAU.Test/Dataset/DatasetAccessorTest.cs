@@ -31,7 +31,7 @@ namespace PLATEAU.Test.Dataset
             var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
-            int maxLod = accessor.GetMaxLod(meshCodes.At(0), PredefinedCityModelPackage.Building);
+            int maxLod = accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GetMaxLod();
             Assert.AreEqual(2, maxLod);
         }
         
