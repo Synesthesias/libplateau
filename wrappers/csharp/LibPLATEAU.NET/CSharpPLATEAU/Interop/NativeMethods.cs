@@ -1239,6 +1239,12 @@ namespace PLATEAU.Interop
             [In] IntPtr accessorPtr,
             out PredefinedCityModelPackage outPackageFlags);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_calculate_center_point(
+            [In] IntPtr accessorPtr,
+            [In] IntPtr geoReferencePtr,
+            out PlateauVector3d outCenterPoint);
+
         // ***************
         //  local_dataset_accessor_c.cpp
         // ***************

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Network;
 
@@ -46,7 +47,7 @@ namespace PLATEAU.Test.Dataset
             var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(3, meshCodes.Length);
-            Assert.AreEqual("533926", meshCodes.At(0).ToString());
+            Assert.AreEqual("53392642", meshCodes.At(1).ToString());
         }
 
         [TestMethod]
@@ -101,6 +102,32 @@ namespace PLATEAU.Test.Dataset
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var meshCode = gmls.At(0).MeshCode;
             Assert.AreEqual(2, accessor.GetMaxLod(meshCode, PredefinedCityModelPackage.Building));
+        }
+        
+        [TestMethod]
+        public void CalcCenterPoint_Returns_Position_Of_Test_Data()
+        {
+            using var source = DatasetSource.Create(true, "data");
+            var collection = source.Accessor;
+            foreach (var meshCode in collection.MeshCodes)
+            {
+                var extent = meshCode.Extent;
+                var min = extent.Min;
+                var max = extent.Max;
+                Console.WriteLine($"{min.Latitude}, {min.Longitude}, {min.Height}");
+            }
+
+            PlateauVector3d center;
+            using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
+            {
+                center = collection.CalculateCenterPoint(geoRef);
+            }
+            Console.WriteLine(center);
+            // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。
+            // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
+            // https://www.gsi.go.jp/sokuchikijun/jpc.html
+            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 1000, "南に51km");
+            Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
     }
 }

@@ -36,4 +36,10 @@ extern "C" {
                    IDatasetAccessor,
                    PredefinedCityModelPackage,
                    handle->getPackages())
+
+    DLL_3_ARG_FUNC(plateau_i_dataset_accessor_calculate_center_point,
+                   IDatasetAccessor* const accessor,
+                   const GeoReference* const geo_reference,
+                   TVec3d* const out_center_point,
+                   *out_center_point = accessor->calculateCenterPoint(*geo_reference))
 }

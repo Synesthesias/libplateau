@@ -64,7 +64,8 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterPoint_Returns_Position_Of_Test_Data()
         {
-            var collection = LocalDatasetAccessor.Find("data");
+            using var source = DatasetSource.Create(false, "data");
+            var collection = source.Accessor;
             foreach (var meshCode in collection.MeshCodes)
             {
                 var extent = meshCode.Extent;
@@ -76,7 +77,7 @@ namespace PLATEAU.Test.Dataset
             PlateauVector3d center;
             using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
             {
-                center = collection.CalcCenterPoint(geoRef);
+                center = collection.CalculateCenterPoint(geoRef);
             }
             Console.WriteLine(center);
             // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。

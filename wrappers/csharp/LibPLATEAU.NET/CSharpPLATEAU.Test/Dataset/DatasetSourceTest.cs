@@ -30,7 +30,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(true, "23ku");
             var accessor = source.Accessor;
-            Assert.AreEqual("53392642", accessor.MeshCodes.At(0).ToString());
+            Assert.AreEqual("53392642", accessor.MeshCodes.At(1).ToString());
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(
                 NetworkConfig.DefaultApiServerUrl + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",

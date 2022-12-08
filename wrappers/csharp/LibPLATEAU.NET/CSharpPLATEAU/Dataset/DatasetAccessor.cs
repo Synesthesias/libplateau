@@ -1,4 +1,5 @@
 ﻿using System;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
 namespace PLATEAU.Dataset
@@ -60,6 +61,14 @@ namespace PLATEAU.Dataset
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,
                 NativeMethods.plateau_i_dataset_accessor_get_packages);
 
+        public PlateauVector3d CalculateCenterPoint(GeoReference geoReference)
+        {
+            var result = NativeMethods.plateau_i_dataset_accessor_calculate_center_point(
+                Handle, geoReference.Handle, out var centerPoint);
+            DLLUtil.CheckDllError(result);
+            return centerPoint;
+        }
+
         /// <summary>
         /// gmlのパスが "udx/(featureType)/aaa.gml" として、
         /// (featureType) の部分を <see cref="PredefinedCityModelPackage"/> に変換します。
@@ -72,5 +81,6 @@ namespace PLATEAU.Dataset
             DLLUtil.CheckDllError(result);
             return package;
         }
+        
     }
 }
