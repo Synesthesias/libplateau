@@ -91,6 +91,65 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
+## FBX SDK
+set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
+find_library(FBXSDK_LIBRARIES
+  NAMES
+    libfbxsdk
+  PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
+  PATH_SUFFIXES
+    win64
+    win32
+    winarm64
+    mac
+    ios
+    ios-armv7
+    linux32
+    linux64
+  NO_DEFAULT_PATH
+  NO_CMAKE_FIND_ROOT_PATH
+)
+
+## libxml2(FBX SDKの依存関係)
+find_library(XML2_LIBRARIES
+  NAMES
+    libxml2
+  PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
+  PATH_SUFFIXES
+    win64
+    win32
+    winarm64
+    mac
+    ios
+    ios-armv7
+    linux32
+    linux64
+  NO_DEFAULT_PATH
+  NO_CMAKE_FIND_ROOT_PATH
+)
+
+## zlib(FBX SDKの依存関係)
+set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
+find_library(ZLIB_LIBRARIES
+  NAMES
+    zlib
+  PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
+  PATH_SUFFIXES
+    win64
+    win32
+    winarm64
+    mac
+    ios
+    ios-armv7
+    linux32
+    linux64
+  NO_DEFAULT_PATH
+  NO_CMAKE_FIND_ROOT_PATH
+)
+
 # cpp-httplib
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
@@ -104,6 +163,7 @@ add_subdirectory("src")
 add_subdirectory("examples/log_skipped_elements")
 add_subdirectory("examples/export_obj")
 add_subdirectory("examples/export_gltf")
+add_subdirectory("examples/export_fbx")
 add_subdirectory("examples/https_mock_test")
 
 # python
