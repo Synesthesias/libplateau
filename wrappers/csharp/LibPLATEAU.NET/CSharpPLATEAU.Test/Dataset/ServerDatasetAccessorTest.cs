@@ -12,17 +12,6 @@ namespace PLATEAU.Test.Dataset
     public class ServerDatasetAccessorTest
     {
 
-        // [TestMethod]
-        // public void MetadataContainsFeatureTypes()
-        // {
-        //     using var source = DatasetSource.Create(true, "");
-        //     var accessor = ServerDatasetAccessor.Create("");
-        //     var meta = accessor.GetMetadataGroup().At(0).Datasets.At(1);
-        //     Assert.AreEqual("八王子市", meta.Title);
-        //     var featureTypes = meta.FeatureTypes.ToCSharpArray();
-        //     CollectionAssert.AreEquivalent(new []{"bldg", "dem"},featureTypes);
-        // }
-
         [TestMethod]
         public void GetMeshCodes_Returns_MeshCodes()
         {
