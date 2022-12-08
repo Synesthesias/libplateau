@@ -74,4 +74,9 @@ extern "C" {
                    std::vector<std::string>* image_paths,
                    auto set = gml_file->searchAllImagePathsInGML();
                    *image_paths = std::vector<std::string>(set.cbegin(), set.cend());)
+                   
+    DLL_VALUE_FUNC(plateau_gml_file_get_max_lod,
+                   GmlFile,
+                   int,
+                   handle->getMaxLod())
 }

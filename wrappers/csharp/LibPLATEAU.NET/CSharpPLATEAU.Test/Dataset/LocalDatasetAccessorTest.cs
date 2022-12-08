@@ -61,6 +61,7 @@ namespace PLATEAU.Test.Dataset
 
         }
 
+        // TODO ここも含め、全体的に Server と Local でテストすべき項目は重複しているのでまとめる
         [TestMethod]
         public void CalcCenterPoint_Returns_Position_Of_Test_Data()
         {

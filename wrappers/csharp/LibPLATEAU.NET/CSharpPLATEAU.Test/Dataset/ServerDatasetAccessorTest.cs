@@ -101,13 +101,13 @@ namespace PLATEAU.Test.Dataset
             var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var meshCode = gmls.At(0).MeshCode;
-            Assert.AreEqual(2, accessor.GetMaxLod(meshCode, PredefinedCityModelPackage.Building));
+            Assert.AreEqual(2, gmls.At(1).GetMaxLod());
         }
         
         [TestMethod]
         public void CalcCenterPoint_Returns_Position_Of_Test_Data()
         {
-            using var source = DatasetSource.Create(true, "data");
+            using var source = DatasetSource.Create(true, "23ku");
             var collection = source.Accessor;
             foreach (var meshCode in collection.MeshCodes)
             {

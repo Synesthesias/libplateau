@@ -1384,6 +1384,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_gml_file_search_all_image_paths_in_gml(
             [In] IntPtr gmlFilePtr,
             [In,Out] IntPtr refNativeVectorStringPtr);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_gml_file_get_max_lod(
+            [In] IntPtr gmlFilePtr,
+            out int outMaxLod);
             
         // ***************
         //  city_model_package_info_c.cpp

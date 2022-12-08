@@ -158,6 +158,17 @@ namespace PLATEAU.Dataset
             return Create(downloadedPath);
         }
 
+        /// <summary>
+        /// ローカルの場合、GMLファイルの全文を検索して対応LODの最大を求めます。
+        /// サーバーの場合、APIサーバーに問い合わせて対応LODの最大を求めます。
+        /// どちらにしても時間がかかる処理になります。
+        /// </summary>
+        public int GetMaxLod()
+        {
+            return DLLUtil.GetNativeValue<int>(Handle,
+                NativeMethods.plateau_gml_file_get_max_lod);
+        }
+
         public void Dispose()
         {
             this.isDisposed = true;
