@@ -53,11 +53,12 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid()
         {
-            var collection = LocalDatasetAccessor.Find("data");
+            using var source = DatasetSource.Create(false, "data");
+            var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
-            Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(collection, validMeshCode));
-            Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(collection, invalidMeshCode));
+            Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, validMeshCode));
+            Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, invalidMeshCode));
 
         }
 
@@ -88,9 +89,9 @@ namespace PLATEAU.Test.Dataset
             Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
 
-        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(LocalDatasetAccessor collection, string meshCode)
+        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCode)
         {
-            var filtered = collection.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
+            var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)

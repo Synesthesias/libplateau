@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
 
@@ -67,6 +68,16 @@ namespace PLATEAU.Dataset
                 Handle, geoReference.Handle, out var centerPoint);
             DLLUtil.CheckDllError(result);
             return centerPoint;
+        }
+
+        public DatasetAccessor FilterByMeshCodes(IEnumerable<MeshCode> meshCodes)
+        {
+            var nativeMeshCodes = NativeVectorMeshCode.Create();
+            foreach (var meshCode in meshCodes)
+            {
+                nativeMeshCodes.Add(meshCode);
+            }
+            var accessor = DatasetAccessor.Cre
         }
 
         /// <summary>

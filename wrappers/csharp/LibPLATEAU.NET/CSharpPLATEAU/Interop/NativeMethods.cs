@@ -1245,6 +1245,12 @@ namespace PLATEAU.Interop
             [In] IntPtr geoReferencePtr,
             out PlateauVector3d outCenterPoint);
 
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_i_dataset_accessor_filter_by_mesh_codes(
+            [In] IntPtr accessorPtr,
+            [In] IntPtr nativeVectorMeshCodePtr,
+            [In, Out] IntPtr refDatasetAccessorPtr);
+
         // ***************
         //  local_dataset_accessor_c.cpp
         // ***************
@@ -1597,6 +1603,11 @@ namespace PLATEAU.Interop
         internal static extern APIResult plateau_vector_mesh_code_count(
             [In] IntPtr handle,
             out int outCount);
+
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_vector_mesh_code_push_back_value(
+            [In] IntPtr handle,
+            [In] MeshCode meshCode);
         
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_vector_dataset_metadata_group(
