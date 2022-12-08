@@ -91,61 +91,54 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
-## FBX SDK
-set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
-find_library(FBXSDK_LIBRARIES
-  NAMES
-    libfbxsdk
-  PATHS
-    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
-  PATH_SUFFIXES
-    win64
-    win32
-    winarm64
-    mac
-    ios
-    ios-armv7
-    linux32
-    linux64
-  NO_DEFAULT_PATH
-  NO_CMAKE_FIND_ROOT_PATH
-)
+## zlib(FBX SDKの依存関係)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
+add_subdirectory("3rdparty/zlib")
+
+set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/3rdparty/zlib")
+if (UNIX)
+  set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
+elseif(WIN32)
+  set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.lib" CACHE STRING "" FORCE)
+endif(WIN32)
 
 ## libxml2(FBX SDKの依存関係)
-find_library(XML2_LIBRARIES
-  NAMES
-    libxml2
-  PATHS
-    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
-  PATH_SUFFIXES
-    win64
-    win32
-    winarm64
-    mac
-    ios
-    ios-armv7
-    linux32
-    linux64
-  NO_DEFAULT_PATH
-  NO_CMAKE_FIND_ROOT_PATH
-)
+set(LIBXML2_WITH_ICONV OFF CACHE BOOL "" FORCE)
+set(LIBXML2_WITH_LZMA OFF CACHE BOOL "" FORCE)
+set(LIBXML2_WITH_PYTHON OFF CACHE BOOL "" FORCE)
+set(LIBXML2_WITH_ICONV OFF CACHE BOOL "" FORCE)
+set(LIBXML2_WITH_TESTS OFF CACHE BOOL "" FORCE)
 
-## zlib(FBX SDKの依存関係)
+add_subdirectory("3rdparty/libxml2")
+
+## FBX SDK
 set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
-find_library(ZLIB_LIBRARIES
+
+if(UNIX)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  if (APPLE)
+    set(FBXSDK_LIB_PATH_SUFFIXES mac)
+  else(APPLE)
+    set(FBXSDK_LIB_PATH_SUFFIXES linux64)
+  endif(APPLE)
+  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(FBXSDK_LIB_PATH_SUFFIXES linux32)
+  endif()
+elseif(WIN32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(FBXSDK_LIB_PATH_SUFFIXES win64)
+  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(FBXSDK_LIB_PATH_SUFFIXES win32)
+  endif()
+endif(WIN32)
+
+find_library(FBXSDK_LIBRARIES
   NAMES
-    zlib
+    libfbxsdk libfbxsdk.a
   PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
   PATH_SUFFIXES
-    win64
-    win32
-    winarm64
-    mac
-    ios
-    ios-armv7
-    linux32
-    linux64
+    ${FBXSDK_LIB_PATH_SUFFIXES}
   NO_DEFAULT_PATH
   NO_CMAKE_FIND_ROOT_PATH
 )

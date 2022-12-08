@@ -3,7 +3,7 @@ add_compile_definitions(LIBPLATEAU_BUILD)
 
 add_library(plateau SHARED "")
 
-target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" "${XML2_LIBRARIES}" "${ZLIB_LIBRARIES}")
+target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}")
 target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
