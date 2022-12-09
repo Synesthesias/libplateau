@@ -16,15 +16,6 @@ namespace PLATEAU.Test.Dataset
         }
 
         [TestMethod]
-        public void Accessor_From_Local_Source_Can_Search_MaxLod()
-        {
-            using var source = DatasetSource.Create(false, "data");
-            using var accessor = source.Accessor;
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-            Assert.AreEqual(2, gmls.At(0).GetMaxLod());
-        }
-
-        [TestMethod]
         public void Accessor_From_Server_Works()
         {
             using var source = DatasetSource.Create(true, "23ku");
