@@ -136,6 +136,22 @@ namespace PLATEAU.Interop
         public int CoordinateZoneID;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FbxWriteOptions
+    {
+        public FbxFileFormat FileFormat;
+
+        public FbxWriteOptions(FbxFileFormat fileFormat)
+        {
+            this.FileFormat = fileFormat;
+        }
+    }
+
+    public enum FbxFileFormat : UInt32
+    {
+        Binary, Ascii
+    }
+
     /// <summary>
     /// 地理院地図のタイル座標です。
     /// タイル座標については国土地理院のWebサイトを参照してください。
@@ -1417,6 +1433,16 @@ namespace PLATEAU.Interop
             out bool flg,
             [In] byte[] objFilePathUtf8,
             [In] IntPtr modelPtr);
+        
+        // ***************
+        //  fbx_writer_c.cpp
+        // ***************
+        [DllImport(DllName)]
+        internal static extern APIResult plateau_fbx_writer_write(
+            [In] byte[] fbxFilePathUtf8,
+            [In] IntPtr modelPtr,
+            FbxWriteOptions options,
+            out bool outIsSucceed);
         
         // ***************
         //  mesh_merger_c.cpp

@@ -48,7 +48,7 @@ add_library(c_wrapper OBJECT
   "client_c.cpp"
   "string_c.cpp"
   "udx_sub_folder_c.cpp"
-  
+  "fbx_writer_c.cpp"
         )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

@@ -1,10 +1,5 @@
 ﻿#include <stdexcept>
-#include <vector>
 #include <filesystem>
-
-#include <citygml/citygml.h>
-#include <citygml/citymodel.h>
-#include <citygml/polygon.h>
 #include <cassert>
 
 #include <plateau/mesh_writer/fbx_writer.h>
