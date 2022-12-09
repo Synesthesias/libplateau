@@ -1,13 +1,13 @@
 ﻿#include <plateau/network/client.h>
-#include <plateau/network/network_config.h>
 
 int main(void) {
     plateau::network::Client client;
 
-    client.setApiServerUrl(plateau::network::NetworkConfig::mockServerUrl());
+    client.setApiServerUrl(plateau::network::Client::getDefaultServerUrl());
 
     // check Client::getMetadata
-    auto meta_data = client.getMetadata();
+    auto meta_data_ptr = client.getMetadata();
+    auto meta_data = *meta_data_ptr;
     for (int i = 0; i < meta_data.size(); i++) {
         std::cout << "data : " << i << std::endl;
         std::cout << "id : " << meta_data[i].id << std::endl;
@@ -24,27 +24,7 @@ int main(void) {
         }
     }
 
-    // check Client::getMeshCodes
-    auto get_mesh_codes = client.getMeshCodes("23ku");
-    std::cout << "mesh codes : ";
-    for(int i = 0; i<get_mesh_codes.size(); i++) std::cout << get_mesh_codes.at(i).get() << ", ";
-    std::cout << std::endl;
-
-    // check Client::getFiles
-    std::vector<plateau::dataset::MeshCode> set_mesh_codes;
-    set_mesh_codes.push_back(plateau::dataset::MeshCode("53392642"));
-    set_mesh_codes.push_back(plateau::dataset::MeshCode("53392670"));
-    auto file_url_lod = client.getFiles(set_mesh_codes);
-    for (auto itr = file_url_lod->begin(); itr != file_url_lod->end(); ++itr) {
-        std::cout << itr->first << " : " << std::endl;
-        for (int j = 0; j < itr->second.size(); j++) {
-            std::cout << "url = " << itr->second[j].second << ", maxLod = " << itr->second[j].first << std::endl;
-        }
-        std::cout << std::endl;
-    }
-
     // check Client::download
-    auto fpath = client.download(".", plateau::network::NetworkConfig::mockServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+    auto fpath = client.download(".", plateau::network::Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
     std::cout << "gml @ " << fpath << std::endl;
-    
 }

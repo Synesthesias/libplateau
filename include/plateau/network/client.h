@@ -12,9 +12,23 @@ namespace plateau::network {
         std::string id;
         std::string title;
         std::string description;
-        int max_lod;
+        int max_lod = 0;
         std::vector<std::string> feature_types;
     };
+
+    /**
+     * データセットに含まれるファイルです。
+     */
+    struct DatasetFileItem {
+        std::string mesh_code;
+        std::string url;
+        int max_lod = 0;
+    };
+
+    /**
+     * データセットに含まれるファイルの一覧です。
+     */
+    typedef std::map<std::string, std::vector<DatasetFileItem>> DatasetFiles;
 
     /**
      * データセットグループの一覧です。
@@ -28,30 +42,21 @@ namespace plateau::network {
     };
 
     /**
-     * サーバー上にあるPLATEAU都市データについて、
-     * どのようなデータがあるのかをクエリで問い合わせます。
-     * またファイルをダウンロードします。
-     *
-     * 処理の流れ:
-     * ・ getMetadata でデータセットの一覧を取得し、そのうちの1つをユーザーが選択します。例: 東京23区、横浜市
-     * ・ 選択したデータセットのIDについて getMeshCodes で地域メッシュコードIDの一覧を取得し、それをもとにユーザーが範囲選択します。
-     * ・ 選択した範囲について、 getFiles でファイルの一覧を取得します。
-     * ・ ファイルを download します。
+     * PLATEAUのAPIサーバーへ接続し、REST APIを介して通信するために使用されます。
      */
     class LIBPLATEAU_EXPORT Client {
     public:
-        Client() : server_url_("") {
-        }
-
-        explicit Client(const std::string& server_url);
+        explicit Client(const std::string& server_url = "");
 
         std::string getApiServerUrl() const;
         void setApiServerUrl(const std::string& url);
-        std::vector<DatasetMetadataGroup> getMetadata() const;
+        std::shared_ptr<std::vector<DatasetMetadataGroup>> getMetadata() const;
         void getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const;
-        std::vector<plateau::dataset::MeshCode> getMeshCodes(const std::string& id);
-        std::shared_ptr<std::map<std::string, std::vector<std::pair<float, std::string>>>> getFiles(const std::vector<plateau::dataset::MeshCode>& mesh_codes);
+        DatasetFiles getFiles(const std::string& id) const;
         std::string download(const std::string& destination_directory_utf8, const std::string& url_utf8) const;
+
+        static std::string getDefaultServerUrl();
+
     private:
         std::string server_url_;
     };

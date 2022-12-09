@@ -13,15 +13,8 @@ extern "C" {
     // 注意 : P/Invoke を使って DLLの利用者から CityModel のアドレスを受け取るとき、
     // Native側で cityModelHandle->getCityModelPtr() を介さないと
     // 正しいアドレスになりません。
-
-    LIBPLATEAU_C_EXPORT void LIBPLATEAU_C_API plateau_delete_city_model(
-        const CityModelHandle* city_model_handle
-    ) {
-        API_TRY{
-            delete city_model_handle;
-        }
-        API_CATCH;
-    }
+    DLL_DELETE_FUNC(plateau_delete_city_model,
+                    CityModelHandle)
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_city_model_get_root_city_objects(
         const CityModelHandle* city_model_handle, const citygml::CityObject** city_objects, int count
