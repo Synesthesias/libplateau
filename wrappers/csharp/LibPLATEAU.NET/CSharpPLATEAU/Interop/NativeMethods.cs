@@ -118,7 +118,7 @@ namespace PLATEAU.Interop
         }
     }
     
-    public enum MeshFileFormat{OBJ, GLTF}
+    public enum MeshFileFormat{OBJ, GLTF, FBX}
 
 
     [StructLayout(LayoutKind.Sequential)]
