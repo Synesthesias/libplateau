@@ -6,31 +6,28 @@ extern "C" {
     using namespace plateau::dataset;
     namespace fs = std::filesystem;
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_dataset_source_local(
-            DatasetSource** out_dataset_source,
-            const char* const source_path_utf8
-    ) {
-        API_TRY{
-                *out_dataset_source = new DatasetSource(DatasetSource::createLocal(fs::u8path(source_path_utf8)));
-                return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
+    DLL_2_ARG_FUNC(plateau_create_dataset_source_local,
+                   DatasetSource** out_dataset_source,
+                   const char* const source_path_utf8,
+                   *out_dataset_source = new DatasetSource(DatasetSource::createLocal(source_path_utf8)) )
 
-    DLL_2_ARG_FUNC(plateau_create_dataset_source_server,
-                   DatasetSource**, // out_pointer_of_new_instance
-                   const char* const, // dataset_id
-                   *arg_1 = new DatasetSource(DatasetSource::createServer(std::string(arg_2))))
+    DLL_3_ARG_FUNC(plateau_create_dataset_source_server,
+                   DatasetSource** out_new_dataset_source,
+                   const char* const dataset_id,
+                   plateau::network::Client* client,
+                   *out_new_dataset_source = new DatasetSource(DatasetSource::createServer(std::string(dataset_id), *client)))
 
     DLL_DELETE_FUNC(plateau_delete_dataset_source,
                     DatasetSource)
 
     /**
-     * DatasetAccessorPInvoke の delete は DLL利用者の責任とします。
+     * IDatasetAccessor の delete は DLL利用者の責任とします。
      */
     DLL_2_ARG_FUNC(plateau_dataset_source_get_accessor,
-                   const DatasetSource* const,
-                   const IDatasetAccessor** const,
-                   *arg_2 = arg_1->getAccessor().get())
+                   const DatasetSource* const dataset_source,
+                   const IDatasetAccessor** const out_dataset_accessor_ptr,
+
+                   auto accessor_ptr = dataset_source->getAccessor();
+                   *out_dataset_accessor_ptr = accessor_ptr->clone();
+    )
 }

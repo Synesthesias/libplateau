@@ -1,13 +1,11 @@
 #include <filesystem>
 #include <utility>
-
-#include <plateau/dataset/local_dataset_accessor.h>
-#include <fstream>
 #include <queue>
 #include <set>
 #include <regex>
-#include "plateau/geometry/geo_reference.h"
-#include "plateau/dataset/lod_searcher.h"
+
+#include <plateau/geometry/geo_reference.h>
+#include "local_dataset_accessor.h"
 
 namespace plateau::dataset {
     namespace fs = std::filesystem;
@@ -90,74 +88,62 @@ namespace plateau::dataset {
             }
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path().string(), gml_files);
+
+            for (const auto& gml_file : gml_files) {
+                const auto mesh_code = gml_file.getMeshCode().get();
+                if (collection.files_by_code_.count(mesh_code) == 0) {
+                    collection.files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
+                }
+                collection.files_by_code_[mesh_code].push_back(gml_file);
+            }
         }
     }
 
-    std::vector<GmlFile> LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package){
-        auto filtered = LocalDatasetAccessor();
-        filter(extent, filtered);
-        auto count = filtered.getGmlFileCount(package);
-        auto ret = std::vector<GmlFile>();
-        for(int i=0; i<count; i++){
-            ret.push_back(filtered.getGmlFile(package, i));
-        }
-        return ret;
-    }
-
-    void LocalDatasetAccessor::getGmlFiles(Extent extent, PredefinedCityModelPackage package, std::vector<GmlFile>& gml_files){
-        gml_files = getGmlFiles(extent, package);
-    }
-
-    int LocalDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
-        auto mesh_code_filtered = filterByMeshCodes({mesh_code});
-        auto count = mesh_code_filtered->getGmlFileCount(package);
-        int max_lod = -1;
-        for(auto i=0; i<count; i++){
-            const auto& gml = mesh_code_filtered->getGmlFile(package, i);
-            auto lods = LodSearcher::searchLodsInFile(fs::u8path(gml.getPath()));
-            max_lod = std::max(max_lod, lods.getMax());
-        }
-        return max_lod;
-    }
-
-    std::shared_ptr<LocalDatasetAccessor> LocalDatasetAccessor::filter(const geometry::Extent& extent) const {
+    std::shared_ptr<IDatasetAccessor> LocalDatasetAccessor::filter(const geometry::Extent& extent) const {
         auto result = std::make_shared<LocalDatasetAccessor>();
         filter(extent, *result);
         return result;
     }
 
-    void LocalDatasetAccessor::filter(const geometry::Extent& extent_filter, LocalDatasetAccessor& collection) const {
-        collection.setUdxPath(udx_path_);
-        for (const auto& [package, files]: files_) {
-            for (const auto& file: files) {
-                auto extent = file.getMeshCode().getExtent();
-                if (extent_filter.intersects2D(extent)) {
-                    collection.addFile(package, file);
+    void LocalDatasetAccessor::filter(const geometry::Extent& extent_filter, IDatasetAccessor& collection) const {
+        const auto out_collection_ptr = dynamic_cast<LocalDatasetAccessor*>(&collection);
+        if (out_collection_ptr == nullptr)
+            return;
+
+        out_collection_ptr->setUdxPath(udx_path_);
+        for (const auto& [code, files] : files_by_code_) {
+            if (extent_filter.intersects2D(MeshCode(code).getExtent())) {
+                for (const auto& file : files) {
+                    out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
             }
         }
     }
 
     void LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
-                                                 LocalDatasetAccessor& collection) const {
+                                                 IDatasetAccessor& collection) const {
+        const auto out_collection_ptr = dynamic_cast<LocalDatasetAccessor*>(&collection);
+        if (out_collection_ptr == nullptr)
+            return;
+
         // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
-        collection.setUdxPath(udx_path_);
+        out_collection_ptr->setUdxPath(udx_path_);
         // 検索用に、引数の mesh_codes を文字列のセットにします。
         auto mesh_codes_str_set = std::set<std::string>();
         for (const auto& mesh_code : mesh_codes) {
             mesh_codes_str_set.insert(mesh_code.get());
         }
         // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
-        for (const auto& [sub_folder, files] : files_) {
-            for (const auto& file : files) {
-                if (mesh_codes_str_set.find(file.getMeshCode().get()) != mesh_codes_str_set.end()) {
-                    collection.addFile(sub_folder, file);
+        for (const auto& [code, files] : files_by_code_) {
+            if (mesh_codes_str_set.find(code) != mesh_codes_str_set.end()) {
+                for (const auto& file : files) {
+                    out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
             }
         }
     }
 
-    std::shared_ptr<LocalDatasetAccessor>
+    std::shared_ptr<IDatasetAccessor>
         LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
         auto result = std::make_shared<LocalDatasetAccessor>();
         filterByMeshCodes(mesh_codes, *result);
@@ -193,36 +179,36 @@ namespace plateau::dataset {
         return (int)files_[package].size();
     }
 
-    std::shared_ptr<std::vector<std::string>> LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package) {
-        const auto result = std::make_shared<std::vector<std::string>>();
-
-        if (files_.find(package) == files_.end())
-            return result;
-
-        for (const auto file : files_[package]) {
-            result->push_back(file.getPath());
-        }
+    std::shared_ptr<std::vector<GmlFile>> LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package) {
+        auto result = std::make_shared<std::vector<GmlFile>>();
+        getGmlFiles(package, *result);
         return result;
     }
 
+    void LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package, std::vector<GmlFile>& gml_files) {
+        if (files_.find(package) == files_.end())
+            return;
 
+        for (const auto& file : files_[package]) {
+            gml_files.push_back(file);
+        }
+    }
 
     std::string LocalDatasetAccessor::getU8RelativePath(const std::string& path) const {
         return fs::relative(fs::u8path(path), fs::u8path(udx_path_)).u8string();
     }
 
     TVec3d LocalDatasetAccessor::calculateCenterPoint(const geometry::GeoReference& geo_reference) {
-        const auto& mesh_codes = getMeshCodes();
         double lat_sum = 0;
         double lon_sum = 0;
         double height_sum = 0;
-        for (const auto& mesh_code : mesh_codes) {
+        for (const auto& mesh_code : mesh_codes_) {
             const auto& center = mesh_code.getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
             height_sum += center.height;
         }
-        auto num = (double)mesh_codes.size();
+        auto num = (double)mesh_codes_.size();
         geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
         auto euclid_average = geo_reference.project(geo_average);
         return euclid_average;
@@ -232,24 +218,15 @@ namespace plateau::dataset {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::vector<MeshCode> LocalDatasetAccessor::getMeshCodes() {
-        if (mesh_codes_.empty()){
+    std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
+        if (mesh_codes_.empty()) {
             for (const auto& [_, files] : files_) {
                 for (const auto& file : files) {
                     mesh_codes_.insert(file.getMeshCode());
                 }
             }
         }
-
-        // set を vector に変換します。
-        auto vector_mesh_codes = std::vector<MeshCode>();
-        for(const auto& mesh_code : mesh_codes_){
-            vector_mesh_codes.push_back(mesh_code);
-        }
-        return vector_mesh_codes;
-    }
-    void LocalDatasetAccessor::getMeshCodes(std::vector<MeshCode>& mesh_codes) {
-        mesh_codes = getMeshCodes();
+        return mesh_codes_;
     }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
@@ -257,6 +234,12 @@ namespace plateau::dataset {
             files_.emplace(sub_folder, std::vector<GmlFile>());
         }
         files_.at(sub_folder).push_back(gml_file_info);
+
+        const auto mesh_code = gml_file_info.getMeshCode().get();
+        if (files_by_code_.count(mesh_code) == 0) {
+            files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
+        }
+        files_by_code_[mesh_code].push_back(gml_file_info);
     }
 
     void LocalDatasetAccessor::setUdxPath(std::string udx_path) {

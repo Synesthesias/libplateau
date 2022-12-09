@@ -12,29 +12,27 @@ DLL_DELETE_FUNC(plateau_delete_client,
                 Client)
 
 DLL_2_ARG_FUNC(plateau_client_get_metadata,
-               const Client* const,
-               std::vector<DatasetMetadataGroup>* const,
-               arg_1->getMetadata(*arg_2))
+               const Client* const client,
+               std::vector<DatasetMetadataGroup>* const out_vector_dataset_metadata_group_ptr,
+               client->getMetadata(*out_vector_dataset_metadata_group_ptr))
 
 DLL_2_ARG_FUNC(plateau_client_set_api_server_url,
-               Client* const,
-               const char* const,
-               arg_1->setApiServerUrl(std::string(arg_2)))
+               Client* const client,
+               const char* const api_server_url,
+               client->setApiServerUrl(std::string(api_server_url)))
 
 DLL_STRING_VALUE_FUNC(plateau_client_get_api_server_url,
                       Client,
                       handle->getApiServerUrl())
 
-LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API plateau_client_download(
-        const Client* const client,
-        const char* const destination_directory_utf8,
-        const char* const url_utf8,
-        std::string* const out_downloaded_path
-) {
-    API_TRY {
-        *out_downloaded_path = client->download(destination_directory_utf8, url_utf8);
-        return APIResult::Success;
-    } API_CATCH
-    return APIResult::ErrorUnknown;
-}
+DLL_4_ARG_FUNC(plateau_client_download,
+               const Client* const client,
+               const char* const destination_directory_utf8,
+               const char* const url_utf8,
+               std::string* const out_downloaded_path,
+               *out_downloaded_path = client->download(destination_directory_utf8, url_utf8) )
+
+DLL_1_ARG_FUNC(plateau_client_get_default_url,
+               std::string* out_default_url,
+               *out_default_url = Client::getDefaultServerUrl())
 }

@@ -32,7 +32,6 @@ add_executable(plateau_test
     "test_mesh_merger.cpp"
     "test_model.cpp"
     "test_gml_file.cpp"
-    "test_lod_searcher.cpp"
     "test_network_client.cpp"
     "test_dataset.cpp"
     "test_dataset_source.cpp"

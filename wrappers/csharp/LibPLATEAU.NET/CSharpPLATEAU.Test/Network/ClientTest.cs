@@ -7,21 +7,35 @@ namespace PLATEAU.Test.Network
     public class ClientTest
     {
         [TestMethod]
-        public void DatasetMetadataGroup()
+        public void GetDatasetMetadataGroup()
         {
-            using var client = Client.Create();
-            client.Url = NetworkConfig.MockServerURL;
-            var metadataGroup = client.GetDatasetMetadataGroup();
-            Assert.AreEqual("東京都", metadataGroup.At(0).Title);
-            Assert.AreEqual("23区", metadataGroup.At(0).Datasets.At(0).Title);
+            var client = Client.Create();
+            client.Url = NetworkConfig.DefaultApiServerUrl;
+            var metadataGroups = client.GetDatasetMetadataGroup();
+            Assert.AreEqual(2, metadataGroups.Length);
+            var group = metadataGroups.At(0);
+            Assert.AreEqual("tokyo", group.ID);
+            Assert.AreEqual("東京都", group.Title);
+            var dataset23Ku = group.Datasets.At(0);
+            Assert.AreEqual("23ku", dataset23Ku.ID);
+            Assert.AreEqual("23区", dataset23Ku.Title);
+            Assert.AreEqual("xxxx", dataset23Ku.Description);
+            Assert.AreEqual(3, dataset23Ku.MaxLOD);
+            var datasetHachioji = group.Datasets.At(1);
+            Assert.AreEqual("八王子市", datasetHachioji.Title);
+            var featureTypes = datasetHachioji.FeatureTypes.ToCSharpArray();
+            CollectionAssert.AreEquivalent(new[] { "bldg", "dem" }, featureTypes);
+            client.Dispose();
+            
         }
 
         [TestMethod]
         public void GetAndSetUrl()
         {
-            using var client = Client.Create();
+            var client = Client.Create();
             client.Url = "https://dummy.com";
             Assert.AreEqual("https://dummy.com", client.Url);
+            client.Dispose();
         }
     }
 }

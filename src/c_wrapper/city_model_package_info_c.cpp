@@ -6,13 +6,12 @@ using namespace plateau::dataset;
 
 extern "C" {
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_city_model_package_info(
-            CityModelPackageInfo** out_info_ptr,
-            bool has_appearance, int min_lod, int max_lod
-    ) {
-        *out_info_ptr = new CityModelPackageInfo(has_appearance, min_lod, max_lod);
-        return APIResult::Success;
-    }
+    DLL_4_ARG_FUNC(plateau_create_city_model_package_info,
+                   CityModelPackageInfo** out_info_ptr,
+                   bool has_appearance,
+                   int min_lod,
+                   int max_lod,
+                   *out_info_ptr = new CityModelPackageInfo(has_appearance, min_lod, max_lod); )
 
 
     DLL_DELETE_FUNC(plateau_delete_city_model_package_info,
