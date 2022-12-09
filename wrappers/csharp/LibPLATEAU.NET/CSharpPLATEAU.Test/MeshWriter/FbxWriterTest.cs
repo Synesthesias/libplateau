@@ -12,22 +12,28 @@ namespace PLATEAU.Test.MeshWriter
     public class FbxWriterTest
     {
         [TestMethod]
-        public void WriteGenerateAFile()
+        public void WriteGenerateFbxFile()
         {
+            string testDir = Path.GetFullPath("./testDir");
+            if(Directory.Exists(testDir)) Directory.Delete(testDir, true);
+            Directory.CreateDirectory(testDir);
             using var model = TestGeometryUtil.ExtractModel();
             string gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             string fbxFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".fbx";
-            string fbxPath = new DirectoryInfo(gmlPath).Parent?.FullName + fbxFileName;
+            string fbxPath = Path.Combine(testDir, fbxFileName);
             var option = new FbxWriteOptions(FbxFileFormat.Binary);
             
-            File.Delete(fbxPath);
             bool isSucceed = FbxWriter.Write(fbxPath, model, option);
             
             Assert.IsTrue(isSucceed);
             Assert.IsTrue(File.Exists(fbxPath), "fbxファイルが存在します。");
             Assert.IsTrue(new FileInfo(fbxPath).Length > 0, "fbxファイルの中身が1バイト以上存在します。");
-            Console.WriteLine(fbxPath);
-            File.Delete(fbxPath);
+            
+            string expectedTextureDir =
+                Path.Combine(testDir, "53392642_bldg_6697_appearance");
+            Assert.IsTrue(Directory.Exists(expectedTextureDir), "テクスチャフォルダが存在します。");
+            
+            Directory.Delete(testDir, true);
         }
     }
 }
