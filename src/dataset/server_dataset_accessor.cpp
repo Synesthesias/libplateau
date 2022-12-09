@@ -67,21 +67,6 @@ namespace plateau::dataset {
         return euclid_average;
     }
 
-    //int ServerDatasetAccessor::getMaxLod(MeshCode mesh_code, PredefinedCityModelPackage package) {
-    //    auto center = mesh_code.getExtent().centerPoint();
-    //    auto center_extent = geometry::Extent(center, center);
-    //    auto gmls = getGmlFiles(center_extent, package);
-    //    int max_lod = -1;
-    //    if (package_to_gmls_map_.find(package) == package_to_gmls_map_.end()) {
-    //        return -1;
-    //    }
-    //    const LodGmlPairs& pairs = package_to_gmls_map_.at(package);
-    //    for (const auto& pair : pairs) {
-    //        max_lod = std::max(max_lod, (int)pair.first);
-    //    }
-    //    return max_lod;
-    //}
-
     PredefinedCityModelPackage ServerDatasetAccessor::getPackages() {
         auto result = PredefinedCityModelPackage::None;
         for (const auto& [key, _] : dataset_files_) {

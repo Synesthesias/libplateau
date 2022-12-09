@@ -75,7 +75,6 @@ namespace plateau::network {
                 auto& file_items = it.value();
 
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
-                //for (int i = 0; i < files.size(); i++) {
                 for (const auto& file_item : file_items) {
                     DatasetFileItem dataset_file;
                     dataset_file.max_lod = std::stof(std::string(file_item["maxLod"]));

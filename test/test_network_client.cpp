@@ -22,18 +22,6 @@ namespace plateau::network {
             ASSERT_EQ(meta_data->at(0).datasets[0].max_lod, 3);
         }
     }
-
-    //TEST_F(ClientTest, GetFiles) { // NOLINT
-    //    std::vector<plateau::dataset::MeshCode> set_mesh_codes;
-    //    set_mesh_codes.emplace_back("53392642");
-    //    set_mesh_codes.emplace_back("53392670");
-    //    auto file_url_lod = client.getFiles(set_mesh_codes);
-    //    ASSERT_NE(file_url_lod->size(), 0);
-    //    if (!file_url_lod->empty()) {
-    //        ASSERT_EQ(file_url_lod->begin()->second[0].first, 1);
-    //        ASSERT_EQ(file_url_lod->begin()->second[0].second, NetworkConfig::mockServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
-    //    }
-    //}
     
     TEST_F(ClientTest, Download) { // NOLINT
         std::string gml_file_name = "53392642_bldg_6697_2_op.gml";
