@@ -57,6 +57,7 @@ OSごとのビルド方法を記載する。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
+* glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールする。
 
 * 以下のコマンドを実行する。
 ```
