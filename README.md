@@ -144,6 +144,59 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 - `*` `&` の位置は左寄せ (`SomeType *foobar` ではなく `SomeType* foobar`)
 
 # ライセンス
-- libplateau本体： 未定
-- xerces-c： Apacheライセンス , 要 著作権表示 , 要 改変したことの告知
-- libcitygml：  GNU LESSER GENERAL PUBLIC LICENSE
+- libplateau本体
+  - 未定
+
+- libcitygml
+  - [https://github.com/Synesthesias/libcitygml.git](https://github.com/Synesthesias/libcitygml.git)
+  - 用途: gmlファイルのパースに利用
+  - ライセンス: GNU Lesser General Public License v2.1
+
+- xerces-c
+  - [https://github.com/Synesthesias/xerces-c.git](https://github.com/Synesthesias/xerces-c.git)
+  - 用途: libcitygmlの依存ライブラリ
+  - ライセンス: Apache-2.0 , 要 著作権表示 , 要 改変したことの告知
+
+- libxml2
+  - [https://github.com/GNOME/libxml2](https://github.com/GNOME/libxml2)
+  - 用途: libcitygmlの依存ライブラリ
+  - ライセンス: MIT
+
+- cpp-httplib
+  - [https://github.com/yhirose/cpp-httplib.git](https://github.com/yhirose/cpp-httplib.git)
+  - 用途: APIサーバーへのアクセスに利用
+  - ライセンス: MIT
+
+- glTF-SDK
+  - [https://github.com/microsoft/glTF-SDK](https://github.com/microsoft/glTF-SDK)
+  - 用途: glTF形式でのエクスポートに利用
+  - ライセンス: MIT
+
+- json
+  - [https://github.com/nlohmann/json.git](https://github.com/nlohmann/json.git)
+  - 用途: APIサーバーから受け取るjsonのパースに利用
+  - ライセンス: MIT
+
+
+- openssl-cmake
+  - [https://github.com/janbar/openssl-cmake](https://github.com/janbar/openssl-cmake)
+  - ライセンス: dual-license (the OpenSSL license plus the SSLeay license)
+
+- zlib
+  - [https://github.com/madler/zlib](https://github.com/madler/zlib)
+  - ライセンス: 独自(再配布可)
+
+- gtest
+  - [https://github.com/google/googletest](https://github.com/google/googletest)
+  - 用途: C++のユニットテスト
+  - ライセンス: [BSD-3-Clause license](https://github.com/google/googletest/blob/main/LICENSE)
+
+- pybind11
+  - [https://github.com/pybind/pybind11.git](https://github.com/pybind/pybind11.git)
+  - 用途: SDKのpython対応(開発停止中)
+  - ライセンス: BSD-style license
+
+- FBXSDK
+  - [https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1)
+  - 用途: fbx形式でのエクスポート機能
+  - ライセンス: 独自
