@@ -4,6 +4,7 @@
 #include <plateau/dataset/mesh_code.h>
 #include <set>
 #include "plateau/network/client.h"
+#include <filesystem>
 
 namespace plateau::dataset {
 
@@ -39,7 +40,8 @@ namespace plateau::dataset {
         std::shared_ptr<GmlFile> fetch(const std::string& destination_root_path) const;
 
         /**
-         * \brief CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
+         * \brief GmlFileのパスがローカルマシンを指す場合、CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
+         * パスが http で始まる場合、GMLファイルとその関連ファイルをダウンロードします。
          * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
          * \param copied_gml_file コピーされたCityGMLファイル
          */
@@ -64,5 +66,10 @@ namespace plateau::dataset {
         int max_lod_;
 
         void applyPath();
+        void fetchLocal(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+                        const std::filesystem::path& gml_destination_path, GmlFile& copied_gml_file) const;
+        void
+        fetchServer(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+                    const std::filesystem::path& gml_destination_path, GmlFile& copied_gml_file) const;
     };
 }

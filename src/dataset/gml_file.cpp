@@ -25,18 +25,12 @@ namespace plateau::dataset {
     namespace fs = std::filesystem;
 
     GmlFile::GmlFile(const std::string& path)
-        : path_(path)
-        , is_valid_(false)
-        , is_local_(true)
-        , max_lod_(-1) {
+            : path_(path), is_valid_(false), is_local_(true), max_lod_(-1) {
         applyPath();
     }
 
     GmlFile::GmlFile(const std::string& path, const int max_lod)
-        : path_(path)
-        , is_valid_(false)
-        , is_local_(true)
-        , max_lod_(max_lod) {
+            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
         applyPath();
     }
 
@@ -62,7 +56,7 @@ namespace plateau::dataset {
         auto appearance_path = fs::u8path(path_).parent_path().append("").u8string();
         std::string current;
         int cnt = 0;
-        for (const auto& character : filename) {
+        for (const auto& character: filename) {
             appearance_path += character;
             if (character == '_') {
                 cnt++;
@@ -98,7 +92,7 @@ namespace plateau::dataset {
         std::vector<std::string> filename_parts;
         std::string current;
         current.reserve(filename.size());
-        for (const auto character : filename) {
+        for (const auto character: filename) {
             if (character == '_') {
                 filename_parts.push_back(current);
                 current = "";
@@ -146,13 +140,15 @@ namespace plateau::dataset {
                 if (hint_matched_pos == std::string::npos) return false;
                 // ヒントが検索ヒットしたので、その周囲の指定数のバイト範囲を正規表現の検索範囲にします。
                 auto search_start =
-                    str_begin + std::max((long long)0, (long long)hint_matched_pos - search_range_before_hint);
-                auto search_end = std::min(str.end(), str_begin + (long long)hint_matched_pos + (long long)hint.size() + search_range_after_hint);
+                        str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
+                auto search_end = std::min(str.end(),
+                                           str_begin + (long long) hint_matched_pos + (long long) hint.size() +
+                                           search_range_after_hint);
                 // 正規表現でヒットしたら、その結果を引数 matched に格納して返します。
                 bool found = std::regex_search(search_start, search_end, matched, regex);
                 if (found) return true;
                 // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
-                search_pos = std::min(str.cend(), str_begin + (long long)hint_matched_pos + (long long)hint.size());
+                search_pos = std::min(str.cend(), str_begin + (long long) hint_matched_pos + (long long) hint.size());
             }
 
         }
@@ -187,13 +183,13 @@ namespace plateau::dataset {
             while (true) {
                 // 開始タグを検索します。
                 if (!regexSearchWithHint(str, begin_tag_search_iter, begin_tag_matched, begin_tag_regex, begin_tag_hint,
-                    search_range_before_hint, search_range_after_hint)) {
+                                         search_range_before_hint, search_range_after_hint)) {
                     break;
                 }
                 // 終了タグを検索します。
                 const auto next_of_begin_tag = begin_tag_matched[0].second;
                 if (regexSearchWithHint(str, next_of_begin_tag, end_tag_matched, end_tag_regex, end_tag_hint,
-                    search_range_before_hint, search_range_after_hint)) {
+                                        search_range_before_hint, search_range_after_hint)) {
                     // 開始タグと終了タグに挟まれた文字列を結果として格納します。
                     found.insert(std::string(next_of_begin_tag, end_tag_matched[0].first));
                 } else {
@@ -227,8 +223,9 @@ namespace plateau::dataset {
          * コピー先に同名のフォルダが存在する場合はコピーしません。
          * コピー元が実在しない場合はコピーしません。
          */
-        void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path, const fs::path& dest_base_path) {
-            for (const auto& path : path_set) {
+        void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path,
+                       const fs::path& dest_base_path) {
+            for (const auto& path: path_set) {
                 auto src = fs::path(src_base_path).append(path).make_preferred();
                 auto dest = fs::path(dest_base_path).append(path).make_preferred();
                 if (!fs::exists(src)) {
@@ -239,6 +236,28 @@ namespace plateau::dataset {
                 fs::copy(src, dest, fs::copy_options::skip_existing);
             }
         }
+
+        /**
+         * fetch の準備として、パスを計算し、必要なディレクトリを作成します。
+         **/
+        void prepareFetch(const std::string& gml_path, const std::string& destination_root_path,
+                          std::string& out_gml_relative_path_from_udx, std::string& out_destination_udx_path,
+                          fs::path& out_gml_destination_path) {
+            const auto udx_path_len = gml_path.rfind("udx") + 3;
+            if (udx_path_len == std::string::npos) {
+                throw std::runtime_error("Invalid gml path. Could not find udx folder");
+            }
+
+            const auto udx_path = gml_path.substr(0, udx_path_len);
+            out_gml_relative_path_from_udx = fs::relative(fs::u8path(gml_path).make_preferred(),
+                                                          fs::u8path(udx_path)).make_preferred().string();
+            const auto root_folder_name = fs::u8path(udx_path).parent_path().filename().string();
+            auto destination_root = fs::u8path(destination_root_path);
+            out_destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
+            out_gml_destination_path = fs::u8path(out_destination_udx_path);
+            out_gml_destination_path.append(out_gml_relative_path_from_udx);
+            fs::create_directories(out_gml_destination_path.parent_path());
+        }
     } // fetch で使う無名関数
 
     std::shared_ptr<GmlFile> GmlFile::fetch(const std::string& destination_root_path) const {
@@ -248,60 +267,65 @@ namespace plateau::dataset {
     }
 
     void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
-
-        const auto udx_path_len = getPath().rfind("udx") + 3;
-        if (udx_path_len == std::string::npos) {
-            throw std::runtime_error("Invalid gml path. Could not find udx folder");
+        auto gml_relative_path_from_udx = std::string();
+        auto destination_udx_path = std::string();
+        auto gml_destination_path = fs::path();
+        prepareFetch(getPath(), destination_root_path, gml_relative_path_from_udx, destination_udx_path,
+                     gml_destination_path);
+        if (is_local_) {
+            fetchLocal(gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
+                       copied_gml_file);
+        } else {
+            fetchServer(gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
+                        copied_gml_file);
         }
+    }
 
-        const auto udx_path = getPath().substr(0, udx_path_len);
-        const auto gml_relative_path = fs::relative(fs::u8path(getPath()).make_preferred(), fs::u8path(udx_path)).make_preferred().string();
-
-        const auto root_folder_name = fs::u8path(udx_path).parent_path().filename().string();
-        auto destination_root = fs::u8path(destination_root_path);
-        const auto destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
-        fs::path gml_destination_path(destination_udx_path);
-        gml_destination_path.append(gml_relative_path);
-        fs::create_directories(gml_destination_path.parent_path());
+    void GmlFile::fetchLocal(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+                             const fs::path& gml_destination_path, GmlFile& copied_gml_file) const {
         const auto& gml_file_path = getPath();
         auto destination_dir = gml_destination_path.parent_path();
-        try {
-            if (is_local_) {
-                fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
-                copied_gml_file.setPath(gml_destination_path.u8string());
-            }
-            else {
-                // gmlファイルをダウンロードします。
-                auto client = Client();
-                client.download(destination_dir.u8string(), path_);
-                auto downloaded_path = destination_dir;
-                downloaded_path /= fs::u8path(gml_file_path).filename();
-                copied_gml_file.setPath(downloaded_path.u8string());
-            }
-        }
-        catch (...) {
-        }
+        fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
+        copied_gml_file.setPath(gml_destination_path.u8string());
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
         const auto codelist_paths = copied_gml_file.searchAllCodelistPathsInGML();
         const auto image_paths = copied_gml_file.searchAllImagePathsInGML();
-        
-        // テクスチャとコードリストファイルをコピー or ダウンロードします。
+
+        // テクスチャとコードリストファイルをコピーします。
         const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
-        const auto relative_gml_dir_path = fs::u8path(gml_relative_path).parent_path().u8string();
+        const auto relative_gml_dir_path = fs::u8path(gml_relative_path_from_udx).parent_path().u8string();
         const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
         auto path_to_download = image_paths;
         path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
-        if(is_local_){
-            copyFiles(path_to_download, gml_dir_path, app_destination_path);
-        }else{
-            auto client = Client();
-            for(const auto& relative_path : path_to_download){
-                auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
-                client.download(full_path.parent_path().u8string(), full_path.filename().u8string());
-            }
-        }
+        copyFiles(path_to_download, gml_dir_path, app_destination_path);
+    }
 
+    void GmlFile::fetchServer(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+                              const fs::path& gml_destination_path, GmlFile& copied_gml_file) const {
+        const auto& gml_file_path = getPath();
+        auto destination_dir = gml_destination_path.parent_path();
+        // gmlファイルをダウンロードします。
+        auto client = Client();
+        client.download(destination_dir.u8string(), path_);
+        auto downloaded_path = destination_dir;
+        downloaded_path /= fs::u8path(gml_file_path).filename();
+        copied_gml_file.setPath(downloaded_path.u8string());
+
+        // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
+        const auto codelist_paths = copied_gml_file.searchAllCodelistPathsInGML();
+        const auto image_paths = copied_gml_file.searchAllImagePathsInGML();
+
+        // テクスチャとコードリストファイルをダウンロードします。
+        const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
+        const auto relative_gml_dir_path = fs::u8path(gml_relative_path_from_udx).parent_path().u8string();
+        const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
+        auto path_to_download = image_paths;
+        path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
+        for (const auto& relative_path: path_to_download) {
+            auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
+            client.download(full_path.parent_path().u8string(), full_path.filename().u8string());
+        }
     }
 
     std::set<std::string> GmlFile::searchAllCodelistPathsInGML() const {
