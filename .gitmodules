@@ -22,3 +22,9 @@
 [submodule "3rdparty/json"]
 	path = 3rdparty/json
 	url = https://github.com/nlohmann/json.git
+[submodule "3rdparty/zlib"]
+	path = 3rdparty/zlib
+	url = https://github.com/madler/zlib
+[submodule "3rdparty/libxml2"]
+	path = 3rdparty/libxml2
+	url = https://github.com/GNOME/libxml2
