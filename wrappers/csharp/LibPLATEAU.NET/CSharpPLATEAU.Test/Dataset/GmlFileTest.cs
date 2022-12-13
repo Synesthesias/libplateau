@@ -95,42 +95,35 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void SearchCodelistPathsAndTexturePaths()
         {
-            using var sourceServer = DatasetSource.Create(false, "data");
-            using var sourceLocal = DatasetSource.Create(true, "23ku");
-            
-            FetchAndCheckFiles(sourceServer);
-            FetchAndCheckFiles(sourceLocal);
-            
-            
-            void FetchAndCheckFiles(DatasetSource datasetSource){
-                using var accessor = datasetSource.Accessor;
-                var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-                var gml = gmls.At(0);
-                var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
-                var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
-                var expectedCodelists = new[]
-                {
-                    "../../codelists/Common_districtsAndZonesType.xml",
-                    "../../codelists/Common_localPublicAuthorities.xml",
-                    "../../codelists/Common_prefecture.xml",
-                    "../../codelists/extendedAttribute_key.xml",
-                    "../../codelists/extendedAttribute_key106.xml",
-                    "../../codelists/extendedAttribute_key2.xml"
-                };
-                var expectedImages = new[]
-                {
-                    "53392642_bldg_6697_appearance/hnap0034.tif",
-                    "53392642_bldg_6697_appearance/hnap0275.tif",
-                    "53392642_bldg_6697_appearance/hnap0276.tif",
-                    "53392642_bldg_6697_appearance/hnap0279.tif",
-                    "53392642_bldg_6697_appearance/hnap0285.tif",
-                    "53392642_bldg_6697_appearance/hnap0286.tif",
-                    "53392642_bldg_6697_appearance/hnap0876.tif",
-                    "53392642_bldg_6697_appearance/hnap0878.tif"
-                };
-                CollectionAssert.AreEquivalent(expectedCodelists, codelistPaths);
-                CollectionAssert.AreEquivalent(expectedImages, imagePaths);}
-            
+            using var sourceLocal = DatasetSource.Create(false, "data");
+
+            using var accessor = sourceLocal.Accessor;
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gml = gmls.At(0);
+            var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
+            var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
+            var expectedCodelists = new[]
+            {
+                "../../codelists/Common_districtsAndZonesType.xml",
+                "../../codelists/Common_localPublicAuthorities.xml",
+                "../../codelists/Common_prefecture.xml",
+                "../../codelists/extendedAttribute_key.xml",
+                "../../codelists/extendedAttribute_key106.xml",
+                "../../codelists/extendedAttribute_key2.xml"
+            };
+            var expectedImages = new[]
+            {
+                "53392642_bldg_6697_appearance/hnap0034.tif",
+                "53392642_bldg_6697_appearance/hnap0275.tif",
+                "53392642_bldg_6697_appearance/hnap0276.tif",
+                "53392642_bldg_6697_appearance/hnap0279.tif",
+                "53392642_bldg_6697_appearance/hnap0285.tif",
+                "53392642_bldg_6697_appearance/hnap0286.tif",
+                "53392642_bldg_6697_appearance/hnap0876.tif",
+                "53392642_bldg_6697_appearance/hnap0878.tif"
+            };
+            CollectionAssert.AreEquivalent(expectedCodelists, codelistPaths);
+            CollectionAssert.AreEquivalent(expectedImages, imagePaths);
         }
 
         [TestMethod]
