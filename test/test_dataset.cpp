@@ -63,6 +63,7 @@ namespace {
         for (const auto& relative_path : file_relative_paths) {
             auto path = fs::path(base_path).append(relative_path).make_preferred();
             ASSERT_TRUE(fs::exists(path)) << path << " does not exist";
+            ASSERT_TRUE(fs::file_size(path) > 0);
         }
     }
 }
@@ -151,7 +152,7 @@ TEST_F(DatasetTest, fetch_server_generates_files) {
     };
     checkFilesExist(images, image_dir);
 
-//    fs::remove_all(temp_test_dir);
+    fs::remove_all(temp_test_dir);
 }
 
 namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。

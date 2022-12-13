@@ -322,9 +322,23 @@ namespace plateau::dataset {
         const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
         auto path_to_download = image_paths;
         path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
+
+        auto server_url = path_.substr(0, path_.substr(8).find("/") + 8);
+
         for (const auto& relative_path: path_to_download) {
             auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
-            client.download(full_path.parent_path().u8string(), full_path.filename().u8string());
+            auto path = (fs::path(destination_dir) / relative_path).make_preferred();
+            auto dest_root = fs::u8path(destination_udx_path).parent_path().parent_path().make_preferred();
+            auto path_from_dest_root = fs::relative(path, dest_root).u8string();
+
+            // '\\' を '/' に置換
+            auto pos = path_from_dest_root.find("\\");
+            while(pos != std::string::npos){
+                path_from_dest_root.replace(pos, 1, "/");
+                pos = path_from_dest_root.find("\\", pos + 1);
+            }
+
+            client.download(full_path.parent_path().u8string(), server_url + "/" + path_from_dest_root);
         }
     }
 
