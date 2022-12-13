@@ -70,20 +70,28 @@ namespace PLATEAU.Test.Dataset
         }
 
         [TestMethod]
-        public void GetMaxLod()
+        public void GetMaxLodLocal()
         {
-            // TODO Serverのときは取得できるのか？
             using var source = DatasetSource.Create(false, "data");
             using var accessor = source.Accessor;
-            var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
+            using var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(2, gmls.At(0).GetMaxLod());
-
-            // TODO dispose filtered
         }
 
-        // TODO あとで消す
+        [TestMethod]
+        public void GetMaxLodServer()
+        {
+            using var source = DatasetSource.Create(true, "23ku");
+            using var accessor = source.Accessor;
+            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse("53392642") });
+            var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
+            Assert.AreEqual(1, gmls.Length);
+            Assert.AreEqual(1, gmls.At(0).GetMaxLod());
+        }
+
+
         [TestMethod]
         public void SearchCodelistPathsAndTexturePaths()
         {
