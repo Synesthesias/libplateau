@@ -1311,10 +1311,9 @@ namespace PLATEAU.Interop
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_gml_file_get_path(
-            [In] IntPtr gmlFilePtr,
-            out IntPtr strPtr,
-            out int strLength);
-        
+            [In] IntPtr handle,
+            [In, Out] IntPtr refPathNativeStringPtr);
+            
         [DllImport(DllName, CharSet = CharSet.Ansi)]
         internal static extern APIResult plateau_gml_file_set_path(
             [In] IntPtr gmlFilePtr,

@@ -26,9 +26,10 @@ extern "C" {
     DLL_DELETE_FUNC(plateau_delete_gml_file,
                     GmlFile)
 
-    DLL_STRING_PTR_FUNC(plateau_gml_file_get_path,
-                        GmlFile,
-                        handle->getPath())
+    DLL_2_ARG_FUNC(plateau_gml_file_get_path,
+                   GmlFile* gml_file,
+                   std::string* out_path_utf8,
+                   *out_path_utf8 = gml_file->getPath().u8string())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_set_path(
             GmlFile* gml_file_info,

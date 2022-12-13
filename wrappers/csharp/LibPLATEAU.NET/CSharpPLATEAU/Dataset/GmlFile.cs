@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using PLATEAU.Interop;
-using PLATEAU.Network;
 
 namespace PLATEAU.Dataset
 {
@@ -37,7 +35,12 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                return DLLUtil.GetNativeString(Handle, NativeMethods.plateau_gml_file_get_path);
+                var pathNativeStr = NativeString.Create();
+                var result = NativeMethods.plateau_gml_file_get_path(Handle, pathNativeStr.Handle);
+                DLLUtil.CheckDllError(result);
+                string path = pathNativeStr.ToString();
+                pathNativeStr.Dispose();
+                return path;
             }
             set
             {

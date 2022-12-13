@@ -48,7 +48,8 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(false, "data");
             using var accessor = source.Accessor;
-            var testDir = Directory.CreateDirectory("temp_test_dir");
+            // パスに日本語名を含むケースで動作確認します。
+            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmls)
             {
@@ -63,7 +64,7 @@ namespace PLATEAU.Test.Dataset
             };
             foreach (string filePath in shouldExists)
             {
-                string resultPath = "temp_test_dir/data/" + filePath;
+                string resultPath = "テスト用一時フォルダ/data/" + filePath;
                 Assert.IsTrue(File.Exists(resultPath), $"{resultPath} does not exist");
             }
             Directory.Delete(testDir.FullName, true);
@@ -131,7 +132,8 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
             using var accessor = source.Accessor;
-            var testDir = Directory.CreateDirectory("temp_test_dir");
+            // パスに日本語名を含むケースでテストします。
+            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
             
             if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
             

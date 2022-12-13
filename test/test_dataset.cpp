@@ -21,7 +21,7 @@ protected:
     static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFile>& actual) {
         std::vector<std::string> actual_file_names;
         std::transform(actual.begin(), actual.end(), std::back_inserter(actual_file_names),
-            [](const GmlFile& file_info) { return file_info.getPath(); });
+            [](const GmlFile& file_info) { return file_info.getPath().u8string(); });
         checkVectors(expected, actual_file_names);
     }
 
@@ -47,7 +47,7 @@ TEST_F(DatasetTest, getAllGmls) {
     std::vector<std::string> actual_files;
     const auto gml_files = local_dataset_accessor->getGmlFiles(PredefinedCityModelPackage::Building);
     for (const auto& gml_file : *gml_files) {
-        actual_files.push_back(gml_file.getPath());
+        actual_files.push_back(gml_file.getPath().u8string());
     }
 
     checkVectors(expected_bldg_files, actual_files);
@@ -63,14 +63,15 @@ namespace {
         for (const auto& relative_path : file_relative_paths) {
             auto path = fs::path(base_path).append(relative_path).make_preferred();
             ASSERT_TRUE(fs::exists(path)) << path << " does not exist";
-            ASSERT_TRUE(fs::file_size(path) > 0);
+            ASSERT_TRUE(fs::file_size(path) > 0) << "downloaded file size is zero : " << path;
         }
     }
 }
 
 TEST_F(DatasetTest, fetch_local_generates_files) {
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
-    auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
+    // パスに日本語を含むケースで動作確認します。
+    auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     //    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFile(std::string("../data/udx/bldg/53392642_bldg_6697_op2.gml"));
@@ -115,18 +116,19 @@ TEST_F(DatasetTest, fetch_local_generates_files) {
 
 TEST_F(DatasetTest, fetch_server_generates_files) {
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
-    auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
+    // パスに日本語を含むケースで動作確認します。
+    auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     const auto& test_gml_info = GmlFile(std::string(Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml"));
     test_gml_info.fetch(temp_test_dir);
     // gmlファイルがコピー先に存在します。
-    auto bldg_dir = fs::path(temp_test_dir).append("13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");
-    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_2_op.gml").make_preferred();
+    auto bldg_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append(u8"53392642_bldg_6697_2_op.gml").make_preferred();
 //        auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
     ASSERT_TRUE(fs::exists(gml_path)) << fs::absolute(gml_path) << " does not exist.";
 
     // codelistsファイルがコピー先に存在します。
-    auto codelists_dir = fs::path(temp_test_dir).append("13100_tokyo23-ku_2020_citygml_3_2_op/codelists");
+    auto codelists_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/codelists");
     std::vector<std::string> codelists = {
             "Common_districtsAndZonesType.xml",
             "Common_prefecture.xml",
@@ -164,7 +166,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
         auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
         bool contains_mesh_code = false;
         for (const auto& building_gml : *gml_vector) {
-            if (building_gml.getPath().find(mesh_code[0].get()) != std::string::npos) {
+            if (building_gml.getPath().u8string().find(mesh_code[0].get()) != std::string::npos) {
                 contains_mesh_code = true;
             }
         }

@@ -11,34 +11,35 @@
 
 #include "lod_searcher.h"
 
+using namespace plateau::network;
+namespace fs = std::filesystem;
+
 namespace {
-    bool checkLocal(const std::string& path) {
-        if (path.size() < 4)
+    bool checkLocal(const fs::path& path) {
+        auto path_str = path.u8string();
+        if (path_str.size() < 4)
             return true;
-        return path.substr(0, 4) != "http";
+        return path_str.substr(0, 4) != "http";
     }
 }
 
 namespace plateau::dataset {
 
-    using namespace plateau::network;
-    namespace fs = std::filesystem;
-
-    GmlFile::GmlFile(const std::string& path)
-            : path_(path), is_valid_(false), is_local_(true), max_lod_(-1) {
+    GmlFile::GmlFile(const std::string& path_utf8)
+            : path_(fs::u8path(path_utf8)), is_valid_(false), is_local_(true), max_lod_(-1) {
         applyPath();
     }
 
-    GmlFile::GmlFile(const std::string& path, const int max_lod)
-            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
+    GmlFile::GmlFile(const std::string& path_utf8, const int max_lod)
+            : path_(fs::u8path(path_utf8)), is_valid_(false), is_local_(true), max_lod_(max_lod) {
         applyPath();
     }
 
-    const std::string& GmlFile::getPath() const {
+    const fs::path& GmlFile::getPath() const {
         return path_;
     }
 
-    void GmlFile::setPath(const std::string& path) {
+    void GmlFile::setPath(const std::filesystem::path& path) {
         path_ = path;
         applyPath();
     }
@@ -52,8 +53,8 @@ namespace plateau::dataset {
     }
 
     std::string GmlFile::getAppearanceDirectoryPath() const {
-        const auto filename = fs::u8path(path_).filename().u8string();
-        auto appearance_path = fs::u8path(path_).parent_path().append("").u8string();
+        const auto filename = path_.filename().u8string();
+        auto appearance_path = path_.parent_path().append("").u8string();
         std::string current;
         int cnt = 0;
         for (const auto& character: filename) {
@@ -64,7 +65,7 @@ namespace plateau::dataset {
                     break;
             }
         }
-        appearance_path += "appearance";
+        appearance_path += u8"appearance";
         return appearance_path;
     }
 
@@ -72,7 +73,7 @@ namespace plateau::dataset {
         if (isMaxLodCalculated())
             return max_lod_;
 
-        auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
+        auto lods = LodSearcher::searchLodsInFile(path_);
         max_lod_ = lods.getMax();
         return max_lod_;
     }
@@ -88,7 +89,7 @@ namespace plateau::dataset {
     void GmlFile::applyPath() {
         is_local_ = checkLocal(path_);
 
-        const auto filename = fs::u8path(path_).filename().u8string();
+        const auto filename = path_.filename().u8string();
         std::vector<std::string> filename_parts;
         std::string current;
         current.reserve(filename.size());
@@ -205,7 +206,7 @@ namespace plateau::dataset {
 
         // TODO GMLファイルの全文をメモリにコピーするので重いです。LodSearcher::searchLOD の実装を参考にすると速くなりそうです。
         std::string loadFile(const fs::path& file_path) {
-            std::ifstream ifs(file_path.u8string());
+            std::ifstream ifs(file_path);
             if (!ifs) {
                 throw std::runtime_error(
                         "loadFile : Could not open file " + file_path.u8string());
@@ -240,35 +241,36 @@ namespace plateau::dataset {
         /**
          * fetch の準備として、パスを計算し、必要なディレクトリを作成します。
          **/
-        void prepareFetch(const std::string& gml_path, const std::string& destination_root_path,
-                          std::string& out_gml_relative_path_from_udx, std::string& out_destination_udx_path,
+        void prepareFetch(const fs::path& gml_path, const fs::path& destination_root_path,
+                          fs::path& out_gml_relative_path_from_udx, fs::path& out_destination_udx_path,
                           fs::path& out_gml_destination_path) {
-            const auto udx_path_len = gml_path.rfind("udx") + 3;
+            auto gml_path_str = gml_path.u8string();
+            const auto udx_path_len = gml_path_str.rfind(u8"udx") + 3;
             if (udx_path_len == std::string::npos) {
                 throw std::runtime_error("Invalid gml path. Could not find udx folder");
             }
 
-            const auto udx_path = gml_path.substr(0, udx_path_len);
-            out_gml_relative_path_from_udx = fs::relative(fs::u8path(gml_path).make_preferred(),
+            const auto udx_path = gml_path_str.substr(0, udx_path_len);
+            out_gml_relative_path_from_udx = fs::relative(fs::path(gml_path).make_preferred(),
                                                           fs::u8path(udx_path)).make_preferred().string();
             const auto root_folder_name = fs::u8path(udx_path).parent_path().filename().string();
-            auto destination_root = fs::u8path(destination_root_path);
+            auto destination_root = fs::path(destination_root_path);
             out_destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
-            out_gml_destination_path = fs::u8path(out_destination_udx_path);
-            out_gml_destination_path.append(out_gml_relative_path_from_udx);
+            out_gml_destination_path = fs::path(out_destination_udx_path);
+            out_gml_destination_path /= out_gml_relative_path_from_udx;
             fs::create_directories(out_gml_destination_path.parent_path());
         }
     } // fetch で使う無名関数
 
-    std::shared_ptr<GmlFile> GmlFile::fetch(const std::string& destination_root_path) const {
+    std::shared_ptr<GmlFile> GmlFile::fetch(const fs::path& destination_root_path) const {
         auto result = std::make_shared<GmlFile>(std::string(""));
         fetch(destination_root_path, *result);
         return result;
     }
 
-    void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
-        auto gml_relative_path_from_udx = std::string();
-        auto destination_udx_path = std::string();
+    void GmlFile::fetch(const fs::path& destination_root_path, GmlFile& copied_gml_file) const {
+        auto gml_relative_path_from_udx = fs::path();
+        auto destination_udx_path = fs::path();
         auto gml_destination_path = fs::path();
         prepareFetch(getPath(), destination_root_path, gml_relative_path_from_udx, destination_udx_path,
                      gml_destination_path);
@@ -281,64 +283,59 @@ namespace plateau::dataset {
         }
     }
 
-    void GmlFile::fetchLocal(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+    void GmlFile::fetchLocal(const fs::path& gml_relative_path_from_udx, const fs::path& destination_udx_path,
                              const fs::path& gml_destination_path, GmlFile& copied_gml_file) const {
         const auto& gml_file_path = getPath();
         auto destination_dir = gml_destination_path.parent_path();
         fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
-        copied_gml_file.setPath(gml_destination_path.u8string());
+        copied_gml_file.setPath(gml_destination_path);
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
         const auto codelist_paths = copied_gml_file.searchAllCodelistPathsInGML();
         const auto image_paths = copied_gml_file.searchAllImagePathsInGML();
 
         // テクスチャとコードリストファイルをコピーします。
-        const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
-        const auto relative_gml_dir_path = fs::u8path(gml_relative_path_from_udx).parent_path().u8string();
-        const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
+        const auto gml_dir_path = gml_file_path.parent_path();
+        const auto relative_gml_dir_path = gml_relative_path_from_udx.parent_path().u8string();
+        const auto app_destination_path = fs::path(destination_udx_path) / relative_gml_dir_path;
         auto path_to_download = image_paths;
         path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
         copyFiles(path_to_download, gml_dir_path, app_destination_path);
     }
 
-    void GmlFile::fetchServer(const std::string& gml_relative_path_from_udx, const std::string& destination_udx_path,
+    void GmlFile::fetchServer(const fs::path& gml_relative_path_from_udx, const fs::path& destination_udx_path,
                               const fs::path& gml_destination_path, GmlFile& copied_gml_file) const {
         const auto& gml_file_path = getPath();
         auto destination_dir = gml_destination_path.parent_path();
         // gmlファイルをダウンロードします。
         auto client = Client();
-        client.download(destination_dir.u8string(), path_);
+        client.download(destination_dir, path_);
         auto downloaded_path = destination_dir;
-        downloaded_path /= fs::u8path(gml_file_path).filename();
-        copied_gml_file.setPath(downloaded_path.u8string());
+        downloaded_path /= gml_file_path.filename();
+        copied_gml_file.setPath(downloaded_path);
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
         const auto codelist_paths = copied_gml_file.searchAllCodelistPathsInGML();
         const auto image_paths = copied_gml_file.searchAllImagePathsInGML();
 
         // テクスチャとコードリストファイルをダウンロードします。
-        const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
-        const auto relative_gml_dir_path = fs::u8path(gml_relative_path_from_udx).parent_path().u8string();
-        const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
+        const auto gml_dir_path = gml_file_path.parent_path();
+        const auto relative_gml_dir_path = gml_relative_path_from_udx.parent_path().u8string();
+        const auto app_destination_path = fs::path(destination_udx_path) / relative_gml_dir_path;
         auto path_to_download = image_paths;
         path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
 
-        auto server_url = path_.substr(0, path_.substr(8).find("/") + 8);
+        auto path_str = path_.u8string();
+        auto server_url = path_str.substr(0, path_str.substr(8).find("/") + 8);
 
         for (const auto& relative_path: path_to_download) {
             auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
             auto path = (fs::path(destination_dir) / relative_path).make_preferred();
-            auto dest_root = fs::u8path(destination_udx_path).parent_path().parent_path().make_preferred();
+            auto dest_root = destination_udx_path.parent_path().parent_path().make_preferred();
             auto path_from_dest_root = fs::relative(path, dest_root).u8string();
+            auto download_path = (fs::path(server_url) / path_from_dest_root).u8string();
 
-            // '\\' を '/' に置換
-            auto pos = path_from_dest_root.find("\\");
-            while(pos != std::string::npos){
-                path_from_dest_root.replace(pos, 1, "/");
-                pos = path_from_dest_root.find("\\", pos + 1);
-            }
-
-            client.download(full_path.parent_path().u8string(), server_url + "/" + path_from_dest_root);
+            client.download(full_path.parent_path(), download_path);
         }
     }
 

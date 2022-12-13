@@ -1,5 +1,4 @@
 #include <plateau/network/client.h>
-#include <filesystem>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../3rdparty/cpp-httplib/httplib.h"
@@ -88,15 +87,25 @@ namespace plateau::network {
         return dataset_files;
     }
 
-    std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
-        auto gml_file_name = fs::u8path(url_utf8).filename().string();
-        auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
-        fs::create_directories(fs::u8path(destination_directory_utf8));
+    fs::path Client::download(const fs::path& destination_directory, const fs::path& url) const {
+        auto gml_file = url.filename();
+        auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
+        fs::create_directories(destination_directory);
 
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
-        auto res = cli.Get(path);
+        auto url_str = url.u8string();
+
+        // '\\' を '/' に置換
+        auto pos = url_str.find(u8"\\");
+        while(pos != std::string::npos){
+            url_str.replace(pos, 1, u8"/");
+            pos = url_str.find(u8"\\", pos + 1);
+        }
+
+        auto path_after_domain = url_str.substr(url_str.substr(8).find("/") + 8);
+        std::cout << "downloading " << path_after_domain << std::endl;
+        auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
             content_type.find("text") != std::string::npos ||
@@ -104,7 +113,7 @@ namespace plateau::network {
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
-            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
+            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path.u8string());
         }
         if (res && res->status == 200) {
             const auto& body = res->body;
