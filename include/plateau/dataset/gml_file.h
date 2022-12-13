@@ -3,6 +3,7 @@
 #include <libplateau_api.h>
 #include <plateau/dataset/mesh_code.h>
 #include <set>
+#include "plateau/network/client.h"
 
 namespace plateau::dataset {
 

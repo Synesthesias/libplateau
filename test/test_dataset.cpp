@@ -8,6 +8,7 @@
 
 using namespace citygml;
 using namespace plateau::dataset;
+using namespace plateau::network;
 namespace fs = std::filesystem;
 
 class DatasetTest : public ::testing::Test {
@@ -66,7 +67,7 @@ namespace {
     }
 }
 
-TEST_F(DatasetTest, fetch_generates_files) {
+TEST_F(DatasetTest, fetch_local_generates_files) {
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
     fs::remove_all(temp_test_dir);
@@ -78,7 +79,7 @@ TEST_F(DatasetTest, fetch_generates_files) {
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
     //    auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
     std::cout << gml_path << std::endl;
-    ASSERT_TRUE(fs::exists(gml_path));
+    ASSERT_TRUE(fs::exists(gml_path)) << gml_path << "does not exist.";
 
     // codelistsファイルがコピー先に存在します。
     auto codelists_dir = fs::path(temp_test_dir).append("data/codelists");
@@ -109,6 +110,48 @@ TEST_F(DatasetTest, fetch_generates_files) {
     checkFilesExist(images, image_dir);
 
     fs::remove_all(temp_test_dir);
+}
+
+TEST_F(DatasetTest, fetch_server_generates_files) {
+    // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
+    auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
+    fs::remove_all(temp_test_dir);
+    const auto& test_gml_info = GmlFile(std::string(Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml"));
+    test_gml_info.fetch(temp_test_dir);
+    // gmlファイルがコピー先に存在します。
+    auto bldg_dir = fs::path(temp_test_dir).append("13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_2_op.gml").make_preferred();
+//        auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
+    ASSERT_TRUE(fs::exists(gml_path)) << fs::absolute(gml_path) << " does not exist.";
+
+    // codelistsファイルがコピー先に存在します。
+    auto codelists_dir = fs::path(temp_test_dir).append("13100_tokyo23-ku_2020_citygml_3_2_op/codelists");
+    std::vector<std::string> codelists = {
+            "Common_districtsAndZonesType.xml",
+            "Common_prefecture.xml",
+            "Common_localPublicAuthorities.xml",
+            "extendedAttribute_key.xml",
+            "extendedAttribute_key2.xml",
+            "extendedAttribute_key106.xml",
+    };
+    checkFilesExist(codelists, codelists_dir);
+
+    // 画像ファイルがコピー先に存在します。
+    auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
+    std::vector<std::string> images = {
+            "hnap0876.jpg",
+            "hnap0878.jpg",
+            "hnap0285.jpg",
+            "hnap0276.jpg",
+            "hnap0275.jpg",
+            "hnap0034.jpg",
+            "hnap0286.jpg",
+            "hnap0279.jpg"
+
+    };
+    checkFilesExist(images, image_dir);
+
+//    fs::remove_all(temp_test_dir);
 }
 
 namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。

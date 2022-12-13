@@ -91,6 +91,7 @@ namespace plateau::network {
     std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
         auto gml_file_name = fs::u8path(url_utf8).filename().string();
         auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
+        fs::create_directories(fs::u8path(destination_directory_utf8));
 
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);

@@ -21,6 +21,7 @@ namespace {
 
 namespace plateau::dataset {
 
+    using namespace plateau::network;
     namespace fs = std::filesystem;
 
     GmlFile::GmlFile(const std::string& path)
@@ -263,27 +264,44 @@ namespace plateau::dataset {
         gml_destination_path.append(gml_relative_path);
         fs::create_directories(gml_destination_path.parent_path());
         const auto& gml_file_path = getPath();
+        auto destination_dir = gml_destination_path.parent_path();
         try {
-            if (is_local_)
+            if (is_local_) {
                 fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
-            else
-                plateau::network::Client().download(gml_destination_path.parent_path().u8string(), path_);
+                copied_gml_file.setPath(gml_destination_path.u8string());
+            }
+            else {
+                // gmlファイルをダウンロードします。
+                auto client = Client();
+                client.download(destination_dir.u8string(), path_);
+                auto downloaded_path = destination_dir;
+                downloaded_path /= fs::u8path(gml_file_path).filename();
+                copied_gml_file.setPath(downloaded_path.u8string());
+            }
         }
         catch (...) {
         }
 
         // GMLファイルを読み込み、関連するテクスチャパスとコードリストパスを取得します。
-        const auto codelist_paths = searchAllCodelistPathsInGML();
-        const auto image_paths = searchAllImagePathsInGML();
+        const auto codelist_paths = copied_gml_file.searchAllCodelistPathsInGML();
+        const auto image_paths = copied_gml_file.searchAllImagePathsInGML();
         
-        // テクスチャとコードリストファイルをコピーします。
+        // テクスチャとコードリストファイルをコピー or ダウンロードします。
         const auto gml_dir_path = fs::u8path(gml_file_path).parent_path();
         const auto relative_gml_dir_path = fs::u8path(gml_relative_path).parent_path().u8string();
         const auto app_destination_path = fs::u8path(destination_udx_path).append(relative_gml_dir_path);
-        copyFiles(image_paths, gml_dir_path, app_destination_path);
-        copyFiles(codelist_paths, gml_dir_path, app_destination_path);
+        auto path_to_download = image_paths;
+        path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
+        if(is_local_){
+            copyFiles(path_to_download, gml_dir_path, app_destination_path);
+        }else{
+            auto client = Client();
+            for(const auto& relative_path : path_to_download){
+                auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
+                client.download(full_path.parent_path().u8string(), full_path.filename().u8string());
+            }
+        }
 
-        copied_gml_file.setPath(gml_destination_path.u8string());
     }
 
     std::set<std::string> GmlFile::searchAllCodelistPathsInGML() const {
