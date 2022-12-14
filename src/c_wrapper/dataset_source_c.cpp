@@ -9,8 +9,8 @@ extern "C" {
 
     DLL_2_ARG_FUNC(plateau_create_dataset_source_local,
                    DatasetSource** out_dataset_source,
-                   const char* const source_path_utf8,
-                   *out_dataset_source = new DatasetSource(DatasetSource::createLocal(source_path_utf8)) )
+                   const char* const source_path,
+                   *out_dataset_source = new DatasetSource(DatasetSource::createLocal(source_path)) )
 
     DLL_3_ARG_FUNC(plateau_create_dataset_source_server,
                    DatasetSource** out_new_dataset_source,

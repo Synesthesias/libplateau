@@ -25,22 +25,22 @@ namespace {
 
 namespace plateau::dataset {
 
-    GmlFile::GmlFile(std::string path_utf8)
-            : path_utf8_(std::move(path_utf8)), is_valid_(false), is_local_(true), max_lod_(-1) {
+    GmlFile::GmlFile(const std::string& path) // NOLINT
+            : path_(path), is_valid_(false), is_local_(true), max_lod_(-1) {
         applyPath();
     }
 
-    GmlFile::GmlFile(std::string path_utf8, const int max_lod)
-            : path_utf8_(std::move(path_utf8)), is_valid_(false), is_local_(true), max_lod_(max_lod) {
+    GmlFile::GmlFile(const std::string& path, const int max_lod) // NOLINT
+            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
         applyPath();
     }
 
     const std::string& GmlFile::getPath() const {
-        return path_utf8_;
+        return path_;
     }
 
-    void GmlFile::setPath(const std::string& path_utf8) {
-        path_utf8_ = path_utf8;
+    void GmlFile::setPath(const std::string& path) {
+        path_ = path;
         applyPath();
     }
 
@@ -53,8 +53,8 @@ namespace plateau::dataset {
     }
 
     std::string GmlFile::getAppearanceDirectoryPath() const {
-        const auto filename = fs::u8path(path_utf8_).filename().u8string();
-        auto appearance_path = fs::u8path(path_utf8_).parent_path().append("").u8string();
+        const auto filename = fs::u8path(path_).filename().u8string();
+        auto appearance_path = fs::u8path(path_).parent_path().append("").u8string();
         std::string current;
         int cnt = 0;
         for (const auto& character: filename) {
@@ -73,7 +73,7 @@ namespace plateau::dataset {
         if (isMaxLodCalculated())
             return max_lod_;
 
-        auto lods = LodSearcher::searchLodsInFile(path_utf8_);
+        auto lods = LodSearcher::searchLodsInFile(path_);
         max_lod_ = lods.getMax();
         return max_lod_;
     }
@@ -87,7 +87,7 @@ namespace plateau::dataset {
     }
 
     void GmlFile::applyPath() {
-        auto path = fs::u8path(path_utf8_);
+        auto path = fs::u8path(path_);
         is_local_ = checkLocal(path);
 
         const auto filename = path.filename().u8string();
@@ -152,7 +152,7 @@ namespace plateau::dataset {
                 // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
                 search_pos = std::min(str.cend(), str_begin + (long long) hint_matched_pos + (long long) hint.size());
             }
-
+            return false;
         }
 
         /**
@@ -322,17 +322,17 @@ namespace plateau::dataset {
         return result;
     }
 
-    void GmlFile::fetch(const std::string& destination_root_path_utf8, GmlFile& copied_gml_file) const {
+    void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
         auto gml_relative_path_from_udx = fs::path();
         auto destination_udx_path = fs::path();
         auto gml_destination_path = fs::path();
-        prepareFetch(fs::u8path(getPath()), fs::u8path(destination_root_path_utf8), gml_relative_path_from_udx, destination_udx_path,
+        prepareFetch(fs::u8path(getPath()), fs::u8path(destination_root_path), gml_relative_path_from_udx, destination_udx_path,
                      gml_destination_path);
         if (is_local_) {
-            fetchLocal(fs::u8path(path_utf8_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
+            fetchLocal(fs::u8path(path_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
                        copied_gml_file);
         } else {
-            fetchServer(fs::u8path(path_utf8_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
+            fetchServer(fs::u8path(path_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
                         copied_gml_file);
         }
     }

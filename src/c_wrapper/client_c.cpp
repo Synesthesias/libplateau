@@ -27,10 +27,10 @@ DLL_STRING_VALUE_FUNC(plateau_client_get_api_server_url,
 
 DLL_4_ARG_FUNC(plateau_client_download,
                const Client* const client,
-               const char* const destination_directory_utf8,
-               const char* const url_utf8,
+               const char* const destination_directory,
+               const char* const url,
                std::string* const out_downloaded_path,
-               *out_downloaded_path = client->download(destination_directory_utf8, url_utf8) )
+               *out_downloaded_path = client->download(destination_directory, url) )
 
 DLL_1_ARG_FUNC(plateau_client_get_default_url,
                std::string* out_default_url,

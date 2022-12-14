@@ -146,7 +146,7 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 - `*` `&` の位置は左寄せ (`SomeType *foobar` ではなく `SomeType* foobar`)
 - Unreal Engine で利用する都合上、ヘッダーファイルで `std::filesystem` は利用しない
   - .cppファイル内での利用は可
-  - パスの受け渡しは string(中身はutf8形式) で行い、`.cpp`内で `auto path = std::filesystem::u8path(path_str_utf8)` で path に直すのが良い
+  - パスの受け渡しは string(中身はutf8形式) で行い、`.cpp`内で `auto path = std::filesystem::u8path(path_str)` で path に直すのが良い
 
 # ライセンス
 - libplateau本体

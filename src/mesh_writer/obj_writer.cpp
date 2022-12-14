@@ -79,11 +79,11 @@ namespace {
 }
 
 namespace plateau::meshWriter {
-    bool ObjWriter::write(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Model& model) {
+    bool ObjWriter::write(const std::string& obj_file_path, const plateau::polygonMesh::Model& model) {
         // 内部状態初期化
         required_materials_.clear();
 
-        std::filesystem::path path = std::filesystem::u8path(obj_file_path_utf8);
+        std::filesystem::path path = std::filesystem::u8path(obj_file_path);
         if (path.is_relative()) {
             auto current_path = std::filesystem::current_path();
             current_path /= path;
@@ -100,9 +100,9 @@ namespace plateau::meshWriter {
             // ファイル名設定
             std::stringstream oss;
             oss << "_" << root_node.getName() << ".obj";
-            const auto filename_without_ext = fs::u8path(obj_file_path_utf8).filename().replace_extension("").u8string();
+            const auto filename_without_ext = fs::u8path(obj_file_path).filename().replace_extension("").u8string();
             const auto& file_path =
-                fs::u8path(obj_file_path_utf8)
+                fs::u8path(obj_file_path)
                 .parent_path()
                 .append(filename_without_ext + oss.str())
                 .u8string();
@@ -120,15 +120,15 @@ namespace plateau::meshWriter {
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path_utf8, const plateau::polygonMesh::Node& node) {
-        auto ofs = std::ofstream(fs::u8path(obj_file_path_utf8));
+    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Node& node) {
+        auto ofs = std::ofstream(fs::u8path(obj_file_path));
         if (!ofs.is_open()) {
-            throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path_utf8);
+            throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path);
         }
         ofs << std::fixed << std::setprecision(6);
 
         // MTL参照
-        const auto mtl_file_name = fs::u8path(obj_file_path_utf8).filename().replace_extension(".mtl").string();
+        const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
         writeCityObjectRecursive(ofs, node);
@@ -239,8 +239,8 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeMtl(const std::string& obj_file_path_utf8) {
-        const auto mtl_file_path = fs::u8path(obj_file_path_utf8).replace_extension(".mtl");
+    void ObjWriter::writeMtl(const std::string& obj_file_path) {
+        const auto mtl_file_path = fs::u8path(obj_file_path).replace_extension(".mtl");
         auto mtl_ofs = std::ofstream(mtl_file_path);
         if (!mtl_ofs.is_open()) {
             throw std::runtime_error("Failed to open mtl file: " + mtl_file_path.u8string());

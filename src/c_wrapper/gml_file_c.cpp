@@ -29,15 +29,15 @@ extern "C" {
 
     DLL_2_ARG_FUNC(plateau_gml_file_get_path,
                    GmlFile* gml_file,
-                   std::string* out_path_utf8,
-                   *out_path_utf8 = gml_file->getPath())
+                   std::string* out_path,
+                   *out_path = gml_file->getPath())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_set_path(
             GmlFile* gml_file_info,
-            char* path_utf8
+            char* path
     ) {
         API_TRY {
-            gml_file_info->setPath(std::string(path_utf8));
+            gml_file_info->setPath(std::string(path));
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

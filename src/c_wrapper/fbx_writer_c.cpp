@@ -6,9 +6,9 @@ using namespace plateau::meshWriter;
 using namespace plateau::polygonMesh;
 extern "C" {
 DLL_4_ARG_FUNC(plateau_fbx_writer_write,
-               const char* const fbx_file_path_utf8,
+               const char* const fbx_file_path,
                const Model* const model,
                FbxWriteOptions options,
                bool* out_succeed,
-               *out_succeed = FbxWriter().write(fbx_file_path_utf8, *model, options))
+               *out_succeed = FbxWriter().write(fbx_file_path, *model, options))
 }
