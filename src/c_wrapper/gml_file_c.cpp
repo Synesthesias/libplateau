@@ -1,11 +1,12 @@
 #include "libplateau_c.h"
 
 #include <plateau/dataset/i_dataset_accessor.h>
-
+#include <filesystem>
 #include "citygml/address.h"
 
 using namespace libplateau;
 using namespace plateau::dataset;
+namespace fs = std::filesystem;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_gml_file(
@@ -51,13 +52,13 @@ extern "C" {
                    MeshCode,
                    handle->getMeshCode())
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch_local(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
             const GmlFile* const gml_file_info,
             char* destination_root_path_chars,
             GmlFile* const out_gml_file_info
     ) {
         API_TRY {
-            const auto destination_root_path = std::string(destination_root_path_chars);
+            const auto destination_root_path = fs::u8path(std::string(destination_root_path_chars));
             gml_file_info->fetch(destination_root_path, *out_gml_file_info);
             return APIResult::Success;
         } API_CATCH;

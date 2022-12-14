@@ -114,8 +114,9 @@ namespace PLATEAU.Dataset
         {
             ThrowIfDisposed();
             var resultGml = Create("");
-            var apiResult = NativeMethods.plateau_gml_file_fetch_local(
-                Handle, destinationRootPath, resultGml.Handle
+            var destinationRootPathUtf8 = DLLUtil.StrToUtf8Bytes(destinationRootPath);
+            var apiResult = NativeMethods.plateau_gml_file_fetch(
+                Handle, destinationRootPathUtf8, resultGml.Handle
             );
             DLLUtil.CheckDllError(apiResult);
             resultGml.Path = resultGml.Path.Replace('\\', '/');
