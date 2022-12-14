@@ -34,10 +34,10 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_set_path(
             GmlFile* gml_file_info,
-            char* path
+            char* path_utf8
     ) {
         API_TRY {
-            gml_file_info->setPath(std::string(path));
+            gml_file_info->setPath(std::string(path_utf8));
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

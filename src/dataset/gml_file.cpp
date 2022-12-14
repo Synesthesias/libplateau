@@ -349,7 +349,7 @@ namespace plateau::dataset {
     }
 
     std::set<std::string> GmlFile::searchAllImagePathsInGML() const {
-        const auto gml_content = loadFile(fs::u8path(getPath()));
+        const auto gml_content = loadFile(fs::u8path(getPath()) );
         // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
         static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
         // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
