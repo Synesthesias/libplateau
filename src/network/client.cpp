@@ -106,7 +106,6 @@ namespace plateau::network {
         }
 
         auto path_after_domain = url_str.substr(url_str.substr(8).find('/') + 8);
-        std::cout << "downloading " << path_after_domain << std::endl;
         auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
