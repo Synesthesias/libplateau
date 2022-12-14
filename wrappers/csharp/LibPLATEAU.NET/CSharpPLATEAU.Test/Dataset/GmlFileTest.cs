@@ -46,7 +46,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Fetch_Local_Copies_Relative_Files()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
             // パスに日本語名を含むケースで動作確認します。
             var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
@@ -73,7 +73,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMaxLodLocal()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
             using var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
@@ -84,7 +84,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMaxLodServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
@@ -96,7 +96,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void SearchCodelistPathsAndTexturePaths()
         {
-            using var sourceLocal = DatasetSource.Create(false, "data");
+            using var sourceLocal = DatasetSource.Create(false, "data", "");
 
             using var accessor = sourceLocal.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
@@ -130,7 +130,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Fetch_Server_Downloads_Files()
         {
-            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
+            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "", "23ku"));
             using var accessor = source.Accessor;
             // パスに日本語名を含むケースでテストします。
             var testDir = Directory.CreateDirectory("テスト用一時フォルダ");

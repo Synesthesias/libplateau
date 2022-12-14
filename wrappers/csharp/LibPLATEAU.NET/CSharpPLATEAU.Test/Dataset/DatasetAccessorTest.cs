@@ -16,7 +16,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
             Assert.AreEqual(1, accessor.MeshCodes.Length);
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
@@ -25,7 +25,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodeServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(3, meshCodes.Length);
@@ -35,7 +35,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data");
+            using var datasetSource = DatasetSource.Create(false, "data", "");
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -49,7 +49,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true,  "", "23ku");
             using var accessor = source.Accessor;
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
@@ -60,7 +60,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data");
+            using var datasetSource = DatasetSource.Create(false, "data", "");
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
             var expected = PredefinedCityModelPackage.Building;
@@ -70,7 +70,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, buildings.Length);
@@ -81,21 +81,21 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void CalcCenterPointServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data");
+            using var datasetSource = DatasetSource.Create(false, "data", "");
             using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
@@ -106,7 +106,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodServer()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmls.At(1).GetMaxLod());
@@ -115,7 +115,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -126,7 +126,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Server()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -137,7 +137,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles_Server_Cache_Works()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             var stopwatch = Stopwatch.StartNew();
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
