@@ -144,6 +144,9 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 - ファイルの末尾は改行
 - 何かの個数を取得する関数名は `get(単数形)Count`
 - `*` `&` の位置は左寄せ (`SomeType *foobar` ではなく `SomeType* foobar`)
+- Unreal Engine で利用する都合上、ヘッダーファイルで `std::filesystem` は利用しない
+  - .cppファイル内での利用は可
+  - パスの受け渡しは string(中身はutf8形式) で行い、`.cpp`内で `auto path = std::filesystem::u8path(path_str)` で path に直すのが良い
 
 # ライセンス
 - libplateau本体

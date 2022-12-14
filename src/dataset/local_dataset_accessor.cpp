@@ -158,7 +158,7 @@ namespace plateau::dataset {
         return result;
     }
 
-    const std::string& LocalDatasetAccessor::getGmlFilePath(PredefinedCityModelPackage package, int index) {
+    std::string LocalDatasetAccessor::getGmlFilePath(PredefinedCityModelPackage package, int index) {
         return getGmlFile(package, index).getPath();
     }
 

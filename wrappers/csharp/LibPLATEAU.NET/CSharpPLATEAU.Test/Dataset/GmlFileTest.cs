@@ -46,9 +46,10 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Fetch_Local_Copies_Relative_Files()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
-            var testDir = Directory.CreateDirectory("temp_test_dir");
+            // パスに日本語名を含むケースで動作確認します。
+            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             foreach (var gml in gmls)
             {
@@ -63,31 +64,41 @@ namespace PLATEAU.Test.Dataset
             };
             foreach (string filePath in shouldExists)
             {
-                string resultPath = "temp_test_dir/data/" + filePath;
+                string resultPath = "テスト用一時フォルダ/data/" + filePath;
                 Assert.IsTrue(File.Exists(resultPath), $"{resultPath} does not exist");
             }
             Directory.Delete(testDir.FullName, true);
         }
 
         [TestMethod]
-        public void GetMaxLod()
+        public void GetMaxLodLocal()
         {
-            // TODO Serverのときは取得できるのか？
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
-            var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
+            using var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(2, gmls.At(0).GetMaxLod());
-
-            // TODO dispose filtered
         }
+
+        [TestMethod]
+        public void GetMaxLodServer()
+        {
+            using var source = DatasetSource.Create(true, "", "23ku");
+            using var accessor = source.Accessor;
+            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse("53392642") });
+            var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
+            Assert.AreEqual(1, gmls.Length);
+            Assert.AreEqual(1, gmls.At(0).GetMaxLod());
+        }
+
 
         [TestMethod]
         public void SearchCodelistPathsAndTexturePaths()
         {
-            using var source = DatasetSource.Create(false, "data");
-            using var accessor = source.Accessor;
+            using var sourceLocal = DatasetSource.Create(false, "data", "");
+
+            using var accessor = sourceLocal.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
             var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
@@ -119,16 +130,23 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Fetch_Server_Downloads_Files()
         {
-            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "23ku"));
+            using var source = DatasetSource.Create(new DatasetSourceConfig(true, "", "23ku"));
             using var accessor = source.Accessor;
-            var testDir = Directory.CreateDirectory("temp_test_dir");
+            // パスに日本語名を含むケースでテストします。
+            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
+            
+            if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
+            
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Console.WriteLine(testDir.FullName);
-            foreach(var gml in gmls)
-            {
-                gml.Fetch(testDir.FullName);
-            }
-            
+            var fetchedGml = gmls.At(0).Fetch(testDir.FullName);
+            bool textureExist = File.Exists(Path.Combine(testDir.FullName,
+                "13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_appearance/hnap0034.jpg"));
+            bool codelistExist = File.Exists(Path.Combine(testDir.FullName,
+                "13100_tokyo23-ku_2020_citygml_3_2_op/codelists/Common_prefecture.xml"));
+            Assert.IsTrue(textureExist);
+            Assert.IsTrue(codelistExist);
+
             Directory.Delete(testDir.FullName, true);
         }
     }

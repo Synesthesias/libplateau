@@ -1,5 +1,4 @@
 #include <plateau/network/client.h>
-#include <filesystem>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../3rdparty/cpp-httplib/httplib.h"
@@ -77,7 +76,7 @@ namespace plateau::network {
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
                 for (const auto& file_item : file_items) {
                     DatasetFileItem dataset_file;
-                    dataset_file.max_lod = std::stof(std::string(file_item["maxLod"]));
+                    dataset_file.max_lod = (int)std::stof(std::string(file_item["maxLod"]));
                     dataset_file.mesh_code = file_item["code"];
                     dataset_file.url = file_item["url"];
 
@@ -88,14 +87,26 @@ namespace plateau::network {
         return dataset_files;
     }
 
-    std::string Client::download(const std::string& destination_directory_utf8, const std::string& url_utf8) const {
-        auto gml_file_name = fs::u8path(url_utf8).filename().string();
-        auto gml_file_path = fs::absolute(fs::u8path(destination_directory_utf8) / gml_file_name).u8string();
+    std::string Client::download(const std::string& destination_directory_path, const std::string& url_str_arg) const {
+        auto url_str = url_str_arg;
+        auto destination_directory = fs::u8path(destination_directory_path);
+        auto url = fs::u8path(url_str);
+        auto gml_file = url.filename();
+        auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
+        fs::create_directories(destination_directory);
 
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto path = url_utf8.substr(url_utf8.substr(8).find("/") + 8);
-        auto res = cli.Get(path);
+
+        // '\\' を '/' に置換
+        auto pos = url_str.find(u8'\\');
+        while(pos != std::string::npos){
+            url_str.replace(pos, 1, u8"/");
+            pos = url_str.find(u8'\\', pos + 1);
+        }
+
+        auto path_after_domain = url_str.substr(url_str.substr(8).find('/') + 8);
+        auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
             content_type.find("text") != std::string::npos ||
@@ -103,13 +114,13 @@ namespace plateau::network {
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
-            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path);
+            throw std::logic_error(std::string("Failed to open stream of gml path : ") + gml_file_path.u8string());
         }
         if (res && res->status == 200) {
             const auto& body = res->body;
             ofs.write(body.c_str(), body.size());
         }
-        return gml_file_path;
+        return gml_file_path.u8string();
     }
 
     std::string Client::getDefaultServerUrl() {

@@ -8,11 +8,12 @@
 
 using namespace citygml;
 using namespace plateau::dataset;
+using namespace plateau::network;
 namespace fs = std::filesystem;
 
 class DatasetTest : public ::testing::Test {
 protected:
-    virtual void SetUp() {
+    void SetUp() override {
         source_path_ = "../data";
         local_dataset_accessor = DatasetSource::createLocal(source_path_).getAccessor();
     }
@@ -40,7 +41,7 @@ protected:
     std::shared_ptr<IDatasetAccessor> local_dataset_accessor;
 };
 
-TEST_F(DatasetTest, getAllGmls) {
+TEST_F(DatasetTest, getAllGmls) { // NOLINT
     const std::vector expected_bldg_files =
     { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
     std::vector<std::string> actual_files;
@@ -52,7 +53,7 @@ TEST_F(DatasetTest, getAllGmls) {
     checkVectors(expected_bldg_files, actual_files);
 }
 
-TEST_F(DatasetTest, getAllMeshCodes) {
+TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
     const auto& mesh_codes = local_dataset_accessor->getMeshCodes();
     ASSERT_EQ(mesh_codes.size(), 1);
 }
@@ -62,23 +63,24 @@ namespace {
         for (const auto& relative_path : file_relative_paths) {
             auto path = fs::path(base_path).append(relative_path).make_preferred();
             ASSERT_TRUE(fs::exists(path)) << path << " does not exist";
+            ASSERT_TRUE(fs::file_size(path) > 0) << "downloaded file size is zero : " << path;
         }
     }
 }
 
-TEST_F(DatasetTest, fetch_generates_files) {
+TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
-    auto temp_test_dir = std::filesystem::path("../temp_test_dir").string();
+    // パスに日本語を含むケースで動作確認します。
+    auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     //    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFile(std::string("../data/udx/bldg/53392642_bldg_6697_op2.gml"));
-    test_gml_info.fetch(temp_test_dir);
+    test_gml_info.fetch(temp_test_dir.u8string());
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
     //    auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
-    std::cout << gml_path << std::endl;
-    ASSERT_TRUE(fs::exists(gml_path));
+    ASSERT_TRUE(fs::exists(gml_path)) << gml_path << "does not exist.";
 
     // codelistsファイルがコピー先に存在します。
     auto codelists_dir = fs::path(temp_test_dir).append("data/codelists");
@@ -111,6 +113,49 @@ TEST_F(DatasetTest, fetch_generates_files) {
     fs::remove_all(temp_test_dir);
 }
 
+TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
+    // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
+    // パスに日本語を含むケースで動作確認します。
+    auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
+    fs::remove_all(temp_test_dir);
+    const auto& test_gml_info = GmlFile(std::string(Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml"));
+    test_gml_info.fetch(temp_test_dir.u8string());
+    // gmlファイルがコピー先に存在します。
+    auto bldg_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append(u8"53392642_bldg_6697_2_op.gml").make_preferred();
+//        auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
+    ASSERT_TRUE(fs::exists(gml_path)) << fs::absolute(gml_path) << " does not exist.";
+
+    // codelistsファイルがコピー先に存在します。
+    auto codelists_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/codelists");
+    std::vector<std::string> codelists = {
+            "Common_districtsAndZonesType.xml",
+            "Common_prefecture.xml",
+            "Common_localPublicAuthorities.xml",
+            "extendedAttribute_key.xml",
+            "extendedAttribute_key2.xml",
+            "extendedAttribute_key106.xml",
+    };
+    checkFilesExist(codelists, codelists_dir);
+
+    // 画像ファイルがコピー先に存在します。
+    auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
+    std::vector<std::string> images = {
+            "hnap0876.jpg",
+            "hnap0878.jpg",
+            "hnap0285.jpg",
+            "hnap0276.jpg",
+            "hnap0275.jpg",
+            "hnap0034.jpg",
+            "hnap0286.jpg",
+            "hnap0279.jpg"
+
+    };
+    checkFilesExist(images, image_dir);
+
+    fs::remove_all(temp_test_dir);
+}
+
 namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。
     bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
                                                      const IDatasetAccessor& udx_file_collection,
@@ -128,7 +173,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
     }
 } // テスト filterByMeshCodes で使う無名名前空間の関数です。
 
-TEST_F(DatasetTest, filter_by_mesh_codes) {
+TEST_F(DatasetTest, filter_by_mesh_codes) { // NOLINT
     ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", *local_dataset_accessor,
         PredefinedCityModelPackage::Building));
     ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", *local_dataset_accessor,

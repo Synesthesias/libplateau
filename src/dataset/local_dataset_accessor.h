@@ -41,7 +41,7 @@ namespace plateau::dataset {
          */
         PredefinedCityModelPackage getPackages() override;
 
-        const std::string& getGmlFilePath(PredefinedCityModelPackage package, int index);
+        std::string getGmlFilePath(PredefinedCityModelPackage package, int index);
         const GmlFile& getGmlFile(PredefinedCityModelPackage package, int index);
 
         /**

@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Get_Accessor_From_Local_DataSource_Returns_Accessor()
         {
-            using var source = DatasetSource.Create(false, "data");
+            using var source = DatasetSource.Create(false, "data", "");
             using var accessor = source.Accessor;
             Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
@@ -18,7 +18,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Accessor_From_Server_Works()
         {
-            using var source = DatasetSource.Create(true, "23ku");
+            using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             Assert.AreEqual("53392642", accessor.MeshCodes.At(1).ToString());
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);

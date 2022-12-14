@@ -107,7 +107,7 @@ namespace plateau::meshWriter {
     GltfWriter::~GltfWriter() {
     }
 
-    bool GltfWriter::write(const std::string& gltf_file_path_utf8, const plateau::polygonMesh::Model& model, GltfWriteOptions options) {
+    bool GltfWriter::write(const std::string& gltf_file_path, const plateau::polygonMesh::Model& model, GltfWriteOptions options) {
 
         impl->required_materials_.clear();
         impl->node_name_ = "";
@@ -118,7 +118,7 @@ namespace plateau::meshWriter {
         impl->material_ids_.clear();
         impl->options_ = options;
 
-        std::filesystem::path path = std::filesystem::u8path(gltf_file_path_utf8);
+        std::filesystem::path path = std::filesystem::u8path(gltf_file_path);
         if (path.is_relative()) {
             auto pathCurrent = std::filesystem::current_path();
             pathCurrent /= path;

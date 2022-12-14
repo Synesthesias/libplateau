@@ -12,4 +12,7 @@ namespace plateau::dataset {
         ASSERT_EQ("bldg", info.getFeatureType());
         ASSERT_EQ(PredefinedCityModelPackage::Building, UdxSubFolder::getPackage("bldg"));
     }
+
+    // fetch のテストは test_dataset.cpp にあります。
+
 }
