@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <plateau/dataset/dataset_source.h>
-
+#include <filesystem>
 #include <memory>
 
 #include "plateau/network/client.h"

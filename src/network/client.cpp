@@ -87,7 +87,9 @@ namespace plateau::network {
         return dataset_files;
     }
 
-    fs::path Client::download(const fs::path& destination_directory, const fs::path& url) const {
+    std::string Client::download(const std::string& destination_directory_path_utf8, const std::string& url_utf8) const {
+        auto destination_directory = fs::u8path(destination_directory_path_utf8);
+        auto url = fs::u8path(url_utf8);
         auto gml_file = url.filename();
         auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
         fs::create_directories(destination_directory);
@@ -103,7 +105,7 @@ namespace plateau::network {
             pos = url_str.find(u8"\\", pos + 1);
         }
 
-        auto path_after_domain = url_str.substr(url_str.substr(8).find("/") + 8);
+        auto path_after_domain = url_str.substr(url_str.substr(8).find('/') + 8);
         std::cout << "downloading " << path_after_domain << std::endl;
         auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
@@ -119,7 +121,7 @@ namespace plateau::network {
             const auto& body = res->body;
             ofs.write(body.c_str(), body.size());
         }
-        return gml_file_path;
+        return gml_file_path.u8string();
     }
 
     std::string Client::getDefaultServerUrl() {

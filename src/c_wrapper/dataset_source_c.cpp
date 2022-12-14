@@ -1,5 +1,6 @@
 #include "libplateau_c.h"
 #include <plateau/dataset/dataset_source.h>
+#include <filesystem>
 
 extern "C" {
     using namespace libplateau;

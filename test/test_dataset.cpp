@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 class DatasetTest : public ::testing::Test {
 protected:
-    virtual void SetUp() {
+    void SetUp() override {
         source_path_ = "../data";
         local_dataset_accessor = DatasetSource::createLocal(source_path_).getAccessor();
     }
@@ -21,7 +21,7 @@ protected:
     static void checkFiles(const std::vector<std::string>& expected, const std::vector<GmlFile>& actual) {
         std::vector<std::string> actual_file_names;
         std::transform(actual.begin(), actual.end(), std::back_inserter(actual_file_names),
-            [](const GmlFile& file_info) { return file_info.getPath().u8string(); });
+            [](const GmlFile& file_info) { return file_info.getPath(); });
         checkVectors(expected, actual_file_names);
     }
 
@@ -41,19 +41,19 @@ protected:
     std::shared_ptr<IDatasetAccessor> local_dataset_accessor;
 };
 
-TEST_F(DatasetTest, getAllGmls) {
+TEST_F(DatasetTest, getAllGmls) { // NOLINT
     const std::vector expected_bldg_files =
     { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
     std::vector<std::string> actual_files;
     const auto gml_files = local_dataset_accessor->getGmlFiles(PredefinedCityModelPackage::Building);
     for (const auto& gml_file : *gml_files) {
-        actual_files.push_back(gml_file.getPath().u8string());
+        actual_files.push_back(gml_file.getPath());
     }
 
     checkVectors(expected_bldg_files, actual_files);
 }
 
-TEST_F(DatasetTest, getAllMeshCodes) {
+TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
     const auto& mesh_codes = local_dataset_accessor->getMeshCodes();
     ASSERT_EQ(mesh_codes.size(), 1);
 }
@@ -68,14 +68,14 @@ namespace {
     }
 }
 
-TEST_F(DatasetTest, fetch_local_generates_files) {
+TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     // パスに日本語を含むケースで動作確認します。
     auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     //    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
     const auto& test_gml_info = GmlFile(std::string("../data/udx/bldg/53392642_bldg_6697_op2.gml"));
-    test_gml_info.fetch(temp_test_dir);
+    test_gml_info.fetch(temp_test_dir.u8string());
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
@@ -114,13 +114,13 @@ TEST_F(DatasetTest, fetch_local_generates_files) {
     fs::remove_all(temp_test_dir);
 }
 
-TEST_F(DatasetTest, fetch_server_generates_files) {
+TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     // パスに日本語を含むケースで動作確認します。
     auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     const auto& test_gml_info = GmlFile(std::string(Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml"));
-    test_gml_info.fetch(temp_test_dir);
+    test_gml_info.fetch(temp_test_dir.u8string());
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");
     auto gml_path = fs::path(bldg_dir).append(u8"53392642_bldg_6697_2_op.gml").make_preferred();
@@ -166,7 +166,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
         auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
         bool contains_mesh_code = false;
         for (const auto& building_gml : *gml_vector) {
-            if (building_gml.getPath().u8string().find(mesh_code[0].get()) != std::string::npos) {
+            if (building_gml.getPath().find(mesh_code[0].get()) != std::string::npos) {
                 contains_mesh_code = true;
             }
         }
@@ -174,7 +174,7 @@ namespace { // テスト filterByMeshCodes で使う無名名前空間の関数�
     }
 } // テスト filterByMeshCodes で使う無名名前空間の関数です。
 
-TEST_F(DatasetTest, filter_by_mesh_codes) {
+TEST_F(DatasetTest, filter_by_mesh_codes) { // NOLINT
     ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", *local_dataset_accessor,
         PredefinedCityModelPackage::Building));
     ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", *local_dataset_accessor,

@@ -1,6 +1,7 @@
 #include <plateau/dataset/dataset_source.h>
 #include "local_dataset_accessor.h"
 #include "server_dataset_accessor.h"
+#include <filesystem>
 
 namespace plateau::dataset{
     namespace fs = std::filesystem;

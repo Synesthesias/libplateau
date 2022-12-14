@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <filesystem>
 #include <plateau/dataset/mesh_code.h>
 
 namespace plateau::network {
@@ -54,7 +53,7 @@ namespace plateau::network {
         std::shared_ptr<std::vector<DatasetMetadataGroup>> getMetadata() const;
         void getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const;
         DatasetFiles getFiles(const std::string& id) const;
-        std::filesystem::path download(const std::filesystem::path& destination_directory, const std::filesystem::path& url) const;
+        std::string download(const std::string& destination_directory_path_utf8, const std::string& url_utf8) const;
 
         static std::string getDefaultServerUrl();
 

@@ -4,7 +4,6 @@
 #include <plateau/dataset/mesh_code.h>
 #include <set>
 #include "plateau/network/client.h"
-#include <filesystem>
 
 namespace plateau::dataset {
 
@@ -13,12 +12,12 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT GmlFile {
     public:
-        explicit GmlFile(const std::string& path_utf8);
-        explicit GmlFile(const std::string& path_utf8, const int max_lod);
+        explicit GmlFile(std::string  path_utf8);
+        explicit GmlFile(std::string  path_utf8, const int max_lod);
 
 
-        const std::filesystem::path& getPath() const;
-        void setPath(const std::filesystem::path& path);
+        const std::string& getPath() const;
+        void setPath(const std::string& path_utf8);
         MeshCode getMeshCode() const;
         const std::string& getFeatureType() const;
         std::string getAppearanceDirectoryPath() const;
@@ -37,15 +36,15 @@ namespace plateau::dataset {
          * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
          * \returns コピー先されたCityGMLファイルの情報を返します。
          */
-        std::shared_ptr<GmlFile> fetch(const std::filesystem::path& destination_root_path) const;
+        std::shared_ptr<GmlFile> fetch(const std::string& destination_root_path) const;
 
         /**
          * \brief GmlFileのパスがローカルマシンを指す場合、CityGMLファイルとその関連ファイル(テクスチャ、コードリスト)をコピーします。コピー先にすでにファイルが存在する場合はスキップします。
          * パスが http で始まる場合、GMLファイルとその関連ファイルをダウンロードします。
-         * \param destination_root_path コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
+         * \param destination_root_path_utf8 コピー先のフォルダへのパス。このパスの配下に3D都市モデルデータ製品のルートフォルダが配置されます。
          * \param copied_gml_file コピーされたCityGMLファイル
          */
-        void fetch(const std::filesystem::path& destination_root_path, GmlFile& copied_gml_file) const;
+        void fetch(const std::string& destination_root_path_utf8, GmlFile& copied_gml_file) const;
 
         /**
          * \brief GMLファイルの全文を検索し、見つかったコードリストパスの一覧を返します。
@@ -58,7 +57,7 @@ namespace plateau::dataset {
         std::set<std::string> searchAllImagePathsInGML() const;
 
     private:
-        std::filesystem::path path_;
+        std::string path_utf8_;
         std::string code_;
         std::string feature_type_;
         bool is_valid_;
@@ -66,10 +65,5 @@ namespace plateau::dataset {
         int max_lod_;
 
         void applyPath();
-        void fetchLocal(const std::filesystem::path& gml_relative_path_from_udx, const std::filesystem::path& destination_udx_path,
-                        const std::filesystem::path& gml_destination_path, GmlFile& copied_gml_file) const;
-        void
-        fetchServer(const std::filesystem::path& gml_relative_path_from_udx, const std::filesystem::path& destination_udx_path,
-                    const std::filesystem::path& gml_destination_path, GmlFile& copied_gml_file) const;
     };
 }
