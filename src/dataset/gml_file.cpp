@@ -253,9 +253,8 @@ namespace plateau::dataset {
             const auto udx_path = gml_path_str.substr(0, udx_path_len);
             out_gml_relative_path_from_udx = fs::relative(fs::path(gml_path).make_preferred(),
                                                           fs::u8path(udx_path)).make_preferred().string();
-            const auto root_folder_name = fs::u8path(udx_path).parent_path().filename().string();
-            auto destination_root = fs::path(destination_root_path);
-            out_destination_udx_path = destination_root.append(root_folder_name).append("udx").string();
+            const auto root_folder_name = fs::u8path(udx_path).parent_path().filename();
+            out_destination_udx_path = (fs::path(destination_root_path) / root_folder_name).append(u8"udx");
             out_gml_destination_path = fs::path(out_destination_udx_path);
             out_gml_destination_path /= out_gml_relative_path_from_udx;
             fs::create_directories(out_gml_destination_path.parent_path());
