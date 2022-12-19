@@ -100,7 +100,7 @@ namespace plateau::network {
 
         // '\\' を '/' に置換
         auto pos = url_str.find(u8'\\');
-        while(pos != std::string::npos){
+        while (pos != std::string::npos) {
             url_str.replace(pos, 1, u8"/");
             pos = url_str.find(u8'\\', pos + 1);
         }
@@ -123,7 +123,8 @@ namespace plateau::network {
         return gml_file_path.u8string();
     }
 
-    std::string Client::getDefaultServerUrl() {
-        return "https://plateau-api-mock-v2.deta.dev";
+    const std::string& Client::getDefaultServerUrl() {
+        static const std::string default_server_url = "https://plateau-api-mock-v2.deta.dev";
+        return default_server_url;
     }
 }
