@@ -66,16 +66,18 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-## ユニットテスト
-add_subdirectory("test")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  ## ユニットテスト
+  add_subdirectory("test")
 
-# dependencies
-## Xerces-C をビルドします。
-### libcitygmlのFindXercesを通すために全てキャッシュ化
-set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
-add_subdirectory("3rdparty/xerces-c")
-set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
-set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
+  # dependencies
+  ## Xerces-C をビルドします。
+  ### libcitygmlのFindXercesを通すために全てキャッシュ化
+  set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
+  add_subdirectory("3rdparty/xerces-c")
+  set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
+  set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
+endif()
 
 ## libcitygml をビルドします。
 ### TODO: GDAL Support
@@ -173,12 +175,15 @@ add_subdirectory("3rdparty/openssl-cmake")
 
 # libplateau をビルドします。
 add_subdirectory("src")
-## Examples
-add_subdirectory("examples/log_skipped_elements")
-add_subdirectory("examples/export_obj")
-add_subdirectory("examples/export_gltf")
-add_subdirectory("examples/export_fbx")
-add_subdirectory("examples/https_mock_test")
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  ## Examples
+  add_subdirectory("examples/log_skipped_elements")
+  add_subdirectory("examples/export_obj")
+  add_subdirectory("examples/export_gltf")
+  add_subdirectory("examples/export_fbx")
+  add_subdirectory("examples/https_mock_test")
+endif()
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
