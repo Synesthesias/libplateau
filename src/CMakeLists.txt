@@ -6,6 +6,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
   target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}")
 else()
   target_link_libraries(plateau PUBLIC citygml GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}")
+  set_target_properties(plateau PROPERTIES FRAMEWORK TRUE)
 endif()
 
 target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
