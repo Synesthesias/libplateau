@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -159,7 +160,9 @@ namespace PLATEAU.Test.Dataset
         private static void TestCenterPoint(DatasetSource source)
         {
             using var collection = source.Accessor;
-            foreach (var meshCode in collection.MeshCodes)
+            var meshCodes = collection.MeshCodes.ToArray();
+            Assert.IsTrue(meshCodes.Length > 0);
+            foreach (var meshCode in meshCodes)
             {
                 var extent = meshCode.Extent;
                 var min = extent.Min;
@@ -181,14 +184,15 @@ namespace PLATEAU.Test.Dataset
         }
         
         
-        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCode)
+        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCodeStr)
         {
-            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
+            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCodeStr) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
-                if (gml.MeshCode.ToString() == meshCode)
+                var meshCode = gml.MeshCode;
+                if (meshCode.ToString() == meshCodeStr)
                 {
                     contains = true;
                     break;
