@@ -88,18 +88,13 @@ namespace plateau::dataset {
             }
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path().string(), gml_files);
-            auto mesh_code = std::string();
-            for (const auto& gml_file : gml_files) {
-                try {
-                    mesh_code = gml_file.getMeshCode().get();
-                }catch(const std::runtime_error& e){
-                    std::cerr << "Failed to parse mesh code from gml file name. Skipping gml.\nwhat() = " << e.what();
-                    continue;
+            for (const auto& gml_file: gml_files) {
+                auto mesh_code = gml_file.getMeshCode();
+                if (!mesh_code.isValid()) continue;
+                if (collection.files_by_code_.count(mesh_code.get()) == 0) {
+                    collection.files_by_code_.emplace(mesh_code.get(), std::vector<GmlFile>());
                 }
-                if (collection.files_by_code_.count(mesh_code) == 0) {
-                    collection.files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
-                }
-                collection.files_by_code_[mesh_code].push_back(gml_file);
+                collection.files_by_code_[mesh_code.get()].push_back(gml_file);
             }
         }
     }
@@ -225,13 +220,11 @@ namespace plateau::dataset {
 
     std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
         if (mesh_codes_.empty()) {
-            for (const auto& [_, files] : files_) {
-                for (const auto& file : files) {
-                    try{
-                        mesh_codes_.insert(file.getMeshCode());
-                    }catch(const std::runtime_error& e){
-                        std::cerr << "Skipping invalid mesh code. file = " << file.getPath() << std::endl;
-                    }
+            for (const auto& [_, files]: files_) {
+                for (const auto& file: files) {
+                    auto mesh_code = file.getMeshCode();
+                    if (!mesh_code.isValid()) continue;
+                    mesh_codes_.insert(file.getMeshCode());
                 }
             }
         }

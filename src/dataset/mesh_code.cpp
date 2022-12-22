@@ -17,8 +17,10 @@ namespace plateau::dataset {
         constexpr double third_cell_width = second_cell_width / third_division_count;
     }
 
-    MeshCode::MeshCode(const std::string& code)
-        : level_(getLevel(code)) {
+    MeshCode::MeshCode(const std::string& code) {
+        is_valid_ = true;
+        level_ = getLevel(code);
+        if (!is_valid_) return;
         first_row_ = static_cast<int>(std::stoi(code.substr(0, 2)));
         first_col_ = static_cast<int>(std::stoi(code.substr(2, 2)));
         second_row_ = static_cast<int>(std::stoi(code.substr(4, 1)));
@@ -39,7 +41,8 @@ namespace plateau::dataset {
             return 3;
         }
         // 2次メッシュ、3次メッシュ以外はサポート対象外
-        throw std::runtime_error("Invalid string for regional mesh code");
+        is_valid_ = false;
+        return 0;
     }
 
     geometry::Extent MeshCode::getExtent() const {
@@ -134,6 +137,10 @@ namespace plateau::dataset {
         oss << std::setw(1) << third_row_;
         oss << std::setw(1) << third_col_;
         return oss.str();
+    }
+
+    bool MeshCode::isValid() const {
+        return is_valid_;
     }
 
     bool MeshCode::operator==(const MeshCode& other) const {
