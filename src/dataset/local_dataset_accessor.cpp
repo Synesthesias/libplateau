@@ -88,9 +88,14 @@ namespace plateau::dataset {
             }
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path().string(), gml_files);
-
+            auto mesh_code = std::string();
             for (const auto& gml_file : gml_files) {
-                const auto mesh_code = gml_file.getMeshCode().get();
+                try {
+                    mesh_code = gml_file.getMeshCode().get();
+                }catch(const std::runtime_error& e){
+                    std::cerr << "Failed to parse mesh code from gml file name. Skipping gml.\nwhat() = " << e.what();
+                    continue;
+                }
                 if (collection.files_by_code_.count(mesh_code) == 0) {
                     collection.files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
                 }
@@ -222,7 +227,11 @@ namespace plateau::dataset {
         if (mesh_codes_.empty()) {
             for (const auto& [_, files] : files_) {
                 for (const auto& file : files) {
-                    mesh_codes_.insert(file.getMeshCode());
+                    try{
+                        mesh_codes_.insert(file.getMeshCode());
+                    }catch(const std::runtime_error& e){
+                        std::cerr << "Skipping invalid mesh code. file = " << file.getPath() << std::endl;
+                    }
                 }
             }
         }
