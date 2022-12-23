@@ -90,7 +90,7 @@ namespace plateau::dataset {
             findGMLsBFS(entry.path().string(), gml_files);
             for (const auto& gml_file: gml_files) {
                 auto mesh_code = gml_file.getMeshCode();
-                if (!mesh_code.isValid()) continue;
+                if (!gml_file.isValid()) continue;
                 if (collection.files_by_code_.count(mesh_code.get()) == 0) {
                     collection.files_by_code_.emplace(mesh_code.get(), std::vector<GmlFile>());
                 }
@@ -190,6 +190,7 @@ namespace plateau::dataset {
             return;
 
         for (const auto& file : files_[package]) {
+            if(!file.isValid()) continue;
             gml_files.push_back(file);
         }
     }

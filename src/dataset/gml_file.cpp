@@ -79,7 +79,7 @@ namespace plateau::dataset {
     }
 
     bool GmlFile::isValid() const {
-        return is_valid_;
+        return is_valid_ && getMeshCode().isValid();
     }
 
     bool GmlFile::isMaxLodCalculated() const {
