@@ -17,7 +17,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = source.Accessor;
             Assert.AreEqual(1, accessor.MeshCodes.Length);
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
@@ -36,13 +36,13 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
             Assert.AreEqual(
-                Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"),
+                Path.GetFullPath("data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml"),
                 Path.GetFullPath(gmls.At(0).Path)
             );
         }
@@ -61,7 +61,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
             var expected = PredefinedCityModelPackage.Building;
@@ -82,7 +82,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             TestCenterPoint(source);
         }
 
@@ -96,7 +96,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
@@ -116,7 +116,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";

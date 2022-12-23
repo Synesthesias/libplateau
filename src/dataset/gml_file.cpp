@@ -73,7 +73,7 @@ namespace plateau::dataset {
         if (isMaxLodCalculated())
             return max_lod_;
 
-        auto lods = LodSearcher::searchLodsInFile(path_);
+        auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
         max_lod_ = lods.getMax();
         return max_lod_;
     }

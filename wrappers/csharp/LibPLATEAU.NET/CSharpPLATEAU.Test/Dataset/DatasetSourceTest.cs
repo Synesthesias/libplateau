@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Get_Accessor_From_Local_DataSource_Returns_Accessor()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = source.Accessor;
             Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
