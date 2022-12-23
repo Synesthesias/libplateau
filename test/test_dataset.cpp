@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 class DatasetTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        source_path_ = "../data";
+        source_path_ = "../data/日本語パステスト";
         local_dataset_accessor = DatasetSource::createLocal(source_path_).getAccessor();
     }
 
@@ -43,7 +43,7 @@ protected:
 
 TEST_F(DatasetTest, getAllGmls) { // NOLINT
     const std::vector expected_bldg_files =
-    { std::filesystem::path("../data/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().string() };
+    { std::filesystem::u8path(u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().u8string() };
     std::vector<std::string> actual_files;
     const auto gml_files = local_dataset_accessor->getGmlFiles(PredefinedCityModelPackage::Building);
     for (const auto& gml_file : *gml_files) {
@@ -61,7 +61,7 @@ TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
 namespace {
     void checkFilesExist(const std::vector<std::string>& file_relative_paths, const fs::path& base_path) {
         for (const auto& relative_path : file_relative_paths) {
-            auto path = fs::path(base_path).append(relative_path).make_preferred();
+            auto path = (fs::path(base_path) / fs::u8path(relative_path)).make_preferred();
             ASSERT_TRUE(fs::exists(path)) << path << " does not exist";
             ASSERT_TRUE(fs::file_size(path) > 0) << "downloaded file size is zero : " << path;
         }
@@ -74,16 +74,16 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
     //    const auto& test_gml_info = local_dataset_accessor.getGmlFile(PredefinedCityModelPackage::Building, 0);
-    const auto& test_gml_info = GmlFile(std::string("../data/udx/bldg/53392642_bldg_6697_op2.gml"));
+    const auto& test_gml_info = GmlFile(std::string(u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml"));
     test_gml_info.fetch(temp_test_dir.u8string());
     // gmlファイルがコピー先に存在します。
-    auto bldg_dir = fs::path(temp_test_dir).append("data/udx/bldg");
-    auto gml_path = fs::path(bldg_dir).append("53392642_bldg_6697_op2.gml").make_preferred();
+    auto bldg_dir = fs::path(temp_test_dir) / fs::u8path(u8"日本語パステスト/udx/bldg");
+    auto gml_path = fs::path(bldg_dir).append(u8"53392642_bldg_6697_op2.gml").make_preferred();
     //    auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
     ASSERT_TRUE(fs::exists(gml_path)) << gml_path << "does not exist.";
 
     // codelistsファイルがコピー先に存在します。
-    auto codelists_dir = fs::path(temp_test_dir).append("data/codelists");
+    auto codelists_dir = fs::path(temp_test_dir) / fs::u8path(u8"日本語パステスト/codelists");
     std::vector<std::string> codelists = {
             "Common_districtsAndZonesType.xml",
             "Common_prefecture.xml",

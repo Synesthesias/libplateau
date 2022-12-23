@@ -56,8 +56,8 @@ int main() {
     try {
         const auto logger = std::make_shared<StdLogger>();
         ParserParams params_;
-        const std::string gml_file_path = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
-        //const std::string gml_file_path = "../data/udx/bldg/52350420_bldg_6697.gml";
+        const std::string gml_file_path = "../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
+        //const std::string gml_file_path = "../data/日本語パステスト/udx/bldg/52350420_bldg_6697.gml";
         plateau::polygonMesh::MeshExtractOptions mesh_extract_options_;
         std::shared_ptr<const CityModel> city_model_ = load(gml_file_path, params_);
 

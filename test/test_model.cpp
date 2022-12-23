@@ -9,7 +9,7 @@ namespace plateau::polygonMesh {
 
     class ModelTest : public ::testing::Test {
     protected:
-        const std::shared_ptr<const CityModel> city_model_ = load("../data/udx/bldg/53392642_bldg_6697_op2.gml",
+        const std::shared_ptr<const CityModel> city_model_ = load("../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml",
                                                                   ParserParams());
     };
 

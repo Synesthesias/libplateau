@@ -164,9 +164,9 @@ namespace plateau::polygonMesh {
             } else {
                 // テクスチャパスを相対から絶対に変換
                 texture_path = texture->getUrl();
-                std::filesystem::path tpath = std::filesystem::u8path(texture_path);
+                auto tpath = std::filesystem::u8path(texture_path);
                 if (tpath.is_relative()) {
-                    std::filesystem::path a_path = gml_path;
+                    auto a_path = std::filesystem::u8path(gml_path);
                     a_path = a_path.parent_path();
                     a_path /= tpath;
                     auto abs_path = std::filesystem::absolute(a_path);

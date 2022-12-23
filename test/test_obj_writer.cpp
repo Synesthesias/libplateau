@@ -19,12 +19,12 @@ namespace plateau::meshWriter {
         }
         ParserParams params_;
 
-        const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+        const std::string gml_path_ = u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
         std::string output_directory_ = ".";
-        std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
-        fs::path output_obj_ = fs::path(output_directory_).append(basename_ + ".obj");
-        fs::path expected_output_obj_ = fs::path(output_directory_).append(basename_ + "_LOD1.obj");
-        fs::path expected_output_mtl_ = fs::path(output_directory_).append(basename_ + "_LOD1.mtl");
+        std::string basename_ = fs::u8path(gml_path_).filename().replace_extension().u8string();
+        fs::path output_obj_ = fs::u8path(output_directory_) / fs::u8path(basename_ + ".obj");
+        fs::path expected_output_obj_ = fs::u8path(output_directory_) / fs::u8path(basename_ + "_LOD1.obj");
+        fs::path expected_output_mtl_ = fs::u8path(output_directory_) / fs::u8path(basename_ + "_LOD1.mtl");
 
         plateau::polygonMesh::MeshExtractOptions options;
 

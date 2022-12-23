@@ -26,7 +26,7 @@ namespace plateau::meshWriter {
         ParserParams params_;
 
 
-        const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+        const std::string gml_path_ = "../日本語パステスト/data/udx/bldg/53392642_bldg_6697_op2.gml";
         std::string output_directory_ = ".";
         std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
         fs::path expected_output_gltf_ = fs::path(output_directory_).append(basename_ + ".fbx");

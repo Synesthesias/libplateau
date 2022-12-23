@@ -8,11 +8,12 @@
 #include "citygml/citymodel.h"
 
 using namespace citygml;
+namespace fs = std::filesystem;
 
 class PrimaryFeaturesTest : public ::testing::Test {
 protected:
     virtual void SetUp() {
-        gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+        gml_path_ = u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
 
         ParserParams params;
         params.tesselate = false;
