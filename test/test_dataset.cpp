@@ -179,3 +179,10 @@ TEST_F(DatasetTest, filter_by_mesh_codes) { // NOLINT
     ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", *local_dataset_accessor,
         PredefinedCityModelPackage::Building));
 }
+
+
+TEST_F(DatasetTest, get_max_lod_local){
+    auto gml_files = local_dataset_accessor->getGmlFiles(PredefinedCityModelPackage::Building);
+    auto gml = gml_files->at(0);
+    ASSERT_EQ(gml.getMaxLod(), 2);
+}
