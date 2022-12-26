@@ -8,7 +8,7 @@ namespace PLATEAU.Test.CityGML {
 
         private static readonly Dictionary<GmlFileCase, string> GmlPaths = new Dictionary<GmlFileCase, string>()
         {
-            { GmlFileCase.Simple, "data/udx/bldg/53392642_bldg_6697_op2.gml" },
+            { GmlFileCase.Simple, "data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml" },
             // { GmlFileCase.Minatomirai , "data/53392642_bldg_6697_op2.gml"} // 今のところ未使用
         };
         

@@ -16,7 +16,7 @@ namespace plateau::dataset {
     TEST_F(DatasetSourceTest, get_accessor_of_local_source_returns_local_accessor) { // NOLINT
         auto source =
                 std::make_shared<DatasetSource>(
-                        std::move(DatasetSource::createLocal("../data")));
+                        std::move(DatasetSource::createLocal(u8"../data/日本語パステスト")));
         auto accessor = source->getAccessor();
         auto mesh_code_str = accessor->getMeshCodes().begin()->get();
         ASSERT_EQ(mesh_code_str, "53392642");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
@@ -16,7 +17,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = source.Accessor;
             Assert.AreEqual(1, accessor.MeshCodes.Length);
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
@@ -35,13 +36,13 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
             Assert.AreEqual(
-                Path.GetFullPath("data/udx/bldg/53392642_bldg_6697_op2.gml"),
+                Path.GetFullPath("data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml"),
                 Path.GetFullPath(gmls.At(0).Path)
             );
         }
@@ -60,7 +61,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
             var expected = PredefinedCityModelPackage.Building;
@@ -81,7 +82,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             TestCenterPoint(source);
         }
 
@@ -95,7 +96,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data", "");
+            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
@@ -115,7 +116,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.Create(false, "data", "");
+            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -133,33 +134,14 @@ namespace PLATEAU.Test.Dataset
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, validMeshCode));
             Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, invalidMeshCode));
         }
-        
-        [TestMethod]
-        public void GetGmlFiles_Server_Cache_Works()
-        {
-            using var source = DatasetSource.Create(true, "", "23ku");
-            using var accessor = source.Accessor;
-            var stopwatch = Stopwatch.StartNew();
-            var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-            Assert.AreEqual(2, gmlFiles.Length);
-            stopwatch.Stop();
-            var time1 = stopwatch.Elapsed;
-            Console.WriteLine($"{time1} sec");
-            stopwatch.Reset();
-            stopwatch.Start();
-            gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-            stopwatch.Stop();
-            var time2 = stopwatch.Elapsed;
-            Console.WriteLine($"{time2} sec");
-            Assert.AreEqual(2, gmlFiles.Length);
-            Assert.IsTrue(time2.TotalMilliseconds < time1.TotalMilliseconds * 0.7, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
-        }
 
 
         private static void TestCenterPoint(DatasetSource source)
         {
             using var collection = source.Accessor;
-            foreach (var meshCode in collection.MeshCodes)
+            var meshCodes = collection.MeshCodes.ToArray();
+            Assert.IsTrue(meshCodes.Length > 0);
+            foreach (var meshCode in meshCodes)
             {
                 var extent = meshCode.Extent;
                 var min = extent.Min;
@@ -181,14 +163,15 @@ namespace PLATEAU.Test.Dataset
         }
         
         
-        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCode)
+        private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCodeStr)
         {
-            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCode) });
+            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCodeStr) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
-                if (gml.MeshCode.ToString() == meshCode)
+                var meshCode = gml.MeshCode;
+                if (meshCode.ToString() == meshCodeStr)
                 {
                     contains = true;
                     break;
