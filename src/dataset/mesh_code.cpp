@@ -17,10 +17,30 @@ namespace plateau::dataset {
         constexpr double third_cell_width = second_cell_width / third_division_count;
     }
 
+    namespace {
+        /**
+         * メッシュコードの文字列からレベル（詳細度）を返します。
+         * 文字列が不正な場合は -1 を返します。
+         */
+        int getLevel(const std::string& code) {
+            if (code.size() == 6) {
+                return 2;
+            }
+            if (code.size() == 8) {
+                return 3;
+            }
+            // 2次メッシュ、3次メッシュ以外はサポート対象外
+            return -1;
+        }
+    }
+
     MeshCode::MeshCode(const std::string& code) {
         is_valid_ = true;
         level_ = getLevel(code);
-        if (!is_valid_) return;
+        if (level_ < 0) {
+            is_valid_ = false;
+            return;
+        }
         first_row_ = static_cast<int>(std::stoi(code.substr(0, 2)));
         first_col_ = static_cast<int>(std::stoi(code.substr(2, 2)));
         second_row_ = static_cast<int>(std::stoi(code.substr(4, 1)));
@@ -31,18 +51,6 @@ namespace plateau::dataset {
 
         third_row_ = static_cast<int>(std::stoi(code.substr(6, 1)));
         third_col_ = static_cast<int>(std::stoi(code.substr(7, 1)));
-    }
-
-    int MeshCode::getLevel(const std::string& code) {
-        if (code.size() == 6) {
-            return 2;
-        }
-        if (code.size() == 8) {
-            return 3;
-        }
-        // 2次メッシュ、3次メッシュ以外はサポート対象外
-        is_valid_ = false;
-        return 0;
     }
 
     geometry::Extent MeshCode::getExtent() const {

@@ -12,7 +12,6 @@ namespace plateau::dataset {
         explicit MeshCode(const std::string& code);
         MeshCode() = default;
 
-        int getLevel(const std::string& code);
         std::string get() const;
         geometry::Extent getExtent() const;
         static MeshCode getThirdMesh(const geometry::GeoCoordinate& coordinate);
