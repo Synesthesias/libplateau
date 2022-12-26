@@ -134,27 +134,6 @@ namespace PLATEAU.Test.Dataset
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, validMeshCode));
             Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, invalidMeshCode));
         }
-        
-        [TestMethod]
-        public void GetGmlFiles_Server_Cache_Works()
-        {
-            using var source = DatasetSource.Create(true, "", "23ku");
-            using var accessor = source.Accessor;
-            var stopwatch = Stopwatch.StartNew();
-            var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-            Assert.AreEqual(2, gmlFiles.Length);
-            stopwatch.Stop();
-            var time1 = stopwatch.Elapsed;
-            Console.WriteLine($"{time1} sec");
-            stopwatch.Reset();
-            stopwatch.Start();
-            gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
-            stopwatch.Stop();
-            var time2 = stopwatch.Elapsed;
-            Console.WriteLine($"{time2} sec");
-            Assert.AreEqual(2, gmlFiles.Length);
-            Assert.IsTrue(time2.TotalMilliseconds < time1.TotalMilliseconds * 0.7, "キャッシュにより、1回目より2回目のほうが速い（ネットワークアクセスが省略される）");
-        }
 
 
         private static void TestCenterPoint(DatasetSource source)
