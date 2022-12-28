@@ -150,7 +150,7 @@ namespace PLATEAU.Test.Dataset
             }
 
             PlateauVector3d center;
-            using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
+            using (var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
             {
                 center = collection.CalculateCenterPoint(geoRef);
             }
