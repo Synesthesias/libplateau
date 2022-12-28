@@ -16,6 +16,12 @@ namespace PLATEAU.MeshWriter
             this.TextureDirectoryPath = path;
         }
     }
+    
+    public enum GltfFileFormat
+    {
+        GLB,
+        GLTF
+    }
 
     public class GltfWriter : IDisposable
     {

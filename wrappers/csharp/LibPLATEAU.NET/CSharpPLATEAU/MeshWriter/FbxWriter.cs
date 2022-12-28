@@ -14,6 +14,22 @@ namespace PLATEAU.MeshWriter
             DLLUtil.CheckDllError(result);
             return isSucceed;
         }
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FbxWriteOptions
+        {
+            public FbxFileFormat FileFormat;
+
+            public FbxWriteOptions(FbxFileFormat fileFormat)
+            {
+                this.FileFormat = fileFormat;
+            }
+        }
+
+        public enum FbxFileFormat : UInt32
+        {
+            Binary, Ascii
+        }
 
         private static class NativeMethods
         {

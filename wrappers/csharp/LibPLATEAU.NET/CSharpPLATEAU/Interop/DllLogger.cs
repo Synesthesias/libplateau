@@ -4,6 +4,16 @@ using System.Threading;
 
 namespace PLATEAU.Interop
 {
+    
+    public enum DllLogLevel
+    {
+        Error = 4,
+        Warning = 3,
+        Info = 2,
+        Debug = 1,
+        Trace = 0
+    }
+    
     /// <summary>
     /// DLL側のログをC#側でコールバックで受け取ることができますが、
     /// その Error, Warn, Info の3つのコールバックをまとめたクラスです。
