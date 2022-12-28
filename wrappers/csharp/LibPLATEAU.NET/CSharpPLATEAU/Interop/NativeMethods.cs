@@ -411,15 +411,7 @@ namespace PLATEAU.Interop
     {
         public const string DllName = "plateau";
 
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_load_citygml(
-            [In] byte[] gmlPathUtf8,
-            [In] CitygmlParserParams parserParams,
-            out IntPtr cityModelHandle,
-            DllLogLevel logLevel,
-            IntPtr logErrorCallbackFuncPtr,
-            IntPtr logWarnCallbackFuncPtr,
-            IntPtr logInfoCallbackFuncPtr);
+        
 
         [DllImport(DllName)]
         internal static extern APIResult plateau_create_mesh_converter(
@@ -466,48 +458,6 @@ namespace PLATEAU.Interop
             [In, Out] ref MeshConvertOptionsData options,
             [In] IntPtr cityModel);
 
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_delete_city_model(
-            [In] IntPtr cityModel);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_city_model_get_root_city_objects(
-            [In] IntPtr cityModel,
-            [In, Out] IntPtr[] cityObjects,
-            int count);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_city_model_get_root_city_object_count(
-            [In] IntPtr cityModel,
-            out int outCount);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_city_model_get_all_city_object_count_of_type(
-            [In] IntPtr cityModel,
-            out int count,
-            CityObjectType type);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_city_model_get_all_city_objects_of_type(
-            [In] IntPtr cityModel,
-            [In, Out] IntPtr[] cityObjects,
-            CityObjectType type,
-            int count);
-
-        [DllImport(DllName, CharSet = CharSet.Ansi)]
-        internal static extern APIResult plateau_city_model_get_city_object_by_id(
-            [In] IntPtr handle,
-            out IntPtr cityObjectPtr,
-            [In] string id);
-
-        // ***************
-        //  geometry_utils_c.cpp
-        // ***************
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_geometry_utils_get_center_point(
-            [In] IntPtr cityModelPtr,
-            out PlateauVector3d outCenterPoint,
-            int coordinateZoneID);
         
         
         // ***************
@@ -516,22 +466,6 @@ namespace PLATEAU.Interop
         [DllImport(DllName)]
         internal static extern APIResult plateau_mesh_extract_options_default_value(
             out MeshExtractOptions outDefaultOptions);
-
-        // ***************
-        //  vector_tile_downloader_c.cpp
-        // ***************
-        
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_tile_projection_project(
-            [In] GeoCoordinate geoCoordinate,
-            int zoomLevel,
-            out TileCoordinate outTileCoordinate);
-
-        [DllImport(DllName)]
-        internal static extern APIResult plateau_tile_projection_unproject(
-            [In] TileCoordinate tileCoordinate,
-            out Extent outExtent);
-
         
         
         // ***************
