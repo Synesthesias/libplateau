@@ -126,5 +126,28 @@ namespace PLATEAU.Interop
             );
             DLLUtil.CheckDllError(result);
         }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_dll_logger(
+                out IntPtr outHandle
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern void plateau_delete_dll_logger([In] IntPtr dllLogger);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dll_logger_set_callbacks(
+                [In] IntPtr handle,
+                [In] IntPtr errorCallbackFuncPtr,
+                [In] IntPtr warnCallbackPtrFuncPtr,
+                [In] IntPtr infoCallbackFuncPtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_dll_logger_set_log_level(
+                [In] IntPtr handle,
+                DllLogLevel dllLogLevel);
+        }
     }
 }
