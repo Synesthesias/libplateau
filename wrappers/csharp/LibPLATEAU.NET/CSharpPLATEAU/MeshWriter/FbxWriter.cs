@@ -1,4 +1,6 @@
-﻿using PLATEAU.Interop;
+﻿using System;
+using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.MeshWriter
@@ -11,6 +13,16 @@ namespace PLATEAU.MeshWriter
             var result = NativeMethods.plateau_fbx_writer_write(fbxPathUtf8, model.Handle, options, out bool isSucceed);
             DLLUtil.CheckDllError(result);
             return isSucceed;
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_fbx_writer_write(
+                [In] byte[] fbxFilePathUtf8,
+                [In] IntPtr modelPtr,
+                FbxWriteOptions options,
+                out bool outIsSucceed);
         }
     }
 }
