@@ -109,6 +109,7 @@ namespace PLATEAU.Dataset
                 Handle, nativePaths.Handle);
             DLLUtil.CheckDllError(result);
             var ret = nativePaths.ToCSharpArray();
+            nativePaths.Dispose();
             return ret;
         }
         
