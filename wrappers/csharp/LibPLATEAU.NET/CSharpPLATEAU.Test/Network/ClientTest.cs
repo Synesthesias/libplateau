@@ -23,7 +23,7 @@ namespace PLATEAU.Test.Network
             Assert.AreEqual(3, dataset23Ku.MaxLOD);
             var datasetHachioji = group.Datasets.At(1);
             Assert.AreEqual("八王子市", datasetHachioji.Title);
-            var featureTypes = datasetHachioji.FeatureTypes.ToCSharpArray();
+            var featureTypes = datasetHachioji.FeatureTypes;
             CollectionAssert.AreEquivalent(new[] { "bldg", "dem" }, featureTypes);
             client.Dispose();
             

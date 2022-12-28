@@ -101,8 +101,8 @@ namespace PLATEAU.Test.Dataset
             using var accessor = sourceLocal.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
-            var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
-            var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
+            var codelistPaths = gml.SearchAllCodelistPathsInGml();
+            var imagePaths = gml.SearchAllImagePathsInGml();
             var expectedCodelists = new[]
             {
                 "../../codelists/Common_districtsAndZonesType.xml",
