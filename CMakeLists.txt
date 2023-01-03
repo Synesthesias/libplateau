@@ -172,10 +172,8 @@ endif()
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
-  ## openssl
-  add_subdirectory("3rdparty/openssl-cmake")
-endif()
+## openssl
+add_subdirectory("3rdparty/openssl-cmake")
 
 # libplateau をビルドします。
 add_subdirectory("src")
