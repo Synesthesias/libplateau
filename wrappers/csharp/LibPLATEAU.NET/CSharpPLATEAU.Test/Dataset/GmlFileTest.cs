@@ -133,9 +133,11 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(new DatasetSourceConfig(true, "", "23ku"));
             using var accessor = source.Accessor;
             // パスに日本語名を含むケースでテストします。
-            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
-            
+            var testDir = new DirectoryInfo("テスト用一時フォルダ");
             if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
+            Directory.CreateDirectory(testDir.FullName);
+
+            accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Fetch(testDir.FullName);
             
             Console.WriteLine(testDir.FullName);
             bool textureExist = File.Exists(Path.Combine(testDir.FullName,

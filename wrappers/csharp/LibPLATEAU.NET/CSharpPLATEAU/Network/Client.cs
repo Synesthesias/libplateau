@@ -31,12 +31,10 @@ namespace PLATEAU.Network
 
         public string Url
         {
-            get
-            {
-                return DLLUtil.GetNativeStringByValue(Handle,
+            get =>
+                DLLUtil.GetNativeStringByValue(Handle,
                     NativeMethods.plateau_client_get_api_server_url_size,
                     NativeMethods.plateau_client_get_api_server_url);
-            }
             set
             {
                 var result = NativeMethods.plateau_client_set_api_server_url(Handle, value);

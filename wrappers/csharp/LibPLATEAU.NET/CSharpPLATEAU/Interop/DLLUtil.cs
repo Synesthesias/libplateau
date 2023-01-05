@@ -135,14 +135,14 @@ namespace PLATEAU.Interop
         /// </summary>
         /// <param name="count">ポインタ配列の要素数です。</param>
         /// <param name="sizes"><see cref="sizes"/>[i] = i番目のポインタの確保バイト数 となるような int配列です。</param>
-        internal static IntPtr AllocPtrArray(int count, int[] sizes)
+        private static IntPtr AllocPtrArray(int count, int[] sizes)
         {
             if (count > sizes.Length)
             {
                 throw new ArgumentException("sizes.Length should not be smaller than count.");
             }
             
-            IntPtr[] managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
+            var managedPtrArray = new IntPtr[count]; // ポインタの配列 (managed)
             for (int i = 0; i < count; i++)
             {
                 IntPtr ptr = Marshal.AllocCoTaskMem(sizes[i]); // 配列内の各ポインタについてメモリ確保
@@ -150,7 +150,7 @@ namespace PLATEAU.Interop
             }
             
             int sizeOfPtrArray = Marshal.SizeOf(typeof(IntPtr)) * count;
-            IntPtr unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
+            var unmanagedPtrArray = Marshal.AllocCoTaskMem(sizeOfPtrArray); // ポインタの配列 (unmanaged)
             Marshal.Copy(managedPtrArray, 0, unmanagedPtrArray, count);
             return unmanagedPtrArray;
         }
