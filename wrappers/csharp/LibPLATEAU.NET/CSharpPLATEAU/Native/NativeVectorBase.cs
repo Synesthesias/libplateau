@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の vector を扱う基底クラスです。

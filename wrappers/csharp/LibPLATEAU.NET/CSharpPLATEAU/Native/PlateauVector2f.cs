@@ -1,8 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     [StructLayout(LayoutKind.Sequential)]
+    // ReSharper disable once InconsistentNaming
     public struct PlateauVector2f
     {
         public float X;

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.Geom
 {

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の std::string を扱います。

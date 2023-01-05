@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using PLATEAU.Dataset;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     public class NativeVectorDatasetMetadata : NativeVectorBase<DatasetMetadata>
     {

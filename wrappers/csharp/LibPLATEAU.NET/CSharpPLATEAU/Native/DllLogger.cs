@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     
     public enum DllLogLevel

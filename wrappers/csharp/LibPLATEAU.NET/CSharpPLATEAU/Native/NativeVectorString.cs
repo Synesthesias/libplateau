@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using PLATEAU.Interop;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// C++側の vector{string} を扱います。

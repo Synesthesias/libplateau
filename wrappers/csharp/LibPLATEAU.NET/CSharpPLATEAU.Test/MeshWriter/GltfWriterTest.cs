@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Interop;
 using PLATEAU.Test.CityGML;
 using PLATEAU.Test.GeometryModel;
 using PLATEAU.MeshWriter;

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PlateauVector3d

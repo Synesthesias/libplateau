@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// 廃棄時に Native側で delete する必要があるものの基底クラスです。

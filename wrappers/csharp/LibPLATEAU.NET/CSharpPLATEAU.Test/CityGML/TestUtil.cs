@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.CityGML {
     internal static class TestUtil {

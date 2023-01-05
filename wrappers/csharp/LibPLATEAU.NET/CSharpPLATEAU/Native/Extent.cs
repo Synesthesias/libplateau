@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace PLATEAU.Interop
+namespace PLATEAU.Native
 {
     /// <summary>
     /// 最小点と最大点の2点で表現される範囲であり、

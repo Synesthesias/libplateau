@@ -137,9 +137,7 @@ namespace PLATEAU.Test.Dataset
             
             if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
             
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Console.WriteLine(testDir.FullName);
-            var fetchedGml = gmls.At(0).Fetch(testDir.FullName);
             bool textureExist = File.Exists(Path.Combine(testDir.FullName,
                 "13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_appearance/hnap0034.jpg"));
             bool codelistExist = File.Exists(Path.Combine(testDir.FullName,
