@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Native;
 using PLATEAU.Network;
 
 namespace PLATEAU.Test.Network
@@ -36,6 +37,13 @@ namespace PLATEAU.Test.Network
             client.Url = "https://dummy.com";
             Assert.AreEqual("https://dummy.com", client.Url);
             client.Dispose();
+        }
+
+        [TestMethod]
+        public void NativeVectorDatasetMetadataCreateAndDispose()
+        {
+            var vectorMetadata = NativeVectorDatasetMetadata.Create();
+            vectorMetadata.Dispose();
         }
     }
 }

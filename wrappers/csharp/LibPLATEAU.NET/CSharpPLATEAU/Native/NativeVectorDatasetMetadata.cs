@@ -37,6 +37,17 @@ namespace PLATEAU.Native
             }
         }
 
+        /// <summary>
+        /// 取扱注意:
+        /// 通常は <see cref="NativeVectorDatasetMetadataGroup"/> の廃棄時に廃棄されるので呼ぶ必要はありません。
+        /// <see cref="NativeVectorDatasetMetadataGroup"/> を介さないインスタンスのみ廃棄してください。
+        /// </summary>
+        public void Dispose()
+        {
+            var result = NativeMethods.plateau_delete_vector_dataset_metadata(Handle);
+            DLLUtil.CheckDllError(result);
+        }
+
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
