@@ -93,6 +93,26 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set(LIBXML2_WITH_PROGRAMS "OFF")
+  set(LIBXML2_WITH_UNICODE "ON")
+  set(LIBXML2_WITH_LZMA "OFF")
+  set(LIBXML2_WITH_ZLIB "OFF")
+  set(LIBXML2_WITH_FTP "OFF")
+  set(LIBXML2_WITH_HTTP "OFF")
+  set(LIBXML2_WITH_HTML "OFF")
+  set(LIBXML2_WITH_ICONV "OFF")
+  set(LIBXML2_WITH_LEGACY "OFF")
+  set(LIBXML2_WITH_MODULES "OFF")
+  set(LIBXML2_WITH_OUTPUT "ON")
+  set(LIBXML2_WITH_PYTHON "OFF")
+  set(LIBXML2_WITH_DEBUG "OFF")
+  set(LIBXML2_WITH_THREADS "ON")
+  set(LIBXML2_WITH_THREAD_ALLOC "OFF")
+  set(LIBXML2_WITH_TESTS "OFF")
+  set(LIBXML2_WITH_SCHEMATRON "OFF")
+endif()
+
 # FBX SDK 以下のディレクトリで debug と release のどちらを利用するか決めます。
 # debug なら debug/*-md.lib を使い、release なら release/*-mt.lib を使います。
 if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
