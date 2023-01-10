@@ -9,7 +9,8 @@ namespace PLATEAU.Network
     public class Client
     {
         public IntPtr Handle { get; }
-        public Client(IntPtr handle)
+
+        private Client(IntPtr handle)
         {
             Handle = handle;
         }

@@ -14,7 +14,7 @@ namespace PLATEAU.Dataset
         private readonly int SecondCol;
         private readonly int ThirdRow;
         private readonly int ThirdCol;
-        private readonly int Level;
+        public readonly int Level;
         [MarshalAs(UnmanagedType.U1)] private readonly bool isValid;
 
         public bool IsValid
