@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.CityGML {
-    public static class TestUtil {
+    internal static class TestUtil {
 
         private static readonly Dictionary<GmlFileCase, string> GmlPaths = new Dictionary<GmlFileCase, string>()
         {

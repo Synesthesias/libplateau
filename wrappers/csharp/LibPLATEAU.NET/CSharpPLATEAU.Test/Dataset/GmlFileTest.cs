@@ -101,8 +101,8 @@ namespace PLATEAU.Test.Dataset
             using var accessor = sourceLocal.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
-            var codelistPaths = gml.SearchAllCodelistPathsInGml().ToCSharpArray();
-            var imagePaths = gml.SearchAllImagePathsInGml().ToCSharpArray();
+            var codelistPaths = gml.SearchAllCodelistPathsInGml();
+            var imagePaths = gml.SearchAllImagePathsInGml();
             var expectedCodelists = new[]
             {
                 "../../codelists/Common_districtsAndZonesType.xml",
@@ -133,13 +133,13 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(new DatasetSourceConfig(true, "", "23ku"));
             using var accessor = source.Accessor;
             // パスに日本語名を含むケースでテストします。
-            var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
-            
+            var testDir = new DirectoryInfo("テスト用一時フォルダ");
             if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
+            Directory.CreateDirectory(testDir.FullName);
+
+            accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Fetch(testDir.FullName);
             
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Console.WriteLine(testDir.FullName);
-            var fetchedGml = gmls.At(0).Fetch(testDir.FullName);
             bool textureExist = File.Exists(Path.Combine(testDir.FullName,
                 "13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_appearance/hnap0034.jpg"));
             bool codelistExist = File.Exists(Path.Combine(testDir.FullName,
