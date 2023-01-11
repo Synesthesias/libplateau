@@ -412,6 +412,7 @@ namespace PLATEAU.Interop
 
     internal static class NativeMethods
     {
+        
         private const string DllName = "plateau";
 
         [DllImport(DllName, CharSet = CharSet.Ansi)]
