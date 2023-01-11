@@ -54,6 +54,9 @@ extern "C" {
             GmlFile* const out_gml_file_info
     ) {
         API_TRY {
+            if(!gml_file_info->isValid()){
+                return APIResult::ErrorValueIsInvalid;
+            }
             const auto destination_root_path = std::string(destination_root_path_chars);
             gml_file_info->fetch(destination_root_path, *out_gml_file_info);
             return APIResult::Success;

@@ -231,7 +231,7 @@ namespace plateau::dataset {
                 auto src = fs::path(src_base_path).append(path).make_preferred();
                 auto dest = fs::path(dest_base_path).append(path).make_preferred();
                 if (!fs::exists(src)) {
-                    std::cout << "file not exist : " << src.string() << std::endl;
+                    std::cout << "file not exist : " << src.u8string() << std::endl;
                     continue;
                 }
                 fs::create_directories(dest.parent_path());
@@ -323,6 +323,7 @@ namespace plateau::dataset {
     }
 
     void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
+        if(!isValid()) throw std::runtime_error("gml file is invalid.");
         auto gml_relative_path_from_udx = fs::path();
         auto destination_udx_path = fs::path();
         auto gml_destination_path = fs::path();

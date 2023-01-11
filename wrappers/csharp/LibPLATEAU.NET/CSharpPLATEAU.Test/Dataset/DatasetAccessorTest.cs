@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 using PLATEAU.Network;
 
 namespace PLATEAU.Test.Dataset
@@ -141,16 +140,9 @@ namespace PLATEAU.Test.Dataset
             using var collection = source.Accessor;
             var meshCodes = collection.MeshCodes.ToArray();
             Assert.IsTrue(meshCodes.Length > 0);
-            foreach (var meshCode in meshCodes)
-            {
-                var extent = meshCode.Extent;
-                var min = extent.Min;
-                var max = extent.Max;
-                Console.WriteLine($"{min.Latitude}, {min.Longitude}, {min.Height}");
-            }
 
             PlateauVector3d center;
-            using (var geoRef = new GeoReference(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
+            using (var geoRef = GeoReference.Create(new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 9))
             {
                 center = collection.CalculateCenterPoint(geoRef);
             }
