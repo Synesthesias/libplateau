@@ -1,7 +1,9 @@
 ﻿
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.CityGML
 {
@@ -24,8 +26,10 @@ namespace PLATEAU.CityGML
             {
                 logCallbacks = LogCallbacks.StdOut;
             }
+
+            var gmlPathUtf8 = DLLUtil.StrToUtf8Bytes(gmlPath);
             APIResult result = NativeMethods.plateau_load_citygml(
-                gmlPath, parserParams, out IntPtr cityModelHandle,
+                gmlPathUtf8, parserParams, out IntPtr cityModelHandle,
                 logLevel, logCallbacks.LogErrorFuncPtr, logCallbacks.LogWarnFuncPtr, logCallbacks.LogInfoFuncPtr);
             if (result == APIResult.ErrorLoadingCityGml)
             {
@@ -34,6 +38,19 @@ namespace PLATEAU.CityGML
             }
             DLLUtil.CheckDllError(result);
             return new CityModel(cityModelHandle);
+        }
+
+        private static class NativeMethods
+        {
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_load_citygml(
+                [In] byte[] gmlPathUtf8,
+                [In] CitygmlParserParams parserParams,
+                out IntPtr cityModelHandle,
+                DllLogLevel logLevel,
+                IntPtr logErrorCallbackFuncPtr,
+                IntPtr logWarnCallbackFuncPtr,
+                IntPtr logInfoCallbackFuncPtr);
         }
     }
 }

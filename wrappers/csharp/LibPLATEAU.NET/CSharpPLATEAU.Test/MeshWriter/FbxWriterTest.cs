@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Interop;
 using PLATEAU.MeshWriter;
 using PLATEAU.Test.CityGML;
 using PLATEAU.Test.GeometryModel;

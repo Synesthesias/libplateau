@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Geometries;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.Geom
 {
@@ -42,7 +42,7 @@ namespace PLATEAU.Test.Geom
         /// </summary>
         private static void CheckZoneIDOrigin(int zoneID, double latitude, double longitude)
         {
-            using var geoReference = new GeoReference(
+            using var geoReference = GeoReference.Create(
                 new PlateauVector3d(0, 0, 0),
                 1f, CoordinateSystem.WUN, zoneID
             );
@@ -80,7 +80,7 @@ namespace PLATEAU.Test.Geom
 
         private static void CheckUnproject(PlateauVector3d point, GeoCoordinate targetLatLon, PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID)
         {
-            using var geoReference = new GeoReference(referencePoint, unitScale, coordinateSystem, zoneID);
+            using var geoReference = GeoReference.Create(referencePoint, unitScale, coordinateSystem, zoneID);
 
             var latLon = geoReference.Unproject(point);
             Assert.IsTrue(Math.Abs(latLon.Latitude - targetLatLon.Latitude) < 0.00000001);//およそ1mm相当の誤差以内か
@@ -99,7 +99,7 @@ namespace PLATEAU.Test.Geom
         [TestMethod]
         public void Getter_Returns_Value()
         {
-            var geoReference = new GeoReference(
+            using var geoReference = GeoReference.Create(
                 new PlateauVector3d(1, 2, 3), 4, CoordinateSystem.ENU, 5
             );
             Assert.AreEqual(1, geoReference.ReferencePoint.X);
@@ -112,7 +112,7 @@ namespace PLATEAU.Test.Geom
 
         private static void CheckProjectUnproject(PlateauVector3d referencePoint, float unitScale, CoordinateSystem coordinateSystem, int zoneID)
         {
-            using var geoReference = new GeoReference(referencePoint, unitScale, coordinateSystem, zoneID);
+            using var geoReference = GeoReference.Create(referencePoint, unitScale, coordinateSystem, zoneID);
             var latitude = 35.62439457074015;
             var longitude = 139.74256342432295;
             var xyz = geoReference.Project(new GeoCoordinate(latitude, longitude, 0.0));

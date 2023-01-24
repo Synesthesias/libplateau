@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using PLATEAU.CityGML;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.CityGML {
-    public static class TestUtil {
+    internal static class TestUtil {
 
         private static readonly Dictionary<GmlFileCase, string> GmlPaths = new Dictionary<GmlFileCase, string>()
         {
-            { GmlFileCase.Simple, "data/udx/bldg/53392642_bldg_6697_op2.gml" },
+            { GmlFileCase.Simple, "data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml" },
             // { GmlFileCase.Minatomirai , "data/53392642_bldg_6697_op2.gml"} // 今のところ未使用
         };
         

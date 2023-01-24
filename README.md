@@ -29,6 +29,10 @@ OSごとのビルド方法を記載する。
 - C++ の libplateau_c をビルドすると DLL ができる。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になる。
 - C++とC#のビルド設定を合わせる必要がある。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされてしまう。）
+- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug or x64-Release にある  
+  libplateau が C#のバイナリのディレクトリにコピーされているか確認してください。  
+  コピーコマンドは CSharpPLATEAU.Test.csproj に記載されており、C#のリビルド時に実行されるはずです。  
+  このコマンドが正しく動作するか確認してください。
 
 ### 3つのOS向けにまとめてビルド
 - Github Actions で```Upload Dlls``` というワークフローを手動実行すると、  
@@ -78,6 +82,16 @@ dotnet build -c Release
 ```
 dotnet test -c Release
 ```
+
+### MacOSでの手動ビルド
+#### C++ビルドに必要なもの
+- PowerShell をMacにインストールする必要があります。 brew でインストールしてください。
+- cmakeのビルドディレクトリを次のように設定します。
+  - Debug構成時は out/build/x64-Debug 
+  - Release(RelWithDebInfo)構成時は out/build/x64-Release
+#### C#ビルドに必要なもの
+- dotnet Core 3.1 を利用します。
+  - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
 
 ## サンプル
 ### log_skipped_elements

@@ -13,7 +13,7 @@ protected:
     }
 
     ParserParams params_;
-    const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+    const std::string gml_path_ = "../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
     std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
     const MeshExtractOptions mesh_extract_options_ = MeshExtractOptions();
     const GeoReference geo_reference_ = GeoReference(mesh_extract_options_.coordinate_zone_id, mesh_extract_options_.reference_point,

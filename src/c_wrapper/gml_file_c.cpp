@@ -14,12 +14,8 @@ extern "C" {
     ) {
         API_TRY {
             const auto gml_file_info = new GmlFile(std::string(path));
-            if (gml_file_info->isValid()) {
-                *gml_file_info_ptr = gml_file_info;
-                return APIResult::Success;
-            } else {
-                return APIResult::ErrorInvalidArgument;
-            }
+            *gml_file_info_ptr = gml_file_info;
+            return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;
     }
@@ -58,6 +54,9 @@ extern "C" {
             GmlFile* const out_gml_file_info
     ) {
         API_TRY {
+            if(!gml_file_info->isValid()){
+                return APIResult::ErrorValueIsInvalid;
+            }
             const auto destination_root_path = std::string(destination_root_path_chars);
             gml_file_info->fetch(destination_root_path, *out_gml_file_info);
             return APIResult::Success;

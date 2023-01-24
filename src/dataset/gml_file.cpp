@@ -73,13 +73,13 @@ namespace plateau::dataset {
         if (isMaxLodCalculated())
             return max_lod_;
 
-        auto lods = LodSearcher::searchLodsInFile(path_);
+        auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
         max_lod_ = lods.getMax();
         return max_lod_;
     }
 
     bool GmlFile::isValid() const {
-        return is_valid_;
+        return is_valid_ && getMeshCode().isValid();
     }
 
     bool GmlFile::isMaxLodCalculated() const {
@@ -231,7 +231,7 @@ namespace plateau::dataset {
                 auto src = fs::path(src_base_path).append(path).make_preferred();
                 auto dest = fs::path(dest_base_path).append(path).make_preferred();
                 if (!fs::exists(src)) {
-                    std::cout << "file not exist : " << src.string() << std::endl;
+                    std::cout << "file not exist : " << src.u8string() << std::endl;
                     continue;
                 }
                 fs::create_directories(dest.parent_path());
@@ -253,7 +253,7 @@ namespace plateau::dataset {
 
             const auto udx_path = gml_path_str.substr(0, udx_path_len);
             out_gml_relative_path_from_udx = fs::relative(fs::path(gml_path).make_preferred(),
-                                                          fs::u8path(udx_path)).make_preferred().string();
+                                                          fs::u8path(udx_path)).make_preferred().u8string();
             const auto root_folder_name = fs::u8path(udx_path).parent_path().filename();
             out_destination_udx_path = (fs::path(destination_root_path) / root_folder_name).append(u8"udx");
             out_gml_destination_path = fs::path(out_destination_udx_path);
@@ -323,6 +323,7 @@ namespace plateau::dataset {
     }
 
     void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
+        if(!isValid()) throw std::runtime_error("gml file is invalid.");
         auto gml_relative_path_from_udx = fs::path();
         auto destination_udx_path = fs::path();
         auto gml_destination_path = fs::path();

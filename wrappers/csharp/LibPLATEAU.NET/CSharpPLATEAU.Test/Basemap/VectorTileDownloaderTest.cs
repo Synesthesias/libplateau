@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Basemap;
-using PLATEAU.Interop;
+using PLATEAU.Native;
 
 namespace PLATEAU.Test.Basemap
 {

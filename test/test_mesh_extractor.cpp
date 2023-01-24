@@ -25,7 +25,7 @@ namespace plateau::polygonMesh {
 
         // テストで使う共通パーツです。
         ParserParams params_;
-        const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
+        const std::string gml_path_ = u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
         MeshExtractOptions mesh_extract_options_ = MeshExtractOptions();
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
         void testExtractFromCWrapper() const;

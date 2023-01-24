@@ -16,20 +16,20 @@ namespace plateau::meshWriter {
     protected:
         void SetUp() override {
             params_.tesselate = true;
-            fs::remove_all(u8"./tempTestDestDir");
+            fs::remove_all(fs::u8path(u8"./tempTestDestDir"));
         }
 
         void TearDown() override {
-            fs::remove_all(u8"./tempTestDestDir");
+            fs::remove_all(fs::u8path(u8"./tempTestDestDir"));
         }
 
         ParserParams params_;
 
 
-        const std::string gml_path_ = "../data/udx/bldg/53392642_bldg_6697_op2.gml";
-        std::string output_directory_ = ".";
-        std::string basename_ = fs::path(gml_path_).filename().replace_extension().string();
-        fs::path expected_output_gltf_ = fs::path(output_directory_).append(basename_ + ".fbx");
+        const std::string gml_path_ = u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
+        std::string output_directory_ = u8".";
+        std::string basename_ = fs::u8path(gml_path_).filename().replace_extension().u8string();
+        fs::path expected_output_gltf_ = fs::u8path(output_directory_) / fs::u8path(basename_ + ".fbx");
 
         plateau::polygonMesh::MeshExtractOptions mesh_extract_options_;
         const std::shared_ptr<const CityModel> city_model_ = load(gml_path_, params_);
