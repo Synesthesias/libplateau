@@ -23,9 +23,9 @@ namespace PLATEAU.Interop
     internal static class DLLUtil
     {
         #if UNITY_IOS && !UNITY_EDITOR_OSX
-        private const string DllName = "__Internal";
+            public const string DllName = "__Internal";
         #else
-        private const string DllName = "plateau";
+            public const string DllName = "plateau";
         #endif
 
         /// <summary>
