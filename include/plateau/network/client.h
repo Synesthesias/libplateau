@@ -52,6 +52,11 @@ namespace plateau::network {
         void setApiServerUrl(const std::string& url);
         std::shared_ptr<std::vector<DatasetMetadataGroup>> getMetadata() const;
         void getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const;
+
+        /**
+         * @brief サーバーから json を受け取り、それをパースしてデータファイルに関する情報を得ます。
+         * 受け取る json の例 : https://plateau-api-mock-v2.deta.dev/api/sdk/datasets/23ku/files
+         */
         DatasetFiles getFiles(const std::string& id) const;
         std::string download(const std::string& destination_directory_path, const std::string& url) const;
 

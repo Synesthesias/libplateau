@@ -70,13 +70,13 @@ namespace plateau::network {
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
             for (json::iterator it = jres.begin(); it != jres.end(); ++it) {
-                auto& key = it.key();
-                auto& file_items = it.value();
+                auto& key = it.key(); // パッケージ種です。例: "bldg"
+                auto& file_items = it.value(); // そのパッケージ種に属する、任意個数のファイル情報です。
 
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
-                for (const auto& file_item : file_items) {
+                for (const auto& file_item : file_items) { // 各ファイルについて
                     DatasetFileItem dataset_file;
-                    dataset_file.max_lod = (int)std::stof(std::string(file_item["maxLod"]));
+                    dataset_file.max_lod = file_item["maxLod"].get<int>();
                     dataset_file.mesh_code = file_item["code"];
                     dataset_file.url = file_item["url"];
 
