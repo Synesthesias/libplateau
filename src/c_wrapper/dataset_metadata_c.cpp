@@ -23,11 +23,6 @@ DLL_STRING_PTR_FUNC(plateau_dataset_metadata_get_description,
                     DatasetMetadata,
                     handle->description)
 
-DLL_VALUE_FUNC(plateau_dataset_metadata_get_max_lod,
-               DatasetMetadata,
-               int,
-               handle->max_lod)
-
 DLL_2_ARG_FUNC(plateau_dataset_metadata_get_feature_types,
                const DatasetMetadata* const meta_data,
                std::vector<std::string>* const feature_types,

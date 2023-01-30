@@ -17,7 +17,6 @@ int main(void) {
             std::cout << "  id : " << meta_data[i].datasets[j].id << std::endl;
             std::cout << "  title : " << meta_data[i].datasets[j].title << std::endl;
             std::cout << "  description : " << meta_data[i].datasets[j].description << std::endl;
-            std::cout << "  max_lod : " << meta_data[i].datasets[j].max_lod << std::endl;
             std::cout << "  feature_types : ";
             for(int k = 0; k < meta_data[i].datasets[j].feature_types.size(); k++) std::cout << meta_data[i].datasets[j].feature_types[k] << " ,";
             std::cout << std::endl;

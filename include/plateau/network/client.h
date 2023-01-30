@@ -12,7 +12,6 @@ namespace plateau::network {
         std::string id;
         std::string title;
         std::string description;
-        int max_lod = 0;
         std::vector<std::string> feature_types;
     };
 

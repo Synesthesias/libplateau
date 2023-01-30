@@ -41,7 +41,6 @@ namespace plateau::network {
                     dataset_meta_data.id = jres["data"][i]["data"][j]["id"];
                     dataset_meta_data.title = jres["data"][i]["data"][j]["title"];
                     dataset_meta_data.description = jres["data"][i]["data"][j]["description"];
-                    dataset_meta_data.max_lod = jres["data"][i]["data"][j]["maxLod"];
                     if (jres["data"][i]["data"][j].contains("featureTypes")) {
                         dataset_meta_data.feature_types = jres["data"][i]["data"][j]["featureTypes"];
                     }
