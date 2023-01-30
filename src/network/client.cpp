@@ -26,7 +26,7 @@ namespace plateau::network {
     void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get("/api/sdk/data");
+        auto res = cli.Get(endPointUrlForMetadataGroups());
 
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
@@ -63,7 +63,7 @@ namespace plateau::network {
 
         httplib::Client cli(server_url_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get("/api/sdk/codes/" + id);
+        auto res = cli.Get(endPointUrlForFiles(id));
 
         DatasetFiles dataset_files;
 

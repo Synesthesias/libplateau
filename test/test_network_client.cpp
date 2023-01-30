@@ -16,7 +16,7 @@ namespace plateau::network {
 
     TEST_F(ClientTest, GetMetadata) { // NOLINT
         auto meta_data = client.getMetadata();
-        ASSERT_NE(meta_data->size(), 0);
+        ASSERT_NE(meta_data->size(), 0) << "Metadata Exists.";
         if (!meta_data->empty()) {
             ASSERT_EQ(meta_data->at(0).id, "tokyo");
             ASSERT_EQ(meta_data->at(0).datasets[0].max_lod, 3);
