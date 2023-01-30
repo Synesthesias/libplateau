@@ -28,8 +28,8 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.Create(true, "", "23ku");
             using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(3, meshCodes.Length);
-            Assert.AreEqual("53392642", meshCodes.At(1).ToString());
+            Assert.AreEqual(2, meshCodes.Length);
+            Assert.AreEqual("53392670", meshCodes.At(1).ToString());
         }
         
         [TestMethod]
@@ -147,10 +147,10 @@ namespace PLATEAU.Test.Dataset
                 center = collection.CalculateCenterPoint(geoRef);
             }
             Console.WriteLine(center);
-            // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。
+            // テスト用のデータは、基準点からおおむね南に50km, 西に5km の地点にあります。
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 1000, "南に51km");
+            Assert.IsTrue(Math.Abs(center.Z - (-50000)) < 2000, "南に50km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
             Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
         

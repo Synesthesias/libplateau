@@ -27,10 +27,10 @@ namespace plateau::dataset {
     TEST_F(ServerDatasetAccessorTest, getmaxLod) { // NOLINT
         const auto dataset_source = DatasetSource::createServer("23ku", network::Client());
         const auto accessor = dataset_source.getAccessor();
-        int max_lod =
-            accessor->filterByMeshCodes({ MeshCode("53392670") })
-            ->getGmlFiles(PredefinedCityModelPackage::Building)
-            ->at(0).getMaxLod();
+        const auto filter_by_mesh_codes = accessor->filterByMeshCodes({MeshCode("53392670")});
+        const auto gml_files = filter_by_mesh_codes->getGmlFiles(PredefinedCityModelPackage::Building);
+        auto first_gml = gml_files->at(0);
+        int max_lod = first_gml.getMaxLod();
         ASSERT_EQ(max_lod, 2);
     }
 }

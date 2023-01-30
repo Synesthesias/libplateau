@@ -22,6 +22,11 @@ namespace plateau::network {
             ASSERT_EQ(meta_data->at(0).datasets[0].max_lod, 3);
         }
     }
+
+    TEST_F(ClientTest, GetFiles){ // NOLINT
+        auto files = client.getFiles("23ku");
+        ASSERT_TRUE(!files.empty());
+    }
     
     TEST_F(ClientTest, Download) { // NOLINT
         std::string gml_file_name = "53392642_bldg_6697_2_op.gml";

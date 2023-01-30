@@ -61,6 +61,6 @@ namespace plateau::network {
         std::string server_url_;
 
         static std::string endPointUrlForMetadataGroups() { return "/api/sdk/datasets"; }
-        static std::string endPointUrlForFiles(const std::string& id) { return "/api/sdk/codes/" + id + "/files"; }
+        static std::string endPointUrlForFiles(const std::string& id) { return "/api/sdk/datasets/" + id + "/files"; }
     };
 }
