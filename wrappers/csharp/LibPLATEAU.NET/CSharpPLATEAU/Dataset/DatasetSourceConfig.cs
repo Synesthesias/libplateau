@@ -12,7 +12,8 @@ namespace PLATEAU.Dataset
         public bool IsServer { get; set; }
         public string LocalSourcePath { get; set; }
         public string ServerDatasetID { get; set; }
-        
+        public string ServerUrl { get; set; }
+
         /// <summary>
         /// <see cref="DatasetSource"/> の初期化のための情報を渡すコンストラクタです。
         /// </summary>
@@ -22,11 +23,13 @@ namespace PLATEAU.Dataset
         /// サーバーモードでのみ利用します。データセットのIDを渡します。
         /// そのIDとは、APIサーバーにデータセットの一覧を問い合わせたときに得られるID文字列です。例: 東京23区のデータセットのIDは "23ku"
         /// </param>
-        public DatasetSourceConfig(bool isServer, string localSourcePath, string serverDatasetID)
+        /// <param name="serverUrl">サーバーモードでのみ利用します。サーバーのURLです。</param>
+        public DatasetSourceConfig(bool isServer, string localSourcePath, string serverDatasetID, string serverUrl)
         {
             IsServer = isServer;
             LocalSourcePath = localSourcePath;
             ServerDatasetID = serverDatasetID;
+            ServerUrl = serverUrl;
         }
     }
 }

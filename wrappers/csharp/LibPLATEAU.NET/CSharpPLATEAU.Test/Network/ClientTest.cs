@@ -10,8 +10,7 @@ namespace PLATEAU.Test.Network
         [TestMethod]
         public void GetDatasetMetadataGroup()
         {
-            var client = Client.Create();
-            client.Url = NetworkConfig.DefaultApiServerUrl;
+            var client = Client.CreateForMockServer();
             var metadataGroups = client.GetDatasetMetadataGroup();
             Assert.AreEqual(2, metadataGroups.Length);
             var group = metadataGroups.At(0);
@@ -32,7 +31,7 @@ namespace PLATEAU.Test.Network
         [TestMethod]
         public void GetAndSetUrl()
         {
-            var client = Client.Create();
+            var client = Client.Create("", "");
             client.Url = "https://dummy.com";
             Assert.AreEqual("https://dummy.com", client.Url);
             client.Dispose();
