@@ -27,12 +27,20 @@ namespace plateau::dataset {
 
     GmlFile::GmlFile(const std::string& path) // NOLINT
             : path_(path), is_valid_(false), is_local_(true), max_lod_(-1) {
+        // 上の行の is_valid_ と is_local_ の設定は一時的なもので、すぐ applyPath() によって書き換えられます。
         applyPath();
     }
 
-    GmlFile::GmlFile(const std::string& path, const int max_lod) // NOLINT
-            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
-        applyPath();
+//    GmlFile::GmlFile(const std::string& path, const int max_lod) // NOLINT
+//            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
+//        applyPath();
+//    }
+
+    /// サーバーモードで使うコンストラクタです。GMLファイルのダウンロードに使う Client を指定します。
+    GmlFile::GmlFile(const std::string& path, const network::Client& client, int max_lod)
+    : GmlFile(path){
+        client_ = client;
+        max_lod_ = max_lod;
     }
 
     const std::string& GmlFile::getPath() const {
@@ -281,10 +289,9 @@ namespace plateau::dataset {
         }
 
         void fetchServer(const fs::path& gml_file_path, const fs::path& gml_relative_path_from_udx, const fs::path& destination_udx_path,
-                         const fs::path& gml_destination_path, GmlFile& copied_gml_file) {
+                         const fs::path& gml_destination_path, GmlFile& copied_gml_file, const network::Client& client) {
             auto destination_dir = gml_destination_path.parent_path();
             // gmlファイルをダウンロードします。
-            auto client = Client();
             client.download(destination_dir.u8string(), gml_file_path.u8string());
             auto downloaded_path = destination_dir;
             downloaded_path /= gml_file_path.filename();
@@ -330,11 +337,16 @@ namespace plateau::dataset {
         prepareFetch(fs::u8path(getPath()), fs::u8path(destination_root_path), gml_relative_path_from_udx, destination_udx_path,
                      gml_destination_path);
         if (is_local_) {
+            // ローカルモード
             fetchLocal(fs::u8path(path_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
                        copied_gml_file);
         } else {
+            // サーバーモード
+            if (!client_.has_value()) {
+                throw std::runtime_error("Client is nullopt.");
+            }
             fetchServer(fs::u8path(path_), gml_relative_path_from_udx, destination_udx_path, gml_destination_path,
-                        copied_gml_file);
+                        copied_gml_file, client_.value());
         }
     }
 

@@ -5,8 +5,12 @@ extern "C" {
 using namespace plateau::network;
 using namespace libplateau;
 
-DLL_CREATE_FUNC(plateau_create_client,
-                Client)
+// TODO C#側対応
+DLL_3_ARG_FUNC(plateau_create_client,
+                const Client** out_client_ptr,
+                const char* const server_url,
+                const char* const api_token,
+                *out_client_ptr = new Client(server_url, api_token))
 
 DLL_DELETE_FUNC(plateau_delete_client,
                 Client)

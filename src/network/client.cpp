@@ -7,12 +7,24 @@
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
+namespace {
+    httplib::Client createHttpLibClient(const std::string& url, const std::string& api_token) {
+        auto client = httplib::Client(url);
+        // Bearer認証を設定します。
+        httplib::Headers headers = {{"Authorization", "Bearer " + api_token}};
+        client.set_default_headers(headers);
+        return client;
+    }
+}
+
 namespace plateau::network {
-    Client::Client(const std::string& server_url) {
-        if (server_url.empty())
-            setApiServerUrl(getDefaultServerUrl());
-        else
-            setApiServerUrl(server_url);
+    Client::Client(const std::string& server_url, const std::string& api_token) {
+        setApiServerUrl( server_url.empty() ? getDefaultServerUrl() : server_url);
+        setApiToken(api_token.empty() ? getDefaultApiToken() : api_token);
+    }
+
+    Client Client::createClientForMockServer() {
+        return Client(Client::getMockServerUrl(), "");
     }
 
     std::string Client::getApiServerUrl() const {
@@ -23,8 +35,12 @@ namespace plateau::network {
         server_url_ = url;
     }
 
+    void Client::setApiToken(const std::string& api_token) {
+        api_token_ = api_token;
+    }
+
     void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
         auto res = cli.Get(endPointUrlForMetadataGroups());
 
@@ -59,8 +75,7 @@ namespace plateau::network {
 
     DatasetFiles Client::getFiles(const std::string& id) const {
         auto file_url_lod = std::make_shared<std::map<std::string, std::vector<std::pair<float, std::string>>>>();
-
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
         auto res = cli.Get(endPointUrlForFiles(id));
 
@@ -94,7 +109,7 @@ namespace plateau::network {
         auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
         fs::create_directories(destination_directory);
 
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
 
         // '\\' を '/' に置換
@@ -123,7 +138,17 @@ namespace plateau::network {
     }
 
     const std::string& Client::getDefaultServerUrl() {
-        static const std::string default_server_url = "https://plateau-api-mock-v2.deta.dev";
+        static const std::string default_server_url = "https://api.plateau.reearth.io";
         return default_server_url;
+    }
+
+    const std::string& Client::getMockServerUrl() {
+        static const std::string mock_server_url = "https://plateau-api-mock-v2.deta.dev";
+        return mock_server_url;
+    }
+
+    const std::string& Client::getDefaultApiToken() {
+        static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
+        return default_api_token;
     }
 }

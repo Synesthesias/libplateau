@@ -45,10 +45,12 @@ namespace plateau::network {
      */
     class LIBPLATEAU_EXPORT Client {
     public:
-        explicit Client(const std::string& server_url = "");
+        Client(const std::string& server_url, const std::string& api_token);
+        static Client createClientForMockServer();
 
         std::string getApiServerUrl() const;
         void setApiServerUrl(const std::string& url);
+        void setApiToken(const std::string& api_token);
         std::shared_ptr<std::vector<DatasetMetadataGroup>> getMetadata() const;
         void getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const;
 
@@ -60,9 +62,11 @@ namespace plateau::network {
         std::string download(const std::string& destination_directory_path, const std::string& url) const;
 
         static const std::string& getDefaultServerUrl();
-
+        static const std::string& getMockServerUrl();
+        static const std::string& getDefaultApiToken(); // Bearer認証で使います。
     private:
         std::string server_url_;
+        std::string api_token_;
 
         static std::string endPointUrlForMetadataGroups() { return "/api/sdk/datasets"; }
         static std::string endPointUrlForFiles(const std::string& id) { return "/api/sdk/datasets/" + id + "/files"; }

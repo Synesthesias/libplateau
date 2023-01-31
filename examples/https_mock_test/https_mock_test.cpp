@@ -1,9 +1,7 @@
 ﻿#include <plateau/network/client.h>
 
 int main(void) {
-    plateau::network::Client client;
-
-    client.setApiServerUrl(plateau::network::Client::getDefaultServerUrl());
+    const auto client = plateau::network::Client::createClientForMockServer();
 
     // check Client::getMetadata
     auto meta_data_ptr = client.getMetadata();
