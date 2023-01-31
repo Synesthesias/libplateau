@@ -148,6 +148,7 @@ namespace plateau::network {
     }
 
     const std::string& Client::getDefaultApiToken() {
+        // TODO あとで消す
         static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
         return default_api_token;
     }

@@ -24,7 +24,7 @@ namespace PLATEAU.Dataset
         /// <param name="serverUrl">サーバーモードでのみ利用します。サーバーのURLです。</param>
         private static DatasetSource Create(bool isServer, string localSourcePath, string serverDatasetID, string serverUrl)
         {
-            return Create(new DatasetSourceConfig(isServer, localSourcePath, serverDatasetID, serverUrl));
+            return Create(new DatasetSourceConfig(isServer, localSourcePath, serverDatasetID, serverUrl, ""));
         }
         
         
