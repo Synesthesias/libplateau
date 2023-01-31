@@ -18,6 +18,17 @@ namespace PLATEAU.Network
             }
         }
 
+        public static string DefaultApiToken
+        {
+            get
+            {
+                var tokenNative = NativeString.Create();
+                var result = NativeMethods.plateau_client_get_default_api_token(tokenNative.Handle);
+                DLLUtil.CheckDllError(result);
+                return tokenNative.ToString();
+            }
+        }
+
         public static string MockServerUrl
         {
             get
@@ -36,8 +47,13 @@ namespace PLATEAU.Network
                 [In, Out] IntPtr nativeStrPtr);
 
             [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_client_get_default_api_token(
+                [In, Out] IntPtr nativeStrPtr);
+
+            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_client_get_mock_server_url(
                 [In, Out] IntPtr nativeStrPtr);
+            
         }
     }
 }
