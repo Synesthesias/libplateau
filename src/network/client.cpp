@@ -8,6 +8,7 @@ using json = nlohmann::json;
 namespace fs = std::filesystem;
 
 namespace {
+    /// httplib::Client を作成し、それにURLとAPIトークンを設定して返します。
     httplib::Client createHttpLibClient(const std::string& url, const std::string& api_token) {
         auto client = httplib::Client(url);
         // Bearer認証を設定します。
@@ -148,7 +149,6 @@ namespace plateau::network {
     }
 
     const std::string& Client::getDefaultApiToken() {
-        // TODO あとで消す
         static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
         return default_api_token;
     }

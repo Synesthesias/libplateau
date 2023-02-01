@@ -56,19 +56,26 @@ namespace plateau::network {
 
         /**
          * @brief サーバーから json を受け取り、それをパースしてデータファイルに関する情報を得ます。
-         * 受け取る json の例 : https://plateau-api-mock-v2.deta.dev/api/sdk/datasets/23ku/files
+         * 受け取る json の例 : https://plateau-api-mock-v2.deta.dev/sdk/datasets/23ku/files
          */
         DatasetFiles getFiles(const std::string& id) const;
         std::string download(const std::string& destination_directory_path, const std::string& url) const;
 
+        /// 株式会社ユーカリヤさんが提供するAPIサーバーのURLをデフォルト値とします。
         static const std::string& getDefaultServerUrl();
+        /// 株式会社シナスタジアが開発用に用意したモックサーバーのURLです。
         static const std::string& getMockServerUrl();
-        static const std::string& getDefaultApiToken(); // Bearer認証で使います。
+
+        /**
+         * サーバーへの接続にあたって Bearer認証で使うトークンであり、(株)ユーカリヤさんのサーバーへの接続に必要なものです。
+         * なお(株)シナスタジアのモックサーバーへの接続時はトークンは空文字で良いです。
+         */
+        static const std::string& getDefaultApiToken();
     private:
         std::string server_url_;
         std::string api_token_;
 
-        static std::string endPointUrlForMetadataGroups() { return "/api/sdk/datasets"; }
-        static std::string endPointUrlForFiles(const std::string& id) { return "/api/sdk/datasets/" + id + "/files"; }
+        static std::string endPointUrlForMetadataGroups() { return "/sdk/datasets"; }
+        static std::string endPointUrlForFiles(const std::string& id) { return "/sdk/datasets/" + id + "/files"; }
     };
 }

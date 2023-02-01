@@ -14,7 +14,6 @@ namespace plateau::dataset {
     class LIBPLATEAU_EXPORT GmlFile {
     public:
         explicit GmlFile(const std::string& path);
-//        explicit GmlFile(const std::string& path, const int max_lod);
         GmlFile(const std::string& path, const network::Client& client, int max_lod = -1);
 
 

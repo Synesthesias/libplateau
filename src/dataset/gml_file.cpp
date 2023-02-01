@@ -31,11 +31,6 @@ namespace plateau::dataset {
         applyPath();
     }
 
-//    GmlFile::GmlFile(const std::string& path, const int max_lod) // NOLINT
-//            : path_(path), is_valid_(false), is_local_(true), max_lod_(max_lod) {
-//        applyPath();
-//    }
-
     /// サーバーモードで使うコンストラクタです。GMLファイルのダウンロードに使う Client を指定します。
     GmlFile::GmlFile(const std::string& path, const network::Client& client, int max_lod)
     : GmlFile(path){
