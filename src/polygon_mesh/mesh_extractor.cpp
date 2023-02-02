@@ -1,6 +1,6 @@
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include "citygml/tesselator.h"
+#include "citygml/vecs.hpp"
 #include "citygml/texture.h"
 #include "../src/polygon_mesh/grid_merger.h"
 #include "citygml/cityobject.h"
