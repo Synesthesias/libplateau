@@ -45,7 +45,13 @@ namespace plateau::network {
      */
     class LIBPLATEAU_EXPORT Client {
     public:
+        /**
+         * @brief
+         * @param server_url 接続先のURLです。空文字の場合、デフォルトのものを利用します。
+         * @param api_token 接続時のBearer認証トークンです。空文字の場合、デフォルトのものを利用します。
+         */
         Client(const std::string& server_url, const std::string& api_token);
+
         static Client createClientForMockServer();
 
         std::string getApiServerUrl() const;
