@@ -39,13 +39,6 @@ DLL_4_ARG_FUNC(plateau_client_download,
                std::string* const out_downloaded_path,
                *out_downloaded_path = client->download(destination_directory, url) )
 
-DLL_1_ARG_FUNC(plateau_client_get_default_url,
-               std::string* out_default_url,
-               *out_default_url = Client::getDefaultServerUrl())
-
-DLL_1_ARG_FUNC(plateau_client_get_default_api_token,
-               std::string* out_default_api_token,
-               *out_default_api_token = Client::getDefaultApiToken())
 
 DLL_1_ARG_FUNC(plateau_client_get_mock_server_url,
                std::string* out_mock_server_url,
