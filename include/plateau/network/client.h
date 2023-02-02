@@ -61,14 +61,14 @@ namespace plateau::network {
         DatasetFiles getFiles(const std::string& id) const;
         std::string download(const std::string& destination_directory_path, const std::string& url) const;
 
-        /// 株式会社ユーカリヤさんが提供するAPIサーバーのURLをデフォルト値とします。
+        /// 本番APIサーバーのURLをデフォルト値とします。
         static const std::string& getDefaultServerUrl();
-        /// 株式会社シナスタジアが開発用に用意したモックサーバーのURLです。
+        /// 開発用に用意したモックサーバーのURLです。
         static const std::string& getMockServerUrl();
 
         /**
-         * サーバーへの接続にあたって Bearer認証で使うトークンであり、(株)ユーカリヤさんのサーバーへの接続に必要なものです。
-         * なお(株)シナスタジアのモックサーバーへの接続時はトークンは空文字で良いです。
+         * サーバーへの接続にあたって Bearer認証で使うトークンであり、本番サーバーへの接続に必要なものです。
+         * なおモックサーバーへの接続時はトークンは空文字で良いです。
          */
         static const std::string& getDefaultApiToken();
     private:
