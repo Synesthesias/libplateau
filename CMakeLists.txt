@@ -68,16 +68,18 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-## ユニットテスト
-add_subdirectory("test")
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  ## ユニットテスト
+  add_subdirectory("test")
 
-# dependencies
-## Xerces-C をビルドします。
-### libcitygmlのFindXercesを通すために全てキャッシュ化
-set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
-add_subdirectory("3rdparty/xerces-c")
-set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
-set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
+  # dependencies
+  ## Xerces-C をビルドします。
+  ### libcitygmlのFindXercesを通すために全てキャッシュ化
+  set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
+  add_subdirectory("3rdparty/xerces-c")
+  set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
+  set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
+endif()
 
 ## libcitygml をビルドします。
 ### TODO: GDAL Support
@@ -93,78 +95,80 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
-# FBX SDK 以下のディレクトリで debug と release のどちらを利用するか決めます。
-# debug なら debug/*-md.lib を使い、release なら release/*-mt.lib を使います。
-if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-  set(FBXSDK_LAST_DIR_NAME "debug")
-  set(FBXSDK_MT_OR_MD "md")
-else()
-  set(FBXSDK_LAST_DIR_NAME "release")
-  set(FBXSDK_MT_OR_MD "mt")
-endif()
-
-## zlib(FBX SDKの依存関係)
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
-add_subdirectory("3rdparty/zlib")
-set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/3rdparty/zlib")
-
-if(UNIX)
-  set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
-elseif(WIN32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win64/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
-  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win32/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
-  endif()
-endif(UNIX)
-
-## libxml2(FBX SDKの依存関係)
-if(UNIX)
-  # FBX SDKのLinux, macOS向けライブラリではiconvが必要
-  set(LIBXML2_WITH_ICONV ON CACHE BOOL "" FORCE)
-elseif(WIN32)
-  set(LIBXML2_WITH_ICONV OFF CACHE BOOL "" FORCE)
-endif()
-set(LIBXML2_WITH_LZMA OFF CACHE BOOL "" FORCE)
-set(LIBXML2_WITH_PYTHON OFF CACHE BOOL "" FORCE)
-set(LIBXML2_WITH_TESTS OFF CACHE BOOL "" FORCE)
-
-add_subdirectory("3rdparty/libxml2")
-
-## FBX SDK
-set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
-
-if(UNIX)
-  if (APPLE)
-    set(FBXSDK_LIB_PATH_SUFFIXES mac)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  # FBX SDK 以下のディレクトリで debug と release のどちらを利用するか決めます。
+  # debug なら debug/*-md.lib を使い、release なら release/*-mt.lib を使います。
+  if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(FBXSDK_LAST_DIR_NAME "debug")
+    set(FBXSDK_MT_OR_MD "md")
   else()
+    set(FBXSDK_LAST_DIR_NAME "release")
+    set(FBXSDK_MT_OR_MD "mt")
+  endif()
+
+  ## zlib(FBX SDKの依存関係)
+  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
+  add_subdirectory("3rdparty/zlib")
+  set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/3rdparty/zlib")
+
+  if(UNIX)
+    set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
+  elseif(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      set(FBXSDK_LIB_PATH_SUFFIXES linux64)
+      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win64/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-      set(FBXSDK_LIB_PATH_SUFFIXES linux32)
+      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win32/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
+    endif()
+  endif(UNIX)
+
+  ## libxml2(FBX SDKの依存関係)
+  if(UNIX)
+    # FBX SDKのLinux, macOS向けライブラリではiconvが必要
+    set(LIBXML2_WITH_ICONV ON CACHE BOOL "" FORCE)
+  elseif(WIN32)
+    set(LIBXML2_WITH_ICONV OFF CACHE BOOL "" FORCE)
+  endif()
+  set(LIBXML2_WITH_LZMA OFF CACHE BOOL "" FORCE)
+  set(LIBXML2_WITH_PYTHON OFF CACHE BOOL "" FORCE)
+  set(LIBXML2_WITH_TESTS OFF CACHE BOOL "" FORCE)
+
+  add_subdirectory("3rdparty/libxml2")
+
+  ## FBX SDK
+  set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
+
+  if(UNIX)
+    if (APPLE)
+      set(FBXSDK_LIB_PATH_SUFFIXES mac)
+    else()
+      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(FBXSDK_LIB_PATH_SUFFIXES linux64)
+      elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(FBXSDK_LIB_PATH_SUFFIXES linux32)
+      endif()
+    endif()
+  elseif(WIN32)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(FBXSDK_LIB_PATH_SUFFIXES win64)
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+      set(FBXSDK_LIB_PATH_SUFFIXES win32)
     endif()
   endif()
-elseif(WIN32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(FBXSDK_LIB_PATH_SUFFIXES win64)
-  elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(FBXSDK_LIB_PATH_SUFFIXES win32)
-  endif()
+
+  set(FBXSDK_LIB_PATH_SUFFIXES "${FBXSDK_LIB_PATH_SUFFIXES}/${FBXSDK_LAST_DIR_NAME}")
+
+  find_library(FBXSDK_LIBRARIES
+    NAMES
+      libfbxsdk-md libfbxsdk-mt libfbxsdk.a
+    PATHS
+      ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
+    PATH_SUFFIXES
+      ${FBXSDK_LIB_PATH_SUFFIXES}
+    NO_DEFAULT_PATH
+    NO_CMAKE_FIND_ROOT_PATH
+  )
+  message("${FBXSDK_LIB_PATH_SUFFIXES} , ${FBXSDK_LIBRARIES}")
 endif()
-
-set(FBXSDK_LIB_PATH_SUFFIXES "${FBXSDK_LIB_PATH_SUFFIXES}/${FBXSDK_LAST_DIR_NAME}")
-
-find_library(FBXSDK_LIBRARIES
-  NAMES
-    libfbxsdk-md libfbxsdk-mt libfbxsdk.a
-  PATHS
-    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
-  PATH_SUFFIXES
-    ${FBXSDK_LIB_PATH_SUFFIXES}
-  NO_DEFAULT_PATH
-  NO_CMAKE_FIND_ROOT_PATH
-)
-message("${FBXSDK_LIB_PATH_SUFFIXES} , ${FBXSDK_LIBRARIES}")
 
 # cpp-httplib
 add_subdirectory("3rdparty/cpp-httplib")
@@ -175,12 +179,15 @@ add_subdirectory("3rdparty/openssl-cmake")
 
 # libplateau をビルドします。
 add_subdirectory("src")
-## Examples
-add_subdirectory("examples/log_skipped_elements")
-add_subdirectory("examples/export_obj")
-add_subdirectory("examples/export_gltf")
-add_subdirectory("examples/export_fbx")
-add_subdirectory("examples/https_mock_test")
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  ## Examples
+  add_subdirectory("examples/log_skipped_elements")
+  add_subdirectory("examples/export_obj")
+  add_subdirectory("examples/export_gltf")
+  add_subdirectory("examples/export_fbx")
+  add_subdirectory("examples/https_mock_test")
+endif()
 
 # python
 option(BUILD_PYTHON "Build python wrapper" OFF)
@@ -190,3 +197,14 @@ endif(BUILD_PYTHON)
 
 # Copy data for testing
 file(COPY data/ DESTINATION "${CMAKE_BINARY_DIR}/data")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+  set_target_properties(ssl PROPERTIES
+    XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
+    XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+  )
+  set_target_properties(crypto PROPERTIES
+    XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
+    XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+  )
+endif()
