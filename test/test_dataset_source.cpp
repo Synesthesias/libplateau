@@ -23,10 +23,10 @@ namespace plateau::dataset {
     }
 
     TEST_F(DatasetSourceTest, get_accessor_of_server_source_returns_server_accessor) { // NOLINT
-        auto source = DatasetSource::createServer(std::string("23ku"), network::Client());
+        auto source = DatasetSource::createServer(std::string("23ku"), network::Client::createClientForMockServer());
         auto accessor = source.getAccessor();
         auto mesh_code_str = accessor->getMeshCodes().begin()->get();
-        ASSERT_EQ(mesh_code_str, "533926");
+        ASSERT_EQ(mesh_code_str, "53392642");
         auto gml_files = accessor->getGmlFiles(PredefinedCityModelPackage::Building);
         ASSERT_EQ(gml_files->at(0).getMeshCode().get(), "53392642");
     }

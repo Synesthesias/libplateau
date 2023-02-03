@@ -10,8 +10,7 @@ namespace PLATEAU.Test.Network
         [TestMethod]
         public void GetDatasetMetadataGroup()
         {
-            var client = Client.Create();
-            client.Url = NetworkConfig.DefaultApiServerUrl;
+            var client = Client.CreateForMockServer();
             var metadataGroups = client.GetDatasetMetadataGroup();
             Assert.AreEqual(2, metadataGroups.Length);
             var group = metadataGroups.At(0);
@@ -21,7 +20,6 @@ namespace PLATEAU.Test.Network
             Assert.AreEqual("23ku", dataset23Ku.ID);
             Assert.AreEqual("23区", dataset23Ku.Title);
             Assert.AreEqual("xxxx", dataset23Ku.Description);
-            Assert.AreEqual(3, dataset23Ku.MaxLOD);
             var datasetHachioji = group.Datasets.At(1);
             Assert.AreEqual("八王子市", datasetHachioji.Title);
             var featureTypes = datasetHachioji.FeatureTypes;
@@ -33,7 +31,7 @@ namespace PLATEAU.Test.Network
         [TestMethod]
         public void GetAndSetUrl()
         {
-            var client = Client.Create();
+            var client = Client.Create("", "");
             client.Url = "https://dummy.com";
             Assert.AreEqual("https://dummy.com", client.Url);
             client.Dispose();

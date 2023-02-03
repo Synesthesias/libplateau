@@ -118,7 +118,9 @@ TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
     // パスに日本語を含むケースで動作確認します。
     auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");
     fs::remove_all(temp_test_dir);
-    const auto& test_gml_info = GmlFile(std::string(Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml"));
+    const auto file_url = std::string(Client::getMockServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+    const auto client = Client::createClientForMockServer();
+    const auto& test_gml_info = GmlFile(file_url, client);
     test_gml_info.fetch(temp_test_dir.u8string());
     // gmlファイルがコピー先に存在します。
     auto bldg_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg");

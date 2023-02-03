@@ -6,6 +6,7 @@
 namespace plateau::dataset {
     /**
      * \brief サーバー上のPLATEAUデータセットに対して、データの検索等を行います。
+     * 他クラスとの関係 については DatasetSource のコメントを参照してください。
      */
     class LIBPLATEAU_EXPORT ServerDatasetAccessor : public IDatasetAccessor {
     public:

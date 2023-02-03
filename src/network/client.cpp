@@ -1,18 +1,47 @@
 #include <plateau/network/client.h>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include "../../3rdparty/cpp-httplib/httplib.h"
 #include "../../3rdparty/json/single_include/nlohmann/json.hpp"
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
+namespace {
+    /// httplib::Client を作成し、それにURLとAPIトークンを設定して返します。
+    httplib::Client createHttpLibClient(const std::string& url, const std::string& api_token) {
+        auto client = httplib::Client(url);
+        // Bearer認証を設定します。
+        httplib::Headers headers = {{"Authorization", "Bearer " + api_token}};
+        client.set_default_headers(headers);
+        return client;
+    }
+
+    /// 本番APIサーバーのURLをデフォルト値とします。
+    const std::string& getDefaultServerUrl() {
+        static const std::string default_server_url = "https://api.plateau.reearth.io";
+        return default_server_url;
+    }
+
+    /**
+     * サーバーへの接続にあたって Bearer認証で使うトークンであり、本番サーバーへの接続に必要なものです。
+     * なおモックサーバーへの接続時はトークンは空文字で良いです。
+     */
+    const std::string& getDefaultApiToken() {
+        static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
+        return default_api_token;
+    }
+}
+
 namespace plateau::network {
-    Client::Client(const std::string& server_url) {
-        if (server_url.empty())
-            setApiServerUrl(getDefaultServerUrl());
-        else
-            setApiServerUrl(server_url);
+    Client::Client(const std::string& server_url, const std::string& api_token) {
+        setApiServerUrl(server_url.empty() ? getDefaultServerUrl() : server_url);
+        setApiToken(api_token.empty() ? getDefaultApiToken() : api_token);
+    }
+
+    Client Client::createClientForMockServer() {
+        return Client(Client::getMockServerUrl(), "");
     }
 
     std::string Client::getApiServerUrl() const {
@@ -23,10 +52,14 @@ namespace plateau::network {
         server_url_ = url;
     }
 
+    void Client::setApiToken(const std::string& api_token) {
+        api_token_ = api_token;
+    }
+
     void Client::getMetadata(std::vector<DatasetMetadataGroup>& out_metadata_groups) const {
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get("/api/sdk/data");
+        auto res = cli.Get(endPointUrlForMetadataGroups());
 
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
@@ -41,7 +74,6 @@ namespace plateau::network {
                     dataset_meta_data.id = jres["data"][i]["data"][j]["id"];
                     dataset_meta_data.title = jres["data"][i]["data"][j]["title"];
                     dataset_meta_data.description = jres["data"][i]["data"][j]["description"];
-                    dataset_meta_data.max_lod = jres["data"][i]["data"][j]["maxLod"];
                     if (jres["data"][i]["data"][j].contains("featureTypes")) {
                         dataset_meta_data.feature_types = jres["data"][i]["data"][j]["featureTypes"];
                     }
@@ -60,23 +92,22 @@ namespace plateau::network {
 
     DatasetFiles Client::getFiles(const std::string& id) const {
         auto file_url_lod = std::make_shared<std::map<std::string, std::vector<std::pair<float, std::string>>>>();
-
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
-        auto res = cli.Get("/api/sdk/codes/" + id);
+        auto res = cli.Get(endPointUrlForFiles(id));
 
         DatasetFiles dataset_files;
 
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
             for (json::iterator it = jres.begin(); it != jres.end(); ++it) {
-                auto& key = it.key();
-                auto& file_items = it.value();
+                auto& key = it.key(); // パッケージ種です。例: "bldg"
+                auto& file_items = it.value(); // そのパッケージ種に属する、任意個数のファイル情報です。
 
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
-                for (const auto& file_item : file_items) {
+                for (const auto& file_item: file_items) { // 各ファイルについて
                     DatasetFileItem dataset_file;
-                    dataset_file.max_lod = (int)std::stof(std::string(file_item["maxLod"]));
+                    dataset_file.max_lod = file_item["maxLod"].get<int>();
                     dataset_file.mesh_code = file_item["code"];
                     dataset_file.url = file_item["url"];
 
@@ -95,7 +126,7 @@ namespace plateau::network {
         auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
         fs::create_directories(destination_directory);
 
-        httplib::Client cli(server_url_);
+        auto cli = createHttpLibClient(server_url_, api_token_);
         cli.enable_server_certificate_verification(false);
 
         // '\\' を '/' に置換
@@ -109,8 +140,8 @@ namespace plateau::network {
         auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
-            content_type.find("text") != std::string::npos ||
-            content_type.find("json") != std::string::npos;
+                content_type.find("text") != std::string::npos ||
+                content_type.find("json") != std::string::npos;
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
@@ -123,8 +154,8 @@ namespace plateau::network {
         return gml_file_path.u8string();
     }
 
-    const std::string& Client::getDefaultServerUrl() {
-        static const std::string default_server_url = "https://plateau-api-mock-v2.deta.dev";
-        return default_server_url;
+    const std::string& Client::getMockServerUrl() {
+        static const std::string mock_server_url = "https://plateau-api-mock-v2.deta.dev";
+        return mock_server_url;
     }
 }
