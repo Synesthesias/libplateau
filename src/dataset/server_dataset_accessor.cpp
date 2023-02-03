@@ -44,7 +44,7 @@ namespace plateau::dataset {
         for (const auto& [sub_folder, gml_files] : dataset_files_) {
             if (UdxSubFolder::getPackage(sub_folder) == package) {
                 for (const auto& dataset_file : gml_files) {
-                    out_gml_files.emplace_back(dataset_file.url, dataset_file.max_lod);
+                    out_gml_files.emplace_back(dataset_file.url, client_, dataset_file.max_lod);
                 }
             }
         }

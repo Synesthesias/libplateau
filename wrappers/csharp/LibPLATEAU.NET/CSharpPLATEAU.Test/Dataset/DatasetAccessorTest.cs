@@ -16,7 +16,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = source.Accessor;
             Assert.AreEqual(1, accessor.MeshCodes.Length);
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
@@ -25,17 +25,17 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodeServer()
         {
-            using var source = DatasetSource.Create(true, "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(3, meshCodes.Length);
-            Assert.AreEqual("53392642", meshCodes.At(1).ToString());
+            Assert.AreEqual(2, meshCodes.Length);
+            Assert.AreEqual("53392670", meshCodes.At(1).ToString());
         }
         
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -49,18 +49,18 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesServer()
         {
-            using var source = DatasetSource.Create(true,  "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
             var gml = gmlFiles.At(0);
-            Assert.AreEqual(NetworkConfig.DefaultApiServerUrl + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml", gml.Path);
+            Assert.AreEqual(NetworkConfig.MockServerUrl + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml", gml.Path);
         }
         
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
             var expected = PredefinedCityModelPackage.Building;
@@ -70,7 +70,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesServer()
         {
-            using var source = DatasetSource.Create(true, "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, buildings.Length);
@@ -81,21 +81,21 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void CalcCenterPointServer()
         {
-            using var source = DatasetSource.Create(true, "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(1, meshCodes.Length);
@@ -106,7 +106,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodServer()
         {
-            using var source = DatasetSource.Create(true, "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmls.At(1).GetMaxLod());
@@ -115,7 +115,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.Create(false, "data/日本語パステスト", "");
+            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -126,7 +126,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Server()
         {
-            using var source = DatasetSource.Create(true, "", "23ku");
+            using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -147,10 +147,10 @@ namespace PLATEAU.Test.Dataset
                 center = collection.CalculateCenterPoint(geoRef);
             }
             Console.WriteLine(center);
-            // テスト用のデータは、基準点からおおむね南に51km, 西に5km の地点にあります。
+            // テスト用のデータは、基準点からおおむね南に50km, 西に5km の地点にあります。
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 1000, "南に51km");
+            Assert.IsTrue(Math.Abs(center.Z - (-50000)) < 2000, "南に50km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
             Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
         }
         

@@ -6,6 +6,7 @@
 namespace plateau::dataset {
     /**
      * \brief ローカルPCに存在するPLATEAUの3D都市モデルデータ製品へのアクセスを提供します。
+     * 他クラスとの関係については、 DatasetSource のコメントを参照してください。
      */
     class LIBPLATEAU_EXPORT LocalDatasetAccessor : public IDatasetAccessor {
     public:
