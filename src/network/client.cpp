@@ -1,6 +1,7 @@
 #include <plateau/network/client.h>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
+
 #include "../../3rdparty/cpp-httplib/httplib.h"
 #include "../../3rdparty/json/single_include/nlohmann/json.hpp"
 
@@ -16,11 +17,26 @@ namespace {
         client.set_default_headers(headers);
         return client;
     }
+
+    /// 本番APIサーバーのURLをデフォルト値とします。
+    const std::string& getDefaultServerUrl() {
+        static const std::string default_server_url = "https://api.plateau.reearth.io";
+        return default_server_url;
+    }
+
+    /**
+     * サーバーへの接続にあたって Bearer認証で使うトークンであり、本番サーバーへの接続に必要なものです。
+     * なおモックサーバーへの接続時はトークンは空文字で良いです。
+     */
+    const std::string& getDefaultApiToken() {
+        static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
+        return default_api_token;
+    }
 }
 
 namespace plateau::network {
     Client::Client(const std::string& server_url, const std::string& api_token) {
-        setApiServerUrl( server_url.empty() ? getDefaultServerUrl() : server_url);
+        setApiServerUrl(server_url.empty() ? getDefaultServerUrl() : server_url);
         setApiToken(api_token.empty() ? getDefaultApiToken() : api_token);
     }
 
@@ -89,7 +105,7 @@ namespace plateau::network {
                 auto& file_items = it.value(); // そのパッケージ種に属する、任意個数のファイル情報です。
 
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
-                for (const auto& file_item : file_items) { // 各ファイルについて
+                for (const auto& file_item: file_items) { // 各ファイルについて
                     DatasetFileItem dataset_file;
                     dataset_file.max_lod = file_item["maxLod"].get<int>();
                     dataset_file.mesh_code = file_item["code"];
@@ -124,8 +140,8 @@ namespace plateau::network {
         auto res = cli.Get(path_after_domain);
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
-            content_type.find("text") != std::string::npos ||
-            content_type.find("json") != std::string::npos;
+                content_type.find("text") != std::string::npos ||
+                content_type.find("json") != std::string::npos;
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
@@ -138,18 +154,8 @@ namespace plateau::network {
         return gml_file_path.u8string();
     }
 
-    const std::string& Client::getDefaultServerUrl() {
-        static const std::string default_server_url = "https://api.plateau.reearth.io";
-        return default_server_url;
-    }
-
     const std::string& Client::getMockServerUrl() {
         static const std::string mock_server_url = "https://plateau-api-mock-v2.deta.dev";
         return mock_server_url;
-    }
-
-    const std::string& Client::getDefaultApiToken() {
-        static const std::string default_api_token = "secret-56c66bcac0ab4724b86fc48309fe517a";
-        return default_api_token;
     }
 }

@@ -22,6 +22,6 @@ int main(void) {
     }
 
     // check Client::download
-    auto fpath = client.download(".", plateau::network::Client::getDefaultServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
+    auto fpath = client.download(".", plateau::network::Client::getMockServerUrl() + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
     std::cout << "gml @ " << fpath << std::endl;
 }

@@ -46,7 +46,6 @@ namespace plateau::network {
     class LIBPLATEAU_EXPORT Client {
     public:
         /**
-         * @brief
          * @param server_url 接続先のURLです。空文字の場合、デフォルトのものを利用します。
          * @param api_token 接続時のBearer認証トークンです。空文字の場合、デフォルトのものを利用します。
          */
@@ -67,16 +66,9 @@ namespace plateau::network {
         DatasetFiles getFiles(const std::string& id) const;
         std::string download(const std::string& destination_directory_path, const std::string& url) const;
 
-        /// 本番APIサーバーのURLをデフォルト値とします。
-        static const std::string& getDefaultServerUrl();
         /// 開発用に用意したモックサーバーのURLです。
         static const std::string& getMockServerUrl();
 
-        /**
-         * サーバーへの接続にあたって Bearer認証で使うトークンであり、本番サーバーへの接続に必要なものです。
-         * なおモックサーバーへの接続時はトークンは空文字で良いです。
-         */
-        static const std::string& getDefaultApiToken();
     private:
         std::string server_url_;
         std::string api_token_;
