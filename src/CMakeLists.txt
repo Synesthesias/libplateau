@@ -1,7 +1,7 @@
 add_compile_definitions(LIBPLATEAU_BUILD)
 
 add_library(plateau SHARED "")
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS") AND (NOT ANDROID) )
   target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper)
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
 else()

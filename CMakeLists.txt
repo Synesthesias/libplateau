@@ -68,7 +68,7 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS") AND (NOT ANDROID) )
   ## ユニットテスト
   add_subdirectory("test")
 
@@ -95,7 +95,7 @@ set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/
 add_subdirectory("3rdparty/glTF-SDK")
 set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTFSDK/Inc")
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS") AND (NOT ANDROID) )
   # FBX SDK 以下のディレクトリで debug と release のどちらを利用するか決めます。
   # debug なら debug/*-md.lib を使い、release なら release/*-mt.lib を使います。
   if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -180,7 +180,7 @@ add_subdirectory("3rdparty/openssl-cmake")
 # libplateau をビルドします。
 add_subdirectory("src")
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS") AND (NOT ANDROID) )
   ## Examples
   add_subdirectory("examples/log_skipped_elements")
   add_subdirectory("examples/export_obj")
