@@ -64,22 +64,22 @@ namespace plateau::network {
         if (res && res->status == 200) {
             auto jres = json::parse(res->body);
 
-            for (int i = 0; i < jres["data"].size(); i++) {
-                DatasetMetadataGroup dataset_meta_data_group;
-                dataset_meta_data_group.id = jres["data"][i]["id"];
-                dataset_meta_data_group.title = jres["data"][i]["title"];
+            for (auto & json_dataset_metadata_group : jres.at("data")) {
+                DatasetMetadataGroup dataset_metadata_group;
+                dataset_metadata_group.id = json_dataset_metadata_group.at("id");
+                dataset_metadata_group.title = json_dataset_metadata_group.at("title");
 
-                for (int j = 0; j < jres["data"][i]["data"].size(); j++) {
-                    DatasetMetadata dataset_meta_data;
-                    dataset_meta_data.id = jres["data"][i]["data"][j]["id"];
-                    dataset_meta_data.title = jres["data"][i]["data"][j]["title"];
-                    dataset_meta_data.description = jres["data"][i]["data"][j]["description"];
-                    if (jres["data"][i]["data"][j].contains("featureTypes")) {
-                        dataset_meta_data.feature_types = jres["data"][i]["data"][j]["featureTypes"];
+                for (auto & json_dataset_metadata : json_dataset_metadata_group.at("data")) {
+                    DatasetMetadata dataset_metadata;
+                    dataset_metadata.id = json_dataset_metadata.at("id");
+                    dataset_metadata.title = json_dataset_metadata.at("title");
+                    dataset_metadata.description = json_dataset_metadata.at("description");
+                    if (json_dataset_metadata.contains("featureTypes")) {
+                        dataset_metadata.feature_types = json_dataset_metadata.at("featureTypes");
                     }
-                    dataset_meta_data_group.datasets.push_back(dataset_meta_data);
+                    dataset_metadata_group.datasets.push_back(dataset_metadata);
                 }
-                out_metadata_groups.push_back(dataset_meta_data_group);
+                out_metadata_groups.push_back(dataset_metadata_group);
             }
         }
     }
@@ -107,11 +107,11 @@ namespace plateau::network {
                 dataset_files.emplace(key, std::vector<DatasetFileItem>());
                 for (const auto& file_item: file_items) { // 各ファイルについて
                     DatasetFileItem dataset_file;
-                    dataset_file.max_lod = file_item["maxLod"].get<int>();
-                    dataset_file.mesh_code = file_item["code"];
-                    dataset_file.url = file_item["url"];
+                    dataset_file.max_lod = file_item.at("maxLod").get<int>();
+                    dataset_file.mesh_code = file_item.at("code");
+                    dataset_file.url = file_item.at("url");
 
-                    dataset_files[key].push_back(dataset_file);
+                    dataset_files.at(key).push_back(dataset_file);
                 }
             }
         }

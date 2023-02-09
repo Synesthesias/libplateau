@@ -45,12 +45,11 @@ namespace plateau::network {
         ASSERT_TRUE(!metadata.title.empty()) << "Metadata has title.";
         ASSERT_TRUE(!metadata.id.empty()) << "Metadata has id.";
     }
-//
-//    TEST_F(ClientTest, GetFilesOfDefaultServer) { // NOLINT
-//        auto client = Client("", "");
-//        auto first_id = client.getMetadata()->at(0).datasets.at(0).id;
-//        auto files = client.getFiles(first_id);
-//        ASSERT_TRUE(!files.empty()) << "Dataset files is not empty.";
-//
-//    }
+
+    TEST_F(ClientTest, GetFilesOfDefaultServer) { // NOLINT
+        auto client = Client("", "");
+        auto first_id = client.getMetadata()->at(0).datasets.at(0).id;
+        auto files = client.getFiles(first_id);
+        ASSERT_TRUE(!files.empty()) << "Dataset files is not empty.";
+    }
 }
