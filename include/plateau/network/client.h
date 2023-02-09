@@ -48,6 +48,7 @@ namespace plateau::network {
         /**
          * @param server_url 接続先のURLです。空文字の場合、デフォルトのものを利用します。
          * @param api_token 接続時のBearer認証トークンです。空文字の場合、デフォルトのものを利用します。
+         * 空文字の場合にデフォルトになる理由は、利用者側からデフォルトURL等が見えないほうが安全だからです。
          */
         Client(const std::string& server_url, const std::string& api_token);
 
