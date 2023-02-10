@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
-if( (UNIX AND NOT APPLE) OR ANDROID)
+if( (UNIX AND NOT APPLE) AND (NOT ANDROID) )
     link_libraries(stdc++fs)
 endif()
 
