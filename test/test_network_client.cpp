@@ -51,5 +51,19 @@ namespace plateau::network {
         auto first_id = client.getMetadata()->at(0).datasets.at(0).id;
         auto files = client.getFiles(first_id);
         ASSERT_TRUE(!files.empty()) << "Dataset files is not empty.";
+        auto files_of_first_package = files.begin()->second;
+        ASSERT_TRUE(!files_of_first_package.empty());
+        auto file = files_of_first_package.at(0);
+        ASSERT_TRUE(0 <= file.max_lod && file.max_lod <= 4 );
+        ASSERT_TRUE(!file.mesh_code.empty());
+        ASSERT_TRUE(!file.url.empty());
+        auto url = file.url;
+        fs::remove("./" + fs::path(url).filename().u8string());
+        auto downloaded_path = fs::u8path(client.download("./", url));
+//        std::cout << "downloaded " << url << " to " << downloaded_path << std::endl;
+//        ASSERT_TRUE(!first_)
+        ASSERT_TRUE(fs::exists(downloaded_path));
+        ASSERT_TRUE(fs::file_size(downloaded_path) > 0);
+        fs::remove(downloaded_path);
     }
 }
