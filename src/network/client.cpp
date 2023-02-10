@@ -10,11 +10,14 @@ namespace fs = std::filesystem;
 
 namespace {
     /// httplib::Client を作成し、それにURLとAPIトークンを設定して返します。
+    /// APIトークンが空文字なら Bearer 認証を設定しません。
     httplib::Client createHttpLibClient(const std::string& url, const std::string& api_token) {
         auto client = httplib::Client(url);
         // Bearer認証を設定します。
-        httplib::Headers headers = {{"Authorization", "Bearer " + api_token}};
-        client.set_default_headers(headers);
+        if(!api_token.empty()){
+            httplib::Headers headers = {{"Authorization", "Bearer " + api_token}};
+            client.set_default_headers(headers);
+        }
         return client;
     }
 
@@ -126,9 +129,6 @@ namespace plateau::network {
         auto gml_file_path = fs::absolute(fs::path(destination_directory) / gml_file);
         fs::create_directories(destination_directory);
 
-        auto cli = createHttpLibClient(server_url_, api_token_);
-        cli.enable_server_certificate_verification(false);
-
         // '\\' を '/' に置換
         auto pos = url_str.find(u8'\\');
         while (pos != std::string::npos) {
@@ -136,12 +136,25 @@ namespace plateau::network {
             pos = url_str.find(u8'\\', pos + 1);
         }
 
-        auto path_after_domain = url_str.substr(url_str.substr(8).find('/') + 8);
+        // URL をドメイン部とそれ以降に分けます。
+        auto domain_end_pos = url_str.substr(8).find('/') + 8;
+        auto path_after_domain = url_str.substr(domain_end_pos);
+        auto path_domain = url_str.substr(0, domain_end_pos);
+
+        // HTTPリクエストを投げます。
+        // 注意:
+        // ここでは api_token は空文字、すなわち Bearer認証を利用しません。
+        // APIサーバーから json を受け取るためには api_token が必要なのに対して、
+        // cmsサーバーからgmlファイルを受け取るためには Bearer認証されていると認証失敗扱いになるためです。
+        auto cli = createHttpLibClient(path_domain, ""/* api_token_ を利用せず空文字*/);
+//        cli.enable_server_certificate_verification(false);
         auto res = cli.Get(path_after_domain);
+        // 結果を受け取ります。
         auto content_type = res->get_header_value("Content-Type");
         bool is_text =
                 content_type.find("text") != std::string::npos ||
-                content_type.find("json") != std::string::npos;
+                content_type.find("json") != std::string::npos ||
+                content_type.find("xml") != std::string::npos;
         auto ofs_mode = std::ios_base::openmode(is_text ? 0 : std::ios::binary);
         auto ofs = std::ofstream(gml_file_path.c_str(), ofs_mode);
         if (!ofs.is_open()) {
