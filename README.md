@@ -173,6 +173,14 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 
 
 # ライセンス
+## ライセンス制約
+libcitygml は LGPUライセンスのため、libcitygml と静的リンクする libplateau にも LGPUライセンスが伝播します。  
+したがって、このリポジトリはLGPUライセンスで公開しなければなりません。  
+なお、libplateauと動的リンクする PLATEAU SDK for Unity には LGPUライセンスは伝播しません。
+
+## ライセンス管理
+サードパーティソフトの権利表記を ThirdPatryNotices.md に記載してください。
+
 - libplateau本体
   - 未定
 

@@ -147,7 +147,10 @@ namespace plateau::network {
         // APIサーバーから json を受け取るためには api_token が必要なのに対して、
         // cmsサーバーからgmlファイルを受け取るためには Bearer認証されていると認証失敗扱いになるためです。
         auto cli = createHttpLibClient(path_domain, ""/* api_token_ を利用せず空文字*/);
+
+        // この1行がないと、MacとUbuntuでモックサーバーに対するテストが失敗します。
         cli.enable_server_certificate_verification(false);
+
         auto res = cli.Get(path_after_domain);
         // 結果を受け取ります。
         auto content_type = res->get_header_value("Content-Type");
