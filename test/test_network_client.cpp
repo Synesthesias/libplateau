@@ -46,7 +46,7 @@ namespace plateau::network {
         ASSERT_TRUE(!metadata.id.empty()) << "Metadata has id.";
     }
 
-    TEST_F(ClientTest, GetFilesOfDefaultServer) { // NOLINT
+    TEST_F(ClientTest, DownloadFilesOfDefaultServer) { // NOLINT
         auto client = Client("", "");
         auto first_id = client.getMetadata()->at(0).datasets.at(0).id;
         auto files = client.getFiles(first_id);
@@ -60,8 +60,6 @@ namespace plateau::network {
         auto url = file.url;
         fs::remove("./" + fs::path(url).filename().u8string());
         auto downloaded_path = fs::u8path(client.download("./", url));
-//        std::cout << "downloaded " << url << " to " << downloaded_path << std::endl;
-//        ASSERT_TRUE(!first_)
         ASSERT_TRUE(fs::exists(downloaded_path));
         ASSERT_TRUE(fs::file_size(downloaded_path) > 0);
         fs::remove(downloaded_path);
