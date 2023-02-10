@@ -110,7 +110,7 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     };
     checkFilesExist(images, image_dir);
 
-    fs::remove_all(temp_test_dir);
+//    fs::remove_all(temp_test_dir);
 }
 
 TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
@@ -127,6 +127,7 @@ TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
     auto gml_path = fs::path(bldg_dir).append(u8"53392642_bldg_6697_2_op.gml").make_preferred();
 //        auto gml_path = fs::path(bldg_dir).append("53392587_bldg_6697_2_op.gml").make_preferred();
     ASSERT_TRUE(fs::exists(gml_path)) << fs::absolute(gml_path) << " does not exist.";
+    ASSERT_TRUE(fs::file_size(gml_path) > 0) << "gml file is not empty.";
 
     // codelistsファイルがコピー先に存在します。
     auto codelists_dir = fs::path(temp_test_dir).append(u8"13100_tokyo23-ku_2020_citygml_3_2_op/codelists");
