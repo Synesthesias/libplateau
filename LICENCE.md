@@ -1,4 +1,8 @@
-Copyright (c) 2022 Synesthesias, Inc.
+# libplateau ライセンス
+libplateau は、PLATEAUを扱うライブラリです。  
+**Copyright (c) 2022 Synesthesias, Inc.**  
+
+## libplateauのライセンスは LGPL であり、その内容は以下のとおりです:
 
 
                     GNU LESSER GENERAL PUBLIC LICENSE
