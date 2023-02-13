@@ -1,4 +1,7 @@
-                  GNU LESSER GENERAL PUBLIC LICENSE
+Copyright (c) 2022 Synesthesias, Inc.
+
+
+                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
 
  Copyright (C) 1991, 1999 Free Software Foundation, Inc.
