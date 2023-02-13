@@ -1,8 +1,11 @@
-# libplateau ライセンス
+# libplateau
 libplateau は、PLATEAUを扱うライブラリです。  
+libplateau is a library that processes PLATEAU data.  
+  
 **Copyright (c) 2022 Synesthesias, Inc.**  
 
 ## libplateauのライセンスは LGPL であり、その内容は以下のとおりです:
+## libplateau is licensed under LGPL:
 
 
                     GNU LESSER GENERAL PUBLIC LICENSE
