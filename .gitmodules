@@ -30,4 +30,4 @@
 	url = https://github.com/GNOME/libxml2
 [submodule "3rdparty/fbx_sdk"]
 	path = 3rdparty/fbx_sdk
-	url = https://github.com/Synesthesias/fbx_sdk.git
+url=git@github.com:Synesthesias/fbx_sdk.git
