@@ -10,6 +10,7 @@ runs:
   using: Composite
 
   steps:
+
     - name: Update Submodules
       run: git submodule update --init --recursive
       shell: ${{ inputs.shell_type }}

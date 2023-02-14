@@ -1,0 +1,396 @@
+fbx_sdk のディレクトリ構成を図示したテキストファイルです。
+
+README.md で「別添のテキストファイルを参照してください」と書かれた該当のテキストファイルになります。
+
+補足:
+include 以下は1つの FBXSDK からコピペすれば十分です。
+lib 以下が重要で、各OS向けの FBXSDK からそれぞれ配置する必要があります。
+
+図:
+
+2020.3.1
+    ├─include
+    │  │  fbxsdk.h
+    │  │
+    │  ├─fbxsdk
+    │  │  │  fbxsdk_def.h
+    │  │  │  fbxsdk_nsbegin.h
+    │  │  │  fbxsdk_nsend.h
+    │  │  │  fbxsdk_version.h
+    │  │  │
+    │  │  ├─core
+    │  │  │  │  fbxclassid.h
+    │  │  │  │  fbxconnectionpoint.h
+    │  │  │  │  fbxdatatypes.h
+    │  │  │  │  fbxemitter.h
+    │  │  │  │  fbxevent.h
+    │  │  │  │  fbxeventhandler.h
+    │  │  │  │  fbxlistener.h
+    │  │  │  │  fbxloadingstrategy.h
+    │  │  │  │  fbxmanager.h
+    │  │  │  │  fbxmodule.h
+    │  │  │  │  fbxobject.h
+    │  │  │  │  fbxperipheral.h
+    │  │  │  │  fbxplugin.h
+    │  │  │  │  fbxplugincontainer.h
+    │  │  │  │  fbxproperty.h
+    │  │  │  │  fbxpropertydef.h
+    │  │  │  │  fbxpropertyhandle.h
+    │  │  │  │  fbxpropertypage.h
+    │  │  │  │  fbxpropertytypes.h
+    │  │  │  │  fbxquery.h
+    │  │  │  │  fbxqueryevent.h
+    │  │  │  │  fbxscopedloadingdirectory.h
+    │  │  │  │  fbxscopedloadingfilename.h
+    │  │  │  │  fbxstream.h
+    │  │  │  │  fbxsymbol.h
+    │  │  │  │  fbxsystemunit.h
+    │  │  │  │  fbxxref.h
+    │  │  │  │
+    │  │  │  ├─arch
+    │  │  │  │      fbxalloc.h
+    │  │  │  │      fbxarch.h
+    │  │  │  │      fbxdebug.h
+    │  │  │  │      fbxnew.h
+    │  │  │  │      fbxstdcompliant.h
+    │  │  │  │      fbxtypes.h
+    │  │  │  │
+    │  │  │  ├─base
+    │  │  │  │      fbxarray.h
+    │  │  │  │      fbxbitset.h
+    │  │  │  │      fbxcharptrset.h
+    │  │  │  │      fbxcontainerallocators.h
+    │  │  │  │      fbxdynamicarray.h
+    │  │  │  │      fbxfile.h
+    │  │  │  │      fbxfolder.h
+    │  │  │  │      fbxhashmap.h
+    │  │  │  │      fbxintrusivelist.h
+    │  │  │  │      fbxmap.h
+    │  │  │  │      fbxmemorypool.h
+    │  │  │  │      fbxmultimap.h
+    │  │  │  │      fbxpair.h
+    │  │  │  │      fbxredblacktree.h
+    │  │  │  │      fbxset.h
+    │  │  │  │      fbxstatus.h
+    │  │  │  │      fbxstring.h
+    │  │  │  │      fbxstringlist.h
+    │  │  │  │      fbxtime.h
+    │  │  │  │      fbxtimecode.h
+    │  │  │  │      fbxutils.h
+    │  │  │  │
+    │  │  │  ├─math
+    │  │  │  │      fbxaffinematrix.h
+    │  │  │  │      fbxdualquaternion.h
+    │  │  │  │      fbxmath.h
+    │  │  │  │      fbxmatrix.h
+    │  │  │  │      fbxquaternion.h
+    │  │  │  │      fbxtransforms.h
+    │  │  │  │      fbxvector2.h
+    │  │  │  │      fbxvector4.h
+    │  │  │  │
+    │  │  │  └─sync
+    │  │  │          fbxatomic.h
+    │  │  │          fbxclock.h
+    │  │  │          fbxsync.h
+    │  │  │          fbxthread.h
+    │  │  │
+    │  │  ├─fileio
+    │  │  │  │  fbxbase64coder.h
+    │  │  │  │  fbxcallbacks.h
+    │  │  │  │  fbxexporter.h
+    │  │  │  │  fbxexternaldocreflistener.h
+    │  │  │  │  fbxfiletokens.h
+    │  │  │  │  fbxglobalcamerasettings.h
+    │  │  │  │  fbxgloballightsettings.h
+    │  │  │  │  fbxglobalsettings.h
+    │  │  │  │  fbxgobo.h
+    │  │  │  │  fbximporter.h
+    │  │  │  │  fbxiobase.h
+    │  │  │  │  fbxiopluginregistry.h
+    │  │  │  │  fbxiosettings.h
+    │  │  │  │  fbxiosettingspath.h
+    │  │  │  │  fbxprogress.h
+    │  │  │  │  fbxreader.h
+    │  │  │  │  fbxstatistics.h
+    │  │  │  │  fbxstatisticsfbx.h
+    │  │  │  │  fbxwriter.h
+    │  │  │  │
+    │  │  │  ├─collada
+    │  │  │  │      fbxcolladaanimationelement.h
+    │  │  │  │      fbxcolladaelement.h
+    │  │  │  │      fbxcolladaiostream.h
+    │  │  │  │      fbxcolladanamespace.h
+    │  │  │  │      fbxcolladatokens.h
+    │  │  │  │      fbxcolladautils.h
+    │  │  │  │      fbxreadercollada14.h
+    │  │  │  │      fbxwritercollada14.h
+    │  │  │  │
+    │  │  │  └─fbx
+    │  │  │          fbxio.h
+    │  │  │          fbxreaderfbx5.h
+    │  │  │          fbxreaderfbx6.h
+    │  │  │          fbxreaderfbx7.h
+    │  │  │          fbxwriterfbx5.h
+    │  │  │          fbxwriterfbx6.h
+    │  │  │          fbxwriterfbx7.h
+    │  │  │
+    │  │  ├─scene
+    │  │  │  │  fbxaudio.h
+    │  │  │  │  fbxaudiolayer.h
+    │  │  │  │  fbxaxissystem.h
+    │  │  │  │  fbxcollection.h
+    │  │  │  │  fbxcollectionexclusive.h
+    │  │  │  │  fbxcontainer.h
+    │  │  │  │  fbxcontainertemplate.h
+    │  │  │  │  fbxdisplaylayer.h
+    │  │  │  │  fbxdocument.h
+    │  │  │  │  fbxdocumentinfo.h
+    │  │  │  │  fbxenvironment.h
+    │  │  │  │  fbxgroupname.h
+    │  │  │  │  fbxlibrary.h
+    │  │  │  │  fbxmediaclip.h
+    │  │  │  │  fbxobjectfilter.h
+    │  │  │  │  fbxobjectmetadata.h
+    │  │  │  │  fbxobjectscontainer.h
+    │  │  │  │  fbxpose.h
+    │  │  │  │  fbxreference.h
+    │  │  │  │  fbxscene.h
+    │  │  │  │  fbxselectionnode.h
+    │  │  │  │  fbxselectionset.h
+    │  │  │  │  fbxtakeinfo.h
+    │  │  │  │  fbxthumbnail.h
+    │  │  │  │  fbxvideo.h
+    │  │  │  │
+    │  │  │  ├─animation
+    │  │  │  │      fbxanimcurve.h
+    │  │  │  │      fbxanimcurvebase.h
+    │  │  │  │      fbxanimcurvefilters.h
+    │  │  │  │      fbxanimcurvenode.h
+    │  │  │  │      fbxanimevalclassic.h
+    │  │  │  │      fbxanimevalstate.h
+    │  │  │  │      fbxanimevaluator.h
+    │  │  │  │      fbxanimlayer.h
+    │  │  │  │      fbxanimstack.h
+    │  │  │  │      fbxanimutilities.h
+    │  │  │  │
+    │  │  │  ├─constraint
+    │  │  │  │      fbxcharacter.h
+    │  │  │  │      fbxcharacternodename.h
+    │  │  │  │      fbxcharacterpose.h
+    │  │  │  │      fbxconstraint.h
+    │  │  │  │      fbxconstraintaim.h
+    │  │  │  │      fbxconstraintcustom.h
+    │  │  │  │      fbxconstraintparent.h
+    │  │  │  │      fbxconstraintposition.h
+    │  │  │  │      fbxconstraintrotation.h
+    │  │  │  │      fbxconstraintscale.h
+    │  │  │  │      fbxconstraintsinglechainik.h
+    │  │  │  │      fbxconstraintutils.h
+    │  │  │  │      fbxcontrolset.h
+    │  │  │  │      fbxhik2fbxcharacter.h
+    │  │  │  │
+    │  │  │  ├─geometry
+    │  │  │  │      fbxblendshape.h
+    │  │  │  │      fbxblendshapechannel.h
+    │  │  │  │      fbxcache.h
+    │  │  │  │      fbxcachedeffect.h
+    │  │  │  │      fbxcamera.h
+    │  │  │  │      fbxcamerastereo.h
+    │  │  │  │      fbxcameraswitcher.h
+    │  │  │  │      fbxcluster.h
+    │  │  │  │      fbxdeformer.h
+    │  │  │  │      fbxgenericnode.h
+    │  │  │  │      fbxgeometry.h
+    │  │  │  │      fbxgeometrybase.h
+    │  │  │  │      fbxgeometryweightedmap.h
+    │  │  │  │      fbxlayer.h
+    │  │  │  │      fbxlayercontainer.h
+    │  │  │  │      fbxlight.h
+    │  │  │  │      fbxlimitsutilities.h
+    │  │  │  │      fbxline.h
+    │  │  │  │      fbxlodgroup.h
+    │  │  │  │      fbxmarker.h
+    │  │  │  │      fbxmesh.h
+    │  │  │  │      fbxnode.h
+    │  │  │  │      fbxnodeattribute.h
+    │  │  │  │      fbxnull.h
+    │  │  │  │      fbxnurbs.h
+    │  │  │  │      fbxnurbscurve.h
+    │  │  │  │      fbxnurbssurface.h
+    │  │  │  │      fbxopticalreference.h
+    │  │  │  │      fbxpatch.h
+    │  │  │  │      fbxproceduralgeometry.h
+    │  │  │  │      fbxshape.h
+    │  │  │  │      fbxskeleton.h
+    │  │  │  │      fbxskin.h
+    │  │  │  │      fbxsubdeformer.h
+    │  │  │  │      fbxsubdiv.h
+    │  │  │  │      fbxtrimnurbssurface.h
+    │  │  │  │      fbxvertexcachedeformer.h
+    │  │  │  │      fbxweightedmapping.h
+    │  │  │  │
+    │  │  │  └─shading
+    │  │  │          fbxbindingoperator.h
+    │  │  │          fbxbindingsentryview.h
+    │  │  │          fbxbindingtable.h
+    │  │  │          fbxbindingtablebase.h
+    │  │  │          fbxbindingtableentry.h
+    │  │  │          fbxconstantentryview.h
+    │  │  │          fbxentryview.h
+    │  │  │          fbxfiletexture.h
+    │  │  │          fbximplementation.h
+    │  │  │          fbximplementationfilter.h
+    │  │  │          fbximplementationutils.h
+    │  │  │          fbxlayeredtexture.h
+    │  │  │          fbxlayerentryview.h
+    │  │  │          fbxoperatorentryview.h
+    │  │  │          fbxproceduraltexture.h
+    │  │  │          fbxpropertyentryview.h
+    │  │  │          fbxsemanticentryview.h
+    │  │  │          fbxshadingconventions.h
+    │  │  │          fbxsurfacelambert.h
+    │  │  │          fbxsurfacematerial.h
+    │  │  │          fbxsurfacematerialutils.h
+    │  │  │          fbxsurfacephong.h
+    │  │  │          fbxtexture.h
+    │  │  │
+    │  │  └─utils
+    │  │          fbxclonemanager.h
+    │  │          fbxdeformationsevaluator.h
+    │  │          fbxembeddedfilesaccumulator.h
+    │  │          fbxgeometryconverter.h
+    │  │          fbxmanipulators.h
+    │  │          fbxmaterialconverter.h
+    │  │          fbxnamehandler.h
+    │  │          fbxprocessor.h
+    │  │          fbxprocessorshaderdependency.h
+    │  │          fbxprocessorxref.h
+    │  │          fbxprocessorxrefuserlib.h
+    │  │          fbxrenamingstrategy.h
+    │  │          fbxrenamingstrategybase.h
+    │  │          fbxrenamingstrategyfbx5.h
+    │  │          fbxrenamingstrategyfbx6.h
+    │  │          fbxrenamingstrategyfbx7.h
+    │  │          fbxrenamingstrategyutilities.h
+    │  │          fbxrootnodeutility.h
+    │  │          fbxscenecheckutility.h
+    │  │          fbxusernotification.h
+    │  │
+    │  └─libxml
+    │          c14n.h
+    │          catalog.h
+    │          chvalid.h
+    │          debugXML.h
+    │          dict.h
+    │          DOCBparser.h
+    │          encoding.h
+    │          entities.h
+    │          globals.h
+    │          hash.h
+    │          HTMLparser.h
+    │          HTMLtree.h
+    │          list.h
+    │          nanoftp.h
+    │          nanohttp.h
+    │          parser.h
+    │          parserInternals.h
+    │          pattern.h
+    │          relaxng.h
+    │          SAX.h
+    │          SAX2.h
+    │          schemasInternals.h
+    │          schematron.h
+    │          threads.h
+    │          tree.h
+    │          uri.h
+    │          valid.h
+    │          xinclude.h
+    │          xlink.h
+    │          xmlautomata.h
+    │          xmlerror.h
+    │          xmlexports.h
+    │          xmlIO.h
+    │          xmlmemory.h
+    │          xmlmodule.h
+    │          xmlreader.h
+    │          xmlregexp.h
+    │          xmlsave.h
+    │          xmlschemas.h
+    │          xmlschemastypes.h
+    │          xmlstring.h
+    │          xmlunicode.h
+    │          xmlversion.h
+    │          xmlwin32version.h
+    │          xmlwriter.h
+    │          xpath.h
+    │          xpathInternals.h
+    │          xpointer.h
+    │
+    └─lib
+        ├─ios
+        │  ├─debug
+        │  │      libfbxsdk.a
+        │  │
+        │  └─release
+        │          libfbxsdk.a
+        │
+        ├─ios-armv7
+        │  ├─debug
+        │  │      libfbxsdk.a
+        │  │
+        │  └─release
+        │          libfbxsdk.a
+        │
+        ├─linux32
+        │  ├─debug
+        │  │      libfbxsdk.a
+        │  │
+        │  └─release
+        │          libfbxsdk.a
+        │
+        ├─linux64
+        │  ├─debug
+        │  │      libfbxsdk.a
+        │  │
+        │  └─release
+        │          libfbxsdk.a
+        │
+        ├─mac
+        │  ├─debug
+        │  │      libfbxsdk.a
+        │  │
+        │  └─release
+        │          libfbxsdk.a
+        │
+        ├─win32
+        │  ├─debug
+        │  │      libfbxsdk-md.lib
+        │  │      libxml2-md.lib
+        │  │      zlib-md.lib
+        │  │
+        │  └─release
+        │          libfbxsdk-mt.lib
+        │          libxml2-mt.lib
+        │          zlib-mt.lib
+        │
+        ├─win64
+        │  ├─debug
+        │  │      libfbxsdk-md.lib
+        │  │      libxml2-md.lib
+        │  │      zlib-md.lib
+        │  │
+        │  └─release
+        │          libfbxsdk-mt.lib
+        │          libxml2-mt.lib
+        │          zlib-mt.lib
+        │
+        └─winarm64
+            ├─debug
+            │      libfbxsdk-md.lib
+            │      libxml2-md.lib
+            │      zlib-md.lib
+            │
+            └─release
+                    libfbxsdk-mt.lib
+                    libxml2-mt.lib
+                    zlib-mt.lib
