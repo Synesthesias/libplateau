@@ -115,9 +115,9 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
     set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
   elseif(WIN32)
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win64/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
+      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/lib/win64/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
     elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib/win32/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
+      set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/lib/win32/${FBXSDK_LAST_DIR_NAME}/zlib-${FBXSDK_MT_OR_MD}.lib" CACHE STRING "" FORCE)
     endif()
   endif(UNIX)
 
@@ -135,7 +135,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
   add_subdirectory("3rdparty/libxml2")
 
   ## FBX SDK
-  set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/include")
+  set(FBXSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/include")
 
   if(UNIX)
     if (APPLE)
@@ -161,7 +161,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
     NAMES
       libfbxsdk-md libfbxsdk-mt libfbxsdk.a
     PATHS
-      ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/FBX/2020.3.1/lib
+      ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/lib
     PATH_SUFFIXES
       ${FBXSDK_LIB_PATH_SUFFIXES}
     NO_DEFAULT_PATH
