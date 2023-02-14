@@ -5,7 +5,7 @@ if( (UNIX AND NOT APPLE) AND (NOT ANDROID) )
     link_libraries(stdc++fs)
 endif()
 
-if( (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS") AND (NOT ANDROID) )
+if( NOT(IOS OR ANDROID) )
     option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 else()
     option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" OFF)
