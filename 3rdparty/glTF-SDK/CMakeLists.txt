@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project (GLTFSDK)
 
-if(UNIX AND NOT APPLE)
+if( (UNIX AND NOT APPLE) AND (NOT ANDROID) )
     link_libraries(stdc++fs)
 endif()
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( NOT(IOS OR ANDROID) )
     option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" ON)
 else()
     option(ENABLE_UNIT_TESTS "ENABLE_UNIT_TESTS" OFF)
@@ -16,7 +16,7 @@ endif()
 
 # Disable the samples on macOS, iOS, and Android since the experimental features they use
 # do not yet build with XCode or clang on these platforms.
-if(APPLE OR ANDROID_OS_PLATFORM)
+if(APPLE OR ANDROID)
     option(ENABLE_SAMPLES "ENABLE_SAMPLES" OFF)
 else()
     option(ENABLE_SAMPLES "ENABLE_SAMPLES" ON)

@@ -1,4 +1,4 @@
-if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
+if( IOS OR ANDROID)
   target_sources(plateau PRIVATE
       "obj_writer.cpp"
       "gltf_writer.cpp"
