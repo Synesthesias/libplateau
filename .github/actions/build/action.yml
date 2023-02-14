@@ -10,6 +10,15 @@ runs:
   using: Composite
 
   steps:
+
+    - name: SSH Setting for private repository
+        env:
+          PRIVATE_TOKEN: ${{secrets.KEY_TO_ACCESS_FBXSDK}}
+        run: |
+          mkdir -p /home/runner/.ssh/
+          echo -e "$TOKEN" > /home/runner/.ssh/id_rsa
+          chmod 600 /home/runner/.ssh/id_rsa
+
     - name: Update Submodules
       run: git submodule update --init --recursive
       shell: ${{ inputs.shell_type }}
