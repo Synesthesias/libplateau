@@ -23,14 +23,6 @@ jobs:
 
     - uses: actions/checkout@v3
 
-#    - name: SSH Setting for private repository
-#      env:
-#        PRIVATE_TOKEN: ${{secrets.KEY_TO_ACCESS_FBXSDK}}
-#      run: |
-#        mkdir -p /home/runner/.ssh/
-#        echo -e "$TOKEN" > /home/runner/.ssh/id_rsa
-#        chmod 600 /home/runner/.ssh/id_rsa
-
     - name: Add SSH private keys for submodule repositories
       uses: webfactory/ssh-agent@v0.7.0
       with:
