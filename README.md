@@ -26,6 +26,10 @@ git submodule update --init --recursive
 OSごとのビルド方法を記載する。
 
 ### 共通
+**社外の方へ**  
+社外の方が libplateau をビルドするには、追加の手順が必要です。    
+下のセクションにある「社外の方へ」をご覧ください。  
+  
 - C++ の libplateau_c をビルドすると DLL ができる。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になる。
 - C++とC#のビルド設定を合わせる必要がある。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされてしまう。）
@@ -132,6 +136,17 @@ PlateauUnitySDKへの導入については、そちらのREADMEを参照のこ�
 
 ## モックサーバー
 モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照。
+
+# 社外の方へ
+お手数をおかけして申し訳ございませんが、社外の方が libplateau をビルドするには追加の手順が必要です。  
+ビルドを試みられたなら、このリポジトリを clone して `submodule update --init` したとき、`fbx_sdk`をクローンできないのに気付いたかもしれません。  
+fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組み込んで良いものの、オープンソースではなく、再配布は禁止となっております。    
+そのため、libplateau 自体はオープンソースですが、例外的に fbx_sdk のみプライベートリポジトリとさせて頂いております。  
+ビルドするためには、Autodesk社が配布しているSDKを指定のディレクトリに配置する必要があります。  
+- [Autodesk社のWebサイト](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3) から、各OS向けのFBXSDKをダウンロードしてインストールします。
+- インストールして得られるファイルを、次のディレクトリ構成に合うように配置します。
+  - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
+  - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` に記しました。
 
 # 実装上の注意
 ## 文字コード
