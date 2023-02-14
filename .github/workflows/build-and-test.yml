@@ -32,7 +32,7 @@ jobs:
 #        chmod 600 /home/runner/.ssh/id_rsa
 
     - name: Add SSH private keys for submodule repositories
-      uses: webfactory/ssh-agent@0.7.0
+      uses: webfactory/ssh-agent
       with:
         ssh-private-key: |
           ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
