@@ -20,6 +20,15 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-18.04]
 
     steps:
+
+    - name: SSH Setting for private repository
+        env:
+          PRIVATE_TOKEN: ${{secrets.KEY_TO_ACCESS_FBXSDK}}
+        run: |
+          mkdir -p /home/runner/.ssh/
+          echo -e "$TOKEN" > /home/runner/.ssh/id_rsa
+          chmod 600 /home/runner/.ssh/id_rsa
+
     - uses: actions/checkout@v3
       with:
         submodules: true
