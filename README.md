@@ -18,8 +18,19 @@
 ```
 git clone https://github.com/Synesthesias/libplateau
 cd libplateau
-git submodule update --init --recursive
+git lfs install
 ```
+その後、社内の方は  
+```
+git submodule update --init --recursive
+```  
+社外の方は  
+```
+git -c submodule.3rdparty/fbx_sdk.update=none submodule update --init --recursive
+```  
+を実行します。  
+両者の違いは、社外の方は submodule の `fbx_sdk` を無視する設定となっています。  
+これについて下のセクションにある「社外の方へ」をご覧ください。
 
 ## ビルド
 ビルドの方法について、全OSで共通の留意点を記したあと、  
@@ -146,7 +157,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 - [Autodesk社のWebサイト](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3) から、各OS向けのFBXSDKをダウンロードしてインストールします。
 - インストールして得られるファイルを、次のディレクトリ構成に合うように配置します。
   - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
-  - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` に記しました。
+  - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。
 
 # 実装上の注意
 ## 文字コード
