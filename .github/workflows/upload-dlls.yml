@@ -5,9 +5,10 @@ name: Upload DLLs
 
 # 手動でgithubサイトのボタンを押したときか、タグを作ったときに実行します。
 on:
-  workflow_dispatch:
-  create:
-    tags: '*'
+  push:
+  #workflow_dispatch:
+  #create:
+  #  tags: '*'
 
 env:
   BUILD_TYPE: RelWithDebInfo
@@ -77,8 +78,111 @@ jobs:
           name: libplateau-${{matrix.os}}-dll
           path: ${{env.HOME}}/output/
 
+  # 2つ目のジョブ。
+  # Android用にライブラリをビルド。
+  upload_android_dlls:
 
-  # 2つ目のジョブです。
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compile-sdk: [33]
+        build-tools: [30.0.3]
+        ndk-version: [23.1.7779620]
+        cmake-version: [3.22.0]
+        root-project-path: [./AndroidNDK]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Add SSH private keys for submodule repositories
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: |
+            ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
+
+      - name: checkout submodules
+        shell: bash
+        run: git submodule update --init --recursive
+
+
+
+
+
+
+
+
+
+      - name: setup ubuntu
+        run: |
+          sudo apt-get --quiet update --yes
+          sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+      - name: setup JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: download Android SDK
+        working-directory: ${{ matrix.root-project-path }}
+        run: |
+          wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+          unzip -d android-sdk-linux android-sdk.zip
+          sudo mkdir -p /root/.android
+          sudo touch /root/.android/repositories.cfg
+          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platforms;android-${{ matrix.compile-sdk }}" >/dev/null
+          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" >/dev/null
+          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "build-tools;${{ matrix.build-tools }}" >/dev/null
+          export ANDROID_SDK_ROOT=$PWD
+          export PATH=$PATH:$PWD/platform-tools/
+          chmod +x ./gradlew
+          set +o pipefail
+          yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
+          set -o pipefail
+      - name: install Android NDK
+        working-directory: ${{ matrix.root-project-path }}
+        run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" "cmake;${{ matrix.cmake-version }}"
+      - name: Insert NDK path
+        working-directory: ${{ matrix.root-project-path }}
+        run: |
+          echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
+
+
+
+
+
+
+
+  # 3つ目のジョブ。
+  # iOS用にライブラリをビルド。
+  upload_ios_dlls:
+
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Add SSH private keys for submodule repositories
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: |
+            ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
+
+      - name: checkout submodules
+        shell: bash
+        run: git submodule update --init --recursive
+
+
+
+
+
+
+
+
+  # 4つ目のジョブです。
   # OSごとのアーティファクトを1つにまとめます。
   sum-up-dlls:
     runs-on: ubuntu-latest
