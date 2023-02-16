@@ -135,7 +135,7 @@ jobs:
           echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "build-tools;${{ matrix.build-tools }}" >/dev/null
           export ANDROID_SDK_ROOT=$PWD
           export PATH=$PATH:$PWD/platform-tools/
-          chmod +x ./gradlew
+#          chmod +x ./gradlew
           set +o pipefail
           yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
           set -o pipefail
