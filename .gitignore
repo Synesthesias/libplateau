@@ -1,4 +1,8 @@
-﻿CMakeLists.txt.user
+﻿
+# fbx_sdk は再配布禁止のため、ご自分で用意していただく形になります。
+/3rdparty/fbx_sdk/
+
+CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
