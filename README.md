@@ -1,30 +1,35 @@
 
 [![Build and Test](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml)
 
-# LibPLATEAU
+# libplateau
+libplateauはPLATEAUの3D都市モデルを扱うためのC++ライブラリであり、以下の機能を提供しています。
+- CityGMLのパース
+- CityGMLのジオメトリのポリゴンメッシュへの変換
+- 緯度経度座標の直交座標系への変換
+- XYZタイル形式のベースマップへのアクセス
+- 3Dファイル形式へのエクスポート
+- REST APIを使用したPLATEAUのサーバーへのアクセス
 
-- クロスプラットフォーム(iOS, android, windows, ubuntu)
-- C++, C# 向けapiの提供
+libplateauはロジックの共通化により[PLATEAU SDK for Unity](https://github.com/Synesthesias/PLATEAU-SDK-for-Unity)と[PLATEAU SDK for Unreal](https://github.com/Synesthesias/PLATEAU-SDK-for-Unreal)の開発を加速させるために活用されています。
 
 ## 開発環境
 - CMake 3.8以降
 
 ### Windows
 - Visual Studio 2022
-  - cmake使うためVisual Studio Installerから`C++によるデスクトップ開発`のインストールが必要
+  - cmakeを使うためVisual Studio Installerから`C++によるデスクトップ開発`のインストールが必要です。
 
 ## セットアップ
 ### リポジトリクローン
 ```
+git lfs install
 git clone https://github.com/Synesthesias/libplateau
 cd libplateau
-git lfs install
 git submodule update --init --recursive
 ```
 
 ## ビルド
-ビルドの方法について、全OSで共通の留意点を記したあと、  
-OSごとのビルド方法を記載します。
+ビルドの方法について、全OSで共通の留意点を記したあと、OSごとのビルド方法を記載します。
 
 ### 共通
 
@@ -107,36 +112,26 @@ dotnet test -c Release
 - dotnet Core 3.1 を利用します。
   - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
 
-## サンプル
-### log_skipped_elements
-パース出来なかった要素をすべて列挙します。
-Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行します。
-
-### export_obj
-.obj, .mtlをエクスポートします。
-
 ## デプロイ
 ### Unity
-PlateauUnitySDKへの導入については、そちらのREADMEを参照してください。
+PLATEAU SDK for Unityへの導入については、そちらのREADMEを参照してください。
 
 ## ディレクトリ構成
 - 3rdparty
   - 外部ライブラリはすべてここにsubmoduleで追加します。(fbx_sdkは例外です。)
   - 利用ライブラリについては後述の「ライセンス管理」を参照してください。
 - data
-  - テスト用のデータを置きます。ビルド時に出力先ディレクトリにコピーされます。
-- examples
-  - サンプルです。
+  - テスト用のデータを配置します。ビルド時に出力先ディレクトリにコピーされます。
 - include
-  - ヘッダファイル一式です。
+  - ヘッダファイル一式を配置します。
 - src
-  - 内部実装のソースコードです。
+  - 内部実装のソースコードを配置します。
 - test
-  - ユニットテストです。
+  - ユニットテストを配置します。
 - wrappers
-  - 他言語向けのwrapper実装です。
+  - 他言語向けのwrapper実装を配置します。
 - .github/workflows
-  - Github Actions で自動テストを行うためのファイルです。
+  - Github Actionsのワークフロー設定を配置します。
 
 ## テストデータ
 テストデータの詳細については ```data/README.md``` を参照してください。
@@ -164,15 +159,16 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 # コード規約
 - 変数名は snake_case , 関数名は lowerCamel
 - private static メソッドはヘッダファイルに書かず、.cppの無名名前空間に書く
-- 外に見せる必要の無いクラス (C#でいう internal クラス) のヘッダーファイルの配置ディレクトリは include ではなく src 
+- 外に見せる必要の無いクラス (C#でいうinternalクラス) のヘッダーファイルの配置ディレクトリはincludeではなくsrc
 - `[[nodiscard]]` は書かない
 - ファイルの末尾は改行
 - 何かの個数を取得する関数名は `get(単数形)Count`
 - `*` `&` の位置は左寄せ (`SomeType *foobar` ではなく `SomeType* foobar`)
 - Unreal Engine で利用する都合上、ヘッダーファイルで `std::filesystem` は利用しない
   - .cppファイル内での利用は可
-  - パスの受け渡しは string(中身はutf8形式) で行い、`.cpp`内で `auto path = std::filesystem::u8path(path_str)` で path に直すのが良い
-- コンテナ要素へのアクセスは `[i]` ではなく `.at(i)` を用いる。Unityからの利用で範囲外アクセスになったとき、前者は例外も出さずに問答無用でUnityが落ちる。後者は例外として補足できる。
+  - パスの受け渡しは string(中身はutf8形式) で行い、`.cpp`内で`auto path = std::filesystem::u8path(path_str)`でpathに直す
+- コンテナ要素へのアクセスは`[i]`ではなく`.at(i)`を用いる。
+  - Unityから利用する際範囲外アクセスでクラッシュしてしまうため。後者は例外として捕捉できる。
 
 # トラブルシューティング
 - **Q.** 手元のマシンではユニットテストが通るのに、CIサーバーの自動テストが通りません。
@@ -182,28 +178,24 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
     パスの文字列をUTF8で扱えていれば、システムロケールが英語でも日本語でも日本語を含むパス文字列に対応します。 
     しかし、パス文字列をUTF8で扱えていなければ、システムロケールが英語のとき、日本語名を含むパス文字列は文字化けします。
 
-
 # ライセンス
 ## ライセンス制約
-libcitygml は LGPL ライセンスのため、libcitygml と静的リンクする libplateau にも LGPLライセンスが伝播します。  
-したがって、このリポジトリはLGPLライセンスで公開しなければなりません。  
-なお、libplateauと動的リンクする PLATEAU SDK for Unity には LGPLライセンスは伝播しません。
+- libcitygmlはLGPLライセンスのため、libplateauにもLGPLライセンスが伝播します。
+- 上記により、このリポジトリはLGPLライセンスで公開しなければなりません。
+- libplateauと動的リンクするPLATEAU SDK for Unity、PLATEAU SDK for UnrealにはLGPLライセンスは伝播しません。
 
 ## ライセンス管理
-サードパーティソフトの権利表記を ThirdPartyNotices.md に記載してください。
-
-- libplateau本体
-  - 未定
+サードパーティソフトの権利表記をThirdPartyNotices.mdに記載してください。
 
 - libcitygml
   - [https://github.com/Synesthesias/libcitygml.git](https://github.com/Synesthesias/libcitygml.git)
-  - 用途: gmlファイルのパースに利用
+  - 用途: CityGMLのパース
   - ライセンス: GNU Lesser General Public License v2.1
 
 - xerces-c
   - [https://github.com/Synesthesias/xerces-c.git](https://github.com/Synesthesias/xerces-c.git)
   - 用途: libcitygmlの依存ライブラリ
-  - ライセンス: Apache-2.0 , 要 著作権表示 , 要 改変したことの告知
+  - ライセンス: Apache-2.0、要 著作権表示、要 改変したことの告知
 
 - libxml2
   - [https://github.com/GNOME/libxml2](https://github.com/GNOME/libxml2)
@@ -212,19 +204,18 @@ libcitygml は LGPL ライセンスのため、libcitygml と静的リンクす�
 
 - cpp-httplib
   - [https://github.com/yhirose/cpp-httplib.git](https://github.com/yhirose/cpp-httplib.git)
-  - 用途: APIサーバーへのアクセスに利用
+  - 用途: APIサーバーへのアクセス
   - ライセンス: MIT
 
 - glTF-SDK
   - [https://github.com/microsoft/glTF-SDK](https://github.com/microsoft/glTF-SDK)
-  - 用途: glTF形式でのエクスポートに利用
+  - 用途: glTF形式でのエクスポート
   - ライセンス: MIT
 
 - json
   - [https://github.com/nlohmann/json.git](https://github.com/nlohmann/json.git)
-  - 用途: APIサーバーから受け取るjsonのパースに利用
+  - 用途: APIサーバーから受け取るjsonのパース
   - ライセンス: MIT
-
 
 - openssl-cmake
   - [https://github.com/janbar/openssl-cmake](https://github.com/janbar/openssl-cmake)
@@ -234,11 +225,6 @@ libcitygml は LGPL ライセンスのため、libcitygml と静的リンクす�
   - [https://github.com/madler/zlib](https://github.com/madler/zlib)
   - ライセンス: 独自(再配布可)
 
-- gtest
-  - [https://github.com/google/googletest](https://github.com/google/googletest)
-  - 用途: C++のユニットテスト
-  - ライセンス: [BSD-3-Clause license](https://github.com/google/googletest/blob/main/LICENSE)
-
 - pybind11
   - [https://github.com/pybind/pybind11.git](https://github.com/pybind/pybind11.git)
   - 用途: SDKのpython対応(開発停止中)
@@ -246,5 +232,5 @@ libcitygml は LGPL ライセンスのため、libcitygml と静的リンクす�
 
 - FBXSDK
   - [https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1)
-  - 用途: fbx形式でのエクスポート機能
+  - 用途: fbx形式でのエクスポート
   - ライセンス: 独自
