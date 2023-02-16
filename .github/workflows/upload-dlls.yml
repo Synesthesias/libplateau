@@ -124,7 +124,7 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
       - name: download Android SDK
-        working-directory: ${{ matrix.root-project-path }}
+        #working-directory: ${{ matrix.root-project-path }}
         run: |
           wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
           unzip -d android-sdk-linux android-sdk.zip
@@ -140,10 +140,10 @@ jobs:
           yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
           set -o pipefail
       - name: install Android NDK
-        working-directory: ${{ matrix.root-project-path }}
+        #working-directory: ${{ matrix.root-project-path }}
         run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" "cmake;${{ matrix.cmake-version }}"
       - name: Insert NDK path
-        working-directory: ${{ matrix.root-project-path }}
+        #working-directory: ${{ matrix.root-project-path }}
         run: |
           echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
 
