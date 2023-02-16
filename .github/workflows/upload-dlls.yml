@@ -90,7 +90,6 @@ jobs:
         compile-sdk: [33]
         build-tools: [30.0.3]
         ndk-version: [23.1.7779620]
-        cmake-version: [3.22.0]
         root-project-path: [./AndroidNDK]
 
     steps:
@@ -140,7 +139,7 @@ jobs:
           set -o pipefail
       - name: install Android NDK
         #working-directory: ${{ matrix.root-project-path }}
-        run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" "cmake;${{ matrix.cmake-version }}"
+        run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" 
       - name: Insert NDK path
         #working-directory: ${{ matrix.root-project-path }}
         run: |
