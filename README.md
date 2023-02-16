@@ -4,7 +4,7 @@
 # LibPLATEAU
 
 - クロスプラットフォーム(iOS, android, windows, ubuntu)
-- C++, C#, python向けapiの提供
+- C++, C# 向けapiの提供
 
 ## 開発環境
 - CMake 3.8以降
@@ -19,31 +19,30 @@
 git clone https://github.com/Synesthesias/libplateau
 cd libplateau
 git lfs install
-```
-その後、社内の方は  
-```
 git submodule update --init --recursive
-```  
-社外の方は  
 ```
-git -c submodule.3rdparty/fbx_sdk.update=none submodule update --init --recursive
-```  
-を実行します。  
-両者の違いは、社外の方は submodule の `fbx_sdk` を無視する設定となっています。  
-これについて下のセクションにある「社外の方へ」をご覧ください。
 
 ## ビルド
 ビルドの方法について、全OSで共通の留意点を記したあと、  
-OSごとのビルド方法を記載する。
+OSごとのビルド方法を記載します。
 
 ### 共通
-**社外の方へ**  
-社外の方が libplateau をビルドするには、追加の手順が必要です。    
-下のセクションにある「社外の方へ」をご覧ください。  
-  
-- C++ の libplateau_c をビルドすると DLL ができる。
-- その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になる。
-- C++とC#のビルド設定を合わせる必要がある。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされてしまう。）
+
+#### 1. fbx_sdkを用意する
+お手数をおかけして申し訳ございませんが、libplateau をビルドするには別途 fbx_sdk が必要です。
+fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組み込んで良いものの、オープンソースではなく、再配布は禁止となっております。    
+そのため、libplateau 自体はオープンソースですが、例外的に fbx_sdk のみ別途ご用意頂く形になっております。  
+ビルドするためには、Autodesk社が配布しているSDKを指定のディレクトリに配置する必要があります。
+- [Autodesk社のWebサイト](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3) から、各OS向けのFBXSDKをダウンロードしてインストールします。
+- インストールして得られるファイルを、次のディレクトリ構成に合うように配置します。
+  - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
+  - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
+
+#### 2. C++, C# のビルド手順(各OS共通) 
+- C++ の libplateau をビルドすると DLL ができます。
+  - 詳しくは下記の、各OS向けのビルド手順を参照してください。
+- その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になります。
+- C++とC#のビルド設定を合わせる必要があります。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされます。）
 - ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug or x64-Release にある  
   libplateau が C#のバイナリのディレクトリにコピーされているか確認してください。  
   コピーコマンドは CSharpPLATEAU.Test.csproj に記載されており、C#のリビルド時に実行されるはずです。  
@@ -51,49 +50,49 @@ OSごとのビルド方法を記載する。
 
 ### 3つのOS向けにまとめてビルド
 - Github Actions で```Upload Dlls``` というワークフローを手動実行すると、  
-  CIの成果として3つのOS向けにビルドしたライブラリをまとめてダウンロードできる。
+  CIの成果として3つのOS向けにビルドしたライブラリをまとめてダウンロードできます。
 
 ### Windowsでの手動ビルド
 #### C++のビルド
-* Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開く。
-* 一度cmakeこけるので再度cmakeする。(CMakeLists.txt開いてCtrl+S)
-* ビルド実行する。(Ctrl+Shift+B)
-* `plateau_test`を実行することでユニットテストを実行可能
+* Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開きます。
+* 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
+* ビルド実行します。(Ctrl+Shift+B)
+* `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
-* ```wrappers/csharp/LibPLATEAU.NET.sln``` を開く。
+* ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。
 * ビルドする。ただしC++側に変更があった場合、  
-  最新のDLLをC#側にコピーするため「ビルド」ではなく「リビルド」を選択する。
-* C#ユニットテストも合わせて実行可能。
+  最新のDLLをC#側にコピーするため「ビルド」ではなく「リビルド」を選択します。
+* C#ユニットテストも合わせて実行可能です。
 
 ### Linuxでの手動ビルド
-利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とする。  
-それより新しいバージョンのUbuntuでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまう。
+利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とします。  
+それより新しいバージョンのUbuntuでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまいます。
 #### C++のビルド
-* Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性がある。  
-  その場合は新しいcmakeをマシンにインストールする。
-* Ubuntu 18 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` する。
-* Ubuntu 18 のデフォルトのコンパイラは g++-7 となっているが、それでは古いので g++-9 を導入する。
-* OpenGL API が必要なので、なければ以下のコマンドでインストールする。
+* Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性があります。  
+  その場合は新しいcmakeをマシンにインストールします。
+* Ubuntu 18 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
+* Ubuntu 18 のデフォルトのコンパイラは g++-7 となっていますが、それでは古いので g++-9 を導入します。
+* OpenGL API が必要なので、なければ以下のコマンドでインストールします。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
-* glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールする。
+* glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールします。
 
-* 以下のコマンドを実行する。
+* 以下のコマンドを実行します。
 ```
 cd (プロジェクトのルートディレクトリ)
 cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
 cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
 ```
 #### C#のビルド
-* マシンに dotnet をインストールする。
-* 以下のコマンドを実行する。
+* マシンに dotnet をインストールします。
+* 以下のコマンドを実行します。
 ```
 cd (プロジェクトのルートディレクトリ）
 cd ./wrappers/csharp/LibPLATEAU.NET
 dotnet build -c Release
 ```
-* 合わせてユニットテストもする場合は以下を実行する。
+* 合わせてユニットテストもする場合は以下を実行します。
 ```
 dotnet test -c Release
 ```
@@ -110,54 +109,40 @@ dotnet test -c Release
 
 ## サンプル
 ### log_skipped_elements
-パース出来なかった要素をすべて列挙してくれる。
-Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行する。
+パース出来なかった要素をすべて列挙します。
+Visual Studioの実行ターゲットを`log_skipped_elements.exe`にして実行します。
 
 ### export_obj
-.obj, .mtlをエクスポートしてくれる。
+.obj, .mtlをエクスポートします。
 
 ## デプロイ
 ### Unity
-PlateauUnitySDKへの導入については、そちらのREADMEを参照のこと。
+PlateauUnitySDKへの導入については、そちらのREADMEを参照してください。
 
 ## ディレクトリ構成
 - 3rdparty
-  - 外部ライブラリはすべてここにsubmoduleで追加する。
-  - libcitygml
-    - citygmlパースライブラリ。変更するため本家をフォークしている。
-  - xerces-c
-    - libcitygmlの依存ライブラリ。xmlパースライブラリ
+  - 外部ライブラリはすべてここにsubmoduleで追加します。(fbx_sdkは例外です。)
+  - 利用ライブラリについては後述の「ライセンス管理」を参照してください。
 - data
-  - テスト用のデータを置く。ビルド時に出力先ディレクトリにコピーされる。
+  - テスト用のデータを置きます。ビルド時に出力先ディレクトリにコピーされます。
 - examples
-  - サンプルを置く。
+  - サンプルです。
 - include
-  - ヘッダファイル一式を置く。
+  - ヘッダファイル一式です。
 - src
-  - 内部実装のソースコードを置く。
+  - 内部実装のソースコードです。
 - test
-  - ユニットテスト
+  - ユニットテストです。
 - wrappers
-  - 他言語向けのwrapper実装を置く。
+  - 他言語向けのwrapper実装です。
 - .github/workflows
-  - Github Actions で自動テストを行うための手順を記載する。
+  - Github Actions で自動テストを行うためのファイルです。
 
 ## テストデータ
-テストデータの詳細については ```data/README.md``` に記載している。
+テストデータの詳細については ```data/README.md``` を参照してください。
 
 ## モックサーバー
-モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照。
-
-# 社外の方へ
-お手数をおかけして申し訳ございませんが、社外の方が libplateau をビルドするには追加の手順が必要です。  
-ビルドを試みられたなら、このリポジトリを clone して `submodule update --init` したとき、`fbx_sdk`をクローンできないのに気付いたかもしれません。  
-fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組み込んで良いものの、オープンソースではなく、再配布は禁止となっております。    
-そのため、libplateau 自体はオープンソースですが、例外的に fbx_sdk のみプライベートリポジトリとさせて頂いております。  
-ビルドするためには、Autodesk社が配布しているSDKを指定のディレクトリに配置する必要があります。  
-- [Autodesk社のWebサイト](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3) から、各OS向けのFBXSDKをダウンロードしてインストールします。
-- インストールして得られるファイルを、次のディレクトリ構成に合うように配置します。
-  - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
-  - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。
+モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照してください。
 
 # 実装上の注意
 ## 文字コード
