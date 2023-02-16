@@ -28,6 +28,3 @@
 [submodule "3rdparty/libxml2"]
 	path = 3rdparty/libxml2
 	url = https://github.com/GNOME/libxml2
-[submodule "3rdparty/fbx_sdk"]
-	path = 3rdparty/fbx_sdk
-url=git@github.com:Synesthesias/fbx_sdk.git
