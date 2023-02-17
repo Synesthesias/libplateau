@@ -90,7 +90,6 @@ jobs:
         compile-sdk: [33]
         build-tools: [30.0.3]
         ndk-version: [23.1.7779620]
-        root-project-path: [./AndroidNDK]
 
     steps:
       - uses: actions/checkout@v3
@@ -105,25 +104,18 @@ jobs:
         shell: bash
         run: git submodule update --init --recursive
 
-
-
-
-
-
-
-
-
       - name: setup ubuntu
         run: |
           sudo apt-get --quiet update --yes
           sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+
       - name: setup JDK 1.8
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: '11'
+
       - name: download Android SDK
-        #working-directory: ${{ matrix.root-project-path }}
         run: |
           wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
           unzip -d android-sdk-linux android-sdk.zip
@@ -137,15 +129,13 @@ jobs:
           set +o pipefail
           yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
           set -o pipefail
+
       - name: install Android NDK
-        #working-directory: ${{ matrix.root-project-path }}
         run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" 
+
       - name: Insert NDK path
-        #working-directory: ${{ matrix.root-project-path }}
         run: |
           echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
-
-
 
       - name: Install ninja-build tool
         uses: seanmiddleditch/gha-setup-ninja@v3
@@ -160,7 +150,7 @@ jobs:
           -D ANDROID_ABI=arm64-v8a 
           -D CMAKE_MAKE_PROGRAM=ninja
           -D CMAKE_BUILD_TYPE=Release
-          -DCMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
+          -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
 
       - name: Build by CMake
         run: cmake --build ${{github.workspace}}/out/build/x64-Release --config Release
