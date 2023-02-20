@@ -82,8 +82,7 @@ jobs:
   # AndroidとiOS用にライブラリをビルド。
   upload_mobile_dlls:
 
-    runs-on: [ubuntu-latest, macos-latest]
-
+    runs-on: [macos-latest, ubuntu-latest]
     strategy:
       fail-fast: false
       matrix:
