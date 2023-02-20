@@ -175,17 +175,17 @@ jobs:
 
       - name: Upload framework for Android
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: libplateau-android-dll
           path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
 
       - name: Upload framework for iOS
         if: runner.os == 'MacOS'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: libplateau-ios-dll
-          path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework
+          path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
 
   # 3つ目のジョブです。
   # OSごとのアーティファクトを1つにまとめます。
@@ -195,7 +195,7 @@ jobs:
 
     steps:
       - name: download-all-artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           path: ~/a
 
@@ -206,13 +206,13 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Android
-          mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS
+          mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
           cp ~/a/libplateau-windows-dll/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           cp ~/a/libplateau-windows-dll/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           cp ~/a/libplateau-ubuntu-18.04-dll/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           cp ~/a/libplateau-macos-latest-dll/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
-          cp -r ~/a/libplateau-ios-dll/plateau.framework ~/a/plateau-plugins/dynamic-libs/iOS
+          cp ~/a/libplateau-ios-dll/* ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
 
       - name: sum-up-static-libs
         run: |
