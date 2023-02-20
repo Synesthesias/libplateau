@@ -79,10 +79,10 @@ jobs:
           path: ${{env.HOME}}/output/
 
   # 2つ目のジョブ。
-  # Android用にライブラリをビルド。
-  upload_android_dlls:
+  # AndroidとiOS用にライブラリをビルド。
+  upload_mobile_dlls:
 
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest]
 
     strategy:
       fail-fast: false
@@ -105,17 +105,20 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: setup ubuntu
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get --quiet update --yes
           sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
 
       - name: setup JDK 1.8
+        if: runner.os == 'Linux'
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: '11'
 
       - name: download Android SDK
+        if: runner.os == 'Linux'
         run: |
           wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
           unzip -d android-sdk-linux android-sdk.zip
@@ -131,16 +134,20 @@ jobs:
           set -o pipefail
 
       - name: install Android NDK
+        if: runner.os == 'Linux'
         run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" 
 
       - name: Insert NDK path
+        if: runner.os == 'Linux'
         run: |
           echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
 
       - name: Install ninja-build tool
+        if: runner.os == 'Linux'
         uses: seanmiddleditch/gha-setup-ninja@v3
 
-      - name: Configure CMake
+      - name: Configure CMake for Android
+        if: runner.os == 'Linux'
         run: >
           cmake
           -S ${{github.workspace}} 
@@ -152,36 +159,8 @@ jobs:
           -D CMAKE_BUILD_TYPE=Release
           -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
 
-      - name: Build by CMake
-        run: cmake --build ${{github.workspace}}/out/build/x64-Release --config Release
-
-
-
-
-
-  # 3つ目のジョブ。
-  # iOS用にライブラリをビルド。
-  upload_ios_dlls:
-
-    runs-on: macos-latest
-
-    strategy:
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Add SSH private keys for submodule repositories
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: |
-            ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
-
-      - name: checkout submodules
-        shell: bash
-        run: git submodule update --init --recursive
-
-      - name: Configure CMake
+      - name: Configure CMake for iOS
+        if: runner.os == 'MacOS'
         run: >
           cmake
           -S ${{github.workspace}} 
@@ -198,9 +177,7 @@ jobs:
 
 
 
-
-
-  # 4つ目のジョブです。
+  # 3つ目のジョブです。
   # OSごとのアーティファクトを1つにまとめます。
   sum-up-dlls:
     runs-on: ubuntu-latest
