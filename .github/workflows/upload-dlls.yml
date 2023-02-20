@@ -82,10 +82,11 @@ jobs:
   # AndroidとiOS用にライブラリをビルド。
   upload_mobile_dlls:
 
-    runs-on: [macos-latest, ubuntu-latest]
+    runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, ubuntu-latest]
         compile-sdk: [33]
         build-tools: [30.0.3]
         ndk-version: [23.1.7779620]
