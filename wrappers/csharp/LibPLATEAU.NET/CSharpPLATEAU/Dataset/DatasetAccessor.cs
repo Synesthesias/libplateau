@@ -38,6 +38,7 @@ namespace PLATEAU.Dataset
             var ret = NativeVectorGmlFile.Create();
             foreach (var package in packages)
             {
+                if (package == PredefinedCityModelPackage.None) continue;
                 using (var gmlFiles = GetGmlFilesForPackage(package))
                 {
                     ret.AddCopyOf(gmlFiles);
