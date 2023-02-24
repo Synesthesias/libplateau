@@ -12,7 +12,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = source.Accessor;
-            Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
+            Assert.AreEqual(accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             Assert.AreEqual("53392670", accessor.MeshCodes.At(1).ToString());
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
             Assert.AreEqual(
                 NetworkConfig.MockServerUrl + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",
                 gmls.At(0).Path);

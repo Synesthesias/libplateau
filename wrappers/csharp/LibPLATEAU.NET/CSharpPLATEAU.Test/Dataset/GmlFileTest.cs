@@ -51,7 +51,7 @@ namespace PLATEAU.Test.Dataset
             using var accessor = source.Accessor;
             // パスに日本語名を含むケースで動作確認します。
             var testDir = Directory.CreateDirectory("テスト用一時フォルダ");
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
             foreach (var gml in gmls)
             {
                 gml.Fetch(testDir.FullName);
@@ -77,7 +77,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.CreateLocal("data/日本語パステスト");
             using var accessor = source.Accessor;
             using var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
-            var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gmls = filtered.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(2, gmls.At(0).GetMaxLod());
         }
@@ -88,7 +88,7 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
             using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse("53392642") });
-            var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gmls = filtered.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(1, gmls.At(0).GetMaxLod());
         }
@@ -100,7 +100,7 @@ namespace PLATEAU.Test.Dataset
             using var sourceLocal = DatasetSource.CreateLocal("data/日本語パステスト");
 
             using var accessor = sourceLocal.Accessor;
-            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
             var gml = gmls.At(0);
             var codelistPaths = gml.SearchAllCodelistPathsInGml();
             var imagePaths = gml.SearchAllImagePathsInGml();
@@ -138,7 +138,7 @@ namespace PLATEAU.Test.Dataset
             if(Directory.Exists(testDir.FullName)) Directory.Delete(testDir.FullName, true);
             Directory.CreateDirectory(testDir.FullName);
 
-            accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Fetch(testDir.FullName);
+            accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building).At(0).Fetch(testDir.FullName);
             
             Console.WriteLine(testDir.FullName);
             bool textureExist = File.Exists(Path.Combine(testDir.FullName,
