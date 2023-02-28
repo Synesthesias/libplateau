@@ -77,5 +77,17 @@ namespace PLATEAU.Test.CityGML
             int actualVal = attrMap[key].AsInt;
             Assert.AreEqual(valueInGmlFile, actualVal);
         }
+
+        [TestMethod]
+        public void AsBool_Returns_GML_Value()
+        {
+            const string parentKey = "uro:buildingDetails";
+            const string childKey = "energy:isHeated";
+            const bool valueInGmlFile = true;
+            var parentVal = attrMap[parentKey];
+            var children = parentVal.AsAttrSet;
+            bool actualVal = children[childKey].AsBool;
+            Assert.AreEqual(valueInGmlFile, actualVal);
+        }
     }
 }

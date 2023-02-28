@@ -535,6 +535,7 @@
 					<uro:districtsAndZonesType codeSpace="../../codelists/Common_districtsAndZonesType.xml">11</uro:districtsAndZonesType>
 					<uro:prefecture codeSpace="../../codelists/Common_prefecture.xml">13</uro:prefecture>
 					<uro:city codeSpace="../../codelists/Common_localPublicAuthorities.xml">13111</uro:city>
+					<energy:isHeated>true</energy:isHeated>
 				</uro:BuildingDetails>
 			</uro:buildingDetails>
 			<uro:extendedAttribute>
