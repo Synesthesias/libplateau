@@ -20,7 +20,7 @@ namespace plateau::dataset {
 
         std::set<MeshCode>& getMeshCodes() override;
         std::shared_ptr<std::vector<GmlFile>> getGmlFiles(const PredefinedCityModelPackage package) override;
-        void getGmlFiles(const PredefinedCityModelPackage package, std::vector<GmlFile>& out_gml_files) override;
+        void getGmlFiles(const PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
 
         TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference) override;
         

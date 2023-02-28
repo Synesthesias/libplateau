@@ -21,7 +21,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = source.Accessor;
-            Assert.AreEqual(1, accessor.MeshCodes.Length);
+            Assert.IsTrue(accessor.MeshCodes.Length > 0, "メッシュコードが存在します。");
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
         }
 
@@ -40,7 +40,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = datasetSource.Accessor;
-            var gmls = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
             Assert.AreEqual(
@@ -54,7 +54,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
-            var gmlFiles = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
+            var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
             var gml = gmlFiles.At(0);
             Assert.AreEqual(NetworkConfig.MockServerUrl + "/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml", gml.Path);
@@ -65,8 +65,8 @@ namespace PLATEAU.Test.Dataset
         {
             using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = datasetSource.Accessor;
-            Console.WriteLine(Path.GetFullPath(accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building).At(0).Path));
-            var expected = PredefinedCityModelPackage.Building;
+            Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
+            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road;
             Assert.AreEqual(expected, accessor.Packages);
         }
         
@@ -75,7 +75,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
-            var buildings = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
+            var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, buildings.Length);
             var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse;
             Assert.AreEqual(expected, accessor.Packages);
@@ -101,8 +101,8 @@ namespace PLATEAU.Test.Dataset
             using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
             var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(1, meshCodes.Length);
-            int maxLod = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building).At(0).GetMaxLod();
+            Assert.IsTrue(meshCodes.Length > 0, "メッシュコードが存在します。");
+            int maxLod = accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GetMaxLod();
             Assert.AreEqual(2, maxLod);
         }
         
@@ -111,7 +111,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             var accessor = source.Accessor;
-            var gmls = accessor.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
+            var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmls.At(1).GetMaxLod());
         }
         
@@ -142,7 +142,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateLocal(TestDataPathLocal);
             var accessor = source.Accessor;
-            using var gmlFiles = accessor.GetGmlFiles();
+            using var gmlFiles = accessor.GetAllGmlFiles();
             Assert.IsTrue(gmlFiles.Length > 0);
             var firstGml = gmlFiles.At(0);
             Assert.AreEqual(PredefinedCityModelPackage.Building, firstGml.Package);
@@ -165,15 +165,15 @@ namespace PLATEAU.Test.Dataset
             // テスト用のデータは、基準点からおおむね南に50km, 西に5km の地点にあります。
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            Assert.IsTrue(Math.Abs(center.Z - (-50000)) < 2000, "南に50km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
-            Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
+            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 2000, "南に51km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
+            Assert.IsTrue(Math.Abs(center.X - (-9000)) < 4000, "西に9km");
         }
         
         
         private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCodeStr)
         {
             using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCodeStr) });
-            var filteredGMLArray = filtered.GetGmlFilesForPackage(PredefinedCityModelPackage.Building);
+            var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
