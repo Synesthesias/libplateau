@@ -78,7 +78,11 @@ namespace plateau::network {
                     dataset_metadata.title = json_dataset_metadata.at("title");
                     dataset_metadata.description = json_dataset_metadata.at("description");
                     if (json_dataset_metadata.contains("featureTypes")) {
-                        dataset_metadata.feature_types = json_dataset_metadata.at("featureTypes");
+                        auto json_feature_types = json_dataset_metadata.at("featureTypes");
+                        if(json_feature_types.is_array()) { // featureTypes : null の場合を除外
+                            dataset_metadata.feature_types = json_feature_types;
+                        }
+
                     }
                     dataset_metadata_group.datasets.push_back(dataset_metadata);
                 }
