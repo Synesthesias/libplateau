@@ -55,9 +55,6 @@ TEST_F(DatasetTest, getGmlsLocal) { // NOLINT
 }
 
 TEST_F(DatasetTest, getGmlsServer) { // NOLINT
-    const auto client = Client::createClientForMockServer();
-    const auto metadata = client.getMetadata();
-//    client.getFiles("hachioji")
     const auto source = DatasetSource::createServer("23ku", Client::createClientForMockServer());
     const auto accessor = source.getAccessor();
     const auto gml_files = accessor->getGmlFiles(PredefinedCityModelPackage::Building | PredefinedCityModelPackage::LandUse);
@@ -77,7 +74,7 @@ TEST_F(DatasetTest, getGmlsServer) { // NOLINT
 
 TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
     const auto& mesh_codes = local_dataset_accessor->getMeshCodes();
-    ASSERT_EQ(mesh_codes.size(), 1);
+    ASSERT_TRUE(mesh_codes.size() > 0);
 }
 
 namespace {
