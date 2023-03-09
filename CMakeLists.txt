@@ -33,7 +33,7 @@ cmake_minimum_required(VERSION 3.13)
 # ・ -D BUILD_LIB_TYPE=static or dynamic        ビルドするのは静的ライブラリか動的ライブラリか
 # ・ -D RUNTIME_LIB_TYPE=MT or MD               (Windowsのみ) MT か MD か
 # デフォルト値は Unity向けに dynamic, MT です。
-# Unreal向けには static, MD になります。
+# Unreal向けには static, MD にしてください。。
 SET(BUILD_LIB_TYPE "dynamic" CACHE STRING "static or dynamic")
 SET(RUNTIME_LIB_TYPE "MT" CACHE STRING "MT or MD")
 if(NOT ( BUILD_LIB_TYPE STREQUAL "static" OR BUILD_LIB_TYPE STREQUAL "dynamic"))
@@ -128,12 +128,15 @@ set(GLTFSDK_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glTF-SDK/glTF-SDK/GLTF
 if( NOT(IOS OR ANDROID) )
   # FBX SDK 以下のディレクトリで debug と release のどちらを利用するか決めます。
   # debug なら debug/*-md.lib を使い、release なら release/*-mt.lib を使います。
-  if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(FBXSDK_LAST_DIR_NAME "debug")
+  if(RUNTIME_LIB_TYPE STREQUAL "MD")
     set(FBXSDK_MT_OR_MD "md")
   else()
-    set(FBXSDK_LAST_DIR_NAME "release")
     set(FBXSDK_MT_OR_MD "mt")
+  endif()
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(FBXSDK_LAST_DIR_NAME "debug")
+  else()
+    set(FBXSDK_LAST_DIR_NAME "release")
   endif()
 
   ## zlib(FBX SDKの依存関係)
@@ -189,7 +192,7 @@ if( NOT(IOS OR ANDROID) )
 
   find_library(FBXSDK_LIBRARIES
     NAMES
-      libfbxsdk-md libfbxsdk-mt libfbxsdk.a
+      libfbxsdk-${FBXSDK_MT_OR_MD} libfbxsdk.a
     PATHS
       ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/lib
     PATH_SUFFIXES
@@ -207,8 +210,12 @@ set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 ## openssl
 add_subdirectory("3rdparty/openssl-cmake")
 
-# libplateau をビルドします。
+####################################
+# libplateau 本体の Cmake ファイルです。
+
 add_subdirectory("src")
+
+####################################
 
 if( NOT(IOS OR ANDROID) )
   ## Examples

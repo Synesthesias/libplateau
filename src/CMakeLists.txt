@@ -1,6 +1,12 @@
 add_compile_definitions(LIBPLATEAU_BUILD)
 
-add_library(plateau SHARED "")
+if(BUILD_LIB_TYPE STREQUAL "dynamic")
+  add_compile_definitions(LIBPLATEAU_BUILD_DYNAMIC)
+  add_library(plateau SHARED "")
+else()
+  add_library(plateau STATIC "")
+endif()
+
 if( NOT(IOS OR ANDROID) )
   target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper)
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
