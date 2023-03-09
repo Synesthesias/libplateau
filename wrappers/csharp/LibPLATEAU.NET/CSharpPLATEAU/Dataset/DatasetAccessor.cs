@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using PLATEAU.Geometries;
 using PLATEAU.Interop;
@@ -21,6 +22,10 @@ namespace PLATEAU.Dataset
         {
         }
 
+        /// <summary>
+        /// 引数のパッケージに対応する <see cref="GmlFile"/> を取得して vector で返します。
+        /// 引数のパッケージは、複数のビットを立てることで複数指定可能です。 
+        /// </summary>
         public NativeVectorGmlFile GetGmlFiles(PredefinedCityModelPackage package)
         {
             var gmlFiles = NativeVectorGmlFile.Create();
@@ -28,6 +33,12 @@ namespace PLATEAU.Dataset
                 Handle, package, gmlFiles.Handle);
             DLLUtil.CheckDllError(result);
             return gmlFiles;
+        }
+
+        public NativeVectorGmlFile GetAllGmlFiles()
+        {
+            var allPackages = ~0u;
+            return GetGmlFiles((PredefinedCityModelPackage)allPackages);
         }
 
         public NativeVectorMeshCode MeshCodes
@@ -47,9 +58,9 @@ namespace PLATEAU.Dataset
         /// 存在するパッケージ種をフラグ形式で返します。
         /// 
         /// サーバーの場合:
-        /// <see cref="GetGmlFiles"/> したことのある <see cref="Extent"/> に関して、
+        /// <see cref="GetGmlFilesForPackage"/> したことのある <see cref="Extent"/> に関して、
         /// 存在するパッケージ種をフラグ形式で返します。
-        /// <see cref="GetGmlFiles"/> を実行した後でないと None が返ります。
+        /// <see cref="GetGmlFilesForPackage"/> を実行した後でないと None が返ります。
         /// </summary>
         public PredefinedCityModelPackage Packages =>
             DLLUtil.GetNativeValue<PredefinedCityModelPackage>(Handle,

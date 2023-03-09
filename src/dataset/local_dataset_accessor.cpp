@@ -185,14 +185,27 @@ namespace plateau::dataset {
         return result;
     }
 
-    void LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package, std::vector<GmlFile>& gml_files) {
-        if (files_.find(package) == files_.end())
-            return;
-
-        for (const auto& file : files_[package]) {
-            if(!file.isValid()) continue;
-            gml_files.push_back(file);
+    void LocalDatasetAccessor::getGmlFiles(PredefinedCityModelPackage package_flags, std::vector<GmlFile>& gml_files) {
+        auto package_num = static_cast<std::underlying_type<PredefinedCityModelPackage>::type>(package_flags);
+        int i = 0;
+        while(package_num > 0){
+            if((package_num & 1) == 1){
+                // フラグが立っている各パッケージについて
+                auto package = (PredefinedCityModelPackage)(1 << i);
+                if (files_.find(package) != files_.end()){
+                    // そのパッケージのファイルが存在すれば追加します。
+                    for (const auto& file : files_[package]) {
+                        if(file.isValid()){
+                            gml_files.push_back(file);
+                        }
+                    }
+                }
+            }
+            ++i;
+            package_num >>= 1;
         }
+
+
     }
 
     std::string LocalDatasetAccessor::getU8RelativePath(const std::string& path) const {

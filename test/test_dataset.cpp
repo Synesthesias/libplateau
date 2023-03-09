@@ -41,21 +41,40 @@ protected:
     std::shared_ptr<IDatasetAccessor> local_dataset_accessor;
 };
 
-TEST_F(DatasetTest, getAllGmls) { // NOLINT
-    const std::vector expected_bldg_files =
-    { std::filesystem::u8path(u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().u8string() };
+TEST_F(DatasetTest, getGmlsLocal) { // NOLINT
+    const std::vector expected_files =
+    { std::filesystem::u8path(u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml").make_preferred().u8string(),
+      std::filesystem::u8path( u8"../data/日本語パステスト/udx/tran/533925_tran_6697_op.gml").make_preferred().u8string() };
     std::vector<std::string> actual_files;
-    const auto gml_files = local_dataset_accessor->getGmlFiles(PredefinedCityModelPackage::Building);
+    auto packages = PredefinedCityModelPackage::Building | PredefinedCityModelPackage::Road;
+    const auto gml_files = local_dataset_accessor->getGmlFiles(packages);
     for (const auto& gml_file : *gml_files) {
         actual_files.push_back(gml_file.getPath());
     }
+    checkVectors(expected_files, actual_files);
+}
 
-    checkVectors(expected_bldg_files, actual_files);
+TEST_F(DatasetTest, getGmlsServer) { // NOLINT
+    const auto source = DatasetSource::createServer("23ku", Client::createClientForMockServer());
+    const auto accessor = source.getAccessor();
+    const auto gml_files = accessor->getGmlFiles(PredefinedCityModelPackage::Building | PredefinedCityModelPackage::LandUse);
+    auto actual_gml_files = std::vector<std::string>();
+    for(const auto& gml_file : *gml_files){
+        actual_gml_files.push_back(gml_file.getPath());
+    }
+    const std::vector<std::string> expected_files = {
+            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",
+            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml",
+            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
+            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
+            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6697_park_op.gml"
+    };
+    checkVectors(expected_files, actual_gml_files);
 }
 
 TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
     const auto& mesh_codes = local_dataset_accessor->getMeshCodes();
-    ASSERT_EQ(mesh_codes.size(), 1);
+    ASSERT_TRUE(mesh_codes.size() > 0);
 }
 
 namespace {

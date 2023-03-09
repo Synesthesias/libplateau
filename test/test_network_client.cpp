@@ -48,7 +48,7 @@ namespace plateau::network {
 
     TEST_F(ClientTest, DownloadFilesOfDefaultServer) { // NOLINT
         auto client = Client("", "");
-        auto first_id = client.getMetadata()->at(0).datasets.at(0).id;
+        auto first_id = client.getMetadata()->at(1).datasets.at(0).id;
         auto files = client.getFiles(first_id);
         ASSERT_TRUE(!files.empty()) << "Dataset files is not empty.";
         auto files_of_first_package = files.begin()->second;

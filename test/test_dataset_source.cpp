@@ -19,7 +19,7 @@ namespace plateau::dataset {
                         std::move(DatasetSource::createLocal(u8"../data/日本語パステスト")));
         auto accessor = source->getAccessor();
         auto mesh_code_str = accessor->getMeshCodes().begin()->get();
-        ASSERT_EQ(mesh_code_str, "53392642");
+        ASSERT_EQ(mesh_code_str, "533925");
     }
 
     TEST_F(DatasetSourceTest, get_accessor_of_server_source_returns_server_accessor) { // NOLINT

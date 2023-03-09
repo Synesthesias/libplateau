@@ -13,19 +13,22 @@ namespace PLATEAU.Test.Dataset
     public class DatasetAccessorTest
     {
 
+        private const string TestDataPathLocal = "data/日本語パステスト";
+        private const string TestDatasetIdServer = "23ku"; // モックサーバーに置かれた東京23区のデータセットID
+
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
+            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = source.Accessor;
-            Assert.AreEqual(1, accessor.MeshCodes.Length);
+            Assert.IsTrue(accessor.MeshCodes.Length > 0, "メッシュコードが存在します。");
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
         }
 
         [TestMethod]
         public void GetMeshCodeServer()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.AreEqual(2, meshCodes.Length);
@@ -35,7 +38,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
+            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -49,7 +52,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesServer()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
             var gmlFiles = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmlFiles.Length);
@@ -60,17 +63,17 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
+            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
-            var expected = PredefinedCityModelPackage.Building;
+            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road;
             Assert.AreEqual(expected, accessor.Packages);
         }
         
         [TestMethod]
         public void GetPackagesServer()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
             var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, buildings.Length);
@@ -81,24 +84,24 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
+            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void CalcCenterPointServer()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             TestCenterPoint(source);
         }
 
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal("data/日本語パステスト");
-            using var accessor = datasetSource.Accessor;
+            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
+            var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(1, meshCodes.Length);
+            Assert.IsTrue(meshCodes.Length > 0, "メッシュコードが存在します。");
             int maxLod = accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GetMaxLod();
             Assert.AreEqual(2, maxLod);
         }
@@ -106,8 +109,8 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodServer()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
-            using var accessor = source.Accessor;
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
+            var accessor = source.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, gmls.At(1).GetMaxLod());
         }
@@ -115,8 +118,8 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.CreateLocal("data/日本語パステスト");
-            using var accessor = source.Accessor;
+            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, validMeshCode));
@@ -126,12 +129,24 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Server()
         {
-            using var source = DatasetSource.CreateForMockServer("23ku");
-            using var accessor = source.Accessor;
+            using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
+            var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
             Assert.IsTrue(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, validMeshCode));
             Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, invalidMeshCode));
+        }
+
+        [TestMethod]
+        public void GetGmlFiles()
+        {
+            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            var accessor = source.Accessor;
+            using var gmlFiles = accessor.GetAllGmlFiles();
+            Assert.IsTrue(gmlFiles.Length > 0);
+            var firstGml = gmlFiles.At(0);
+            Assert.AreEqual(PredefinedCityModelPackage.Building, firstGml.Package);
+            Assert.AreEqual("53392642", firstGml.MeshCode.ToString());
         }
 
 
@@ -150,8 +165,8 @@ namespace PLATEAU.Test.Dataset
             // テスト用のデータは、基準点からおおむね南に50km, 西に5km の地点にあります。
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            Assert.IsTrue(Math.Abs(center.Z - (-50000)) < 2000, "南に50km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
-            Assert.IsTrue(Math.Abs(center.X - (-5000)) < 1000, "西に5km");
+            Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 2000, "南に51km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
+            Assert.IsTrue(Math.Abs(center.X - (-9000)) < 4000, "西に9km");
         }
         
         

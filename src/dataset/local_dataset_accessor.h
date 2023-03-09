@@ -54,10 +54,10 @@ namespace plateau::dataset {
         /**
          * \brief packageに該当するCityGMLファイルを取得します。
          *        なければ空のvectorを返します。
-         * \param package 都市モデルパッケージ
+         * \param package_flags 都市モデルパッケージ
          * \param gml_files 取得結果の格納先
          */
-        void getGmlFiles(PredefinedCityModelPackage package, std::vector<GmlFile>& gml_files) override;
+        void getGmlFiles(PredefinedCityModelPackage package_flags, std::vector<GmlFile>& gml_files) override;
 
         /**
          * \brief packageに該当するCityGMLファイルの個数を取得します。

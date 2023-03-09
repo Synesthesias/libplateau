@@ -8,14 +8,15 @@ extern "C"{
     using namespace plateau::network;
 
 /**
- * vector<任意の型> を P/Invoke で扱うための6つのメソッドを生成するマクロです。
- * 6つのメソッドとは
+ * vector<任意の型> を P/Invoke で扱うための7つのメソッドを生成するマクロです。
+ * そのメソッドとは
  * 1: plateau_create_vector_FUNC_NAME (new)
  * 2: plateau_delete_vector_FUNC_NAME (delete),
  * 3: plateau_vector_FUNC_NAME_get_pointer (要素のポインタを取得),
  * 4: plateau_vector_FUNC_NAME_get_value (要素の値を取得)
  * 5: plateau_vector_FUNC_NAME_count (要素数を取得)
- * 6: plateau_vector_FUNC_NAME_push_back_value (値渡しで要素を追加)
+ * 6: plateau_vector_FUNC_NAME_push_back_value (要素を追加, 値渡し)
+ * 7: plateau_vector_FUNC_NAME_push_back_copy_of_ref (要素を追加, ポインタ渡しでポインタの参照先のコピーを追加)
  * です。
  * なお通常は、 3か4のどちらか片方は利用しないはずです。
  * vectorの要素は実体で保持されます。
@@ -56,7 +57,12 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
     DLL_2_ARG_FUNC (plateau_vector_ ## FUNC_NAME ## _push_back_value,\
         std::vector< VECTOR_ELEMENT_TYPE >* const vector, \
         VECTOR_ELEMENT_TYPE element, \
-        vector->push_back(element))
+        vector->push_back(element))                    \
+                                                       \
+    DLL_2_ARG_FUNC(plateau_vector_ ## FUNC_NAME ## _push_back_copy_of_ref, \
+        std::vector< VECTOR_ELEMENT_TYPE >* const vector, \
+        VECTOR_ELEMENT_TYPE* element_ptr, /*NOLINT*/ \
+        vector->push_back(*element_ptr))
 
     PLATEAU_VECTOR(gml_file, GmlFile)
     PLATEAU_VECTOR(mesh_code, MeshCode)

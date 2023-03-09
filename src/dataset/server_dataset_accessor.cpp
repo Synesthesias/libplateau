@@ -38,11 +38,13 @@ namespace plateau::dataset {
     }
 
     void ServerDatasetAccessor::getGmlFiles(
-        const PredefinedCityModelPackage package,
+        const PredefinedCityModelPackage package_flags,
         std::vector<GmlFile>& out_gml_files) {
 
+        auto arg_package_num = static_cast<std::underlying_type<PredefinedCityModelPackage>::type>(package_flags);
         for (const auto& [sub_folder, gml_files] : dataset_files_) {
-            if (UdxSubFolder::getPackage(sub_folder) == package) {
+            auto data_package_num = static_cast<std::underlying_type<PredefinedCityModelPackage>::type>(UdxSubFolder::getPackage(sub_folder));
+            if ((data_package_num & arg_package_num) != 0) { // フラグ群の積集合が1つ以上あるなら、引数の package のどれかに合致するので追加
                 for (const auto& dataset_file : gml_files) {
                     out_gml_files.emplace_back(dataset_file.url, client_, dataset_file.max_lod);
                 }
