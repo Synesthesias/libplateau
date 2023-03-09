@@ -8,10 +8,14 @@
 # README.md を参照するか、 .github/actions/build/action.yml の Configure CMake の箇所を参照してコマンド例とします。
 
 # 【ビルドの方針】
+# [Unity向けビルドの場合]
 # 最終的に libplateau.dll (または .so , .dylib ) が1つだけ出力されるようにします(example, libを除く)。
 # なぜなら soファイルが複数できてしまうと、Unityに取り込んだときに .so同士の依存関係が解決されず DllNotFoundExceptionになるためです。
 # ビルド時の依存関係を矢印で表すと次のようになります。
 # plateau.dll (c_wrapperを含む)  --> (3rdparty/libcitygml, 3rdparty/xerces_c)
+#
+# [Unreal Engine向けビルドの場合]
+# 静的ライブラリをビルドします。
 
 # 【トラブルシューティング】
 # Linux の Unity で DllNotFoundException になった場合
@@ -24,14 +28,40 @@
 # github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
 cmake_minimum_required(VERSION 3.13)
 
+# 引数チェック
+# cmakeの引数で、次の変数が指定される必要があります。
+# ・ -D BUILD_LIB_TYPE=static or dynamic        ビルドするのは静的ライブラリか動的ライブラリか
+# ・ -D RUNTIME_LIB_TYPE=MT or MD               (Windowsのみ) MT か MD か
+# デフォルト値は Unity向けに dynamic, MT です。
+# Unreal向けには static, MD になります。
+SET(BUILD_LIB_TYPE "dynamic" CACHE STRING "static or dynamic")
+SET(RUNTIME_LIB_TYPE "MT" CACHE STRING "MT or MD")
+if(NOT ( BUILD_LIB_TYPE STREQUAL "static" OR BUILD_LIB_TYPE STREQUAL "dynamic"))
+  message(FATAL_ERROR "Variable not set. use -D BUILD_LIB_TYPE=static or dynamic")
+endif()
+if(NOT (RUNTIME_LIB_TYPE STREQUAL "MT" OR RUNTIME_LIB_TYPE STREQUAL "MD"))
+  message(FATAL_ERROR "Variable not set. use -D RUNTIME_LIB_TYPE=MT or MD")
+endif()
+
 # MSVC_RUNTIME_LIBRARYプロパティを有効化
 # 参考：https://cmake.org/cmake/help/latest/policy/CMP0091.html
 if(POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif()
 
-# MDd or MTでコンパイル
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:DebugDLL>")
+# (Windows向け) MT or MD or MTd or MDd のどれでコンパイルするか決めます。
+# CMAKE_MSVC_RUNTIME_LIBRARY の値は最終的に次の4択のどれかになります:
+# MultiThreaded, MultiThreadedDebug, MultiThreadedDll, MultiThreadedDebugDll
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  string(APPEND CMAKE_MSVC_RUNTIME_LIBRARY "Debug" )
+endif()
+if(RUNTIME_LIB_TYPE STREQUAL "MD")
+  string(APPEND CMAKE_MSVC_RUNTIME_LIBRARY "DLL")
+endif()
+message("CMAKE_MSVC_RUNTIME_LIBRARY = ${CMAKE_MSVC_RUNTIME_LIBRARY}")
+
+
 
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
