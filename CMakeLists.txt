@@ -189,10 +189,16 @@ if( NOT(IOS OR ANDROID) )
   endif()
 
   set(FBXSDK_LIB_PATH_SUFFIXES "${FBXSDK_LIB_PATH_SUFFIXES}/${FBXSDK_LAST_DIR_NAME}")
+  set(FBXSDK_LIB_NAME "libfbxsdk")
+  if(WIN32)
+    string(APPEND FBXSDK_LIB_NAME "-${FBXSDK_MT_OR_MD}")
+  else()
+    string(APPEND FBXSDK_LIB_NAME ".a")
+  endif()
 
   find_library(FBXSDK_LIBRARIES
     NAMES
-      libfbxsdk-${FBXSDK_MT_OR_MD} libfbxsdk.a
+      ${FBXSDK_LIB_NAME}
     PATHS
       ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/fbx_sdk/2020.3.1/lib
     PATH_SUFFIXES
