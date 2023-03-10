@@ -44,11 +44,32 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
 #### 2. C++, C# のビルド手順(各OS共通) 
+- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。
+  - Unity向けRelease
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドディレクトリ : out/build/x64-Release-Unity
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+
+  - Unity向けDebug
+    - ビルドタイプ(CMAKE_BUILD_TYPE)  : Debug
+    - ビルドディレクトリ : out/build/x64-Debug-Unity
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+
+  - Unreal向けRelease(CMAKE_BUILD_TYPE)
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドディレクトリ : out/build/x64-Release-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+
+  - Unreal向けDebug
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
+    - ビルドディレクトリ : out/build/x64-Debug-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD 
+
 - C++ の libplateau をビルドすると DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になります。
 - C++とC#のビルド設定を合わせる必要があります。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされます。）
-- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug or x64-Release にある  
+- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug-Unity or x64-Release-Unity にある  
   libplateau が C#のバイナリのディレクトリにコピーされているか確認してください。  
   コピーコマンドは CSharpPLATEAU.Test.csproj に記載されており、C#のリビルド時に実行されるはずです。  
   このコマンドが正しく動作するか確認してください。
