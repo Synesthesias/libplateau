@@ -93,6 +93,7 @@ if(COMPILER_SUPPORTS_PIC)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 endif()
 
+
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
 # 今回は文字コードを統一したいので UTF-8 にします。
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
