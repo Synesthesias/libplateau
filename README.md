@@ -91,24 +91,28 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * C#ユニットテストも合わせて実行可能です。
 
 ### Linuxでの手動ビルド
-利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とします。  
-それより新しいバージョンのUbuntuでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまいます。
+利用する Linux は、Unityの対応OSに合わせて Ubuntu 20.04 とします。
 #### C++のビルド
 * Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性があります。  
   その場合は新しいcmakeをマシンにインストールします。
-* Ubuntu 18 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
-* Ubuntu 18 のデフォルトのコンパイラは g++-7 となっていますが、それでは古いので g++-9 を導入します。
+* Ubuntu 20 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
 * OpenGL API が必要なので、なければ以下のコマンドでインストールします。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
 * glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールします。
 
-* 以下のコマンドを実行します。
+* 以下のコマンドを実行します。  
+Unity向けの場合:
 ```
 cd (プロジェクトのルートディレクトリ)
-cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
-cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
+cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MT
+cmake --build ./out/build/x64-Release-Unity/ --config RelWithDebInfo
+```
+Unreal Engine向けの場合:
+```
+cmake -S . -B ./out/build/x64-Release-Unreal/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=static -D RUNTIME_LIB_TYPE=MD
+cmake --build ./out/build/x64-Release-Unreal/ --config RelWithDebInfo
 ```
 #### C#のビルド
 * マシンに dotnet をインストールします。
