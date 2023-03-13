@@ -53,6 +53,8 @@ runs:
         -G "Ninja" 
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
         -D CMAKE_CXX_FLAGS="-w"
+        -D BUILD_LIB_TYPE=dynamic
+        -D RUNTIME_LIB_TYPE=MT
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
@@ -60,6 +62,19 @@ runs:
 
     - name: Build by CMake for Unity
       run: cmake --build ${{github.workspace}}/out/build/x64-Release-Unity --config ${{env.BUILD_TYPE}}
+      shell: ${{ inputs.shell_type }}
+
+    - name: Configure CMake for Unreal
+      run: >
+        cmake
+        -S ${{github.workspace}}
+        -B ${{github.workspace}}/out/build/x64-Release-Unreal
+        -G "Ninja"
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
+        -D CMAKE_CXX_FLAGS="-w"
+        -D BUILD_LIB_TYPE=static
+        -D RUNTIME_LIB_TYPE=MD
+        ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
 
 

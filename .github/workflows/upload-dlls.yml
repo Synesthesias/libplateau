@@ -47,34 +47,35 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mkdir D:\a\output -Force
-          Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release\bin\* -Destination D:\a\output
+          Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release-Unity\bin\* -Destination D:\a\output
           Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\CSharpPLATEAU\bin\Release\netstandard2.0\CSharpPLATEAU.dll -Destination D:\a\output
 
       - name: Copy lib for Windows
         if: runner.os == 'Windows'
         run: |
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\3rdparty\libcitygml\lib\citygml.lib -Destination D:\a\output
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\src\plateau.lib -Destination D:\a\output
+#          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release\3rdparty\libcitygml\lib\citygml.lib -Destination D:\a\output
+          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release-Unreal\src\plateau.lib -Destination D:\a\output
 
       - name: Upload DLL for Windows
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v2
         with:
-          name: libplateau-windows-dll
+          name: libplateau-windows
           path: D:\a\output
 
       - name: Copy Libraries for Ubuntu and MacOS
         if: runner.os != 'Windows'
         run: |
           mkdir $HOME/output/
-          find ${{github.workspace}}/out/build/x64-Release -name *.so -or -name *.dylib -or -name libcitygml.a | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libcitygml.a | xargs -I {} cp -v {} $HOME/output
           echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
 
       - name: Upload DLL(so, dylib) for Ubuntu and MacOS
         if: runner.os != 'Windows'
         uses: actions/upload-artifact@v2
         with:
-          name: libplateau-${{matrix.os}}-dll
+          name: libplateau-${{matrix.os}}
           path: ${{env.HOME}}/output/
 
   # 2つ目のジョブ。
@@ -206,10 +207,10 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Android
           mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
-          cp ~/a/libplateau-windows-dll/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
-          cp ~/a/libplateau-windows-dll/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
-          cp ~/a/libplateau-ubuntu-18.04-dll/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
-          cp ~/a/libplateau-macos-latest-dll/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-windows/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
+          cp ~/a/libplateau-windows/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
+          cp ~/a/libplateau-ubuntu-18.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
+          cp ~/a/libplateau-macos-latest/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
           cp ~/a/libplateau-ios-dll/* ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
 
@@ -218,9 +219,9 @@ jobs:
           mkdir -p ~/a/plateau-plugins/static-libs/windows
           mkdir -p ~/a/plateau-plugins/static-libs/linux
           mkdir -p ~/a/plateau-plugins/static-libs/macos
-          cp ~/a/libplateau-windows-dll/*.lib ~/a/plateau-plugins/static-libs/windows
-          cp ~/a/libplateau-ubuntu-18.04-dll/*.a ~/a/plateau-plugins/static-libs/linux
-          cp ~/a/libplateau-macos-latest-dll/*.a ~/a/plateau-plugins/static-libs/macos
+          cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
+          cp ~/a/libplateau-ubuntu-18.04/*.a ~/a/plateau-plugins/static-libs/linux
+          cp ~/a/libplateau-macos-latest/*.a ~/a/plateau-plugins/static-libs/macos
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
