@@ -2,7 +2,7 @@ project(export_fbx)
 
 add_executable(export_fbx "export_fbx.cpp")
 
-target_link_libraries(export_fbx PRIVATE plateau citygml)
+target_link_libraries(export_fbx PRIVATE plateau citygml "${FBXSDK_LIBRARIES}")
 
 include_directories("${GLTFSDK_INCLUDE}")
 
