@@ -65,7 +65,7 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Configure CMake for Unreal
-      run: |
+      run: >
         cmake
         -S ${{github.workspace}}
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
