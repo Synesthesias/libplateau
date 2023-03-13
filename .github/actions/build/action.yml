@@ -65,7 +65,7 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Configure CMake for Unreal
-      run: >
+      run: |
         cmake
         -S ${{github.workspace}}
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
@@ -75,6 +75,11 @@ runs:
         -D BUILD_LIB_TYPE=static
         -D RUNTIME_LIB_TYPE=MD
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
+      shell: ${{ inputs.shell_type }}
+
+    - name: Build by CMake for Unreal
+      run: |
+        cmake --build ${{github.workspace}}/out/build/x64-Release-Unreal --config ${{env.BUILD_TYPE}}
       shell: ${{ inputs.shell_type }}
 
 
