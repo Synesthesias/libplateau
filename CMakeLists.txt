@@ -67,7 +67,7 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
+message(compiler_id = ${CMAKE_CXX_COMPILER_ID}, compiler_version = ${CMAKE_CXX_COMPILER_VERSION})
 
 # Xerces-C ライブラリの問題を修正するための措置です。
 # C言語で Windows かどうかチェックするには通常 #if define (_WIN32) と書きますが、
@@ -119,7 +119,10 @@ set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
 set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
+find_package(OpenGL REQUIRED)
+
 add_subdirectory("3rdparty/libcitygml")
+
 set(LIBCITYGML_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcitygml/sources/include")
 
 ## glTF-SDK
@@ -210,12 +213,13 @@ if( NOT(IOS OR ANDROID) )
   message("${FBXSDK_LIB_PATH_SUFFIXES} , ${FBXSDK_LIBRARIES}")
 endif()
 
-# cpp-httplib
-add_subdirectory("3rdparty/cpp-httplib")
-set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
-
 ## openssl
 add_subdirectory("3rdparty/openssl-cmake")
+
+# cpp-httplib
+set(HTTPLIB_COMPILE TRUE CACHE BOOL TRUE FORCE)
+add_subdirectory("3rdparty/cpp-httplib")
+set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
 ####################################
 # libplateau 本体の Cmake ファイルです。
@@ -251,4 +255,32 @@ if(IOS)
     XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
   )
+endif()
+
+
+# libファイルを1つに結合します。
+if(BUILD_LIB_TYPE STREQUAL "static")
+  # windows で libファイル結合します。
+  # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
+  if(WIN32)
+    find_program(MSVC_LIB_TOOL lib.exe)
+    message("msvc_lib_tool = ${MSVC_LIB_TOOL}")
+    add_custom_target(plateau_combined
+            ALL
+            COMMAND
+              ${MSVC_LIB_TOOL} /OUT:$<TARGET_FILE_DIR:plateau>\\plateau_combined.lib
+              $<TARGET_FILE:plateau>
+              $<TARGET_FILE:citygml>
+              $<TARGET_FILE:xerces-c>
+              $<TARGET_FILE:GLTFSDK>
+              $<TARGET_FILE:crypto>
+              $<TARGET_FILE:ssl>
+              $<TARGET_FILE:LibXml2>
+              $<TARGET_FILE:httplib>
+              $<TARGET_FILE:zlibstatic>
+              ${FBXSDK_LIBRARIES}
+            DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+            )
+  endif(WIN32)
 endif()

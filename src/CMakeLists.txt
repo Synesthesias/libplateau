@@ -8,7 +8,9 @@ else()
 endif()
 
 if( NOT(IOS OR ANDROID) )
-  target_link_libraries(plateau PUBLIC citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper)
+  target_link_libraries(plateau PUBLIC
+          citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper
+          )
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
 else()
   target_link_libraries(plateau PUBLIC 
@@ -17,6 +19,7 @@ else()
     "crypto" 
     "ssl" 
     "c_wrapper"
+    "${OPENGL_LIBRARIES}"
   )
   set_target_properties(plateau PROPERTIES 
     FRAMEWORK TRUE
