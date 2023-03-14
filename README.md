@@ -202,10 +202,6 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
     しかし、パス文字列をUTF8で扱えていなければ、システムロケールが英語のとき、日本語名を含むパス文字列は文字化けします。
 
 # ライセンス
-## ライセンス制約
-- libcitygmlはLGPLライセンスのため、libplateauにもLGPLライセンスが伝播します。
-- 上記により、このリポジトリはLGPLライセンスで公開しなければなりません。
-- libplateauと動的リンクするPLATEAU SDK for Unity、PLATEAU SDK for UnrealにはLGPLライセンスは伝播しません。
 
 ## ライセンス管理
 サードパーティソフトの権利表記をThirdPartyNotices.mdに記載してください。
