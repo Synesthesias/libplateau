@@ -304,7 +304,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
       add_custom_target(plateau_combined
               ALL
               COMMAND
-                echo -n -e \"create plateau_combined.a \n addlib ${COMBINE_LIB_FILES} \n save \n end \" | ar -M
+                echo -n -e \"create plateau_combined.a \\n addlib ${COMBINE_LIB_FILES} \\n save \\n end \" | ar -M
               DEPENDS ${COMBINE_LIB_DEPENDS}
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
               )
