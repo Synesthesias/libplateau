@@ -25,8 +25,8 @@
 # ldd ./libplateau.so | grep "not found”
 
 
-# github actions で cmakeのオプション -S -B を使いたいのでこれを最小バージョンとします。
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.8)
+cmake_policy(SET CMP0076 NEW)
 
 # 引数チェック
 # cmakeの引数で、次の変数が指定される必要があります。
@@ -119,7 +119,9 @@ set(LIBCITYGML_USE_GDAL OFF CACHE BOOL "" FORCE)
 set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
 set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
-find_package(OpenGL REQUIRED)
+
+find_package(OpenGL)
+message("OPENGL_INCLUDE_DIR = ${OPENGL_INCLUDE_DIR}, GLU_INCLUDE_DIR = ${GLU_INCLUDE_DIR}")
 
 add_subdirectory("3rdparty/libcitygml")
 

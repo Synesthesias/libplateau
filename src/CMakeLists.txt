@@ -19,7 +19,6 @@ else()
     "crypto" 
     "ssl" 
     "c_wrapper"
-    "${OPENGL_LIBRARIES}"
   )
   set_target_properties(plateau PROPERTIES 
     FRAMEWORK TRUE
