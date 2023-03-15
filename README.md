@@ -130,9 +130,7 @@ dotnet test -c Release
 ### MacOSでの手動ビルド
 #### C++ビルドに必要なもの
 - PowerShell をMacにインストールする必要があります。 brew でインストールしてください。
-- cmakeのビルドディレクトリを次のように設定します。
-  - Debug構成時は out/build/x64-Debug 
-  - Release(RelWithDebInfo)構成時は out/build/x64-Release
+- cmakeのビルドディレクトリを上記のように設定してビルドします。
 #### C#ビルドに必要なもの
 - dotnet Core 3.1 を利用します。
   - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
