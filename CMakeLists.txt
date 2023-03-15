@@ -260,15 +260,8 @@ endif()
 
 # libファイルを1つに結合します。
 if(BUILD_LIB_TYPE STREQUAL "static")
-  # windows で libファイル結合します。
-  # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
-  if(WIN32)
-    find_program(MSVC_LIB_TOOL lib.exe)
-    message("msvc_lib_tool = ${MSVC_LIB_TOOL}")
-    add_custom_target(plateau_combined
-            ALL
-            COMMAND
-              ${MSVC_LIB_TOOL} /OUT:$<TARGET_FILE_DIR:plateau>\\plateau_combined.lib
+
+  set(COMBINE_LIB_FILES
               $<TARGET_FILE:plateau>
               $<TARGET_FILE:citygml>
               $<TARGET_FILE:xerces-c>
@@ -278,9 +271,43 @@ if(BUILD_LIB_TYPE STREQUAL "static")
               $<TARGET_FILE:LibXml2>
               $<TARGET_FILE:httplib>
               $<TARGET_FILE:zlibstatic>
-              ${FBXSDK_LIBRARIES}
-            DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic
+              ${FBXSDK_LIBRARIES})
+
+  set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic)
+
+  # windows で libファイル結合します。
+  # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
+  if(WIN32)
+    find_program(MSVC_LIB_TOOL lib.exe)
+    message("msvc_lib_tool = ${MSVC_LIB_TOOL}")
+    add_custom_target(plateau_combined
+            ALL
+            COMMAND
+              ${MSVC_LIB_TOOL} /OUT:$<TARGET_FILE_DIR:plateau>\\plateau_combined.lib
+              ${COMBINE_LIB_FILES}
+            DEPENDS ${COMBINE_LIB_DEPENDS}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             )
-  endif(WIN32)
+  elseif(UNIX)
+    # macOS で libファイル結合します。
+    if(APPLE)
+      add_custom_target(plateau_combined
+              ALL
+              COMMAND
+                "/usr/bin/libtool -o $<TARGET_FILE_DIR:plateau>/plateau_combined.a ${COMBINE_LIB_FILES}"
+              DEPENDS ${COMBINE_LIB_DEPENDS}
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+              )
+    else()
+      # linux で libファイル結合します。
+      # 参考 : https://qiita.com/fault/items/2a3201fc697a2e537906
+      add_custom_target(plateau_combined
+              ALL
+              COMMAND
+                "echo -n -e \"create plateau_combined.a \n addlib ${COMBINE_LIB_FILES} \n save \n end \" | ar -M"
+              DEPENDS ${COMBINE_LIB_DEPENDS}
+              WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+              )
+    endif()
+  endif()
 endif()

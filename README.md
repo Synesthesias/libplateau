@@ -83,7 +83,8 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開きます。
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
-* Unity向けの場合は dll ができます。Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
+* Unity向けの場合は dll ができます。
+* Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
 * `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。
