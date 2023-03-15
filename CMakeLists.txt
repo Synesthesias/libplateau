@@ -294,7 +294,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
       add_custom_target(plateau_combined
               ALL
               COMMAND
-                "/usr/bin/libtool -o $<TARGET_FILE_DIR:plateau>/plateau_combined.a ${COMBINE_LIB_FILES}"
+                /usr/bin/libtool -o $<TARGET_FILE_DIR:plateau>/plateau_combined.a ${COMBINE_LIB_FILES}
               DEPENDS ${COMBINE_LIB_DEPENDS}
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
               )
@@ -304,7 +304,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
       add_custom_target(plateau_combined
               ALL
               COMMAND
-                "echo -n -e \"create plateau_combined.a \n addlib ${COMBINE_LIB_FILES} \n save \n end \" | ar -M"
+                echo -n -e \"create plateau_combined.a \n addlib ${COMBINE_LIB_FILES} \n save \n end \" | ar -M
               DEPENDS ${COMBINE_LIB_DEPENDS}
               WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
               )
