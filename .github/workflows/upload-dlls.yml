@@ -67,7 +67,7 @@ jobs:
         run: |
           mkdir $HOME/output/
           find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
-          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libcitygml.a | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau*.a | xargs -I {} cp -v {} $HOME/output
           echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
 
       - name: Upload DLL(so, dylib) for Ubuntu and MacOS
