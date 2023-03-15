@@ -120,8 +120,6 @@ set(XERCESC_WAS_STATIC ON CACHE BOOL "" FORCE)
 
 set(LIBCITYGML_DYNAMIC OFF CACHE BOOL "" FORCE)
 
-find_package(OpenGL)
-message("OPENGL_INCLUDE_DIR = ${OPENGL_INCLUDE_DIR}, GLU_INCLUDE_DIR = ${GLU_INCLUDE_DIR}")
 
 add_subdirectory("3rdparty/libcitygml")
 

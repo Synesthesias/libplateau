@@ -63,9 +63,9 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - Unreal向けDebug
     - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD 
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
 
-- C++ の libplateau をビルドすると DLL ができます。
+- C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になります。
 - C++とC#のビルド設定を合わせる必要があります。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされます。）
@@ -83,6 +83,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開きます。
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
+* Unity向けの場合は dll ができます。Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
 * `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。

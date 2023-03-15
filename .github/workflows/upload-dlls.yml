@@ -53,7 +53,7 @@ jobs:
       - name: Copy lib for Windows
         if: runner.os == 'Windows'
         run: |
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release-Unreal\src\plateau.lib -Destination D:\a\output
+          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release-Unreal\src\plateau_combined.lib -Destination D:\a\output
 
       - name: Upload DLL for Windows
         if: runner.os == 'Windows'
