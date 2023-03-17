@@ -78,10 +78,6 @@ runs:
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
 
-    - name : Add msbuild to path if Windows
-      if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v1.1
-
     # Unreal Engine側と Visual Studio のバージョンを合わせる必要があります。
     - name: Configure CMake for Unreal for Windows
       if: runner.os == 'Windows'
