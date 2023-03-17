@@ -64,7 +64,8 @@ runs:
       run: cmake --build ${{github.workspace}}/out/build/x64-Release-Unity --config ${{env.BUILD_TYPE}}
       shell: ${{ inputs.shell_type }}
 
-    - name: Configure CMake for Unreal
+    - name: Configure CMake for Unreal for non-Windows
+      if: runner.os != 'Windows'
       run: >
         cmake
         -S ${{github.workspace}}
@@ -76,6 +77,22 @@ runs:
         -D RUNTIME_LIB_TYPE=MD
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
+
+    # Unreal Engine側と Visual Studio のバージョンを合わせる必要があります。
+    - name: Configure CMake for Unreal for Windows
+        if: runner.os == 'Windows'
+        run: >
+          cmake
+          -S ${{github.workspace}}
+          -B ${{github.workspace}}/out/build/x64-Release-Unreal
+          -G "Visual Studio 16 2019"
+          -D CMAKE_INSTALL_PREFIX="C:/ninja"
+          -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
+          -D CMAKE_CXX_FLAGS="-w"
+          -D BUILD_LIB_TYPE=static
+          -D RUNTIME_LIB_TYPE=MD
+          ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
+        shell: ${{ inputs.shell_type }}
 
     - name: Build by CMake for Unreal
       run: |
