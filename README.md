@@ -63,7 +63,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - **Windows** : Unreal向けRelease
     - ビルドタイプ : RelWithDebInfo
     - ビルドディレクトリ : out/build/x64-Release-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja"
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
   - **Mac, Linux** : Unreal向けDebug
     - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
@@ -73,7 +73,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - **Windows** : Unreal向けDebug
     - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja"
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
