@@ -109,6 +109,10 @@ if( NOT(IOS OR ANDROID) )
   set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
   ### Xerces-cのうちネットワーク機能はビルドしません
   set(network false CACHE BOOL false FORCE)
+  ### macOSの場合に Xerces-C が利用する transcodedr を指定します。
+  if(APPLE)
+    set(transcoder macosunicodeconverter CACHE BOOL macosunicodeconverter FORCE)
+  endif()
   add_subdirectory("3rdparty/xerces-c")
   set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
   set(XERCESC_LIBRARY xerces-c CACHE STRING "" FORCE)
