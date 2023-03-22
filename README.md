@@ -48,12 +48,12 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - Unity向けRelease
     - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
     - ビルドディレクトリ : out/build/x64-Release-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
 
   - Unity向けDebug
     - ビルドタイプ(CMAKE_BUILD_TYPE)  : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
 
   - **Mac, Linux** : Unreal向けRelease
     - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
@@ -116,7 +116,7 @@ sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 Unity向けの場合:
 ```
 cd (プロジェクトのルートディレクトリ)
-cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MT
+cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MD
 cmake --build ./out/build/x64-Release-Unity/ --config RelWithDebInfo
 ```
 Unreal Engine向けの場合:
