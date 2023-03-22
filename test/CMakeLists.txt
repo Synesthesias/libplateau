@@ -40,5 +40,10 @@ add_executable(plateau_test
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
+# Visual Studio 以外向けに出力先を設定します。
 set_target_properties(plateau_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY
   ${LIBPLATEAU_BINARY_DIR})
+
+# Visual Studio 向けに出力先を設定します。
+string(TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_TO_UPPER)
+set_target_properties( plateau_test PROPERTIES "RUNTIME_OUTPUT_DIRECTORY_${CMAKE_BUILD_TYPE_TO_UPPER}" "${LIBPLATEAU_BINARY_DIR}" )

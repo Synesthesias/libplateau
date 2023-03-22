@@ -71,6 +71,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(compiler_id = ${CMAKE_CXX_COMPILER_ID}, compiler_version = ${CMAKE_CXX_COMPILER_VERSION})
 
+
+
 # Xerces-C ライブラリの問題を修正するための措置です。
 # C言語で Windows かどうかチェックするには通常 #if define (_WIN32) と書きますが、
 # Xerces-C の作者は _WIN32 のアンダースコアを書き忘れてしまいました。
@@ -85,6 +87,8 @@ set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 project("libplateau")
 
 set(LIBPLATEAU_BINARY_DIR ${libplateau_BINARY_DIR}/bin)
+
+
 
 # Linuxで shared library を作るときにはコンパイルオプション -fPIC が必要なので付加します。
 # ただし、Windowsの MSVC でコンパイルするときは -fPIC が不要で、付けると警告が出るので付加しません。
