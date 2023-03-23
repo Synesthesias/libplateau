@@ -32,12 +32,9 @@ cmake_policy(SET CMP0076 NEW)
 # cmakeの引数で、次の変数が指定される必要があります。
 # ・ -D BUILD_LIB_TYPE=static or dynamic        ビルドするのは静的ライブラリか動的ライブラリか
 # ・ -D RUNTIME_LIB_TYPE=MT or MD               (Windowsのみ) MT か MD か
-# デフォルト値は Unity向けに dynamic, MD です。
-# 補足:
-# 以前は Unity 向けは MT, Unreal向けは MD のつもりでしたが、MTビルドだとうまくいかないので今は全部 MD になってます。
-# ここで MT と MD の切り替え機能があるのはその名残です。
+# デフォルト値は Unity向けに dynamic, MT です。
 SET(BUILD_LIB_TYPE "dynamic" CACHE STRING "static or dynamic")
-SET(RUNTIME_LIB_TYPE "MD" CACHE STRING "MT or MD")
+SET(RUNTIME_LIB_TYPE "MT" CACHE STRING "MT or MD")
 if(NOT ( BUILD_LIB_TYPE STREQUAL "static" OR BUILD_LIB_TYPE STREQUAL "dynamic"))
   message(FATAL_ERROR "Variable not set. use -D BUILD_LIB_TYPE=static or dynamic")
 endif()
@@ -114,10 +111,10 @@ if( NOT(IOS OR ANDROID) )
   ### libcitygmlのFindXercesを通すために全てキャッシュ化
   set(BUILD_SHARED_LIBS false CACHE BOOL "" FORCE)
   ### Xerces-cのうちネットワーク機能はビルドしません
-  set(network false CACHE BOOL false FORCE)
+  set(network false CACHE BOOL "" FORCE)
   ### macOSの場合に Xerces-C が利用する transcodedr を指定します。
   if(APPLE)
-    set(transcoder macosunicodeconverter CACHE BOOL macosunicodeconverter FORCE)
+    set(transcoder macosunicodeconverter CACHE BOOL "" FORCE)
   endif()
   add_subdirectory("3rdparty/xerces-c")
   set(XERCESC_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/xerces-c/src" "${libplateau_BINARY_DIR}/3rdparty/xerces-c/src" CACHE STRING "" FORCE)
@@ -229,7 +226,7 @@ endif()
 add_subdirectory("3rdparty/openssl-cmake")
 
 # cpp-httplib
-set(HTTPLIB_COMPILE TRUE CACHE BOOL TRUE FORCE)
+set(HTTPLIB_COMPILE TRUE CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
