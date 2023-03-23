@@ -32,7 +32,7 @@ cmake_policy(SET CMP0076 NEW)
 # cmakeの引数で、次の変数が指定される必要があります。
 # ・ -D BUILD_LIB_TYPE=static or dynamic        ビルドするのは静的ライブラリか動的ライブラリか
 # ・ -D RUNTIME_LIB_TYPE=MT or MD               (Windowsのみ) MT か MD か
-# デフォルト値は Unity向けに dynamic, MT です。
+# デフォルト値は Unity向けに dynamic, MT です。ただし Debugビルドの時は Unity でも MD にしてください。
 SET(BUILD_LIB_TYPE "dynamic" CACHE STRING "static or dynamic")
 SET(RUNTIME_LIB_TYPE "MT" CACHE STRING "MT or MD")
 if(NOT ( BUILD_LIB_TYPE STREQUAL "static" OR BUILD_LIB_TYPE STREQUAL "dynamic"))
