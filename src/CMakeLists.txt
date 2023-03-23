@@ -1,8 +1,9 @@
 add_compile_definitions(LIBPLATEAU_BUILD)
 
 if(BUILD_LIB_TYPE STREQUAL "dynamic")
-  add_compile_definitions(LIBPLATEAU_BUILD_DYNAMIC)
   add_library(plateau SHARED "")
+  target_compile_definitions(plateau PUBLIC LIBPLATEAU_BUILD_DYNAMIC)
+  message("plateau is dynamic library.")
 else()
   add_library(plateau STATIC "")
 endif()
