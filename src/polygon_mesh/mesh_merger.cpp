@@ -98,7 +98,7 @@ namespace plateau::polygonMesh {
          */
         void plateauPolygonToMeshInfo(
                 const Polygon& poly, bool remove_triangles_outside_extent, const std::string& gml_path,
-                Extent extent, GeoReference geo_reference,
+                Extent extent, const GeoReference& geo_reference,
                 std::vector<TVec3d>& out_vertices, std::vector<unsigned>& out_indices, std::vector<TVec2f>& out_uv_1,
                 std::vector<SubMesh>& out_sub_meshes) {
 
