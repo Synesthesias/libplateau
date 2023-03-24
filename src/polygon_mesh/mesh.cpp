@@ -69,6 +69,14 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
+    void Mesh::reserve(long long vertex_count) {
+        vertices_.reserve(vertex_count);
+        indices_.reserve(vertex_count);
+        uv1_.reserve(vertex_count);
+        uv2_.reserve(vertex_count);
+        uv3_.reserve(vertex_count);
+    }
+
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices) {
         // 各頂点を追加します。
         for (const auto& other_pos: other_vertices) {

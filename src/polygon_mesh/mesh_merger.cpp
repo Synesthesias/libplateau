@@ -236,17 +236,19 @@ namespace plateau::polygonMesh {
          * findAllPolygons のジオメトリを対象とする版です。
          * 結果は引数の polygons に格納します。
          */
-        void findAllPolygonsInGeometry(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod) {
+        void findAllPolygonsInGeometry(const Geometry& geom, std::list<const citygml::Polygon*>& polygons, unsigned lod, long long& out_vertices_count) {
             unsigned int num_child = geom.getGeometriesCount();
             for (unsigned int i = 0; i < num_child; i++) {
-                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod);
+                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count);
             }
 
             if (geom.getLOD() != lod) return;
 
             unsigned int num_poly = geom.getPolygonsCount();
             for (unsigned int i = 0; i < num_poly; i++) {
-                polygons.push_back(geom.getPolygon(i).get());
+                const auto& poly = geom.getPolygon(i);
+                polygons.push_back(poly.get());
+                out_vertices_count += (long long)poly->getVertices().size();
             }
         }
 
@@ -327,7 +329,9 @@ namespace plateau::polygonMesh {
     void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                                const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
-        auto polygons = findAllPolygons(city_object, lod);
+        long long vertex_count = 0;
+        auto polygons = findAllPolygons(city_object, lod, vertex_count);
+        mesh.reserve(vertex_count);
         for (auto poly : polygons) {
             MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element,
                                      gml_path);
@@ -343,11 +347,13 @@ namespace plateau::polygonMesh {
         }
     }
 
-    std::list<const Polygon*> MeshMerger::findAllPolygons(const CityObject& city_obj, unsigned lod) {
+    std::list<const Polygon *>
+    MeshMerger::findAllPolygons(const CityObject &city_obj, unsigned lod, long long &out_vertices_count) {
         auto polygons = std::list<const citygml::Polygon*>();
         unsigned int num_geom = city_obj.getGeometriesCount();
+        out_vertices_count = 0;
         for (unsigned int i = 0; i < num_geom; i++) {
-            findAllPolygonsInGeometry(city_obj.getGeometry(i), polygons, lod);
+            findAllPolygonsInGeometry(city_obj.getGeometry(i), polygons, lod, out_vertices_count);
         }
         return std::move(polygons);
     }
