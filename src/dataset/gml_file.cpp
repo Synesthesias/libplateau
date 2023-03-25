@@ -78,6 +78,7 @@ namespace plateau::dataset {
 
         auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
         max_lod_ = lods.getMax();
+        if(max_lod_ < 0) max_lod_ = 0; // MaxLodが取得できなかった場合のフェイルセーフです。
         return max_lod_;
     }
 
