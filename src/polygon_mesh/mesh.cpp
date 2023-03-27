@@ -19,16 +19,19 @@ namespace plateau::polygonMesh {
 
     Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
                std::vector<SubMesh>&& sub_meshes) {
-        vertices_ = vertices;
-        indices_ = indices;
+        vertices_ = std::move(vertices);
+        indices_ = std::move(indices);
         uv1_ = uv_1;
         uv2_ = UV();
         uv3_ = UV();
-        for (int i = 0; i < vertices_.size(); i++) {
+        auto vertices_count = vertices_.size();
+        uv2_.reserve(vertices_count);
+        uv3_.reserve(vertices_count);
+        for (int i = 0; i < vertices_count; i++) {
             uv2_.emplace_back(0, 0);
             uv3_.emplace_back(0, 0);
         }
-        sub_meshes_ = sub_meshes;
+        sub_meshes_ = std::move(sub_meshes);
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {
@@ -64,6 +67,14 @@ namespace plateau::polygonMesh {
 
     const std::vector<SubMesh>& Mesh::getSubMeshes() const {
         return sub_meshes_;
+    }
+
+    void Mesh::reserve(long long vertex_count) {
+        vertices_.reserve(vertex_count);
+        indices_.reserve(vertex_count);
+        uv1_.reserve(vertex_count);
+        uv2_.reserve(vertex_count);
+        uv3_.reserve(vertex_count);
     }
 
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices) {

@@ -1,6 +1,5 @@
 #include "grid_merger.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include "plateau/mesh_writer/obj_writer.h"
 #include <plateau/polygon_mesh/mesh_merger.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
@@ -183,7 +182,8 @@ namespace plateau::polygonMesh {
             Mesh group_mesh;
             // グループ内の各オブジェクトのループ
             for (const auto& city_obj: group_objs) {
-                auto polygons = MeshMerger::findAllPolygons(*city_obj.getCityObject(), lod);
+                long long city_obj_vertex_count = 0;
+                auto polygons = MeshMerger::findAllPolygons(*city_obj.getCityObject(), lod, city_obj_vertex_count);
                 // オブジェクト内の各ポリゴンのループ
                 for (const auto& poly: polygons) {
                     // 各ポリゴンを結合していきます。

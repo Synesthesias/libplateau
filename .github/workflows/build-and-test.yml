@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-18.04]
+        os: [windows-2019, macos-latest, ubuntu-20.04]
 
     steps:
 
@@ -40,7 +40,7 @@ jobs:
 
     - name: Run Test
       run: |
-        cd ${{github.workspace}}/out/build/x64-Release/bin
+        cd ${{github.workspace}}/out/build/x64-Release-Unity/bin
         ./plateau_test
 
     - name: Run Test of C# Wrapper

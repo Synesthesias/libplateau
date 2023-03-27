@@ -44,11 +44,42 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
 #### 2. C++, C# のビルド手順(各OS共通) 
-- C++ の libplateau をビルドすると DLL ができます。
+- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。
+  - Unity向けRelease
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドディレクトリ : out/build/x64-Release-Unity
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+
+  - Unity向けDebug
+    - ビルドタイプ(CMAKE_BUILD_TYPE)  : Debug
+    - ビルドディレクトリ : out/build/x64-Debug-Unity
+    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
+
+  - **Mac, Linux** : Unreal向けRelease
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドディレクトリ : out/build/x64-Release-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+
+  - **Windows** : Unreal向けRelease
+    - ビルドタイプ : RelWithDebInfo
+    - ビルドディレクトリ : out/build/x64-Release-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+  - **Mac, Linux** : Unreal向けDebug
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
+    - ビルドディレクトリ : out/build/x64-Debug-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+
+  - **Windows** : Unreal向けDebug
+    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
+    - ビルドディレクトリ : out/build/x64-Debug-Unreal
+    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug
+
+- C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になります。
 - C++とC#のビルド設定を合わせる必要があります。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされます。）
-- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug or x64-Release にある  
+- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug-Unity or x64-Release-Unity にある  
   libplateau が C#のバイナリのディレクトリにコピーされているか確認してください。  
   コピーコマンドは CSharpPLATEAU.Test.csproj に記載されており、C#のリビルド時に実行されるはずです。  
   このコマンドが正しく動作するか確認してください。
@@ -62,6 +93,8 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開きます。
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
+* Unity向けの場合は dll ができます。
+* Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
 * `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。
@@ -70,24 +103,28 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * C#ユニットテストも合わせて実行可能です。
 
 ### Linuxでの手動ビルド
-利用する Linux は、Unityの対応OSに合わせて Ubuntu 18 とします。  
-それより新しいバージョンのUbuntuでビルドすると、Ubuntu 18 には存在しないライブラリに依存してしまうのでUnityで実行不能となってしまいます。
+利用する Linux は、Unityの対応OSに合わせて Ubuntu 20.04 とします。
 #### C++のビルド
-* Ubuntuに入っているデフォルトの cmake ではバージョンが古い可能性があります。  
-  その場合は新しいcmakeをマシンにインストールします。
-* Ubuntu 18 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
-* Ubuntu 18 のデフォルトのコンパイラは g++-7 となっていますが、それでは古いので g++-9 を導入します。
+* Ubuntu 20 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
 * OpenGL API が必要なので、なければ以下のコマンドでインストールします。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
 * glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールします。
 
-* 以下のコマンドを実行します。
+* 以下のコマンドを実行します。  
+Unity向けの場合:
 ```
 cd (プロジェクトのルートディレクトリ)
-cmake -S . -B ./out/build/x64-Release/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w"
-cmake --build ./out/build/x64-Release/ --config RelWithDebInfo
+cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MT
+cmake --build ./out/build/x64-Release-Unity/ --config RelWithDebInfo
+```
+ただし Debug ビルドの場合は RUNTIME_LIB_TYPE=MD
+
+Unreal Engine向けの場合:
+```
+cmake -S . -B ./out/build/x64-Release-Unreal/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=static -D RUNTIME_LIB_TYPE=MD
+cmake --build ./out/build/x64-Release-Unreal/ --config RelWithDebInfo
 ```
 #### C#のビルド
 * マシンに dotnet をインストールします。
@@ -105,9 +142,7 @@ dotnet test -c Release
 ### MacOSでの手動ビルド
 #### C++ビルドに必要なもの
 - PowerShell をMacにインストールする必要があります。 brew でインストールしてください。
-- cmakeのビルドディレクトリを次のように設定します。
-  - Debug構成時は out/build/x64-Debug 
-  - Release(RelWithDebInfo)構成時は out/build/x64-Release
+- cmakeのビルドディレクトリを上記のように設定してビルドします。
 #### C#ビルドに必要なもの
 - dotnet Core 3.1 を利用します。
   - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
@@ -179,10 +214,6 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
     しかし、パス文字列をUTF8で扱えていなければ、システムロケールが英語のとき、日本語名を含むパス文字列は文字化けします。
 
 # ライセンス
-## ライセンス制約
-- libcitygmlはLGPLライセンスのため、libplateauにもLGPLライセンスが伝播します。
-- 上記により、このリポジトリはLGPLライセンスで公開しなければなりません。
-- libplateauと動的リンクするPLATEAU SDK for Unity、PLATEAU SDK for UnrealにはLGPLライセンスは伝播しません。
 
 ## ライセンス管理
 サードパーティソフトの権利表記をThirdPartyNotices.mdに記載してください。

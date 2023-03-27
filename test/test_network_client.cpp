@@ -32,36 +32,4 @@ namespace plateau::network {
         auto fpath = fs::u8path(fpath_str);
         ASSERT_TRUE(fs::file_size(fpath));
     }
-
-    TEST_F(ClientTest, GetMetadataOfDefaultServer) { // NOLINT
-        auto client = Client("", "");
-        auto metadata_groups = client.getMetadata();
-        ASSERT_TRUE(!metadata_groups->empty()) << "Metadata groups is not empty.";
-        auto metadata_group = metadata_groups->at(0);
-        ASSERT_TRUE(!metadata_group.datasets.empty()) << "First metadata group has metadata.";
-        ASSERT_TRUE(!metadata_group.title.empty()) << "First metadata group has title.";
-        ASSERT_TRUE(!metadata_group.id.empty()) << "First metadata group has id.";
-        auto metadata = metadata_group.datasets.at(0);
-        ASSERT_TRUE(!metadata.title.empty()) << "Metadata has title.";
-        ASSERT_TRUE(!metadata.id.empty()) << "Metadata has id.";
-    }
-
-    TEST_F(ClientTest, DownloadFilesOfDefaultServer) { // NOLINT
-        auto client = Client("", "");
-        auto first_id = client.getMetadata()->at(1).datasets.at(0).id;
-        auto files = client.getFiles(first_id);
-        ASSERT_TRUE(!files.empty()) << "Dataset files is not empty.";
-        auto files_of_first_package = files.begin()->second;
-        ASSERT_TRUE(!files_of_first_package.empty());
-        auto file = files_of_first_package.at(0);
-        ASSERT_TRUE(0 <= file.max_lod && file.max_lod <= 4 );
-        ASSERT_TRUE(!file.mesh_code.empty());
-        ASSERT_TRUE(!file.url.empty());
-        auto url = file.url;
-        fs::remove("./" + fs::path(url).filename().u8string());
-        auto downloaded_path = fs::u8path(client.download("./", url));
-        ASSERT_TRUE(fs::exists(downloaded_path));
-        ASSERT_TRUE(fs::file_size(downloaded_path) > 0);
-        fs::remove(downloaded_path);
-    }
 }

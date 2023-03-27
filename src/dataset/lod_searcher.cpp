@@ -7,6 +7,25 @@ using namespace plateau::dataset;
 namespace fs = std::filesystem;
 
 namespace {
+
+    const char* getCharPtr(const char* found_ptr, const size_t lod_pattern_size, size_t offset, const char* const chunk_last){
+        return std::min(
+                found_ptr + lod_pattern_size + offset,
+                chunk_last
+        );
+    }
+
+    void readCharAndSetLod(const char* found_ptr, const size_t lod_pattern_size, size_t offset, const char* const chunk_last, LodFlag& lod_flag){
+        // ":lod" の次の文字 + offset を指すポインタです。そこはLODの番号を指すことを期待します。
+        auto lod_num_ptr = getCharPtr(found_ptr, lod_pattern_size, offset, chunk_last);
+
+        // ":lod" の直後の数字を求めます。 数字は1桁であることが前提です。
+        int lod_num = *lod_num_ptr - u8'0';
+        if (0 <= lod_num && lod_num <= 9) {
+            lod_flag.setFlag(lod_num);
+        }
+    }
+
     LodFlag searchLods(std::ifstream& ifs) {
         // 注意:
         // この関数は実行速度にこだわる必要があります。
@@ -33,16 +52,11 @@ namespace {
 
             // ":lod" がヒットするたびに、その直後の数字をLODとみなして取得します。
             while (found_ptr) {
-                // ":lod" の次の文字を指すポインタです。そこはLODの番号を指すことを期待します。
-                auto lod_num_ptr = std::min(
-                        found_ptr + lod_pattern_size,
-                        chunk_last
-                );
-
-                // ":lod" の直後の数字を求めます。 数字は1桁であることが前提です。
-                int lod_num = *lod_num_ptr - u8'0';
-                if (0 <= lod_num && lod_num <= 9) {
-                    lod_flag.setFlag(lod_num);
+                // ":lod"の直後が数字であれば、そのLODをセット
+                readCharAndSetLod(found_ptr, lod_pattern_size, 0, chunk_last, lod_flag);
+                // ":lod" の直後が ">" であれば、 ":lod>"の直後の数字のLODをセット (dem向け)
+                if(*getCharPtr(found_ptr, lod_pattern_size, 0, chunk_last) == u8'>'){
+                    readCharAndSetLod(found_ptr, lod_pattern_size, 1, chunk_last, lod_flag);
                 }
 
                 // チャンク内の次の ":lod" を探します。

@@ -170,11 +170,13 @@ namespace plateau::polygonMesh {
         plateau_load_citygml(gml_path_.c_str(), plateau_citygml_parser_params(), &city_model_handle,
                              DllLogLevel::LL_WARNING, nullptr, nullptr, nullptr);
 
-        auto model = new Model();
+        Model* model;
+        plateau_create_model(&model);
         plateau_mesh_extractor_extract(city_model_handle, mesh_extract_options_, model);
 
         ASSERT_TRUE(model->getRootNodeCount() == 1);
         ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "group6");
+        plateau_delete_city_model(city_model_handle);
         plateau_delete_model(model);
     }
 
