@@ -1,0 +1,8 @@
+# submodule のライセンスをチェックする licensed というツールの設定ファイルです。
+
+allowed:
+  - mit
+  - bsd-2-clause
+  - bsd-3-clause
+  - cc0-1.0
+  - apache-2.0
