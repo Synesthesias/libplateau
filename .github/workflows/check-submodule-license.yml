@@ -1,4 +1,5 @@
 # licensed というツールを使って submodule のライセンスをチェックします。
+# このCIに失敗する場合、 .licensed.yml という名前のファイルを見直してください。
 
 # 参考 : licensed について
 # https://github.com/github/licensed

@@ -9,7 +9,7 @@ allowed:
 
 reviewed:
   git_submodule:
-    - libxml2 # MITライセンスなのでOK
+    # - libxml2 # MITライセンスなのでOK
     - openssl-cmake # 再配布可能、要著作権表示
     - pybind11 # BSD-3ライセンスなのでOK
     - zlib # 再配布可能、要ライセンス表示
