@@ -1,5 +1,11 @@
 # licensed というツールを使って submodule のライセンスをチェックします。
 
+# 参考 : licensed について
+# https://github.com/github/licensed
+
+# 参考 : licensed の CI 利用について
+# https://github.com/marketplace/actions/setup-github-licensed
+
 name: Check Submodule License
 
 on:
@@ -15,8 +21,12 @@ jobs:
     - uses: actions/checkout@v3
 
     - uses: ruby/setup-ruby@v1
-        with:
-          version: '4.x'
+      with:
+        ruby-version: ruby
+
+    - uses: jonabc/setup-licensed@v1
+      with:
+        version: '4.x'
 
     - run: licensed cache
     - run: licensed status
