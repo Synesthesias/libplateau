@@ -2,6 +2,9 @@
 # fbx_sdk は再配布禁止のため、ご自分で用意していただく形になります。
 /3rdparty/fbx_sdk/
 
+# licensed ツールのキャッシュフォルダです。
+.licenses/*
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles

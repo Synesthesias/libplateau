@@ -1,0 +1,16 @@
+# submodule のライセンスをチェックする licensed というツールの設定ファイルです。
+
+allowed:
+  - mit
+  - bsd-2-clause
+  - bsd-3-clause
+  - cc0-1.0
+  - apache-2.0
+
+reviewed:
+  git_submodule:
+    - libxml2 # MITライセンスなのでOK
+    - openssl-cmake # 再配布可能、要著作権表示
+    - pybind11 # BSD-3ライセンスなのでOK
+    - zlib # 再配布可能、要ライセンス表示
+    - libcitygml # LGPLライセンス、改変部分をpublicリポジトリで公開しているのでOK

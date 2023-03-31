@@ -1,0 +1,37 @@
+# licensed というツールを使って submodule のライセンスをチェックします。
+# このCIに失敗する場合、 .licensed.yml という名前のファイルを見直してください。
+
+# 参考 : licensed について
+# https://github.com/github/licensed
+
+# 参考 : licensed の CI 利用について
+# https://github.com/marketplace/actions/setup-github-licensed
+
+name: Check Submodule License
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  check-submodule-license:
+    runs-on: ubuntu-20.04
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: checkout submodules
+      shell: bash
+      run: git submodule update --init --recursive
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ruby
+
+    - uses: jonabc/setup-licensed@v1
+      with:
+        version: '4.x'
+
+    - run: licensed cache
+    - run: licensed status
