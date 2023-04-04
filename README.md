@@ -44,7 +44,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
 #### 2. C++, C# のビルド手順
-- C++ は、Visual Studio または CLion で CMake を使ってビルドします。  
+- C++ は、CMake を使ってビルドします。CMake は、 Visaul Studio, CLion, コマンド のどれからでも利用できます。
   - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
     - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
     - 入っていなければインストールしてください。
@@ -121,14 +121,14 @@ sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
 * glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールします。
 
-* 以下のコマンドを実行します。  
+* CMake でビルドするために、Linux向けの CLion を利用することもできますが、代わりに次のコマンドからもビルドできます：  
 Unity向けの場合:
 ```
 cd (プロジェクトのルートディレクトリ)
 cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MT
 cmake --build ./out/build/x64-Release-Unity/ --config RelWithDebInfo
 ```
-ただし Debug ビルドの場合は RUNTIME_LIB_TYPE=MD
+ただし Debug ビルドの場合は `RUNTIME_LIB_TYPE=MD`
 
 Unreal Engine向けの場合:
 ```
