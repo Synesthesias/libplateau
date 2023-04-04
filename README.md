@@ -45,6 +45,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 
 #### 2. C++, C# のビルド手順
 - C++ は、CMake を使ってビルドします。CMake は、 Visaul Studio, CLion, コマンド のどれからでも利用できます。
+- Visual Studio のバージョンについては、 Unreal Engine向けのSDK が Visual Studio 2019 を想定しているので、2019を推奨します。 
   - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
     - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
     - 入っていなければインストールしてください。
