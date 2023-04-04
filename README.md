@@ -43,37 +43,42 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
-#### 2. C++, C# のビルド手順(各OS共通) 
-- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。
+#### 2. C++, C# のビルド手順
+
+##### CMakeの設定
+- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
+- なお、Visual Studio ではビルドディレクトリの冒頭に `${projectDir}/` を付けてください。CLion では `${projectDir}/`は不要です。
   - Unity向けRelease
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
-    - ビルドディレクトリ : out/build/x64-Release-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドディレクトリ(ビルドルート) : out/build/x64-Release-Unity
+    - CMakeコマンド引数 : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
 
   - Unity向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE)  : Debug
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE)  : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
+    - CMakeコマンド引数 : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
 
   - **Mac, Linux** : Unreal向けRelease
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : RelWithDebInfo
     - ビルドディレクトリ : out/build/x64-Release-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - CMakeコマンド引数 : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
 
   - **Windows** : Unreal向けRelease
     - ビルドタイプ : RelWithDebInfo
     - ビルドディレクトリ : out/build/x64-Release-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    - CMakeコマンド引数(Visual Studio向け) : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - CMakeオプション(CLion向け) : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
   - **Mac, Linux** : Unreal向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - CMakeコマンド引数 : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
 
   - **Windows** : Unreal向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : Debug
     - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug
+    - CMakeコマンド引数(Visual Studio向け) : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - CMakeオプション(CLion向け) : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
