@@ -43,45 +43,55 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `3rdparty/fbx_sdk/2020.3.1` 以下に配置します。
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
-#### 2. C++, C# のビルド手順(各OS共通) 
-- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。
+#### 2. C++, C# のビルド手順
+- C++ は、CMake を使ってビルドします。CMake は、 Visaul Studio, CLion, コマンド のどれからでも利用できます。
+- Visual Studio のバージョンについては、 Unreal Engine向けのSDK が Visual Studio 2019 を想定しているので、2019を推奨します。 
+  - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
+    - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
+    - 入っていなければインストールしてください。
+
+##### CMakeの設定
+- CMakeでのビルドについて、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
+- なお、Visual Studio ではビルドディレクトリの冒頭に `${projectDir}/` を付けてください。CLion では `${projectDir}/`は不要です。
   - Unity向けRelease
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
-    - ビルドディレクトリ : out/build/x64-Release-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
+    - ビルドディレクトリ(ビルドルート) : `out/build/x64-Release-Unity`
+    - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT`
 
   - Unity向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE)  : Debug
-    - ビルドディレクトリ : out/build/x64-Debug-Unity
-    - CMakeオプション : -DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE)  : `Debug`
+    - ビルドディレクトリ : `out/build/x64-Debug-Unity`
+    - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD`
 
   - **Mac, Linux** : Unreal向けRelease
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : RelWithDebInfo
-    - ビルドディレクトリ : out/build/x64-Release-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
+    - ビルドディレクトリ : `out/build/x64-Release-Unreal`
+    - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
 
   - **Windows** : Unreal向けRelease
-    - ビルドタイプ : RelWithDebInfo
-    - ビルドディレクトリ : out/build/x64-Release-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo
+    - ビルドタイプ : `RelWithDebInfo`
+    - ビルドディレクトリ : `out/build/x64-Release-Unreal`
+    - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
+    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
 
   - **Mac, Linux** : Unreal向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
-    - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
+    - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
+    - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
 
   - **Windows** : Unreal向けDebug
-    - ビルドタイプ(CMAKE_BUILD_TYPE) : Debug
-    - ビルドディレクトリ : out/build/x64-Debug-Unreal
-    - CMakeオプション : -DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug
+    - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
+    - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
+    - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
+    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug`
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
 - その後 C# の LibPLATEAU.NET をビルドすると自動で上述のDLLがコピーされ、C#側で利用可能になります。
 - C++とC#のビルド設定を合わせる必要があります。(C++でRelease 設定でビルドしたなら C# も Release、Debug なら C# も Debug。これを間違うと古いDLLがコピーされます。）
-- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の out/build/x64-Debug-Unity or x64-Release-Unity にある  
+- ユニットテストの実行時、dllがないという旨のエラーが出る場合、C++ビルド結果の `out/build/x64-Debug-Unity or x64-Release-Unity` にある  
   libplateau が C#のバイナリのディレクトリにコピーされているか確認してください。  
-  コピーコマンドは CSharpPLATEAU.Test.csproj に記載されており、C#のリビルド時に実行されるはずです。  
+  コピーコマンドは `CSharpPLATEAU.Test.csproj` に記載されており、C#のリビルド時に実行されるはずです。  
   このコマンドが正しく動作するか確認してください。
 
 ### 3つのOS向けにまとめてビルド
@@ -112,14 +122,14 @@ sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
 ```
 * glTF-sdk のビルドのために PowerShell が必要なので、[このWebページ](https://learn.microsoft.com/ja-jp/powershell/scripting/install/install-ubuntu?view=powershell-7.3)を参考に Ubuntu向け PowerShell をインストールします。
 
-* 以下のコマンドを実行します。  
+* CMake でビルドするために、Linux向けの CLion を利用することもできますが、代わりに次のコマンドからもビルドできます：  
 Unity向けの場合:
 ```
 cd (プロジェクトのルートディレクトリ)
 cmake -S . -B ./out/build/x64-Release-Unity/ -G "Ninja" -D CMAKE_BUILD_TYPE:STRING="RelWithDebInfo" -D CMAKE_INSTALL_PROGRAM="ninja" -D CMAKE_CXX_FLAGS="-w" -D BUILD_LIB_TYPE=dynamic -D RUNTIME_LIB_TYPE=MT
 cmake --build ./out/build/x64-Release-Unity/ --config RelWithDebInfo
 ```
-ただし Debug ビルドの場合は RUNTIME_LIB_TYPE=MD
+ただし Debug ビルドの場合は `RUNTIME_LIB_TYPE=MD`
 
 Unreal Engine向けの場合:
 ```
