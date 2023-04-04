@@ -44,9 +44,13 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
   - `2020.3.1` 以下のディレクトリ構成は、別添のテキストファイル `file_tree_of_fbxsdk.txt` を参照してください。 
 
 #### 2. C++, C# のビルド手順
+- C++ は、Visual Studio または CLion で CMake を使ってビルドします。  
+  - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
+    - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
+    - 入っていなければインストールしてください。
 
 ##### CMakeの設定
-- C++ は CMake でビルドしますが、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
+- CMakeでのビルドについて、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
 - なお、Visual Studio ではビルドディレクトリの冒頭に `${projectDir}/` を付けてください。CLion では `${projectDir}/`は不要です。
   - Unity向けRelease
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : RelWithDebInfo
