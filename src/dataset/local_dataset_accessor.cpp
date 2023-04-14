@@ -11,6 +11,31 @@ namespace plateau::dataset {
     namespace fs = std::filesystem;
     using namespace geometry;
 
+    //! 建築物、建築物部分、建築物付属物及びこれらの境界面
+    const std::string UdxSubFolder::bldg = "bldg";
+    //! 道路
+    const std::string UdxSubFolder::tran = "tran";
+    //! 都市計画決定情報
+    const std::string UdxSubFolder::urf = "urf";
+    //! 土地利用
+    const std::string UdxSubFolder::luse = "luse";
+    //! 都市設備
+    const std::string UdxSubFolder::frn = "frn";
+    //! 植生
+    const std::string UdxSubFolder::veg = "veg";
+    //! 起伏
+    const std::string UdxSubFolder::dem = "dem";
+    //! 洪水浸水想定区域
+    const std::string UdxSubFolder::fld = "fld";
+    //! 津波浸水想定
+    const std::string UdxSubFolder::tnm = "tnm";
+    //! 土砂災害警戒区域
+    const std::string UdxSubFolder::lsld = "lsld";
+    //! 高潮浸水想定区域
+    const std::string UdxSubFolder::htd = "htd";
+    //! 内水浸水想定区域
+    const std::string UdxSubFolder::ifld = "ifld";
+
     PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name) {
         if (folder_name == bldg) return PredefinedCityModelPackage::Building;
         if (folder_name == tran) return PredefinedCityModelPackage::Road;
