@@ -8,6 +8,8 @@
 
 namespace fs = std::filesystem;
 
+const std::string VectorTileDownloader::default_url_ = "http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
+
 VectorTileDownloader::VectorTileDownloader(
     const std::string& destination,
     const plateau::geometry::Extent& extent,
