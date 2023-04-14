@@ -81,8 +81,10 @@ endif()
 
 set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
 
-# このバージョン数値は Unreal Engine と合わせないと Unreal SDK ビルド時に大量の警
-set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+if(NOT IOS)
+  # このバージョン数値は Unreal Engine と合わせないと Unreal SDK ビルド時に大量の警告が出ます
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+endif()
 
 project("libplateau")
 
