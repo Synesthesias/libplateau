@@ -309,10 +309,20 @@ namespace plateau::dataset {
 
             for (const auto& relative_path: path_to_download) {
                 auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
-                auto path = (fs::path(destination_dir) / relative_path).make_preferred();
-                auto dest_root = destination_udx_path.parent_path().parent_path().make_preferred();
-                auto path_from_dest_root = fs::relative(path, dest_root).u8string();
-                auto download_path = (fs::path(server_url) / path_from_dest_root).u8string();
+//                auto path = (fs::path(destination_dir) / relative_path);
+//                auto dest_root = destination_udx_path.parent_path().parent_path();
+//                auto path_from_dest_root = fs::relative(path, dest_root).u8string();
+                auto download_path = (gml_dir_path / fs::path(relative_path)).lexically_normal().u8string();
+                std::replace(download_path.begin(), download_path.end(), '\\', '/');
+
+                // 上の lexically_normal の副作用で "http(s)://" が "http(s):/" になるので、
+                // 欠けたスラッシュを1つ追加します。
+                auto search = std::string(":/");
+                auto pos = download_path.find(search);
+                auto len = search.length();
+                if(pos == 4 || pos == 5){
+                    download_path.replace(pos, len, "://");
+                }
 
                 client.download(full_path.parent_path().u8string(), download_path);
             }
