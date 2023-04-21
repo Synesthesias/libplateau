@@ -304,14 +304,9 @@ namespace plateau::dataset {
             auto path_to_download = image_paths;
             path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
 
-            auto path_str = gml_file_path.u8string();
-            auto server_url = path_str.substr(0, path_str.substr(8).find('/') + 8);
 
             for (const auto& relative_path: path_to_download) {
                 auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
-//                auto path = (fs::path(destination_dir) / relative_path);
-//                auto dest_root = destination_udx_path.parent_path().parent_path();
-//                auto path_from_dest_root = fs::relative(path, dest_root).u8string();
                 auto download_path = (gml_dir_path / fs::path(relative_path)).lexically_normal().u8string();
                 std::replace(download_path.begin(), download_path.end(), '\\', '/');
 
