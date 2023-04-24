@@ -33,7 +33,7 @@ namespace plateau::dataset {
 
     /// サーバーモードで使うコンストラクタです。GMLファイルのダウンロードに使う Client を指定します。
     GmlFile::GmlFile(const std::string& path, const network::Client& client, int max_lod)
-    : GmlFile(path){
+            : GmlFile(path) {
         client_ = client;
         max_lod_ = max_lod;
     }
@@ -78,7 +78,7 @@ namespace plateau::dataset {
 
         auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
         max_lod_ = lods.getMax();
-        if(max_lod_ < 0) max_lod_ = 0; // MaxLodが取得できなかった場合のフェイルセーフです。
+        if (max_lod_ < 0) max_lod_ = 0; // MaxLodが取得できなかった場合のフェイルセーフです。
         return max_lod_;
     }
 
@@ -141,17 +141,17 @@ namespace plateau::dataset {
             const auto str_begin = str.cbegin();
             while (search_pos != str.cend()) {
                 // ヒントで検索します。
-                auto hint_matched_pos = str.find(hint, search_pos - str_begin);
+                const auto hint_matched_pos = str.find(hint, search_pos - str_begin);
                 // ヒントで検索ヒットしなければ、正規表現でも検索ヒットしません。そのようなヒントが渡されていることが前提です。
                 if (hint_matched_pos == std::string::npos) return false;
                 // ヒントが検索ヒットしたので、その周囲の指定数のバイト範囲を正規表現の検索範囲にします。
-                auto search_start =
+                const auto search_start =
                         str_begin + std::max((long long) 0, (long long) hint_matched_pos - search_range_before_hint);
-                auto search_end = std::min(str.end(),
+                const auto search_end = std::min(str.end(),
                                            str_begin + (long long) hint_matched_pos + (long long) hint.size() +
                                            search_range_after_hint);
                 // 正規表現でヒットしたら、その結果を引数 matched に格納して返します。
-                bool found = std::regex_search(search_start, search_end, matched, regex);
+                const bool found = std::regex_search(search_start, search_end, matched, regex);
                 if (found) return true;
                 // ヒントにはヒットしたけど正規表現にヒットしなかったケースです。検索位置を進めて再度ヒントを検索します。
                 search_pos = std::min(str.cend(), str_begin + (long long) hint_matched_pos + (long long) hint.size());
@@ -180,7 +180,7 @@ namespace plateau::dataset {
                 const std::regex& begin_tag_regex, const std::regex& end_tag_regex,
                 const std::string& str,
                 const std::string& begin_tag_hint, const std::string& end_tag_hint,
-                unsigned search_range_before_hint, unsigned search_range_after_hint
+                const unsigned search_range_before_hint, const unsigned search_range_after_hint
         ) {
             std::set<std::string> found;
             std::smatch begin_tag_matched;
@@ -221,7 +221,7 @@ namespace plateau::dataset {
             return buffer.str();
         }
 
-        auto regex_options = std::regex::optimize | std::regex::nosubs;
+        const auto regex_options = std::regex::optimize | std::regex::nosubs;
 
         /**
          * 引数の set の中身を相対パスと解釈し、 setの各要素をコピーします。
@@ -232,8 +232,8 @@ namespace plateau::dataset {
         void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path,
                        const fs::path& dest_base_path) {
             for (const auto& path: path_set) {
-                auto src = fs::path(src_base_path).append(path).make_preferred();
-                auto dest = fs::path(dest_base_path).append(path).make_preferred();
+                const auto src = fs::path(src_base_path).append(path).make_preferred();
+                const auto dest = fs::path(dest_base_path).append(path).make_preferred();
                 if (!fs::exists(src)) {
                     std::cout << "file not exist : " << src.u8string() << std::endl;
                     continue;
@@ -249,7 +249,7 @@ namespace plateau::dataset {
         void prepareFetch(const fs::path& gml_path, const fs::path& destination_root_path,
                           fs::path& out_gml_relative_path_from_udx, fs::path& out_destination_udx_path,
                           fs::path& out_gml_destination_path) {
-            auto gml_path_str = gml_path.u8string();
+            const auto gml_path_str = gml_path.u8string();
             const auto udx_path_len = gml_path_str.rfind(u8"udx") + 3;
             if (udx_path_len == std::string::npos) {
                 throw std::runtime_error("Invalid gml path. Could not find udx folder");
@@ -265,9 +265,10 @@ namespace plateau::dataset {
             fs::create_directories(out_gml_destination_path.parent_path());
         }
 
-        void fetchLocal(const fs::path& gml_file_path, const fs::path& gml_relative_path_from_udx, const fs::path& destination_udx_path,
+        void fetchLocal(const fs::path& gml_file_path, const fs::path& gml_relative_path_from_udx,
+                        const fs::path& destination_udx_path,
                         const fs::path& gml_destination_path, GmlFile& copied_gml_file) {
-            auto destination_dir = gml_destination_path.parent_path();
+            const auto destination_dir = gml_destination_path.parent_path();
             fs::copy(gml_file_path, gml_destination_path, fs::copy_options::skip_existing);
             copied_gml_file.setPath(gml_destination_path.u8string());
 
@@ -284,9 +285,11 @@ namespace plateau::dataset {
             copyFiles(path_to_download, gml_dir_path, app_destination_path);
         }
 
-        void fetchServer(const fs::path& gml_file_path, const fs::path& gml_relative_path_from_udx, const fs::path& destination_udx_path,
-                         const fs::path& gml_destination_path, GmlFile& copied_gml_file, const network::Client& client) {
-            auto destination_dir = gml_destination_path.parent_path();
+        void fetchServer(const fs::path& gml_file_path, const fs::path& gml_relative_path_from_udx,
+                         const fs::path& destination_udx_path,
+                         const fs::path& gml_destination_path, GmlFile& copied_gml_file,
+                         const network::Client& client) {
+            const auto destination_dir = gml_destination_path.parent_path();
             // gmlファイルをダウンロードします。
             client.download(destination_dir.u8string(), gml_file_path.u8string());
             auto downloaded_path = destination_dir;
@@ -304,15 +307,20 @@ namespace plateau::dataset {
             auto path_to_download = image_paths;
             path_to_download.insert(codelist_paths.cbegin(), codelist_paths.cend());
 
-            auto path_str = gml_file_path.u8string();
-            auto server_url = path_str.substr(0, path_str.substr(8).find('/') + 8);
 
             for (const auto& relative_path: path_to_download) {
-                auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
-                auto path = (fs::path(destination_dir) / relative_path).make_preferred();
-                auto dest_root = destination_udx_path.parent_path().parent_path().make_preferred();
-                auto path_from_dest_root = fs::relative(path, dest_root).u8string();
-                auto download_path = (fs::path(server_url) / path_from_dest_root).u8string();
+                const auto full_path = fs::absolute(fs::path(destination_dir) / fs::u8path(relative_path));
+                auto download_path = (gml_dir_path / fs::path(relative_path)).lexically_normal().u8string();
+                std::replace(download_path.begin(), download_path.end(), '\\', '/');
+
+                // 上の lexically_normal の副作用で "http(s)://" が "http(s):/" になるので、
+                // 欠けたスラッシュを1つ追加します。
+                const auto search = std::string(":/");
+                const auto pos = download_path.find(search);
+                const auto len = search.length();
+                if (pos == 4 || pos == 5) {
+                    download_path.replace(pos, len, "://");
+                }
 
                 client.download(full_path.parent_path().u8string(), download_path);
             }
@@ -326,11 +334,12 @@ namespace plateau::dataset {
     }
 
     void GmlFile::fetch(const std::string& destination_root_path, GmlFile& copied_gml_file) const {
-        if(!isValid()) throw std::runtime_error("gml file is invalid.");
+        if (!isValid()) throw std::runtime_error("gml file is invalid.");
         auto gml_relative_path_from_udx = fs::path();
         auto destination_udx_path = fs::path();
         auto gml_destination_path = fs::path();
-        prepareFetch(fs::u8path(getPath()), fs::u8path(destination_root_path), gml_relative_path_from_udx, destination_udx_path,
+        prepareFetch(fs::u8path(getPath()), fs::u8path(destination_root_path), gml_relative_path_from_udx,
+                     destination_udx_path,
                      gml_destination_path);
         if (is_local_) {
             // ローカルモード
@@ -358,7 +367,7 @@ namespace plateau::dataset {
     }
 
     std::set<std::string> GmlFile::searchAllImagePathsInGML() const {
-        const auto gml_content = loadFile(fs::u8path(getPath()) );
+        const auto gml_content = loadFile(fs::u8path(getPath()));
         // 開始タグは <app:imageURI> です。ただし、<括弧> の前後に半角スペースがあっても良いものとします。
         static const auto begin_tag = std::regex(R"(< *app:imageURI *>)", regex_options);
         // 終了タグは </app:imageURI> です。ただし、<括弧> と /(スラッシュ) の前後に半角スペースがあっても良いものとします。
