@@ -54,6 +54,8 @@ void VectorTileDownloader::download(
 
     httplib::Client client(host);
     std::string body;
+    client.set_connection_timeout(1, 0);
+
     auto result = client.Get(
         path, httplib::Headers(),
         [&](const httplib::Response& response) {
@@ -63,6 +65,11 @@ void VectorTileDownloader::download(
             body.append(data, data_length);
             return true; // return 'false' if you want to cancel the request.
         });
+
+    if (result.error() != httplib::Error::Success) {
+        out_vector_tile.image_path.clear();
+        return;
+        }
 
     auto file_path = calcDestinationPath(coordinate, destination);
     create_directories(file_path.parent_path());
