@@ -51,9 +51,10 @@ void VectorTileDownloader::download(
     std::string host = strs[0] + "/" + strs[1] + "/" + strs[2];
     std::string path = "/" + strs[3] + "/" + strs[4] + "/" + std::to_string(coordinate.zoom_level) + "/" + std::to_string(coordinate.column) + "/" + std::to_string(coordinate.row) + ".png";
 
-
     httplib::Client client(host);
     std::string body;
+    client.set_connection_timeout(5, 0);
+
     auto result = client.Get(
         path, httplib::Headers(),
         [&](const httplib::Response& response) {
@@ -63,6 +64,12 @@ void VectorTileDownloader::download(
             body.append(data, data_length);
             return true; // return 'false' if you want to cancel the request.
         });
+
+    if (result.error() != httplib::Error::Success) {
+        out_vector_tile.image_path.clear();
+        out_vector_tile.result = static_cast<HttpResult>(result.error());
+        return;
+    }
 
     auto file_path = calcDestinationPath(coordinate, destination);
     create_directories(file_path.parent_path());
