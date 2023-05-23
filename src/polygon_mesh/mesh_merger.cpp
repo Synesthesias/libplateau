@@ -105,7 +105,14 @@ namespace plateau::polygonMesh {
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon_original = poly.getVertices();
             const auto& other_indices_original = poly.getIndices();
-            const auto& other_uv_1_original = poly.getTexCoordsForTheme("rgbTexture", true);
+            auto other_uv_1_original_base = poly.getTexCoordsForTheme("rgbTexture", true);
+            // rgbTextureのthemeが存在しない場合
+            if (other_uv_1_original_base.empty()) {
+                auto themes = poly.getAllTextureThemes(true);
+                if (!themes.empty())
+                    other_uv_1_original_base = poly.getTexCoordsForTheme(themes.at(0), true);
+            }
+            const auto& other_uv_1_original = other_uv_1_original_base;
 
             assert(other_indices_original.size() % 3 == 0);
 
@@ -158,6 +165,12 @@ namespace plateau::polygonMesh {
 
             // テクスチャパスを取得し SubMesh を作ります。
             auto texture = poly.getTextureFor("rgbTexture");
+            if (texture == nullptr) {
+                // rgbTextureのthemeが存在しない場合
+                auto themes = poly.getAllTextureThemes(true);
+                if(!themes.empty())
+                    texture = poly.getTextureFor(themes.at(0));
+            }
             std::string texture_path;
             if (texture == nullptr) {
                 texture_path = std::string("");
