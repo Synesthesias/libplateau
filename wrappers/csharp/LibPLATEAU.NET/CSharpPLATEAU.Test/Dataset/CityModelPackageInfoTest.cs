@@ -21,7 +21,7 @@ namespace PLATEAU.Test.Dataset
             var buildingPredefined = CityModelPackageInfo.GetPredefined(PredefinedCityModelPackage.Building);
             Assert.AreEqual(true, buildingPredefined.hasAppearance);
             Assert.AreEqual(0, buildingPredefined.minLOD);
-            Assert.AreEqual(3, buildingPredefined.maxLOD);
+            Assert.AreEqual(4, buildingPredefined.maxLOD);
         }
     }
 }
