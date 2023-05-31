@@ -38,24 +38,30 @@ LodFlag LodSearcher::searchLodsInFile(const fs::path& file_path) {
 
 LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
     // 注意:
-    // この関数は実行速度にこだわる必要があります。
-    // 用途はPLATEAUデータのインポートにおける範囲選択画面で、多くのGMLファイルについて利用可能なLODを検索します。
+    // この関数は実行速度にこだわる必要があるため、 std::string よりも原始的な C言語の機能を積極的に利用しています。
+    // 用途はPLATEAUデータのインポートにおける範囲選択画面で、GMLファイルについて利用可能なLODを検索します。
+    // 範囲選択画面では多くのGMLファイルを検索対象とするので、高速である必要があります。
 
     // 文字列検索で ":lod" にヒットした直後の数値をLODとします。
     const static auto lod_pattern = u8":lod";
     const static auto lod_pattern_size = strlen(lod_pattern);
 
-    auto lod_flag = LodFlag();
-
     // GMLファイルを全部メモリに読み込むと重いので、16KBごとに分割して読み込みます。
     // 分割された1つを チャンク(chunk) と名付けます。
-    constexpr int chunk_size = 16 * 1024;
-    char chunk[chunk_size];
+    // この手法のデメリットとして、チャンクの切れ目で ":lod(num)" が分断された場合には見逃してしまいます。
+    // しかし、 ":lod(num)" はGML内で何度も登場することを考えれば、低確率で見逃しても他で検知できる確率が高いのでよしとします。
+    constexpr int chunk_read_size = 16 * 1024;
+    constexpr int chunk_mem_size = chunk_read_size + 1; // null終端文字の分
+    char chunk[chunk_mem_size];
     const char* const chunk_const = chunk;
+    auto lod_flag = LodFlag();
 
-    ifs.read(chunk, sizeof chunk);
-    auto read_size = ifs.gcount();
     do {
+        ifs.read(chunk, chunk_read_size);
+        auto read_size = ifs.gcount();
+        // ifstream.read() では null終端文字は付きませんが、付けておかないと下の strstr でバグるので追加します。
+        chunk[read_size] = '\0';
+
         const char* const chunk_last = chunk_const + read_size - 1; // チャンク内の最後の文字のポインタ
         // チャンク内での文字列検索を始めます。 ":lod" を探します。
         const char* found_ptr = strstr(chunk, lod_pattern);
@@ -73,9 +79,6 @@ LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
             auto next_pos = std::min(found_ptr + lod_pattern_size, chunk_last);
             found_ptr = strstr(next_pos, lod_pattern);
         }
-        // 次のチャンクに移ります。
-        ifs.read(chunk, sizeof chunk);
-        read_size = ifs.gcount();
     } while (!ifs.eof());
 
 
@@ -101,6 +104,9 @@ void LodFlag::unsetFlag(unsigned digit) {
     flags_ &= ~(1 << digit);
 }
 
+/// 存在するLODのフラグ列のうち、最大のLODを返します。
+/// LODが存在しない場合は -1 を返します。
+/// LOD i が存在する場合、LOD 0 ～ i-1 も存在することが前提です。
 int LodFlag::getMax() const {
     auto flag = flags_;
     int i = -1;

@@ -25,6 +25,10 @@ namespace plateau::dataset {
         ASSERT_EQ(getMaxLod(""), -1);
     }
 
+    TEST_F(LodSearcherTest, WhenBodyIsOneSpaceReturnsMinus1) { // NOLINT
+        ASSERT_EQ(getMaxLod(" "), -1);
+    }
+
     TEST_F(LodSearcherTest, WhenLodIsMissingReturnsMinus1) { // NOLINT
         ASSERT_EQ(getMaxLod(":lod_is_not_found"), -1);
     }
