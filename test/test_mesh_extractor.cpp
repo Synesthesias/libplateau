@@ -49,7 +49,7 @@ namespace plateau::polygonMesh {
 
         const auto& first_model_node = lod_node.getChildAt(0);
         const auto& first_model_node_name = first_model_node.getName();
-        ASSERT_EQ(first_model_node_name, "group6");
+        ASSERT_EQ(first_model_node_name, "group7");
 
 
     }
@@ -175,7 +175,7 @@ namespace plateau::polygonMesh {
         plateau_mesh_extractor_extract(city_model_handle, mesh_extract_options_, model);
 
         ASSERT_TRUE(model->getRootNodeCount() == 1);
-        ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "group6");
+        ASSERT_EQ(model->getRootNodeAt(0).getChildAt(0).getName(), "group7");
         plateau_delete_city_model(city_model_handle);
         plateau_delete_model(model);
     }
