@@ -62,12 +62,20 @@ jobs:
           name: libplateau-windows
           path: D:\a\output
 
-      - name: Copy Libraries for Ubuntu and MacOS
-        if: runner.os != 'Windows'
+      - name: Copy Libraries for Ubuntu
+        if: runner.os == 'Linux'
         run: |
           mkdir $HOME/output/
-          find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
-          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau*.a | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau.a | xargs -I {} cp -v {} $HOME/output
+          echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
+
+      - name: Copy Libraries for MacOS
+        if: runner.os == 'MacOS'
+        run: |
+          mkdir $HOME/output/
+          find ${{github.workspace}}/out/build/x64-Release-Unity -name *.dylib | xargs -I {} cp -v {} $HOME/output
+          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau_combined.a | xargs -I {} cp -v {} $HOME/output
           echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
 
       - name: Upload DLL(so, dylib) for Ubuntu and MacOS
