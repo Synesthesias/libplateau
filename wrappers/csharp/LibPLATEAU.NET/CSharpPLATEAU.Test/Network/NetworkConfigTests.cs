@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Network
         [TestMethod]
         public void GetMockServerUrl()
         {
-            Assert.AreEqual("https://plateauapimockv3-1-w3921743.deta.app/", NetworkConfig.MockServerUrl);
+            Assert.AreEqual("https://plateauapimockv3-1-w3921743.deta.app", NetworkConfig.MockServerUrl);
         }
     }
 }
