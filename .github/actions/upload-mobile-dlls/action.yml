@@ -1,0 +1,105 @@
+
+# 現在の Github Actions ランナーのOSで Android, iOS 向けにビルドし、結果をアーティファクトとしてアップロードします。
+
+inputs:
+  shell_type:
+    description: "利用するシェルを引数で渡します。"
+    required: true
+
+runs:
+  using: Composite
+
+  steps:
+    - name: checkout submodules
+        shell: bash
+        run: git submodule update --init --recursive
+
+          - name: setup ubuntu
+            if: runner.os == 'Linux'
+            run: |
+              sudo apt-get --quiet update --yes
+              sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+            shell: ${{ inputs.shell_type }}
+
+          - name: setup JDK 1.8
+            if: runner.os == 'Linux'
+            uses: actions/setup-java@v2
+            with:
+              distribution: 'zulu'
+              java-version: '11'
+
+          - name: download Android SDK
+            if: runner.os == 'Linux'
+            run: |
+              wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+              unzip -d android-sdk-linux android-sdk.zip
+              sudo mkdir -p /root/.android
+              sudo touch /root/.android/repositories.cfg
+              echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platforms;android-${{ matrix.compile-sdk }}" >/dev/null
+              echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" >/dev/null
+              echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "build-tools;${{ matrix.build-tools }}" >/dev/null
+              export ANDROID_SDK_ROOT=$PWD
+              export PATH=$PATH:$PWD/platform-tools/
+              set +o pipefail
+              yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
+              set -o pipefail
+            shell: ${{ inputs.shell_type }}
+
+          - name: install Android NDK
+            if: runner.os == 'Linux'
+            run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}"
+            shell: ${{ inputs.shell_type }}
+
+          - name: Insert NDK path
+            if: runner.os == 'Linux'
+            run: |
+              echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
+            shell: ${{ inputs.shell_type }}
+
+          - name: Install ninja-build tool
+            if: runner.os == 'Linux'
+            uses: seanmiddleditch/gha-setup-ninja@v3
+
+          - name: Configure CMake for Android
+            if: runner.os == 'Linux'
+            run: >
+              cmake
+              -S ${{github.workspace}} 
+              -B ${{github.workspace}}/out/build/x64-Release 
+              -G "Ninja" 
+              -D ANDROID_PLATFORM=android-23
+              -D ANDROID_ABI=arm64-v8a 
+              -D CMAKE_MAKE_PROGRAM=ninja
+              -D CMAKE_BUILD_TYPE=Release
+              -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
+            shell: ${{ inputs.shell_type }}
+
+          - name: Configure CMake for iOS
+            if: runner.os == 'MacOS'
+            run: >
+              cmake
+              -S ${{github.workspace}} 
+              -B ${{github.workspace}}/out/build/x64-Release 
+              -G "Xcode" 
+              -D CMAKE_SYSTEM_NAME=iOS
+              -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0
+              -D CMAKE_BUILD_TYPE=Release
+            shell: ${{ inputs.shell_type }}
+
+          - name: Build by CMake
+            run: cmake --build ${{github.workspace}}/out/build/x64-Release --config Release
+            shell: ${{ inputs.shell_type }}
+
+          - name: Upload framework for Android
+            if: runner.os == 'Linux'
+            uses: actions/upload-artifact@v2
+            with:
+              name: libplateau-android-dll
+              path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
+
+          - name: Upload framework for iOS
+            if: runner.os == 'MacOS'
+            uses: actions/upload-artifact@v2
+            with:
+              name: libplateau-ios-dll
+              path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
