@@ -4,6 +4,9 @@ inputs:
   shell_type:
     description: "利用するシェルを引数で渡します。"
     required: true
+  visual_studio_version:
+    description: "ビルドで利用する Visual Studio のバージョンです。Windowsでのみ利用します。"
+    required: true
 
 runs:
   using: Composite
@@ -18,6 +21,7 @@ runs:
       uses: ./.github/actions/build
       with:
         shell_type: ${{ inputs.shell_type }}
+        visual_studio_version: ${{ inputs.visual_studio_version }}
 
     - name: Copy DLL for Windows
       if: runner.os == 'Windows'

@@ -38,6 +38,7 @@ jobs:
         uses: ./.github/actions/upload-dll
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
+          visual_studio_version: "17 2022"
 
   # 2つ目のジョブ。
   # AndroidとiOS用にライブラリをビルド。
