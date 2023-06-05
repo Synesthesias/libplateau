@@ -10,12 +10,6 @@ runs:
 
   steps:
 
-    - name: Add SSH private keys for submodule repositories
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: |
-          ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
-
     - name: checkout submodules
       shell: bash
       run: git submodule update --init --recursive
@@ -23,7 +17,7 @@ runs:
     - name: Build
       uses: ./.github/actions/build
       with:
-        shell_type: ${{ inptus.shell_type }}
+        shell_type: ${{ inputs.shell_type }}
 
     - name: Copy DLL for Windows
       if: runner.os == 'Windows'
