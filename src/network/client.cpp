@@ -175,7 +175,7 @@ namespace plateau::network {
     }
 
     const std::string& Client::getMockServerUrl() {
-        static const std::string mock_server_url = "https://plateauapimockv3-1-w3921743.deta.app/";
+        static const std::string mock_server_url = "https://plateauapimockv3-1-w3921743.deta.app";
         return mock_server_url;
     }
 }

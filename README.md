@@ -182,7 +182,7 @@ PLATEAU SDK for Unityへの導入については、そちらのREADMEを参照�
 テストデータの詳細については ```data/README.md``` を参照してください。
 
 ## モックサーバー
-モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照してください。
+モックサーバーについては [PLATEAU-API-Mock-v3](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照してください。
 
 # 実装上の注意
 ## 文字コード
