@@ -5,7 +5,6 @@ name: Upload DLLs with Older Visual Studio (2019)
 # 手動でgithubサイトのボタンを押したときに実行します。
 on:
   workflow_dispatch:
-  push:
 
 env:
   BUILD_TYPE: RelWithDebInfo
