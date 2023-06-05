@@ -25,6 +25,8 @@ jobs:
         os: [windows-2022, macos-latest, ubuntu-20.04]
 
     steps:
+      
+      - uses: actions/checkout@v3
 
       - name: Upload Dll
         uses: ./.github/actions/upload-dll
