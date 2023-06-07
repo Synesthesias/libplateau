@@ -104,7 +104,9 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
 * Unity向けの場合は dll ができます。
-* Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
+  * 場所は `out/build/x64-Release(またはDebug)-Unity/bin/plateau.dll` です。
+* Unreal向けの場合は lib ができます。
+  * 場所は `out/build/x64-Release-Unreal/src/plateau_combined.lib` がです。
 * `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。
@@ -153,6 +155,9 @@ dotnet test -c Release
 #### C++ビルドに必要なもの
 - PowerShell をMacにインストールする必要があります。 brew でインストールしてください。
 - cmakeのビルドディレクトリを上記のように設定してビルドします。
+- 成果物の場所：
+  - Unityなら `out/build/x64-Release(またはDebug)-Unity/src/libplateau.dylib` 
+  - Unrealなら `out/build/x64-Release(またはDebug)-Unreal/src/libplateu_combined.a`
 #### C#ビルドに必要なもの
 - dotnet Core 3.1 を利用します。
   - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
