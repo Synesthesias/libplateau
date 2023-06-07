@@ -46,9 +46,16 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 #### 2. C++, C# のビルド手順
 - C++ は、CMake を使ってビルドします。CMake は、 Visaul Studio, CLion, コマンド のどれからでも利用できます。
 - Visual Studio のバージョンについては、 Unreal Engine向けのSDK が Visual Studio 2022 を想定しているので、2022を推奨します。 
-  - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
-    - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
+  - Visual Studioを利用する場合、 CMake でビルドするために 「C++によるデスクトップ開発ツール」がインストールされているか確認してください。
+    - 確認方法は、Visual Studio Installer を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
     - 入っていなければインストールしてください。
+
+#### C# コードの用途
+- C# のコードは、次の2つの役割があります：
+  - ユニットテストを回す
+  - PLATEAU SDK for Unity で C#コードを利用する
+- Unity については C# コードを直接 Unity にコピーする運用をしているため、コードではない `CSharpPLATEAU.dll` は使いません。
+  - C#の DLL はユニットテストでのみ利用します。
 
 ##### CMakeの設定
 - CMakeでのビルドについて、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
@@ -75,17 +82,21 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
     - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
 
   - **Mac, Ubuntu** : Unreal向けDebug
+    - 注意: Debug ライブラリは通常の Unreal Engine では動きません。通常はReleaseを利用してください。 
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
 
   - **Windows** : Unreal向けDebug
+    - 注意: Debug ライブラリは通常の Unreal Engine では動きません。通常はReleaseを利用してください。
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
     - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug`
 
-CMakeの構成時に GTest に関するエラーが1件出ますが、無視で大丈夫です。
+> **トラブルシューティング**   
+> - CMakeの構成時に GTest に関するエラーが1件出ますが、無視で大丈夫です。
+> - IDEは Jetbrains CLion を利用していて、CMake の find_program(MSVC_LIB_TOOL lib.exe) がうまくいかない場合、 CLionのインストール時の設定で Add “bin” folder to the PATH にチェックを入れてください。
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
