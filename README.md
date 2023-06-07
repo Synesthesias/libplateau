@@ -53,17 +53,17 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 ##### CMakeの設定
 - CMakeでのビルドについて、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
 - なお、Visual Studio ではビルドディレクトリの冒頭に `${projectDir}/` を付けてください。CLion では `${projectDir}/`は不要です。
-  - Unity向けRelease
+  - Unity向けRelease (Windows, Mac, Ubuntu共通)
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
     - ビルドディレクトリ(ビルドルート) : `out/build/x64-Release-Unity`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT`
 
-  - Unity向けDebug
+  - Unity向けDebug (Windows, Mac, Ubuntu共通)
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE)  : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unity`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD`
 
-  - **Mac, Linux** : Unreal向けRelease
+  - **Mac, Ubuntu** : Unreal向けRelease
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
     - ビルドディレクトリ : `out/build/x64-Release-Unreal`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
@@ -74,7 +74,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
     - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
     - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
 
-  - **Mac, Linux** : Unreal向けDebug
+  - **Mac, Ubuntu** : Unreal向けDebug
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
@@ -84,6 +84,8 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
     - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug`
+
+CMakeの構成時に GTest に関するエラーが1件出ますが、無視で大丈夫です。
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
