@@ -63,7 +63,7 @@ jobs:
             ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
 
       - name: Upload Dlls for Mobile
-        uses: ./github/actions/upload-mobile-dlls
+        uses: ./.github/actions/upload-mobile-dlls
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
 
