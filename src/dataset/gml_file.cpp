@@ -8,8 +8,7 @@
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/mesh_code.h>
 #include <plateau/network/client.h>
-
-#include "lod_searcher.h"
+#include <plateau/dataset/lod_searcher.h>
 
 using namespace plateau::network;
 namespace fs = std::filesystem;

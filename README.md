@@ -45,25 +45,32 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 
 #### 2. C++, C# のビルド手順
 - C++ は、CMake を使ってビルドします。CMake は、 Visaul Studio, CLion, コマンド のどれからでも利用できます。
-- Visual Studio のバージョンについては、 Unreal Engine向けのSDK が Visual Studio 2019 を想定しているので、2019を推奨します。 
-  - Visual Studioを利用する場合、 CMake でビルドするために C++によるデスクトップ開発ツールがインストールされているか確認してください。
-    - 確認方法は、Visual Studio Insttaller を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
+- Visual Studio のバージョンについては、 Unreal Engine向けのSDK が Visual Studio 2022 を想定しているので、2022を推奨します。 
+  - Visual Studioを利用する場合、 CMake でビルドするために 「C++によるデスクトップ開発ツール」がインストールされているか確認してください。
+    - 確認方法は、Visual Studio Installer を起動 → Visual Studio Community の"変更"ボタン → "C++によるデスクトップ開発" にチェックが入っているか確認してください。
     - 入っていなければインストールしてください。
+
+#### C# コードの用途
+- C# のコードは、次の2つの役割があります：
+  - ユニットテストを回す
+  - PLATEAU SDK for Unity で C#コードを利用する
+- Unity については C# コードを直接 Unity にコピーする運用をしているため、コードではない `CSharpPLATEAU.dll` は使いません。
+  - C#の DLL はユニットテストでのみ利用します。
 
 ##### CMakeの設定
 - CMakeでのビルドについて、次の設定が必要です。Visual Studio または CLion で次の設定にしてください。  
 - なお、Visual Studio ではビルドディレクトリの冒頭に `${projectDir}/` を付けてください。CLion では `${projectDir}/`は不要です。
-  - Unity向けRelease
+  - Unity向けRelease (Windows, Mac, Ubuntu共通)
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
     - ビルドディレクトリ(ビルドルート) : `out/build/x64-Release-Unity`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MT`
 
-  - Unity向けDebug
+  - Unity向けDebug (Windows, Mac, Ubuntu共通)
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE)  : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unity`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=dynamic -DRUNTIME_LIB_TYPE=MD`
 
-  - **Mac, Linux** : Unreal向けRelease
+  - **Mac, Ubuntu** : Unreal向けRelease
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `RelWithDebInfo`
     - ビルドディレクトリ : `out/build/x64-Release-Unreal`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
@@ -72,18 +79,24 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
     - ビルドタイプ : `RelWithDebInfo`
     - ビルドディレクトリ : `out/build/x64-Release-Unreal`
     - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
-    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
+    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=RelWithDebInfo`
 
-  - **Mac, Linux** : Unreal向けDebug
+  - **Mac, Ubuntu** : Unreal向けDebug
+    - 注意: Debug ライブラリは通常の Unreal Engine では動きません。通常はReleaseを利用してください。 
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数 : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
 
   - **Windows** : Unreal向けDebug
+    - 注意: Debug ライブラリは通常の Unreal Engine では動きません。通常はReleaseを利用してください。
     - ビルドタイプ(構成の種類,CMAKE_BUILD_TYPE) : `Debug`
     - ビルドディレクトリ : `out/build/x64-Debug-Unreal`
     - CMakeコマンド引数(Visual Studio向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD`
-    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug`
+    - CMakeオプション(CLion向け) : `-DBUILD_LIB_TYPE=static -DRUNTIME_LIB_TYPE=MD -G "Visual Studio 17 2022" -DCMAKE_INSTALL_PREFIX="C:/ninja" -DCMAKE_BUILD_TYPE=Debug`
+
+> **トラブルシューティング**   
+> - CMakeの構成時に GTest に関するエラーが1件出ますが、無視で大丈夫です。
+> - IDEは Jetbrains CLion を利用していて、CMake の find_program(MSVC_LIB_TOOL lib.exe) がうまくいかない場合、 CLionのインストール時の設定で Add “bin” folder to the PATH にチェックを入れてください。
 
 - C++ の libplateau をビルドすると、Unity向けの場合は DLL ができます。
   - 詳しくは下記の、各OS向けのビルド手順を参照してください。
@@ -104,7 +117,9 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
 * Unity向けの場合は dll ができます。
-* Unreal向けの場合は `out/build/x64-Release-Unreal/src/plateau_combined.lib` ができます。
+  * 場所は `out/build/x64-Release(またはDebug)-Unity/bin/plateau.dll` です。
+* Unreal向けの場合は lib ができます。
+  * 場所は `out/build/x64-Release-Unreal/src/plateau_combined.lib` がです。
 * `plateau_test`を実行することでユニットテストを実行可能です
 #### C#のビルド
 * ```wrappers/csharp/LibPLATEAU.NET.sln``` を開きます。
@@ -153,6 +168,9 @@ dotnet test -c Release
 #### C++ビルドに必要なもの
 - PowerShell をMacにインストールする必要があります。 brew でインストールしてください。
 - cmakeのビルドディレクトリを上記のように設定してビルドします。
+- 成果物の場所：
+  - Unityなら `out/build/x64-Release(またはDebug)-Unity/src/libplateau.dylib` 
+  - Unrealなら `out/build/x64-Release(またはDebug)-Unreal/src/libplateu_combined.a`
 #### C#ビルドに必要なもの
 - dotnet Core 3.1 を利用します。
   - IDEにRiderを利用している場合、デフォルトで dotnet core 7 になっているので 3.1 をインストールしてそちらを利用するように設定を変えます。
@@ -182,7 +200,7 @@ PLATEAU SDK for Unityへの導入については、そちらのREADMEを参照�
 テストデータの詳細については ```data/README.md``` を参照してください。
 
 ## モックサーバー
-モックサーバーについては [PLATEAU-API-Mock-v2](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照してください。
+モックサーバーについては [PLATEAU-API-Mock-v3](https://github.com/Synesthesias/PLATEAU-API-Mock-v2) を参照してください。
 
 # 実装上の注意
 ## 文字コード

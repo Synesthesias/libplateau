@@ -1,13 +1,10 @@
+# upload-dlls.yml の、Visual Studioのバージョンを古くした(VS2019)版です。
 
-# github actions でビルドしてDLL等の成果物をアップロードする手順です。
+name: Upload DLLs with Older Visual Studio (2019)
 
-name: Upload DLLs
-
-# 手動でgithubサイトのボタンを押したときか、タグを作ったときに実行します。
+# 手動でgithubサイトのボタンを押したときに実行します。
 on:
   workflow_dispatch:
-  create:
-    tags: '*'
 
 env:
   BUILD_TYPE: RelWithDebInfo
@@ -22,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-latest, ubuntu-20.04]
+        os: [windows-2019, macos-latest, ubuntu-20.04]
 
     steps:
 
@@ -38,7 +35,7 @@ jobs:
         uses: ./.github/actions/upload-dll
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
-          visual_studio_version: "17 2022"
+          visual_studio_version: "16 2019"
 
   # 2つ目のジョブ。
   # AndroidとiOS用にライブラリをビルド。
@@ -108,4 +105,3 @@ jobs:
         with:
           name: all-libraries
           path: ~/a/plateau-plugins
-          

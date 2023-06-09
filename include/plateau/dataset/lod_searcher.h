@@ -14,6 +14,7 @@ namespace plateau::dataset {
     class LIBPLATEAU_EXPORT LodSearcher {
     public:
         static plateau::dataset::LodFlag searchLodsInFile(const std::filesystem::path& file_path);
+        static plateau::dataset::LodFlag searchLodsInIstream(std::istream& ifs);
     };
 
     /// どのLODが含まれるかをフラグ(unsigned)で表現します。
