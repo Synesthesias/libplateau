@@ -5,6 +5,9 @@ inputs:
   shell_type:
     description: "利用するシェルを引数で渡します。"
     required: true
+  visual_studio_version:
+    description: "ビルドで利用する Visual Studio のバージョンです。Windowsでのみ利用します。"
+    required: true
 
 runs:
   using: Composite
@@ -85,7 +88,7 @@ runs:
         cmake
         -S ${{github.workspace}}
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
-        -G "Visual Studio 16 2019"
+        -G "Visual Studio ${{ inputs.visual_studio_version }}"
         -D CMAKE_INSTALL_PREFIX="C:/ninja"
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
         -D CMAKE_CXX_FLAGS="-w"

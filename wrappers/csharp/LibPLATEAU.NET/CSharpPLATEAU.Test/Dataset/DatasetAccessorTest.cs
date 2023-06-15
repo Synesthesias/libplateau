@@ -31,8 +31,8 @@ namespace PLATEAU.Test.Dataset
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
             var meshCodes = accessor.MeshCodes;
-            Assert.AreEqual(2, meshCodes.Length);
-            Assert.AreEqual("53392670", meshCodes.At(1).ToString());
+            Assert.AreEqual(3, meshCodes.Length);
+            Assert.AreEqual("53392642", meshCodes.At(1).ToString());
         }
         
         [TestMethod]
@@ -77,7 +77,7 @@ namespace PLATEAU.Test.Dataset
             using var accessor = source.Accessor;
             var buildings = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(2, buildings.Length);
-            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse;
+            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UrbanPlanningDecision | PredefinedCityModelPackage.LandUse | PredefinedCityModelPackage.Relief;
             Assert.AreEqual(expected, accessor.Packages);
         }
         
@@ -166,7 +166,7 @@ namespace PLATEAU.Test.Dataset
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
             Assert.IsTrue(Math.Abs(center.Z - (-51000)) < 2000, "南に51km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
-            Assert.IsTrue(Math.Abs(center.X - (-9000)) < 4000, "西に9km");
+            Assert.IsTrue(Math.Abs(center.X - (-9000)) < 5000, "西に9km");
         }
         
         

@@ -35,6 +35,31 @@ namespace plateau::dataset {
     const std::string UdxSubFolder::htd = "htd";
     //! 内水浸水想定区域
     const std::string UdxSubFolder::ifld = "ifld";
+    //! 交通(鉄道) 
+    const std::string UdxSubFolder::rwy = "rwy";
+    //! 交通(航路)
+    const std::string UdxSubFolder::wwy = "wwy";
+    //! 水部
+    const std::string UdxSubFolder::wtr = "wtr";
+    //! 橋梁
+    const std::string UdxSubFolder::brid = "brid";
+    //! 徒歩道 
+    const std::string UdxSubFolder::trk = "trk";
+    //! 広場
+    const std::string UdxSubFolder::squr = "squr";
+    //! トンネル 
+    const std::string UdxSubFolder::tun = "tun";
+    //! 地下埋設物 
+    const std::string UdxSubFolder::unf = "unf";
+    //! 地下街 
+    const std::string UdxSubFolder::ubld = "ubld";
+    //! 区域 
+    const std::string UdxSubFolder::area = "area";
+    //! その他の構造物 
+    const std::string UdxSubFolder::cons = "cons";
+    //! 汎用都市
+    const std::string UdxSubFolder::gen = "gen";
+
 
     PredefinedCityModelPackage UdxSubFolder::getPackage(const std::string& folder_name) {
         if (folder_name == bldg) return PredefinedCityModelPackage::Building;
@@ -49,6 +74,19 @@ namespace plateau::dataset {
         if (folder_name == lsld) return PredefinedCityModelPackage::DisasterRisk;
         if (folder_name == htd) return PredefinedCityModelPackage::DisasterRisk;
         if (folder_name == ifld) return PredefinedCityModelPackage::DisasterRisk;
+        if (folder_name == rwy) return PredefinedCityModelPackage::Railway;
+        if (folder_name == wwy) return PredefinedCityModelPackage::Waterway;
+        if (folder_name == wtr) return PredefinedCityModelPackage::WaterBody;
+        if (folder_name == brid) return PredefinedCityModelPackage::Bridge;
+        if (folder_name == trk) return PredefinedCityModelPackage::Track;
+        if (folder_name == squr) return PredefinedCityModelPackage::Square;
+        if (folder_name == tun) return PredefinedCityModelPackage::Tunnel;
+        if (folder_name == unf) return PredefinedCityModelPackage::UndergroundFacility;
+        if (folder_name == ubld) return PredefinedCityModelPackage::UndergroundBuilding;
+        if (folder_name == area) return PredefinedCityModelPackage::Area;
+        if (folder_name == cons) return PredefinedCityModelPackage::OtherConstruction;
+        if (folder_name == gen) return PredefinedCityModelPackage::Generic;
+
         return PredefinedCityModelPackage::Unknown;
     }
 
