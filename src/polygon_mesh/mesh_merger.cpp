@@ -339,24 +339,73 @@ namespace plateau::polygonMesh {
         mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture, TVec2f(0, 0), TVec2f(0, 0));
     }
 
-    void MeshMerger::mergePolygonsInCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
+    void MeshMerger::mergePolygonsInPrimaryCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                                const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
         mesh.reserve(vertex_count);
         for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element,
-                                     gml_path);
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
         }
+
+        auto CityObjectList = mesh.GetCityObjectList();
+        auto PrimaryId = CityObjectList.createtPrimaryId();
+        auto GmlId = city_object.getId();
+
+        mesh.addUV4WithSameVal(PrimaryId.getUV(), vertex_count);
+        CityObjectList.add(PrimaryId, GmlId);
+    }
+
+    void MeshMerger::mergePolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
+                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
+                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
+        long long vertex_count = 0;
+        auto polygons = findAllPolygons(city_object, lod, vertex_count);
+        mesh.reserve(vertex_count);
+        for (auto poly : polygons) {
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+        }
+
+        auto CityObjectList = mesh.GetCityObjectList();
+        auto AtomicId = CityObjectList.createtAtomicId();
+        auto GmlId = city_object.getId();
+
+        mesh.addUV4WithSameVal(AtomicId.getUV(), vertex_count);
+        CityObjectList.add(AtomicId, GmlId);
+    }
+
+    int MeshMerger::checkPolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
+                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
+                                           const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
+        long long vertex_count = 0;
+        auto polygons = findAllPolygons(city_object, lod, vertex_count);
+        mesh.reserve(vertex_count);
+        for (auto poly : polygons) {
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+        }
+
+        return(vertex_count);
     }
 
     void MeshMerger::mergePolygonsInCityObjects(Mesh& mesh, const std::list<const CityObject*>& city_objects,
                                                 unsigned int lod,
                                                 const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
                                                 const TVec2f& uv_3_element, const TVec2f& uv_2_element, const std::string& gml_path) {
+
+        auto CityObjectList = mesh.GetCityObjectList();
+
         for (auto obj : city_objects) {
-            mergePolygonsInCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            auto AtomicId = CityObjectList.createtAtomicId();
+            auto GmlId = obj->getId();
+
+            int VertexCount = checkPolygonsInAtomicCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+
+            if (VertexCount > 0) {
+
+                mesh.addUV4WithSameVal(AtomicId.getUV(), VertexCount);
+            }
+            CityObjectList.add(AtomicId, GmlId);
         }
     }
 

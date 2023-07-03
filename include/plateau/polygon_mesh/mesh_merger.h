@@ -42,14 +42,28 @@ namespace plateau::polygonMesh {
                                   plateau::geometry::CoordinateSystem mesh_axis_convert_to, bool include_texture);
 
         /**
-         * merge関数を 引数 city_object_ の各 Polygon に対して実行します。
+         * 最小地物のMeshのuv4フィールドに主要地物IDを設定しMeshをマージします。
          */
-        static void mergePolygonsInCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
+        static void mergePolygonsInPrimaryCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
                                               const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
 
         /**
-         * merge関数を 引数 city_objects の 各 CityObject の 各 Polygon に対して実行します。
+         * 最小地物のMeshのuv4フィールドに最小地物IDを設定しMeshをマージします。
+         */
+        static void mergePolygonsInAtomicCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
+                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
+                                              const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
+
+        /**
+         * 最小地物のMeshのuv4フィールドに最小地物IDを設定するために、最小地物を構成するPolygonに含まれるVertex数を取得します。
+         */
+        static int checkPolygonsInAtomicCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
+                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
+                                              const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
+
+        /**
+         * 主要地物のMeshのuv4フィールドに、主要地物のcity_objectsに含まれるすべての最小地物の最小地物IDを設定しMeshをマージします。
          */
         static void
         mergePolygonsInCityObjects(Mesh& mesh, const std::list<const citygml::CityObject*>& city_objects, unsigned int lod,

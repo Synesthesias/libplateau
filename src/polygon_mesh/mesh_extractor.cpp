@@ -53,9 +53,16 @@ namespace plateau::polygonMesh {
                             // 範囲外ならスキップします。
                             if (shouldSkipCityObj(*primary_obj, options)) continue;
                             // 主要地物のメッシュを作ります。
+
                             Mesh mesh;
+
+                            auto ObjectCityList = mesh.GetCityObjectList();
+                            auto PrimaryId = ObjectCityList.createtPrimaryId();
+                            auto GmlId = primary_obj->getId();
+                            ObjectCityList.add(PrimaryId, GmlId);
+
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
-                                MeshMerger::mergePolygonsInCityObject(mesh, *primary_obj, lod, options, geo_reference,
+                                MeshMerger::mergePolygonsInPrimaryCityObject(mesh, *primary_obj, lod, options, geo_reference,
                                                                       TVec2f{0, 0},
                                                                       TVec2f{0, 0}, city_model.getGmlPath());
                             }
@@ -84,7 +91,7 @@ namespace plateau::polygonMesh {
 
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 primary_mesh = Mesh();
-                                MeshMerger::mergePolygonsInCityObject(primary_mesh.value(), *primary_obj, lod, options,
+                                MeshMerger::mergePolygonsInPrimaryCityObject(primary_mesh.value(), *primary_obj, lod, options,
                                                                       geo_reference,
                                                                       TVec2f{0, 0},
                                                                       TVec2f{0, 0}, city_model.getGmlPath());
@@ -95,7 +102,7 @@ namespace plateau::polygonMesh {
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
                                 auto atomic_mesh = Mesh();
-                                MeshMerger::mergePolygonsInCityObject(atomic_mesh, *atomic_obj, lod, options,
+                                MeshMerger::mergePolygonsInAtomicCityObject(atomic_mesh, *atomic_obj, lod, options,
                                                                       geo_reference,
                                                                       TVec2f{0, 0},
                                                                       TVec2f{0, 0}, city_model.getGmlPath());

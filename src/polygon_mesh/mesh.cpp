@@ -9,11 +9,14 @@
 namespace plateau::polygonMesh {
     using namespace citygml;
 
+    CityObjectList root_city_object_list;
+
     Mesh::Mesh() :
             vertices_(),
             uv1_(UV()),
             uv2_(UV()),
             uv3_(UV()),
+            uv4_(UV()),
             sub_meshes_() {
     }
 
@@ -24,6 +27,7 @@ namespace plateau::polygonMesh {
         uv1_ = uv_1;
         uv2_ = UV();
         uv3_ = UV();
+        uv4_ = UV();
         auto vertices_count = vertices_.size();
         uv2_.reserve(vertices_count);
         uv3_.reserve(vertices_count);
@@ -65,6 +69,10 @@ namespace plateau::polygonMesh {
         return uv3_;
     }
 
+    const UV& Mesh::getUV4() const {
+        return uv4_;
+    }
+
     const std::vector<SubMesh>& Mesh::getSubMeshes() const {
         return sub_meshes_;
     }
@@ -75,6 +83,7 @@ namespace plateau::polygonMesh {
         uv1_.reserve(vertex_count);
         uv2_.reserve(vertex_count);
         uv3_.reserve(vertex_count);
+        uv4_.reserve(vertex_count);
     }
 
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices) {
@@ -145,6 +154,12 @@ namespace plateau::polygonMesh {
         }
     }
 
+    void Mesh::addUV4WithSameVal(const TVec2f& uv_4_val, unsigned num_adding_vertices) {
+        for (int i = 0; i < num_adding_vertices; i++) {
+            uv4_.push_back(uv_4_val);
+        }
+    }
+
     void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
@@ -182,5 +197,9 @@ namespace plateau::polygonMesh {
         for (const auto& sub_mesh: sub_meshes_) {
             sub_mesh.debugString(ss, indent + 1);
         }
+    }
+
+    CityObjectList Mesh::GetCityObjectList() const {
+        return(root_city_object_list);
     }
 }
