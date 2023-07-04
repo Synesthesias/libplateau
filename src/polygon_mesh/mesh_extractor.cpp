@@ -62,16 +62,12 @@ namespace plateau::polygonMesh {
                             ObjectCityList.add(PrimaryId, GmlId);
 
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
-                                MeshMerger::mergePolygonsInPrimaryCityObject(mesh, *primary_obj, lod, options, geo_reference,
-                                                                      TVec2f{0, 0},
-                                                                      TVec2f{0, 0}, city_model.getGmlPath());
+                                MeshMerger::mergePolygonsInPrimaryCityObject(mesh, *primary_obj, lod, options, geo_reference, city_model.getGmlPath());
                             }
                             if (lod >= 2) {
                                 // 主要地物の子である各最小地物をメッシュに加えます。
                                 auto atomic_objs = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_obj);
-                                MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, options, geo_reference,
-                                                                       TVec2f{0, 0},
-                                                                       TVec2f{0, 0}, city_model.getGmlPath());
+                                MeshMerger::mergePolygonsInCityObjects(mesh, atomic_objs, lod, options, geo_reference, city_model.getGmlPath());
                             }
                             // 主要地物ごとのノードを追加します。
                             lod_node.addChildNode(Node(primary_obj->getId(), std::move(mesh)));
@@ -91,10 +87,7 @@ namespace plateau::polygonMesh {
 
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
                                 primary_mesh = Mesh();
-                                MeshMerger::mergePolygonsInPrimaryCityObject(primary_mesh.value(), *primary_obj, lod, options,
-                                                                      geo_reference,
-                                                                      TVec2f{0, 0},
-                                                                      TVec2f{0, 0}, city_model.getGmlPath());
+                                MeshMerger::mergePolygonsInPrimaryCityObject(primary_mesh.value(), *primary_obj, lod, options, geo_reference, city_model.getGmlPath());
                             }
                             auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));
                             // 最小地物ごとにノードを作成します。
@@ -102,10 +95,7 @@ namespace plateau::polygonMesh {
                             for (auto atomic_obj: atomic_objs) {
                                 // 最小地物のノードを作成
                                 auto atomic_mesh = Mesh();
-                                MeshMerger::mergePolygonsInAtomicCityObject(atomic_mesh, *atomic_obj, lod, options,
-                                                                      geo_reference,
-                                                                      TVec2f{0, 0},
-                                                                      TVec2f{0, 0}, city_model.getGmlPath());
+                                MeshMerger::mergePolygonsInAtomicCityObject(atomic_mesh, *atomic_obj, lod, options, geo_reference, city_model.getGmlPath());
                                 auto atomic_node = Node(atomic_obj->getId(), std::move(atomic_mesh));
                                 primary_node.addChildNode(std::move(atomic_node));
                             }

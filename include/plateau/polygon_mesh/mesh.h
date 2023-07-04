@@ -43,10 +43,7 @@ namespace plateau::polygonMesh {
         const std::vector<TVec3d>& getVertices() const;
 
         const std::vector<unsigned>& getIndices() const;
-        void setUV2(const UV& uv2);
         const UV& getUV1() const;
-        const UV& getUV2() const;
-        const UV& getUV3() const;
         const UV& getUV4() const;
         const std::vector<SubMesh>& getSubMeshes() const;
         void reserve(long long vertex_count);
@@ -58,8 +55,6 @@ namespace plateau::polygonMesh {
                             bool invert_mesh_front_back);
         /// UV1を追加します。追加した結果、UV1の要素数が頂点数に足りなければ、足りない分を 0 で埋めます。
         void addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size);
-        void addUV2WithSameVal(const TVec2f& uv_2_val, unsigned num_adding_vertices);
-        void addUV3WithSameVal(const TVec2f& uv_3_val, unsigned num_adding_vertices);
         void addUV4WithSameVal(const TVec2f& uv_4_val, unsigned num_adding_vertices);
 
         /**
@@ -90,8 +85,6 @@ namespace plateau::polygonMesh {
         std::vector<TVec3d> vertices_;
         std::vector<unsigned> indices_;
         UV uv1_;
-        UV uv2_;
-        UV uv3_;
         UV uv4_;
         std::vector<SubMesh> sub_meshes_;
     };

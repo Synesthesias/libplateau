@@ -193,16 +193,13 @@ namespace plateau::polygonMesh {
         }
 
         /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
-        void mergeShape(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                        bool invert_mesh_front_back) {
+        void mergeShape(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
             auto prev_num_vertices = mesh.getVertices().size();
             auto other_num_vertices = other_mesh.getVertices().size();
 
             mesh.addVerticesList(other_mesh.getVertices());
             mesh.addIndicesList(other_mesh.getIndices(), (unsigned)prev_num_vertices, invert_mesh_front_back);
             mesh.addUV1(other_mesh.getUV1(), (unsigned)other_num_vertices);
-            mesh.addUV2WithSameVal(uv_2_element, (unsigned)other_num_vertices);
-            mesh.addUV3WithSameVal(uv_3_element, (unsigned)other_num_vertices);
         }
 
         /**
@@ -210,13 +207,11 @@ namespace plateau::polygonMesh {
          * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける SubMesh が追加されます。
          */
         void
-            mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element, const TVec2f& uv_3_element,
-                             bool invert_mesh_front_back) {
+            mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
             if (!isValidMesh(other_mesh)) return;
             auto prev_indices_count = mesh.getIndices().size();
 
-            mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
-                       invert_mesh_front_back);
+            mergeShape(mesh, other_mesh, invert_mesh_front_back);
 
             const auto& other_sub_meshes = other_mesh.getSubMeshes();
             size_t offset = prev_indices_count;
@@ -235,12 +230,9 @@ namespace plateau::polygonMesh {
          * merge関数 のテクスチャ無し版です。
          * 生成される Mesh の SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
          */
-        void mergeWithoutTexture(Mesh& mesh, const Mesh& other_mesh, const TVec2f& uv_2_element,
-                                 const TVec2f& uv_3_element,
-                                 bool invert_mesh_front_back) {
+        void mergeWithoutTexture(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
             if (!isValidMesh(other_mesh)) return;
-            mergeShape(mesh, other_mesh, uv_2_element, uv_3_element,
-                       invert_mesh_front_back);
+            mergeShape(mesh, other_mesh, invert_mesh_front_back);
             mesh.extendLastSubMesh(mesh.getIndices().size() - 1);
 
         }
@@ -281,8 +273,7 @@ namespace plateau::polygonMesh {
     }
 
     void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
-                                  const GeoReference& geo_reference, const TVec2f& uv_2_element,
-                                  const TVec2f& uv_3_element, const std::string& gml_path) {
+                                  const GeoReference& geo_reference, const std::string& gml_path) {
         if (!isValidPolygon(other_poly)) return;
         std::vector<TVec3d> vertices;
         std::vector<unsigned> indices;
@@ -301,13 +292,12 @@ namespace plateau::polygonMesh {
         );
     }
 
-    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures,
-                               const TVec2f& uv_2_element, const TVec2f& uv_3_element) {
+    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures) {
         if (!isValidMesh(other_mesh)) return;
         if (include_textures) {
-            mergeWithTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
+            mergeWithTexture(mesh, other_mesh, invert_mesh_front_back);
         } else {
-            mergeWithoutTexture(mesh, other_mesh, uv_2_element, uv_3_element, invert_mesh_front_back);
+            mergeWithoutTexture(mesh, other_mesh, invert_mesh_front_back);
         }
     }
 
@@ -336,17 +326,16 @@ namespace plateau::polygonMesh {
         }
 
         const Mesh other_mesh(std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes));
-        mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture, TVec2f(0, 0), TVec2f(0, 0));
+        mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture);
     }
 
     void MeshMerger::mergePolygonsInPrimaryCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
-                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
+                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
         mesh.reserve(vertex_count);
         for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
         }
 
         auto CityObjectList = mesh.GetCityObjectList();
@@ -358,13 +347,12 @@ namespace plateau::polygonMesh {
     }
 
     void MeshMerger::mergePolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
-                                               const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
+                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
         mesh.reserve(vertex_count);
         for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
         }
 
         auto CityObjectList = mesh.GetCityObjectList();
@@ -376,13 +364,12 @@ namespace plateau::polygonMesh {
     }
 
     int MeshMerger::checkPolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
-                                           const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path) {
+                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
         mesh.reserve(vertex_count);
         for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
         }
 
         return(vertex_count);
@@ -390,8 +377,7 @@ namespace plateau::polygonMesh {
 
     void MeshMerger::mergePolygonsInCityObjects(Mesh& mesh, const std::list<const CityObject*>& city_objects,
                                                 unsigned int lod,
-                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference,
-                                                const TVec2f& uv_3_element, const TVec2f& uv_2_element, const std::string& gml_path) {
+                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
 
         auto CityObjectList = mesh.GetCityObjectList();
 
@@ -399,7 +385,7 @@ namespace plateau::polygonMesh {
             auto AtomicId = CityObjectList.createtAtomicId();
             auto GmlId = obj->getId();
 
-            int VertexCount = checkPolygonsInAtomicCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, uv_2_element, uv_3_element, gml_path);
+            int VertexCount = checkPolygonsInAtomicCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, gml_path);
 
             if (VertexCount > 0) {
 

@@ -7,8 +7,6 @@ namespace plateau::polygonMesh {
     using namespace citygml;
 /**
  * インポートした各CityObject についてインポート番号を記憶するためのクラスです。
- * ID情報をUV2に埋め込む時に利用します。
- * TODO UV2からデータを取り出す機能は未実装です。
  */
     class CityObjectWithImportID {
     public:
@@ -190,12 +188,7 @@ namespace plateau::polygonMesh {
                 // オブジェクト内の各ポリゴンのループ
                 for (const auto& poly: polygons) {
                     // 各ポリゴンを結合していきます。
-                    // importID をメッシュに残すためにuv2, uv_3 を利用しています。UVなので2次元floatの値を取りますが、実際に伝えたい値はUVごとに1つのintです。
-                    const auto uv_2 = TVec2f((float) (city_obj.getPrimaryImportID()) + (float) 0.25,
-                                             0); // +0.25 する理由は、floatの誤差があっても四捨五入しても切り捨てても望みのint値を得られるためです。
-                    const auto uv_3 = TVec2f((float) (city_obj.getSecondaryImportID()) + (float) 0.25, 0);
-                    MeshMerger::mergePolygon(group_mesh, *poly, options, geo_reference, uv_2, uv_3,
-                                             city_model.getGmlPath());
+                    MeshMerger::mergePolygon(group_mesh, *poly, options, geo_reference, city_model.getGmlPath());
                 }
 
                 auto AtomicId = CityObjectList.createtAtomicId();

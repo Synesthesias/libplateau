@@ -24,14 +24,12 @@ namespace plateau::polygonMesh {
          * options.export_appearance の値によって、 mergeWithTexture または mergeWithoutTexture を呼び出します。
          */
         static void mergePolygon(Mesh& mesh, const citygml::Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
-                                 const geometry::GeoReference& geo_reference, const TVec2f& uv_2_element,
-                                 const TVec2f& uv_3_element, const std::string& gml_path);
+                                 const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * Mesh に Polygon をマージする代わりに Mesh をマージする版です。
          */
-        static void mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures,
-                              const TVec2f& uv_2_element, const TVec2f& uv_3_element);
+        static void mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures);
 
         /**
          * Mesh に Polygon をマージする代わりに、データ配列を直接 move で渡す版です。
@@ -45,30 +43,26 @@ namespace plateau::polygonMesh {
          * 最小地物のMeshのuv4フィールドに主要地物IDを設定しMeshをマージします。
          */
         static void mergePolygonsInPrimaryCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
-                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
-                                              const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
+                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * 最小地物のMeshのuv4フィールドに最小地物IDを設定しMeshをマージします。
          */
         static void mergePolygonsInAtomicCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
-                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
-                                              const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
+                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * 最小地物のMeshのuv4フィールドに最小地物IDを設定するために、最小地物を構成するPolygonに含まれるVertex数を取得します。
          */
         static int checkPolygonsInAtomicCityObject(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
-                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
-                                              const TVec2f& uv_2_element, const TVec2f& uv_3_element, const std::string& gml_path);
+                                              const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * 主要地物のMeshのuv4フィールドに、主要地物のcity_objectsに含まれるすべての最小地物の最小地物IDを設定しMeshをマージします。
          */
         static void
         mergePolygonsInCityObjects(Mesh& mesh, const std::list<const citygml::CityObject*>& city_objects, unsigned int lod,
-                                   const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference,
-                                   const TVec2f& uv_3_element, const TVec2f& uv_2_element, const std::string& gml_path);
+                                   const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * city_obj に含まれるポリゴンをすべて検索し、リストで返します。

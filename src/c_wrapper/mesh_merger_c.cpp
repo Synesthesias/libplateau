@@ -15,8 +15,7 @@ extern "C" {
     ) {
         API_TRY {
             MeshMerger::mergeMesh(
-                    *mesh, *other_mesh, invert_mesh_front_back, include_texture,
-                    TVec2f(0, 0), TVec2f(0, 0)
+                    *mesh, *other_mesh, invert_mesh_front_back, include_texture
             );
             return APIResult::Success;
         } API_CATCH;

@@ -14,8 +14,6 @@ namespace plateau::polygonMesh {
     Mesh::Mesh() :
             vertices_(),
             uv1_(UV()),
-            uv2_(UV()),
-            uv3_(UV()),
             uv4_(UV()),
             sub_meshes_() {
     }
@@ -25,16 +23,8 @@ namespace plateau::polygonMesh {
         vertices_ = std::move(vertices);
         indices_ = std::move(indices);
         uv1_ = uv_1;
-        uv2_ = UV();
-        uv3_ = UV();
         uv4_ = UV();
         auto vertices_count = vertices_.size();
-        uv2_.reserve(vertices_count);
-        uv3_.reserve(vertices_count);
-        for (int i = 0; i < vertices_count; i++) {
-            uv2_.emplace_back(0, 0);
-            uv3_.emplace_back(0, 0);
-        }
         sub_meshes_ = std::move(sub_meshes);
     }
 
@@ -50,23 +40,8 @@ namespace plateau::polygonMesh {
         return indices_;
     }
 
-    void Mesh::setUV2(const UV& uv2) {
-        if (uv2.size() != vertices_.size()) {
-            throw std::logic_error("Size of uv2 does not match num of vertices.");
-        }
-        uv2_ = uv2;
-    }
-
     const UV& Mesh::getUV1() const {
         return uv1_;
-    }
-
-    const UV& Mesh::getUV2() const {
-        return uv2_;
-    }
-
-    const UV& Mesh::getUV3() const {
-        return uv3_;
     }
 
     const UV& Mesh::getUV4() const {
@@ -81,8 +56,6 @@ namespace plateau::polygonMesh {
         vertices_.reserve(vertex_count);
         indices_.reserve(vertex_count);
         uv1_.reserve(vertex_count);
-        uv2_.reserve(vertex_count);
-        uv3_.reserve(vertex_count);
         uv4_.reserve(vertex_count);
     }
 
@@ -139,18 +112,6 @@ namespace plateau::polygonMesh {
         // other_uv_1 の数が頂点数に足りなければ 0 で埋めます。
         for (size_t i = other_uv_1.size(); i < other_vertices_size; i++) {
             uv1_.emplace_back(0, 0);
-        }
-    }
-
-    void Mesh::addUV2WithSameVal(const TVec2f& uv_2_val, unsigned num_adding_vertices) {
-        for (int i = 0; i < num_adding_vertices; i++) {
-            uv2_.push_back(uv_2_val);
-        }
-    }
-
-    void Mesh::addUV3WithSameVal(const TVec2f& uv_3_val, unsigned num_adding_vertices) {
-        for (int i = 0; i < num_adding_vertices; i++) {
-            uv3_.push_back(uv_3_val);
         }
     }
 

@@ -81,8 +81,6 @@ extern "C"{
 
     // UV1 を取得する関数
     PLATEAU_MESH_GET_UV(1)
-    // UV2 を取得する関数
-    PLATEAU_MESH_GET_UV(2)
-    // UV3 を取得する関数
-    PLATEAU_MESH_GET_UV(3)
+    // UV4 を取得する関数
+    PLATEAU_MESH_GET_UV(4)
 }

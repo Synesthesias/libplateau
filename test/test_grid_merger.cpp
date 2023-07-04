@@ -35,11 +35,9 @@ TEST_F(GridMergerTest, gridMerge_uv_size_matches_num_of_vertices) { // NOLINT
     auto result = GridMerger::gridMerge(*city_model_, mesh_extract_options_, 0, geo_reference_);
     for (const auto& [id, mesh]: result) {
         auto size_of_uv1 = mesh.getUV1().size();
-        auto size_of_uv2 = mesh.getUV2().size();
-        auto size_of_uv3 = mesh.getUV3().size();
+        auto size_of_uv4 = mesh.getUV4().size();
         auto num_of_vertices = mesh.getVertices().size();
         ASSERT_EQ(size_of_uv1, num_of_vertices);
-        ASSERT_EQ(size_of_uv2, num_of_vertices);
-        ASSERT_EQ(size_of_uv3, num_of_vertices);
+        ASSERT_EQ(size_of_uv4, num_of_vertices);
     }
 }
