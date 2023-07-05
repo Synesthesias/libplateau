@@ -31,7 +31,8 @@ namespace plateau::polygonMesh {
         
     public:
         Mesh();
-        Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, std::vector<SubMesh>&& sub_meshes);
+        Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+               std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list);
 
         /// コピーを禁止します。
         Mesh(const Mesh& mesh) = delete;
@@ -79,7 +80,7 @@ namespace plateau::polygonMesh {
         /// メッシュとサブメッシュに関する情報を stringstream に書き込みます。
         void debugString(std::stringstream& ss, int indent) const;
 
-        CityObjectList GetCityObjectList() const;
+        CityObjectList GetCityObjectList();
 
     private:
         std::vector<TVec3d> vertices_;
@@ -87,6 +88,7 @@ namespace plateau::polygonMesh {
         UV uv1_;
         UV uv4_;
         std::vector<SubMesh> sub_meshes_;
+        CityObjectList root_city_object_list_;
     };
 }
 

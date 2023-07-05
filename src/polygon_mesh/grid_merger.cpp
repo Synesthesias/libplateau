@@ -179,7 +179,7 @@ namespace plateau::polygonMesh {
             // グループ内でマージする Mesh の新規作成
             Mesh group_mesh;
 
-            auto CityObjectList = group_mesh.GetCityObjectList();
+            auto cityObjectList = group_mesh.GetCityObjectList();
 
             // グループ内の各オブジェクトのループ
             for (const auto& city_obj: group_objs) {
@@ -191,14 +191,14 @@ namespace plateau::polygonMesh {
                     MeshMerger::mergePolygon(group_mesh, *poly, options, geo_reference, city_model.getGmlPath());
                 }
 
-                auto AtomicId = CityObjectList.createtAtomicId();
-                auto GmlId = city_obj.getCityObject()->getId();
+                auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
+                auto gmlId = city_obj.getCityObject()->getId();
 
                 if (city_obj_vertex_count > 0) {
-                    group_mesh.addUV4WithSameVal(AtomicId.getUV(), city_obj_vertex_count);
+                    group_mesh.addUV4WithSameVal(primaryAtomicId.getIndex(), city_obj_vertex_count);
                 }
 
-                CityObjectList.add(AtomicId, GmlId);
+                cityObjectList.add(primaryAtomicId, gmlId);
             }
             merged_meshes.emplace(group_id, std::move(group_mesh));
         }

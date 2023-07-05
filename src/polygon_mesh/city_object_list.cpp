@@ -6,31 +6,35 @@
 
 namespace plateau::polygonMesh {
 
-    CityObjectList::CityObjectList() {
-        auto size = city_object_index_to_gml_id.max_size();
+    CityObjectList& CityObjectList::operator=(CityObjectList&& city_object_list) {
+        primary_id = city_object_list.primary_id;
+        primary_atomic_id = city_object_list.primary_atomic_id;
+        city_object_index_to_gml_id = std::move(city_object_list.city_object_index_to_gml_id);
+
+        return *this;
     }
 
-    static std::map<CityObjectIndex, std::string, std::less<>> feature_index_to_gml_id;
+    CityObjectList::CityObjectList() {
+    }
 
-    CityObjectIndex CityObjectList::createtPrimaryId() {
-        atomic_id = 0;
+    CityObjectIndex CityObjectList::createPrimaryId() {
+        primary_atomic_id = 0;
         return(CityObjectIndex(primary_id++, none));
     }
 
-    CityObjectIndex CityObjectList::createtAtomicId() {
-        return(CityObjectIndex(primary_id, atomic_id++));
+    CityObjectIndex CityObjectList::createPrimaryAtomicId() {
+        return(CityObjectIndex(primary_id, primary_atomic_id++));
     }
 
-    const std::string& CityObjectList::getAtomicGmlId(CityObjectIndex featureIndex) {
-        return(feature_index_to_gml_id[featureIndex]);
+    const std::string& CityObjectList::getAtomicGmlId(CityObjectIndex cityObjectIndex) {
+        return(city_object_index_to_gml_id.at(cityObjectIndex));
     }
 
     const std::string& CityObjectList::getPrimaryGmlId(int id) {
-        return(feature_index_to_gml_id[CityObjectIndex(id, none)]);
+        return(city_object_index_to_gml_id.at(CityObjectIndex(id, none)));
     }
 
     void CityObjectList::add(CityObjectIndex key, std::string value) {
-        
-        feature_index_to_gml_id[key] = value;
+        city_object_index_to_gml_id[key] = value;
     }
 }

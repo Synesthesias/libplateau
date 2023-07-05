@@ -325,7 +325,7 @@ namespace plateau::polygonMesh {
             vs.at(i) = GeoReference::convertAxisFromENUTo(mesh_axis_convert_to, enu);
         }
 
-        const Mesh other_mesh(std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes));
+        const Mesh other_mesh(std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes), std::move(mesh.GetCityObjectList()));
         mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture);
     }
 
@@ -338,12 +338,12 @@ namespace plateau::polygonMesh {
             MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
         }
 
-        auto CityObjectList = mesh.GetCityObjectList();
-        auto PrimaryId = CityObjectList.createtPrimaryId();
-        auto GmlId = city_object.getId();
+        auto cityObjectList = mesh.GetCityObjectList();
+        auto primaryId = cityObjectList.createPrimaryId();
+        auto gmlId = city_object.getId();
 
-        mesh.addUV4WithSameVal(PrimaryId.getUV(), vertex_count);
-        CityObjectList.add(PrimaryId, GmlId);
+        mesh.addUV4WithSameVal(primaryId.getIndex(), vertex_count);
+        cityObjectList.add(primaryId, gmlId);
     }
 
     void MeshMerger::mergePolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
@@ -355,22 +355,21 @@ namespace plateau::polygonMesh {
             MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
         }
 
-        auto CityObjectList = mesh.GetCityObjectList();
-        auto AtomicId = CityObjectList.createtAtomicId();
-        auto GmlId = city_object.getId();
+        auto cityObjectList = mesh.GetCityObjectList();
+        auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
+        auto gmlId = city_object.getId();
 
-        mesh.addUV4WithSameVal(AtomicId.getUV(), vertex_count);
-        CityObjectList.add(AtomicId, GmlId);
+        mesh.addUV4WithSameVal(primaryAtomicId.getIndex(), vertex_count);
+        cityObjectList.add(primaryAtomicId, gmlId);
     }
 
-    int MeshMerger::checkPolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
+    int MeshMerger::countVertices(Mesh& mesh, const CityObject& city_object, unsigned int lod) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
-        mesh.reserve(vertex_count);
-        for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
-        }
+        //mesh.reserve(vertex_count);
+        //for (auto poly : polygons) {
+        //    MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
+        //}
 
         return(vertex_count);
     }
@@ -379,19 +378,19 @@ namespace plateau::polygonMesh {
                                                 unsigned int lod,
                                                 const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
 
-        auto CityObjectList = mesh.GetCityObjectList();
+        auto cityObjectList = mesh.GetCityObjectList();
 
         for (auto obj : city_objects) {
-            auto AtomicId = CityObjectList.createtAtomicId();
-            auto GmlId = obj->getId();
+            auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
+            auto gmlId = obj->getId();
 
-            int VertexCount = checkPolygonsInAtomicCityObject(mesh, *obj, lod, mesh_extract_options, geo_reference, gml_path);
+            int vertexCount = countVertices(mesh, *obj, lod);
 
-            if (VertexCount > 0) {
+            if (vertexCount > 0) {
 
-                mesh.addUV4WithSameVal(AtomicId.getUV(), VertexCount);
+                mesh.addUV4WithSameVal(primaryAtomicId.getIndex(), vertexCount);
             }
-            CityObjectList.add(AtomicId, GmlId);
+            cityObjectList.add(primaryAtomicId, gmlId);
         }
     }
 

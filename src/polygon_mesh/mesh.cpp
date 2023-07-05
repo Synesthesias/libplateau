@@ -9,23 +9,22 @@
 namespace plateau::polygonMesh {
     using namespace citygml;
 
-    CityObjectList root_city_object_list;
-
     Mesh::Mesh() :
             vertices_(),
             uv1_(UV()),
             uv4_(UV()),
-            sub_meshes_() {
+            sub_meshes_(),
+            root_city_object_list_() {
     }
 
     Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
-               std::vector<SubMesh>&& sub_meshes) {
+               std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list) {
         vertices_ = std::move(vertices);
         indices_ = std::move(indices);
         uv1_ = uv_1;
-        uv4_ = UV();
         auto vertices_count = vertices_.size();
         sub_meshes_ = std::move(sub_meshes);
+        root_city_object_list_ = std::move( city_object_list);
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {
@@ -160,7 +159,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    CityObjectList Mesh::GetCityObjectList() const {
-        return(root_city_object_list);
+    CityObjectList Mesh::GetCityObjectList() {
+        return(CityObjectList());
     }
 }
