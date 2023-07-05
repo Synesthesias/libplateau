@@ -54,7 +54,8 @@ namespace plateau::polygonMesh {
         /**
          * 最小地物のMeshのuv4フィールドに最小地物IDを設定するために、最小地物を構成するPolygonに含まれるVertex数を取得します。
          */
-        static int countVertices(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod);
+        static int countVertices(Mesh& mesh, const citygml::CityObject& city_object, unsigned int lod,
+                                           const MeshExtractOptions& mesh_extract_options, const geometry::GeoReference& geo_reference, const std::string& gml_path);
 
         /**
          * 主要地物のMeshのuv4フィールドに、主要地物のcity_objectsに含まれるすべての最小地物の最小地物IDを設定しMeshをマージします。

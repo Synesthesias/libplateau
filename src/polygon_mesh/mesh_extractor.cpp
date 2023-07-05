@@ -86,7 +86,7 @@ namespace plateau::polygonMesh {
                             auto primary_mesh = std::optional<Mesh>(std::nullopt);
 
                             if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_obj)) {
-                                //primary_mesh = Mesh();
+                                primary_mesh = Mesh();
                                 MeshMerger::mergePolygonsInPrimaryCityObject(primary_mesh.value(), *primary_obj, lod, options, geo_reference, city_model.getGmlPath());
                             }
                             auto primary_node = Node(primary_obj->getId(), std::move(primary_mesh));

@@ -363,13 +363,14 @@ namespace plateau::polygonMesh {
         cityObjectList.add(primaryAtomicId, gmlId);
     }
 
-    int MeshMerger::countVertices(Mesh& mesh, const CityObject& city_object, unsigned int lod) {
+    int MeshMerger::countVertices(Mesh& mesh, const CityObject& city_object, unsigned int lod,
+                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
         long long vertex_count = 0;
         auto polygons = findAllPolygons(city_object, lod, vertex_count);
-        //mesh.reserve(vertex_count);
-        //for (auto poly : polygons) {
-        //    MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
-        //}
+        mesh.reserve(vertex_count);
+        for (auto poly : polygons) {
+            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
+        }
 
         return(vertex_count);
     }
@@ -384,7 +385,7 @@ namespace plateau::polygonMesh {
             auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
             auto gmlId = obj->getId();
 
-            int vertexCount = countVertices(mesh, *obj, lod);
+            int vertexCount = countVertices(mesh, *obj, lod, mesh_extract_options, geo_reference, gml_path);
 
             if (vertexCount > 0) {
 
