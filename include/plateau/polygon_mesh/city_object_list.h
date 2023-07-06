@@ -13,8 +13,8 @@ namespace plateau::polygonMesh {
 
         static CityObjectIndex fromUV(const TVec2f& uv) {
             return {
-                std::lround(uv.x),
-                std::lround(uv.y)
+                static_cast<int>(std::lround(uv.x)),
+                static_cast<int>(std::lround(uv.y))
             };
         }
 
