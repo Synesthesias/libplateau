@@ -3,9 +3,9 @@
 #include <libplateau_api.h>
 #include <map>
 #include <string>
+#include <cmath>
 
 namespace plateau::polygonMesh {
-
 
     struct LIBPLATEAU_EXPORT CityObjectIndex {
         int primary_index;
@@ -73,10 +73,14 @@ namespace plateau::polygonMesh {
     public:
         CityObjectList() = default;
 
-        const std::string& getAtomicGmlID(const CityObjectIndex& city_object_index);
-        const std::string& getPrimaryGmlID(int index);
+        const std::string& getAtomicGmlID(const CityObjectIndex& city_object_index) const;
+        const std::string& getPrimaryGmlID(int index) const;
 
-        CityObjectIndex getCityObjectIndex(const std::string& gml_id);
+        void getAllKeys(std::vector<CityObjectIndex>& keys) const;
+
+        std::shared_ptr<std::vector<CityObjectIndex>> getAllKeys() const;
+
+        CityObjectIndex getCityObjectIndex(const std::string& gml_id) const;
 
         void add(const CityObjectIndex& key, const std::string& value);
 

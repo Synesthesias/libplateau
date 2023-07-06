@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using PLATEAU.Native;
 using System.Runtime.InteropServices;
 using PLATEAU.Interop;
@@ -29,6 +30,14 @@ namespace PLATEAU.PolygonMesh
         internal CityObjectList(IntPtr handle)
         {
             Handle = handle;
+        }
+
+        public CityObjectIndex[] GetAllKeys()
+        {
+            var keys = NativeVectorCityObjectIndex.Create();
+            var result = NativeMethods.plateau_city_object_list_get_all_keys(Handle, keys.Handle);
+            DLLUtil.CheckDllError(result);
+            return keys.ToArray();
         }
 
         public string GetPrimaryID(int index)
@@ -83,6 +92,11 @@ namespace PLATEAU.PolygonMesh
                 [In] IntPtr handle,
                 out CityObjectIndex index,
                 [In] string gmlID);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_city_object_list_get_all_keys(
+                [In] IntPtr handle,
+                [In, Out] IntPtr keys);
         }
     }
 }

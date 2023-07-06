@@ -133,8 +133,9 @@ namespace plateau::polygonMesh {
     }
 
     bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
-        return !(lod >= 2 && // ( LODが2以上 かつ
+        // LOD2以上の建築物以外の場合主要地物の形状を含める
+        return !(lod >= 2 &&
                  (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
-                 (citygml::CityObject::CityObjectsType)0); // ビット演算で、フラグに Building を含む)の NOT
+                 static_cast<citygml::CityObject::CityObjectsType>(0));
     }
 }
