@@ -58,7 +58,10 @@ extern "C"{
         return APIResult::ErrorUnknown;
     }
 
-
+    DLL_PTR_FUNC(plateau_mesh_get_city_object_list,
+                 Mesh,
+                 CityObjectList,
+                 &handle->getCityObjectList())
 
     /**
      * UVを取得するマクロです。

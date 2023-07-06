@@ -13,9 +13,13 @@ extern "C" {
             bool invert_mesh_front_back,
             bool include_texture
     ) {
-        API_TRY {
-            MeshMerger::mergeMesh(
-                    *mesh, *other_mesh, invert_mesh_front_back, include_texture
+        API_TRY{
+            auto factory = MeshFactory();
+            factory.mergeMesh(
+                    *mesh, invert_mesh_front_back, include_texture
+            );
+            factory.mergeMesh(
+                    *other_mesh, invert_mesh_front_back, include_texture
             );
             return APIResult::Success;
         } API_CATCH;
@@ -47,10 +51,12 @@ extern "C" {
                 sub_meshes.push_back(*(sub_mesh_ptr));
             }
 
-            MeshMerger::mergeMeshInfo(*mesh,
-                                      std::move(vertices), std::move(indices), std::move(uv_1),
-                                      std::move(sub_meshes),
-                                      mesh_axis_convert_from, mesh_axis_convert_to, include_texture);
+            auto factory = MeshFactory(std::unique_ptr<Mesh>(mesh));
+            factory.mergeMeshInfo(
+                std::move(vertices), std::move(indices), std::move(uv_1),
+                std::move(sub_meshes),
+                mesh_axis_convert_from, mesh_axis_convert_to, include_texture);
+            factory.releaseMesh().release();
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

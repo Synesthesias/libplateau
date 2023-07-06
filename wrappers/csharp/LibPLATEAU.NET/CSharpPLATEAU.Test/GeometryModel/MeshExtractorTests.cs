@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.Test.GeometryModel
 {
@@ -20,6 +21,22 @@ namespace PLATEAU.Test.GeometryModel
             var model = TestGeometryUtil.ExtractModel();
             var rootNode = model.GetRootNodeAt(0);
             Assert.IsNull(rootNode.Mesh, "メッシュがない状況ではMeshはnullを返す");
+        }
+
+
+        [TestMethod]
+        public void CityObjectIndexExistsForEveryUV4Value()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var foundMesh = TestGeometryUtil.FirstMeshInModel(model);
+            var cityObjectList = foundMesh.CityObjectList;
+            foreach (var vt in foundMesh.GetUv4())
+            {
+                var atomicGmlID = cityObjectList.GetAtomicID(CityObjectIndex.FromUV(vt));
+                var primaryGmlID = cityObjectList.GetPrimaryID(CityObjectIndex.FromUV(vt).PrimaryIndex);
+                Assert.IsNotNull(atomicGmlID, "UV4に含まれている値はCityObjectListにも含まれている");
+                Assert.IsNotNull(primaryGmlID, "UV4に含まれている値はCityObjectListにも含まれている");
+            }
         }
     }
 }

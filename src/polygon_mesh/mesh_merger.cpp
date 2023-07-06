@@ -168,7 +168,7 @@ namespace plateau::polygonMesh {
             if (texture == nullptr) {
                 // rgbTextureのthemeが存在しない場合
                 auto themes = poly.getAllTextureThemes(true);
-                if(!themes.empty())
+                if (!themes.empty())
                     texture = poly.getTextureFor(themes.at(0));
             }
             std::string texture_path;
@@ -190,51 +190,6 @@ namespace plateau::polygonMesh {
             out_sub_meshes = std::vector{
                 SubMesh(0, out_indices.size() - 1, texture_path)
             };
-        }
-
-        /// 形状情報をマージします。merge関数における SubMesh を扱わない版です。
-        void mergeShape(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
-            auto prev_num_vertices = mesh.getVertices().size();
-            auto other_num_vertices = other_mesh.getVertices().size();
-
-            mesh.addVerticesList(other_mesh.getVertices());
-            mesh.addIndicesList(other_mesh.getIndices(), (unsigned)prev_num_vertices, invert_mesh_front_back);
-            mesh.addUV1(other_mesh.getUV1(), (unsigned)other_num_vertices);
-        }
-
-        /**
-         * merge関数 のテクスチャあり版です。
-         * テクスチャについては、マージした結果、範囲とテクスチャを対応付ける SubMesh が追加されます。
-         */
-        void
-            mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
-            if (!isValidMesh(other_mesh)) return;
-            auto prev_indices_count = mesh.getIndices().size();
-
-            mergeShape(mesh, other_mesh, invert_mesh_front_back);
-
-            const auto& other_sub_meshes = other_mesh.getSubMeshes();
-            size_t offset = prev_indices_count;
-            for (const auto& other_sub_mesh : other_sub_meshes) {
-                const auto& texture_path = other_sub_mesh.getTexturePath();
-                size_t start_index = other_sub_mesh.getStartIndex() + offset;
-                size_t end_index = other_sub_mesh.getEndIndex() + offset;
-                assert(start_index <= end_index);
-                assert(end_index < mesh.getIndices().size());
-                assert((end_index - start_index + 1) % 3 == 0);
-                mesh.addSubMesh(texture_path, start_index, end_index);
-            }
-        }
-
-        /**
-         * merge関数 のテクスチャ無し版です。
-         * 生成される Mesh の SubMesh はただ1つであり、そのテクスチャパスは空文字列となります。
-         */
-        void mergeWithoutTexture(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back) {
-            if (!isValidMesh(other_mesh)) return;
-            mergeShape(mesh, other_mesh, invert_mesh_front_back);
-            mesh.extendLastSubMesh(mesh.getIndices().size() - 1);
-
         }
 
         /**
@@ -259,7 +214,7 @@ namespace plateau::polygonMesh {
 
     }
 
-    bool MeshMerger::shouldInvertIndicesOnMeshConvert(const CoordinateSystem sys) {
+    bool MeshFactory::shouldInvertIndicesOnMeshConvert(const CoordinateSystem sys) {
         switch (sys) {
         case CoordinateSystem::ENU:
         case CoordinateSystem::WUN:
@@ -272,37 +227,63 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void MeshMerger::mergePolygon(Mesh& mesh, const Polygon& other_poly, const MeshExtractOptions& mesh_extract_options,
-                                  const GeoReference& geo_reference, const std::string& gml_path) {
-        if (!isValidPolygon(other_poly)) return;
+    MeshFactory::MeshFactory(
+        std::unique_ptr<Mesh>&& target,
+        const MeshExtractOptions& mesh_extract_options,
+        const geometry::GeoReference& geo_reference)
+
+        : options_(mesh_extract_options)
+        , geo_reference_(geo_reference)
+        , available_primary_index_()
+        , last_atomic_index_cache_() {
+
+        if (target == nullptr)
+            mesh_ = std::make_unique<Mesh>();
+        else
+            mesh_ = std::move(target);
+    }
+
+    void MeshFactory::addPolygon(const Polygon& polygon, const std::string& gml_path) {
+        if (!isValidPolygon(polygon))
+            return;
+
         std::vector<TVec3d> vertices;
         std::vector<unsigned> indices;
         std::vector<TVec2f> uv_1;
         std::vector<SubMesh> sub_meshes;
         plateauPolygonToMeshInfo(
-                other_poly, mesh_extract_options.exclude_triangles_outside_extent,
-                gml_path, mesh_extract_options.extent, geo_reference,
-                vertices, indices, uv_1, sub_meshes
+            polygon,
+            options_.exclude_triangles_outside_extent,
+            gml_path,
+            options_.extent,
+            geo_reference_,
+            vertices,
+            indices,
+            uv_1,
+            sub_meshes
         );
-        mergeMeshInfo(mesh, std::move(vertices),
-                      std::move(indices), std::move(uv_1), std::move(sub_meshes),
-                      geometry::CoordinateSystem::ENU,
-                      mesh_extract_options.mesh_axes,
-                      mesh_extract_options.export_appearance
+
+        mergeMeshInfo(
+            std::move(vertices),
+            std::move(indices), std::move(uv_1), std::move(sub_meshes),
+            geometry::CoordinateSystem::ENU,
+            options_.mesh_axes,
+            options_.export_appearance
         );
     }
 
-    void MeshMerger::mergeMesh(Mesh& mesh, const Mesh& other_mesh, bool invert_mesh_front_back, bool include_textures) {
-        if (!isValidMesh(other_mesh)) return;
+    void MeshFactory::mergeMesh(const Mesh& other_mesh, const bool invert_mesh_front_back, const bool include_textures) const {
+        if (!isValidMesh(other_mesh))
+            return;
+
         if (include_textures) {
-            mergeWithTexture(mesh, other_mesh, invert_mesh_front_back);
+            mergeWithTexture(other_mesh, invert_mesh_front_back);
         } else {
-            mergeWithoutTexture(mesh, other_mesh, invert_mesh_front_back);
+            mergeWithoutTexture(other_mesh, invert_mesh_front_back);
         }
     }
 
-    void MeshMerger::mergeMeshInfo(
-        Mesh& mesh,
+    void MeshFactory::mergeMeshInfo(
         std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
         std::vector<SubMesh>&& sub_meshes,
         CoordinateSystem mesh_axis_convert_from,
@@ -310,13 +291,13 @@ namespace plateau::polygonMesh {
 
         // 座標軸を変換するとき、符号の反転によってポリゴンが裏返ることがあります。それを補正するためにポリゴンを裏返す処理が必要かどうかを求めます。
         // 座標軸を FROM から TO に変換するとして、それは 下記の [1]と[2] の XOR で求まります。
-        bool invert_mesh_front_back =
+        const bool invert_mesh_front_back =
             shouldInvertIndicesOnMeshConvert(mesh_axis_convert_from) !=  // [1] FROM → ENU に変換するときに反転の必要があるか
             shouldInvertIndicesOnMeshConvert(mesh_axis_convert_to);     // [2] ENU → TO に変換するときに反転の必要があるか
 
-    // 座標軸を変換します。
+        // 座標軸を変換します。
         std::vector<TVec3d> vs = std::move(vertices);
-        auto vertex_count = vs.size();
+        const auto vertex_count = vs.size();
         for (int i = 0; i < vertex_count; i++) {
             const auto& before = vs.at(i);
             // BEFORE → ENU
@@ -325,84 +306,151 @@ namespace plateau::polygonMesh {
             vs.at(i) = GeoReference::convertAxisFromENUTo(mesh_axis_convert_to, enu);
         }
 
-        const Mesh other_mesh(std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes), std::move(mesh.GetCityObjectList()));
-        mergeMesh(mesh, other_mesh, invert_mesh_front_back, include_texture);
+        const Mesh other_mesh(std::move(vs), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
+        mergeMesh(other_mesh, invert_mesh_front_back, include_texture);
     }
 
-    void MeshMerger::mergePolygonsInPrimaryCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
+    void MeshFactory::addPolygonsInPrimaryCityObject(
+        const CityObject& city_object, unsigned int lod,
+        const std::string& gml_path) {
+
         long long vertex_count = 0;
-        auto polygons = findAllPolygons(city_object, lod, vertex_count);
-        mesh.reserve(vertex_count);
-        for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
+        std::list<const Polygon*> polygons;
+        findAllPolygons(city_object, lod, polygons, vertex_count);
+        mesh_->reserve(vertex_count);
+        for (const auto polygon : polygons) {
+            addPolygon(*polygon, gml_path);
         }
 
-        auto cityObjectList = mesh.GetCityObjectList();
-        auto primaryId = cityObjectList.createPrimaryId();
-        auto gmlId = city_object.getId();
+        const auto& gml_id = city_object.getId();
 
-        mesh.addUV4WithSameVal(primaryId.getIndex(), vertex_count);
-        cityObjectList.add(primaryId, gmlId);
+        mesh_->addUV4WithSameVal(available_primary_index_.toUV(), vertex_count);
+        mesh_->city_object_list_.add(available_primary_index_, gml_id);
+        ++available_primary_index_.primary_index;
     }
 
-    void MeshMerger::mergePolygonsInAtomicCityObject(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                               const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
+    long long MeshFactory::countVertices(
+        const CityObject& city_object, const unsigned lod) {
+
         long long vertex_count = 0;
-        auto polygons = findAllPolygons(city_object, lod, vertex_count);
-        mesh.reserve(vertex_count);
-        for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
-        }
+        std::list<const Polygon*> polygons;
+        findAllPolygons(city_object, lod, polygons, vertex_count);
 
-        auto cityObjectList = mesh.GetCityObjectList();
-        auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
-        auto gmlId = city_object.getId();
-
-        mesh.addUV4WithSameVal(primaryAtomicId.getIndex(), vertex_count);
-        cityObjectList.add(primaryAtomicId, gmlId);
+        return vertex_count;
     }
 
-    int MeshMerger::countVertices(Mesh& mesh, const CityObject& city_object, unsigned int lod,
-                                           const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
-        long long vertex_count = 0;
-        auto polygons = findAllPolygons(city_object, lod, vertex_count);
-        mesh.reserve(vertex_count);
-        for (auto poly : polygons) {
-            MeshMerger::mergePolygon(mesh, *poly, mesh_extract_options, geo_reference, gml_path);
-        }
+    void MeshFactory::addPolygonsInAtomicCityObject(
+        const CityObject& parent_city_object, const CityObject& city_object,
+        const unsigned lod, const std::string& gml_path) {
 
-        return(vertex_count);
-    }
+        CityObjectIndex city_object_index{};
 
-    void MeshMerger::mergePolygonsInCityObjects(Mesh& mesh, const std::list<const CityObject*>& city_objects,
-                                                unsigned int lod,
-                                                const MeshExtractOptions& mesh_extract_options, const GeoReference& geo_reference, const std::string& gml_path) {
-
-        auto cityObjectList = mesh.GetCityObjectList();
-
-        for (auto obj : city_objects) {
-            auto primaryAtomicId = cityObjectList.createPrimaryAtomicId();
-            auto gmlId = obj->getId();
-
-            int vertexCount = countVertices(mesh, *obj, lod, mesh_extract_options, geo_reference, gml_path);
-
-            if (vertexCount > 0) {
-
-                mesh.addUV4WithSameVal(primaryAtomicId.getIndex(), vertexCount);
+        if (last_parent_gml_id_cache_ == parent_city_object.getId()) {
+            city_object_index = last_atomic_index_cache_;
+            ++city_object_index.atomic_index;
+        } else {
+            city_object_index = createAvailableAtomicIndex(parent_city_object.getId());
+            // 新規の主要地物に最小地物を追加する際は、主要地物のインデックスも追加する。
+            if (city_object_index.atomic_index == 0)
+            {
+                auto primary_index = city_object_index;
+                primary_index.atomic_index = CityObjectIndex::invalidIndex();
+                mesh_->city_object_list_.add(primary_index, parent_city_object.getId());
             }
-            cityObjectList.add(primaryAtomicId, gmlId);
+        }
+
+        last_atomic_index_cache_ = city_object_index;
+        last_parent_gml_id_cache_ = parent_city_object.getId();
+
+        long long vertex_count = 0;
+        std::list<const Polygon*> polygons;
+        findAllPolygons(city_object, lod, polygons, vertex_count);
+        mesh_->reserve(vertex_count);
+        for (const auto polygon : polygons) {
+            addPolygon(*polygon, gml_path);
+        }
+
+        mesh_->addUV4WithSameVal(city_object_index.toUV(), vertex_count);
+        mesh_->city_object_list_.add(city_object_index, city_object.getId());
+    }
+
+    void MeshFactory::addPolygonsInAtomicCityObjects(
+        const CityObject& parent_city_object,
+        const std::list<const CityObject*>& city_objects,
+        const unsigned lod, const std::string& gml_path) {
+
+        auto available_city_object_index = createAvailableAtomicIndex(parent_city_object.getId());
+        // 新規の主要地物に最小地物を追加する際は、主要地物のインデックスも追加する。
+        if (available_city_object_index.atomic_index == 0) {
+            auto primary_index = available_city_object_index;
+            primary_index.atomic_index = CityObjectIndex::invalidIndex();
+            mesh_->city_object_list_.add(primary_index, parent_city_object.getId());
+        }
+
+        for (const auto city_object : city_objects) {
+            auto gml_id = city_object->getId();
+
+            long long vertex_count = 0;
+            std::list<const Polygon*> polygons;
+            findAllPolygons(*city_object, lod, polygons, vertex_count);
+            mesh_->reserve(vertex_count);
+            for (const auto polygon : polygons) {
+                addPolygon(*polygon, gml_path);
+            }
+
+            if (vertex_count > 0)
+                mesh_->addUV4WithSameVal(available_city_object_index.toUV(), vertex_count);
+
+            mesh_->city_object_list_.add(available_city_object_index, gml_id);
+            ++available_city_object_index.atomic_index;
         }
     }
 
-    std::list<const Polygon *>
-    MeshMerger::findAllPolygons(const CityObject &city_obj, unsigned lod, long long &out_vertices_count) {
-        auto polygons = std::list<const citygml::Polygon*>();
-        unsigned int num_geom = city_obj.getGeometriesCount();
+    void MeshFactory::findAllPolygons(const CityObject& city_obj, const unsigned lod, std::list<const Polygon*>& out_polygons, long long& out_vertices_count) {
+        const auto geometry_count = city_obj.getGeometriesCount();
         out_vertices_count = 0;
-        for (unsigned int i = 0; i < num_geom; i++) {
-            findAllPolygonsInGeometry(city_obj.getGeometry(i), polygons, lod, out_vertices_count);
+        for (unsigned i = 0; i < geometry_count; i++) {
+            findAllPolygonsInGeometry(city_obj.getGeometry(i), out_polygons, lod, out_vertices_count);
         }
-        return std::move(polygons);
+    }
+
+    void MeshFactory::mergeWithoutTexture(const Mesh& other_mesh, const bool invert_mesh_front_back) const {
+        if (!isValidMesh(other_mesh)) return;
+        mergeShape(other_mesh, invert_mesh_front_back);
+        mesh_->extendLastSubMesh(mesh_->getIndices().size() - 1);
+    }
+
+    void MeshFactory::mergeWithTexture(const Mesh& other_mesh, const bool invert_mesh_front_back) const {
+        if (!isValidMesh(other_mesh)) return;
+        const auto prev_indices_count = mesh_->getIndices().size();
+
+        mergeShape(other_mesh, invert_mesh_front_back);
+
+        const auto& other_sub_meshes = other_mesh.getSubMeshes();
+        const size_t offset = prev_indices_count;
+        for (const auto& other_sub_mesh : other_sub_meshes) {
+            const auto& texture_path = other_sub_mesh.getTexturePath();
+            const size_t start_index = other_sub_mesh.getStartIndex() + offset;
+            const size_t end_index = other_sub_mesh.getEndIndex() + offset;
+            assert(start_index <= end_index);
+            assert(end_index < mesh_->getIndices().size());
+            assert((end_index - start_index + 1) % 3 == 0);
+            mesh_->addSubMesh(texture_path, start_index, end_index);
+        }
+    }
+
+    CityObjectIndex MeshFactory::createAvailableAtomicIndex(const std::string& parent_gml_id) {
+        const auto it = available_atomic_indices_.find(parent_gml_id);
+        CityObjectIndex available_city_object_index;
+        if (it != available_atomic_indices_.end()) {
+            // 既に主要地物のインデックスが登録されていた場合はそれを利用
+            available_city_object_index = it->second;
+        } else {
+            // 登録されて無ければ新規にインデックスを追加
+            available_city_object_index = available_primary_index_;
+            available_city_object_index.atomic_index = 0;
+            ++available_primary_index_.primary_index;
+        }
+        return available_city_object_index;
     }
 }

@@ -40,11 +40,10 @@ namespace PLATEAU.Test.GeometryModel
             var foundMesh = TestGeometryUtil.FirstMeshInModel(model);
             int numVert = foundMesh.VerticesCount;
             int numUV1 = foundMesh.GetUv1().Length;
-            int numUV2 = foundMesh.GetUv2().Length;
-            int numUV3 = foundMesh.GetUv3().Length;
+            int numUV4 = foundMesh.GetUv4().Length;
             Assert.AreEqual(numVert, numUV1);
-            Assert.AreEqual(numVert, numUV2);
-            Assert.AreEqual(numVert, numUV3);
+            Assert.AreEqual(numVert, numUV1);
+            Assert.AreEqual(numVert, numUV4);
         }
 
         [TestMethod]
@@ -67,14 +66,10 @@ namespace PLATEAU.Test.GeometryModel
             
             int numVert = mesh.VerticesCount;
             int numUV1 = mesh.GetUv1().Length;
-            int numUV2 = mesh.GetUv2().Length;
-            int numUV3 = mesh.GetUv3().Length;
             int numIndices = mesh.IndicesCount;
             mesh.MergeMesh(mesh2, true);
             Assert.AreEqual(2 * numVert, mesh.VerticesCount);
             Assert.AreEqual(2 * numUV1, mesh.GetUv1().Length);
-            Assert.AreEqual(2 * numUV2, mesh.GetUv2().Length);
-            Assert.AreEqual(2 * numUV3, mesh.GetUv3().Length);
             Assert.AreEqual(2 * numIndices, mesh.IndicesCount);
         }
 

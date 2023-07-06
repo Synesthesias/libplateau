@@ -2,44 +2,63 @@
 
 #include <libplateau_api.h>
 #include <map>
+#include <string>
 
 namespace plateau::polygonMesh {
 
 
-    class CityObjectIndex {
-    private:
-        TVec2f vec;
+    struct LIBPLATEAU_EXPORT CityObjectIndex {
+        int primary_index;
+        int atomic_index;
 
-    public:
-        //コンストラクタ
-        CityObjectIndex(TVec2f _vec) : vec(_vec) {
+        static CityObjectIndex fromUV(const TVec2f& uv) {
+            return {
+                std::lround(uv.x),
+                std::lround(uv.y)
+            };
         }
 
-        TVec2f getIndex() {
-            return(vec);
+        TVec2f toUV() const {
+            return {
+                static_cast<float>(primary_index),
+                static_cast<float>(atomic_index)
+            };
         }
 
-        CityObjectIndex(int primaryNum, int atomicNum) {
-            vec = TVec2f(primaryNum, atomicNum);
+        static int invalidIndex() {
+            return -1;
         }
 
-        bool operator<(const CityObjectIndex& obj) const {
-            return (this->vec.x < obj.vec.x ? true : (this->vec.y < obj.vec.y));
+        static CityObjectIndex first() {
+            return { 0, 0 };
         }
 
-        bool operator>(const CityObjectIndex& obj) const {
-            return (this->vec.x > obj.vec.x ? true : (this->vec.y > obj.vec.y));
+        CityObjectIndex nextAtomic() const {
+            return {
+                primary_index,
+                atomic_index + 1
+            };
         }
 
-        bool operator==(const CityObjectIndex& obj) const {
-            return (this->vec.x == obj.vec.x ? true : (this->vec.y == obj.vec.y));
+        CityObjectIndex nextPrimary() const {
+            return {
+                primary_index,
+                invalidIndex()
+            };
+        }
+
+        bool operator<(const CityObjectIndex& other) const {
+            return primary_index < other.primary_index
+                ? true
+                : primary_index > other.primary_index
+                ? false
+                : atomic_index < other.atomic_index;
         }
     };
 
     /**
-     * 
      * @brief CityObjectListは、地物インデックスと地物IDの対応関係を保持するために、Modelに含まれる地物のリストを保持する目的で設計されています。
-     * 
+     *
      * plateau::polygonMesh::Meshに次のメンバー変数を追加します。
      * 上記のUVに記録したID ( CityObjectIndex ) と、 gml:id を対応付けるデータ構造  CityObjectListを作成します。
      * CityObjectListは、 std::map<CityObjectIndex, std::string> city_object_index_to_gml_idから構成されます。
@@ -52,27 +71,17 @@ namespace plateau::polygonMesh {
     class LIBPLATEAU_EXPORT CityObjectList {
 
     public:
-        CityObjectList();
+        CityObjectList() = default;
 
-        CityObjectList(const CityObjectList& city_object_list) = delete;
-        CityObjectList& operator=(const CityObjectList&) = delete;
-        CityObjectList(CityObjectList&& city_object_list) = default;
-        //CityObjectList& operator=(CityObjectList&& city_object_list) = default;
-        CityObjectList& operator=(CityObjectList&& city_object_list);
+        const std::string& getAtomicGmlID(const CityObjectIndex& city_object_index);
+        const std::string& getPrimaryGmlID(int index);
 
-        CityObjectIndex createPrimaryId();
-        CityObjectIndex createPrimaryAtomicId();
+        CityObjectIndex getCityObjectIndex(const std::string& gml_id);
 
-        const std::string& getAtomicGmlId(CityObjectIndex CityObjectIndex);
-        const std::string& getPrimaryGmlId(int id);
-
-        void add(CityObjectIndex key, std::string value);
+        void add(const CityObjectIndex& key, const std::string& value);
 
     private:
-        const int none = -1;
-        int primary_id = 0;
-        int primary_atomic_id = 0;
-        std::map<CityObjectIndex, std::string> city_object_index_to_gml_id;
+        std::map<CityObjectIndex, std::string> city_object_index_to_gml_id_;
     };
 
 }

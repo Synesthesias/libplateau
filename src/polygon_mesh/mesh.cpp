@@ -1,30 +1,23 @@
 #include <plateau/polygon_mesh/mesh.h>
-#include <memory>
+
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
-#include <plateau/polygon_mesh/mesh_merger.h>
-#include <plateau/polygon_mesh/polygon_mesh_utils.h>
-#include "plateau/mesh_writer/obj_writer.h"
 
 namespace plateau::polygonMesh {
     using namespace citygml;
 
-    Mesh::Mesh() :
-            vertices_(),
-            uv1_(UV()),
-            uv4_(UV()),
-            sub_meshes_(),
-            root_city_object_list_() {
+    Mesh::Mesh()
+        : uv1_(UV())
+        , uv4_(UV()) {
     }
 
     Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
-               std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list) {
-        vertices_ = std::move(vertices);
-        indices_ = std::move(indices);
-        uv1_ = uv_1;
-        auto vertices_count = vertices_.size();
-        sub_meshes_ = std::move(sub_meshes);
-        root_city_object_list_ = std::move( city_object_list);
+               std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list)
+        : vertices_(std::move(vertices))
+        , indices_(std::move(indices))
+        , uv1_(std::move(uv_1))
+        , sub_meshes_(std::move(sub_meshes))
+        , city_object_list_(std::move(city_object_list)) {
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {
@@ -60,7 +53,7 @@ namespace plateau::polygonMesh {
 
     void Mesh::addVerticesList(const std::vector<TVec3d>& other_vertices) {
         // 各頂点を追加します。
-        for (const auto& other_pos: other_vertices) {
+        for (const auto& other_pos : other_vertices) {
             vertices_.push_back(other_pos);
         }
     }
@@ -77,22 +70,22 @@ namespace plateau::polygonMesh {
                               bool invert_mesh_front_back) {
         auto prev_num_indices = indices_.size();
 
-        if(other_indices.size() % 3 != 0){
+        if (other_indices.size() % 3 != 0) {
             throw std::runtime_error("size of other_indices must be multiple of 3.");
         }
 
         // インデックスリストの末尾に追加します。
         // 以前の頂点の数だけインデックスの数値を大きくします。
-        for (auto other_index: other_indices) {
+        for (auto other_index : other_indices) {
             indices_.push_back(other_index + (int)prev_num_vertices);
         }
 
         // メッシュを裏返すべきとき、次の方法で裏返します:
         // indices を 3つごとに分け、三角形グループとします。
         // 各三角形グループ内の順番を反転させます。
-        if(invert_mesh_front_back){
+        if (invert_mesh_front_back) {
             auto triangle_count = other_indices.size() / 3;
-            for(int tri = 0; tri < triangle_count; tri++){
+            for (int tri = 0; tri < triangle_count; tri++) {
                 auto vert1ID = prev_num_indices + 3 * tri;
                 auto vert3ID = vert1ID + 2;
                 auto vert1 = indices_.at(vert1ID);
@@ -105,7 +98,7 @@ namespace plateau::polygonMesh {
 
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
-        for (const auto& vec: other_uv_1) {
+        for (const auto& vec : other_uv_1) {
             uv1_.push_back(vec);
         }
         // other_uv_1 の数が頂点数に足りなければ 0 で埋めます。
@@ -114,8 +107,15 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addUV4WithSameVal(const TVec2f& uv_4_val, unsigned num_adding_vertices) {
-        for (int i = 0; i < num_adding_vertices; i++) {
+    void Mesh::addUV4(const std::vector<TVec2f>& other_uv_4, unsigned long long other_vertices_size) {
+        // UV4を追加します。
+        for (const auto& vec : other_uv_4) {
+            uv4_.push_back(vec);
+        }
+    }
+
+    void Mesh::addUV4WithSameVal(const TVec2f& uv_4_val, const long long size) {
+        for (int i = 0; i < size; i++) {
             uv4_.push_back(uv_4_val);
         }
     }
@@ -154,12 +154,12 @@ namespace plateau::polygonMesh {
     void Mesh::debugString(std::stringstream& ss, int indent) const {
         for (int i = 0; i < indent; i++) ss << "    ";
         ss << "Mesh: ( " << vertices_.size() << " vertices, " << indices_.size() << " indices )" << std::endl;
-        for (const auto& sub_mesh: sub_meshes_) {
+        for (const auto& sub_mesh : sub_meshes_) {
             sub_mesh.debugString(ss, indent + 1);
         }
     }
 
-    CityObjectList Mesh::GetCityObjectList() {
-        return(CityObjectList());
+    const CityObjectList& Mesh::getCityObjectList() const {
+        return city_object_list_;
     }
 }
