@@ -36,10 +36,10 @@ extern "C" {
             Mesh** out_mesh_ptr
             ) {
         API_TRY{
-            auto& mesh = node->getMesh();
-            if(mesh.has_value()){
-                *out_mesh_ptr = &mesh.value();
-            }else{
+            const auto mesh = node->getMesh();
+            if (mesh != nullptr) {
+                *out_mesh_ptr = mesh;
+            } else {
                 return APIResult::ErrorValueNotFound;
             }
             return APIResult::Success;
@@ -58,7 +58,7 @@ extern "C" {
             Mesh* mesh
             ) {
         API_TRY {
-            node->setMesh(std::move(*mesh));
+            node->setMesh(std::unique_ptr<Mesh>(mesh));
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

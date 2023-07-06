@@ -146,18 +146,17 @@ namespace plateau::meshWriter {
 
         const auto& node_name = node.getName();
 
-        const auto& mesh = node.getMesh();
-        if (mesh.has_value()) {
-
-            const auto& sub_meshes = mesh.value().getSubMeshes();
+        const auto mesh = node.getMesh();
+        if (mesh != nullptr) {
+            const auto& sub_meshes = mesh->getSubMeshes();
             if (!sub_meshes.empty()) {
                 std::stringstream ss;
                 ss << node_name;
                 startMeshGroup(ofs, ss.str());
 
-                const auto& vertices = mesh.value().getVertices();
-                const auto& all_indices = mesh.value().getIndices();
-                const auto& uvs = mesh.value().getUV1();
+                const auto& vertices = mesh->getVertices();
+                const auto& all_indices = mesh->getIndices();
+                const auto& uvs = mesh->getUV1();
 
                 assert(all_indices.size() % 3 == 0);
 
