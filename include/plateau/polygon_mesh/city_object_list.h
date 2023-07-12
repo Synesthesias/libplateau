@@ -11,6 +11,16 @@ namespace plateau::polygonMesh {
         int primary_index;
         int atomic_index;
 
+        CityObjectIndex()
+            : primary_index(0)
+            , atomic_index(0) {
+        }
+
+        CityObjectIndex(const int primary_index, const int atomic_index)
+            : primary_index(primary_index)
+            , atomic_index(atomic_index) {
+        }
+
         static CityObjectIndex fromUV(const TVec2f& uv) {
             return {
                 static_cast<int>(std::lround(uv.x)),

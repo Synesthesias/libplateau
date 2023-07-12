@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include <plateau/polygon_mesh/mesh_merger.h>
+#include <plateau/polygon_mesh/mesh_factory.h>
 #include "citygml/citygml.h"
 #include "plateau/polygon_mesh/mesh_extractor.h"
 #include "../src/c_wrapper/mesh_merger_c.cpp"
@@ -46,14 +46,11 @@ TEST_F(MeshMergerTest, when_merge_then_vertices_count_is_sum_of_before) {
     ASSERT_GT(indices_count_2, 0);
     ASSERT_GT(uv_1_count_2, 0);
     ASSERT_GT(uv_4_count_2, 0);
-    auto factory = MeshFactory(nullptr, mesh_extract_options_, GeoReference(9));
-    factory.mergeMesh(*mesh_1, false, true);
-    factory.mergeMesh(*mesh_2, false, true);
-    const auto merged_mesh = factory.releaseMesh();
-    ASSERT_EQ(vert_count_1 + vert_count_2, merged_mesh->getVertices().size());
-    ASSERT_EQ(indices_count_1 + indices_count_2, merged_mesh->getIndices().size());
-    ASSERT_EQ(uv_1_count_1 + uv_1_count_2, merged_mesh->getUV1().size());
-    ASSERT_EQ(uv_4_count_1 + uv_4_count_2, merged_mesh->getUV4().size());
+    MeshMerger::mergeMesh(*mesh_1, *mesh_2, false, true);
+    ASSERT_EQ(vert_count_1 + vert_count_2, mesh_1->getVertices().size());
+    ASSERT_EQ(indices_count_1 + indices_count_2, mesh_1->getIndices().size());
+    ASSERT_EQ(uv_1_count_1 + uv_1_count_2, mesh_1->getUV1().size());
+    ASSERT_EQ(uv_4_count_1 + uv_4_count_2, mesh_1->getUV4().size());
 }
 
 
@@ -93,19 +90,18 @@ TEST_F(MeshMergerTest, mesh_add_sub_mesh) {
             SubMesh(0, 2, "")
     };
 
-    // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
-    MeshFactory factory(nullptr, mesh_extract_options_, GeoReference(9));
-    factory.mergeMeshInfo(std::move(vertices), std::move(indices), std::move(uv_1),
-                              std::move(sub_meshes), CoordinateSystem::ENU, CoordinateSystem::ENU, true);
-    const auto mesh = factory.releaseMesh();
+    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
 
-    mesh->addSubMesh("test.png", 0, 2);
-    const auto sub_mesh = mesh->getSubMeshes().at(1);
+    mesh.addSubMesh("test.png", 3, 5);
+
+    const auto sub_mesh = mesh.getSubMeshes().at(1);
     ASSERT_EQ("test.png", sub_mesh.getTexturePath());
+    ASSERT_EQ(3, sub_mesh.getStartIndex());
+    ASSERT_EQ(5, sub_mesh.getEndIndex());
 }
 
 
-TEST_F(MeshMergerTest, mesh_merger_info) {
+TEST_F(MeshMergerTest, mesh_merger_merge) {
     std::vector<TVec3d> vertices = {TVec3d(11, 12, 13),
                                     TVec3d(21, 22, 23),
                                     TVec3d(31, 32, 33)};
@@ -117,13 +113,27 @@ TEST_F(MeshMergerTest, mesh_merger_info) {
             SubMesh(0, 2, "")
     };
 
-    // ここでの CoordinateSystem の設定によっては Indices の順番が逆転するので注意してください。
-    MeshFactory factory(nullptr, mesh_extract_options_, GeoReference(9));
-    factory.mergeMeshInfo(std::move(vertices), std::move(indices), std::move(uv_1),
-                              std::move(sub_meshes), CoordinateSystem::ENU, CoordinateSystem::ENU, true);
-    const auto mesh = factory.releaseMesh();
-    ASSERT_EQ(33, mesh->getVertices().at(2).z);
-    ASSERT_EQ(2, mesh->getIndices().at(2));
-    ASSERT_EQ(static_cast<float>(0.32), mesh->getUV1().at(2).y);
+    std::vector<TVec3d> vertices_to_add = { TVec3d(14, 15, 16),
+                                TVec3d(24, 25, 26),
+                                TVec3d(34, 35, 36) };
+    std::vector<unsigned int> indices_to_add = { 0, 1, 2 };
+    std::vector<TVec2f> uv_1_to_add = { TVec2f(0.11, 0.12),
+                                TVec2f(0.21, 0.22),
+                                TVec2f(0.31, 0.32) };
+    std::vector<SubMesh> sub_meshes_to_add = {
+            SubMesh(0, 2, "")
+    };
+
+    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
+
+    auto mesh_to_add = Mesh(std::move(vertices_to_add), std::move(indices_to_add), std::move(uv_1_to_add), std::move(sub_meshes_to_add), CityObjectList());
+
+    MeshMerger::mergeMesh(mesh, mesh_to_add, false, true);
+    ASSERT_EQ(33, mesh.getVertices().at(2).z);
+    ASSERT_EQ(2, mesh.getIndices().at(2));
+    ASSERT_EQ(static_cast<float>(0.32), mesh.getUV1().at(2).y);
+    ASSERT_EQ(36, mesh.getVertices().at(5).z);
+    ASSERT_EQ(5, mesh.getIndices().at(5));
+    ASSERT_EQ(static_cast<float>(0.32), mesh.getUV1().at(5).y);
 
 }

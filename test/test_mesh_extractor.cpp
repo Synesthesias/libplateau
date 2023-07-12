@@ -5,7 +5,7 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
-#include "../src/polygon_mesh/grid_merger.h"
+#include "../src/polygon_mesh/area_mesh_factory.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 
 using namespace citygml;

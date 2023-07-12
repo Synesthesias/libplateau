@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "citygml/citygml.h"
-#include "../src/polygon_mesh/grid_merger.h"
+#include "../src/polygon_mesh/area_mesh_factory.h"
 
 using namespace citygml;
 using namespace plateau::polygonMesh;

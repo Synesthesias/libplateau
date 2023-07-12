@@ -1,6 +1,7 @@
-#include "grid_merger.h"
+#include "area_mesh_factory.h"
+
 #include <plateau/polygon_mesh/primary_city_object_types.h>
-#include <plateau/polygon_mesh/mesh_merger.h>
+#include <plateau/polygon_mesh/mesh_factory.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 
 namespace {
