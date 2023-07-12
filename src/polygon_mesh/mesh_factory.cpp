@@ -17,7 +17,7 @@ namespace plateau::polygonMesh {
         bool isValidPolygon(const Polygon& other_poly) {
             return !(other_poly.getVertices().empty() || other_poly.getIndices().empty());
         }
-        
+
         /**
          * Plateau の Polygon を Mesh情報 に変換します。
          * Mesh構築に必要な情報を Polygon から コピーします。すなわち:
@@ -27,9 +27,8 @@ namespace plateau::polygonMesh {
          * 結果は引数で out と名の付くものに格納されます。
          */
         void cityGmlPolygonToMesh(
-                const Polygon& polygon, bool remove_triangles_outside_extent, const std::string& gml_path,
-                Extent extent, const GeoReference& geo_reference,
-                Mesh& out_mesh) {
+            const Polygon& polygon, const std::string& gml_path,
+            const GeoReference& geo_reference, Mesh& out_mesh) {
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon = polygon.getVertices();
@@ -79,12 +78,12 @@ namespace plateau::polygonMesh {
             } else {
                 // テクスチャパスを相対から絶対に変換
                 texture_path = texture->getUrl();
-                auto relative_texture_path = std::filesystem::u8path(texture_path);
+                const auto relative_texture_path = std::filesystem::u8path(texture_path);
                 if (relative_texture_path.is_relative()) {
                     auto a_path = std::filesystem::u8path(gml_path);
                     a_path = a_path.parent_path();
                     a_path /= relative_texture_path;
-                    auto abs_path = std::filesystem::absolute(a_path);
+                    const auto abs_path = std::filesystem::absolute(a_path);
 
                     texture_path = abs_path.u8string();
                 }
@@ -176,17 +175,10 @@ namespace plateau::polygonMesh {
             return;
 
         Mesh mesh;
-        cityGmlPolygonToMesh(
-            polygon,
-            options_.exclude_triangles_outside_extent,
-            gml_path,
-            options_.extent,
-            geo_reference_,
-            mesh
-        );
+        cityGmlPolygonToMesh(polygon, gml_path, geo_reference_, mesh);
 
-        const auto from = geometry::CoordinateSystem::ENU;
-        const auto to = options_.mesh_axes;
+        const auto from_axis = geometry::CoordinateSystem::ENU;
+        const auto to_axis = options_.mesh_axes;
 
         // 座標軸を変換します。
         auto& vertices = mesh.getVertices();
@@ -194,16 +186,16 @@ namespace plateau::polygonMesh {
         for (size_t i = 0; i < vertex_count; ++i) {
             const auto& before = vertices.at(i);
             // BEFORE → ENU
-            const auto enu = GeoReference::convertAxisToENU(from, before);
+            const auto enu_vertex = GeoReference::convertAxisToENU(from_axis, before);
             // ENU → AFTER
-            vertices.at(i) = GeoReference::convertAxisFromENUTo(from, enu);
+            vertices.at(i) = GeoReference::convertAxisFromENUTo(to_axis, enu_vertex);
         }
 
         // 座標軸を変換するとき、符号の反転によってポリゴンが裏返ることがあります。それを補正するためにポリゴンを裏返す処理が必要かどうかを求めます。
         // 座標軸を FROM から TO に変換するとして、それは 下記の [1]と[2] の XOR で求まります。
         const bool invert_mesh_front_back =
-            shouldInvertIndicesOnMeshConvert(from) !=  // [1] FROM → ENU に変換するときに反転の必要があるか
-            shouldInvertIndicesOnMeshConvert(to);     // [2] ENU → TO に変換するときに反転の必要があるか
+            shouldInvertIndicesOnMeshConvert(from_axis) !=  // [1] FROM → ENU に変換するときに反転の必要があるか
+            shouldInvertIndicesOnMeshConvert(to_axis);     // [2] ENU → TO に変換するときに反転の必要があるか
 
         MeshMerger::mergeMesh(
             *mesh_,
@@ -212,7 +204,7 @@ namespace plateau::polygonMesh {
             options_.export_appearance
         );
     }
-    
+
     void MeshFactory::addPolygonsInPrimaryCityObject(
         const CityObject& city_object, const unsigned int lod,
         const std::string& gml_path) {
@@ -220,7 +212,7 @@ namespace plateau::polygonMesh {
         long long vertex_count = 0;
         std::list<const Polygon*> polygons;
 
-        const auto extent = options_.exclude_triangles_outside_extent
+        const auto extent = options_.exclude_polygons_outside_extent
             ? options_.extent
             : Extent::all();
 
@@ -269,7 +261,7 @@ namespace plateau::polygonMesh {
         last_atomic_index_cache_ = city_object_index;
         last_parent_gml_id_cache_ = parent_city_object.getId();
 
-        const auto extent = options_.exclude_triangles_outside_extent
+        const auto extent = options_.exclude_polygons_outside_extent
             ? options_.extent
             : Extent::all();
 
@@ -301,7 +293,7 @@ namespace plateau::polygonMesh {
         for (const auto city_object : city_objects) {
             auto gml_id = city_object->getId();
 
-            const auto extent = options_.exclude_triangles_outside_extent
+            const auto extent = options_.exclude_polygons_outside_extent
                 ? options_.extent
                 : Extent::all();
 
