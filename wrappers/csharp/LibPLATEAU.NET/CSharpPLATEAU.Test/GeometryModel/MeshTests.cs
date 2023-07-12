@@ -96,9 +96,8 @@ namespace PLATEAU.Test.GeometryModel
 
         private static Mesh CreateSimpleMesh()
         {
-            var mesh = Mesh.Create("testMesh");
             SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
-            mesh.MergeMeshInfo(vertices, indices, uv1, subMeshes, CoordinateSystem.EUN, CoordinateSystem.EUN, true);
+            var mesh = Mesh.Create(vertices, indices, uv1, subMeshes);
             return mesh;
         }
 

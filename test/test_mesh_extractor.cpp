@@ -5,7 +5,7 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
-#include "../src/polygon_mesh/grid_merger.h"
+#include "../src/polygon_mesh/area_mesh_factory.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 
 using namespace citygml;
@@ -141,7 +141,7 @@ namespace plateau::polygonMesh {
            no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
         options.exclude_city_object_outside_extent = false;
-        options.exclude_triangles_outside_extent = true;
+        options.exclude_polygons_outside_extent = true;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
         foreachMeshGranularity(
                 options,
@@ -155,7 +155,7 @@ namespace plateau::polygonMesh {
            some_vertices_extracted_when_extent_range_is_all_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
         options.exclude_city_object_outside_extent = false;
-        options.exclude_triangles_outside_extent = true;
+        options.exclude_polygons_outside_extent = true;
         options.extent = Extent::all();
         foreachMeshGranularityAndLOD(
                 options,
