@@ -38,5 +38,21 @@ namespace PLATEAU.Test.GeometryModel
                 Assert.IsNotNull(primaryGmlID, "UV4に含まれている値はCityObjectListにも含まれている");
             }
         }
+
+        [TestMethod]
+        public void CityObjectIndexCanGetFromGmlID()
+        {
+            var model = TestGeometryUtil.ExtractModel();
+            var foundMesh = TestGeometryUtil.FirstMeshInModel(model);
+            var cityObjectList = foundMesh.CityObjectList;
+            foreach (var index in cityObjectList.GetAllKeys())
+            {
+                var gmlID = cityObjectList.GetAtomicID(index);
+                var actualIndex = cityObjectList.GetCityObjectIndex(gmlID);
+
+                Assert.AreEqual(index.AtomicIndex, actualIndex.AtomicIndex);
+                Assert.AreEqual(index.PrimaryIndex, actualIndex.PrimaryIndex);
+            }
+        }
     }
 }
