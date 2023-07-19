@@ -13,6 +13,10 @@ if( NOT(IOS OR ANDROID) )
           citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper
           )
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
+
+  add_dependencies(plateau libjpeg-turbo png_static tiff)
+  target_link_libraries(plateau PRIVATE ${JPEG_TURBO_LIBRARIES} png_static tiff)
+  target_include_directories(plateau PRIVATE "${JPEG_TURBO_INCLUDE_DIRS}" "${PNG_INCLUDE}" "${TIFF_INCLUDE}")
 else()
   target_link_libraries(plateau PUBLIC 
     "citygml" 
@@ -39,6 +43,7 @@ add_subdirectory(basemap)
 add_subdirectory(c_wrapper)
 add_subdirectory(dataset)
 add_subdirectory(network)
+add_subdirectory(texture)
 
 
 # libファイルを1つに結合します。

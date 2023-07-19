@@ -235,6 +235,20 @@ set(HTTPLIB_COMPILE TRUE CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
+## libjpeg-turbo
+include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
+
+## libpng
+set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
+set(PNG_STATIC ON CACHE BOOL "Build static lib")
+set(PNG_TESTS OFF CACHE BOOL "Build libpng tests")
+add_subdirectory("3rdparty/libpng")
+set(PNG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng")
+
+## libtiff
+add_subdirectory("3rdparty/libtiff")
+set(TIFF_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libtiff/libtiff")
+
 ####################################
 # libplateau 本体の Cmake ファイルです。
 
@@ -249,6 +263,7 @@ if( NOT(IOS OR ANDROID) )
   add_subdirectory("examples/export_gltf")
   add_subdirectory("examples/export_fbx")
   add_subdirectory("examples/https_mock_test")
+  add_subdirectory("examples/texture_packing")
 endif()
 
 # python
