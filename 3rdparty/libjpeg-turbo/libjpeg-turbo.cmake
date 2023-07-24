@@ -54,6 +54,7 @@ ExternalProject_Add(
     URL https://github.com/libjpeg-turbo/libjpeg-turbo/archive/refs/tags/3.0.0.tar.gz
     URL_HASH SHA256=171dae5d73560bc94006a7c0c3281bd9bfde6a34f7e41e66f930a1a9162bd7df
     DOWNLOAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libjpeg-turbo"
+    INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo"
     UPDATE_COMMAND ""
     CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
@@ -63,9 +64,11 @@ ExternalProject_Add(
         -DWITH_SIMD=${WITH_SIMD}
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo
         ${ExternalProject_CMAKE_ARGS_hidden}
+    BUILD_BYPRODUCTS
+        <INSTALL_DIR>/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 
 ExternalProject_Get_Property(libjpeg-turbo INSTALL_DIR)
-set(JPEG_TURBO_INCLUDE_DIRS "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo/include/") # "/" is critical.
-set(JPEG_TURBO_LIB_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo/lib/")
+set(JPEG_TURBO_INCLUDE_DIRS "${INSTALL_DIR}/include/") # "/" is critical.
+set(JPEG_TURBO_LIB_DIR "${INSTALL_DIR}/lib/")
 set(JPEG_TURBO_LIBRARIES "${JPEG_TURBO_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
