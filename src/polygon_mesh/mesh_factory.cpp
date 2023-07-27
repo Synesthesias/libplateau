@@ -227,7 +227,6 @@ namespace plateau::polygonMesh {
         const auto primary_index = available_primary_index_.getPrimary();
         mesh_->addUV4WithSameVal(primary_index.toUV(), vertex_count);
         mesh_->city_object_list_.add(primary_index, gml_id);
-        ++available_primary_index_.primary_index;
     }
 
     long long MeshFactory::countVertices(
@@ -314,6 +313,9 @@ namespace plateau::polygonMesh {
         }
     }
 
+    void MeshFactory::incrementPrimaryIndex() {
+        ++available_primary_index_.primary_index;
+    }
 
     void MeshFactory::findAllPolygons(
         const CityObject& city_obj, const unsigned lod,
@@ -339,7 +341,6 @@ namespace plateau::polygonMesh {
             // 登録されて無ければ新規にインデックスを追加
             available_city_object_index = available_primary_index_;
             available_city_object_index.atomic_index = 0;
-            ++available_primary_index_.primary_index;
         }
         return available_city_object_index;
     }

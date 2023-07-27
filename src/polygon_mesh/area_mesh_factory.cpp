@@ -132,6 +132,7 @@ namespace plateau::polygonMesh {
                     auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_object);
                     mesh_factory.addPolygonsInAtomicCityObjects(*primary_object, atomic_objects, lod, city_model.getGmlPath());
                 }
+                mesh_factory.incrementPrimaryIndex();
             }
             merged_meshes.emplace(group_id, mesh_factory.releaseMesh());
         }
