@@ -5,7 +5,7 @@
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
-#include "../src/polygon_mesh/grid_merger.h"
+#include "../src/polygon_mesh/area_mesh_factory.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 
 using namespace citygml;
@@ -62,9 +62,11 @@ namespace plateau::polygonMesh {
         int found_texture_num = 0;
         for (int i = 0; i < num_child; i++) {
             const auto& child = lod_node.getChildAt(i);
-            const auto& mesh_opt = child.getMesh();
-            if (!mesh_opt.has_value()) continue;
-            const auto& sub_meshes = mesh_opt.value().getSubMeshes();
+            const auto mesh = child.getMesh();
+            if (mesh == nullptr)
+                continue;
+
+            const auto& sub_meshes = mesh->getSubMeshes();
             if (sub_meshes.empty()) continue;
             for (auto& sub_mesh: sub_meshes) {
                 const auto& tex_url = sub_mesh.getTexturePath();
@@ -88,8 +90,8 @@ namespace plateau::polygonMesh {
         auto model = MeshExtractor::extract(*city_model_, options);
         const auto& first_primary_node = model->getRootNodeAt(0).getChildAt(0);
         const auto& first_atomic_node = first_primary_node.getChildAt(0);
-        ASSERT_FALSE(first_primary_node.getMesh().has_value());
-        ASSERT_TRUE(first_atomic_node.getMesh().has_value());
+        ASSERT_FALSE(first_primary_node.getMesh() != nullptr);
+        ASSERT_TRUE(first_atomic_node.getMesh() != nullptr);
     }
 
     TEST_F(MeshExtractorTest, extract_can_export_multiple_lods_when_granularity_is_per_city_model_area) { // NOLINT
@@ -104,9 +106,9 @@ namespace plateau::polygonMesh {
         ASSERT_EQ(lod0.getName(), "LOD0");
         ASSERT_EQ(lod1.getName(), "LOD1");
         ASSERT_EQ(lod2.getName(), "LOD2");
-        auto lod0_grid1_num_vertices = lod0.getChildAt(1).getMesh().value().getVertices().size();
-        auto lod1_grid1_num_vertices = lod1.getChildAt(1).getMesh().value().getVertices().size();
-        auto lod2_grid1_num_vertices = lod2.getChildAt(1).getMesh().value().getVertices().size();
+        auto lod0_grid1_num_vertices = lod0.getChildAt(1).getMesh()->getVertices().size();
+        auto lod1_grid1_num_vertices = lod1.getChildAt(1).getMesh()->getVertices().size();
+        auto lod2_grid1_num_vertices = lod2.getChildAt(1).getMesh()->getVertices().size();
         ASSERT_GT(lod0_grid1_num_vertices, 0);
         ASSERT_GT(lod1_grid1_num_vertices, 0);
         ASSERT_GT(lod2_grid1_num_vertices, 0);
@@ -139,7 +141,7 @@ namespace plateau::polygonMesh {
            no_mesh_extracted_when_extent_range_is_zero_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
         options.exclude_city_object_outside_extent = false;
-        options.exclude_triangles_outside_extent = true;
+        options.exclude_polygons_outside_extent = true;
         options.extent = Extent(GeoCoordinate(0, 0, 0), GeoCoordinate(0, 0, 0));
         foreachMeshGranularity(
                 options,
@@ -153,7 +155,7 @@ namespace plateau::polygonMesh {
            some_vertices_extracted_when_extent_range_is_all_and_option_says_removing_outer_polygons) { // NOLINT
         auto options = mesh_extract_options_;
         options.exclude_city_object_outside_extent = false;
-        options.exclude_triangles_outside_extent = true;
+        options.exclude_polygons_outside_extent = true;
         options.extent = Extent::all();
         foreachMeshGranularityAndLOD(
                 options,
@@ -182,7 +184,7 @@ namespace plateau::polygonMesh {
 
     bool MeshExtractorTest::haveVertexRecursive(const Node& node) const {
         const auto& mesh = node.getMesh();
-        if (mesh.has_value() && !(mesh.value().getVertices().empty())) {
+        if (mesh != nullptr && !(mesh->getVertices().empty())) {
             return true;
         }
         auto num_child = node.getChildCount();

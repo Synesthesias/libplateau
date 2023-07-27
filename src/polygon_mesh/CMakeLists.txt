@@ -4,7 +4,9 @@ target_sources(plateau PRIVATE
         "sub_mesh.cpp"
         "mesh_extractor.cpp"
         "model.cpp"
-        "grid_merger.cpp"
+        "area_mesh_factory.cpp"
         "polygon_mesh_utils.cpp"
+        "mesh_factory.cpp"
         "mesh_merger.cpp"
+	    "city_object_list.cpp"
 )

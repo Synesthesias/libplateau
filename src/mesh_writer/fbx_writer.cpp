@@ -91,8 +91,8 @@ namespace plateau::meshWriter {
             const auto fbx_node = FbxNode::Create(fbx_scene, node.getName().c_str());
             parent_fbx_node->AddChild(fbx_node);
 
-            const auto& mesh = node.getMesh();
-            if (mesh.has_value())
+            const auto mesh = node.getMesh();
+            if (mesh != nullptr)
                 addMesh(*mesh, fbx_scene, fbx_node);
 
             for (size_t i = 0; i < node.getChildCount(); ++i) {

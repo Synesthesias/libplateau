@@ -54,6 +54,7 @@ void VectorTileDownloader::download(
     httplib::Client client(host);
     std::string body;
     client.set_connection_timeout(5, 0);
+    client.enable_server_certificate_verification(false);
 
     auto result = client.Get(
         path, httplib::Headers(),
