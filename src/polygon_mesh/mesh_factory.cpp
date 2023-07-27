@@ -224,8 +224,9 @@ namespace plateau::polygonMesh {
 
         const auto& gml_id = city_object.getId();
 
-        mesh_->addUV4WithSameVal(available_primary_index_.toUV(), vertex_count);
-        mesh_->city_object_list_.add(available_primary_index_, gml_id);
+        const auto primary_index = available_primary_index_.getPrimary();
+        mesh_->addUV4WithSameVal(primary_index.toUV(), vertex_count);
+        mesh_->city_object_list_.add(primary_index, gml_id);
         ++available_primary_index_.primary_index;
     }
 
