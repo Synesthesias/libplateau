@@ -71,6 +71,7 @@ namespace {
 
                     // 主要地物ごとのノードを追加します。
                     lod_node.addChildNode(Node(primary_object->getId(), mesh_factory.releaseMesh()));
+                    mesh_factory.incrementPrimaryIndex();
                 }
             }
             break;
@@ -87,8 +88,8 @@ namespace {
 
                     // 主要地物のノードを作成します。
                     std::unique_ptr<Mesh> primary_mesh;
+                    MeshFactory primary_mesh_factory(nullptr, options, geo_reference);
                     if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_city_object)) {
-                        MeshFactory primary_mesh_factory(nullptr, options, geo_reference);
                         primary_mesh_factory.addPolygonsInPrimaryCityObject(*primary_city_object, lod, city_model.getGmlPath());
                         primary_mesh = primary_mesh_factory.releaseMesh();
                     }
@@ -105,6 +106,7 @@ namespace {
                         primary_node.addChildNode(std::move(atomic_node));
                     }
                     lod_node.addChildNode(std::move(primary_node));
+                    primary_mesh_factory.incrementPrimaryIndex();
                 }
 
             }
