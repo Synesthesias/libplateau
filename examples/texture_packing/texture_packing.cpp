@@ -1,85 +1,86 @@
-
-#include <plateau/texture/atlas_manager.h>
-#include <plateau/texture/jpeg.h>
-
-#include <iostream>
-#include <fstream>
+#include <string>
 #include <filesystem>
-#include <chrono>
 
+#include <citygml/citygml.h>
+#include <citygml/citygmllogger.h>
 
-using namespace plateau::texture;
+#include <plateau/polygon_mesh/mesh_extractor.h>
 
-int
-main( int argc, char* argv[] )
-{
-    std::chrono::system_clock::time_point timer1;
-    std::chrono::system_clock::time_point timer2;
-    std::chrono::system_clock::time_point timer3;
+#include <plateau/mesh_writer/obj_writer.h>
 
-    const int range = 1024 * 2; // 画像を詰め込む領域(range x range)の指定
+namespace fs = std::filesystem;
+using namespace citygml;
+namespace {
+    class StdLogger : public citygml::CityGMLLogger {
+    public:
 
-    AtlasManager manager(range, range); // 画像パッキングクラスの初期化
+        StdLogger(LOGLEVEL level = LOGLEVEL::LL_ERROR)
+            : CityGMLLogger(level) {
+        }
 
-    if ( argc < 2 ) {
-        return 1;
-    }
-    try {
+        void log(LOGLEVEL level, const std::string& message, const char* file, int line) const override {
+            std::ostream& stream = level == LOGLEVEL::LL_ERROR ? std::cerr : std::cout;
 
-        // テクスチャをパックする領域の大きさ(例:2048x2048)を指定、第3引数の整数は領域を塗りつぶす色(例: R:255、G:255、B:255)のグレースケール値
-        TextureImage canvas(range, range, 255);
-
-        // コマンドラインの第1引数に画像が格納されているフォルダのパスが必要
-        auto path = std::filesystem::path(argv[1]);
-        auto directory = path;
-
-        std::vector<TextureImage> imageList;
-
-        timer1 = std::chrono::system_clock::now(); // 処理時間計測用タイマーの設定
-
-        auto index = 0;
-
-        for (const auto& file : std::filesystem::directory_iterator(directory)) {
-            auto fileName = file.path().generic_string();
-            auto image = TextureImage(fileName);
-            auto imageWidth = image.getWidth();
-            auto imageHeight = image.getHeight();
-
-            if (imageHeight > 2048)
-            {
-                // 大きな画像(例: 4096x4096)はスキップ
-                continue;
-            }
-
-            // パッキング領域の検索、「info」構造体の「valid」ブール値(true:成功、false:失敗)で判定可能
-            auto info = manager.insert(imageWidth, imageHeight);
-
-            std::cout << ++index << " : " << "COVERAGE: " << manager.getCoverage() << " LEFT: " << info.getLeft() << " TOP: " << info.getTop() << " WIDTH: " << info.getWidth() << " HEIGHT: " << info.getHeight() << " : " << file.path() << std::endl;
-
-            if (info.getValid())
-            {
-                // 見つかったパッキングの領域に画像をコピー
-                canvas.pack(info.getLeft(), info.getTop(), image);
-            }
-            else {
-                // パッキングする十分な空間が見つからないので終了
+            switch (level) {
+            case LOGLEVEL::LL_DEBUG:
+                stream << "DEBUG";
+                break;
+            case LOGLEVEL::LL_WARNING:
+                stream << "WARNING";
+                break;
+            case LOGLEVEL::LL_TRACE:
+                stream << "TRACE";
+                break;
+            case LOGLEVEL::LL_ERROR:
+                stream << "ERROR";
+                break;
+            case LOGLEVEL::LL_INFO:
+                stream << "INFO";
                 break;
             }
-        }
-        timer2 = std::chrono::system_clock::now();
-        canvas.save("canvas.jpg");
-        timer3 = std::chrono::system_clock::now();
 
-        //std::cout << "Packing Time     : " << std::format("{:5.3f}", std::chrono::duration_cast<std::chrono::milliseconds>(timer2 - timer1).count() / 1000.0) << " sec" << std::endl;
-        //std::cout << "Canvas Save Time : " << std::format("{:5.3f}", std::chrono::duration_cast<std::chrono::milliseconds>(timer3 - timer2).count() / 1000.0) << " sec" << std::endl;
-        //std::cout << std::format("{:=^30}", "") << std::endl;
-        //std::cout << "Total Time       : " << std::format("{:5.3f}", std::chrono::duration_cast<std::chrono::milliseconds>(timer3 - timer1).count() / 1000.0) << " sec" << std::endl;
+            if (file) {
+                stream << " [" << file;
+                if (line > -1) {
+                    stream << ":" << line;
+                }
+                stream << "]";
+            }
+
+            stream << " " << message << std::endl;
+        }
+    };
+}
+
+int main() {
+    try {
+        const auto logger = std::make_shared<StdLogger>();
+        ParserParams params_;
+        //const std::string gml_file_path = "../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml";
+        const std::string gml_file_path = "../data/dataset/udx/bldg/53392642_bldg_6697_op2.gml";
+        //const std::string gml_file_path = "../data/日本語パステスト/udx/bldg/52350420_bldg_6697.gml";
+        plateau::polygonMesh::MeshExtractOptions mesh_extract_options_;
+        std::shared_ptr<const CityModel> city_model_ = load(gml_file_path, params_);
+
+        mesh_extract_options_.enable_texture_packing = true;
+
+        auto model = plateau::polygonMesh::MeshExtractor::extract(*city_model_, mesh_extract_options_);
+
+        const auto destination = fs::path(".").string();
+        const auto gml_file_name = fs::path(gml_file_path).filename().string();
+        const auto base_obj_name = fs::path(gml_file_name).replace_extension(".obj").string();
+        const auto obj_file_path = fs::path(destination).append(base_obj_name).make_preferred().string();
+
+        auto result = plateau::meshWriter::ObjWriter().write(obj_file_path, *model);
     }
-    catch( const std::exception& e ) {
-        std::cout << "ERROR: " <<  e.what() << std::endl;
+    catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
+    catch (...) {
+        std::cout << "Unknown error occurred. GML file might not exist." << std::endl;
         return 1;
     }
 
     return 0;
 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          

@@ -1,4 +1,6 @@
 target_sources(plateau PRIVATE
-        "atlas_manager.cpp"
-	    "jpeg.cpp"
+    "texture_packer.cpp"
+    "image_reader.cpp"
+    "jpeg_image_reader.cpp"
+    "png_image_reader.cpp"
 )
