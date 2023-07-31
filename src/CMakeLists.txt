@@ -16,7 +16,11 @@ if( NOT(IOS OR ANDROID) )
 
   add_dependencies(plateau libjpeg-turbo png_static tiff)
   target_link_libraries(plateau PRIVATE ${JPEG_TURBO_LIBRARIES} png_static tiff)
-  target_include_directories(plateau PRIVATE "${JPEG_TURBO_INCLUDE_DIRS}" "${PNG_INCLUDE}" "${TIFF_INCLUDE}")
+  target_include_directories(plateau PRIVATE
+    "${JPEG_TURBO_INCLUDE_DIRS}"
+    "${PNG_INCLUDE}"
+    "${CMAKE_CURRENT_BINARY_DIR}/../3rdparty/libpng"
+    "${TIFF_INCLUDE}")
 else()
   target_link_libraries(plateau PUBLIC 
     "citygml" 

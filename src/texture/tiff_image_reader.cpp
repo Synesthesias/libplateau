@@ -9,8 +9,42 @@
 #include <regex>
 #include <filesystem>
 
-namespace tif
-{
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+namespace tif {
+    namespace {
+
+#ifdef WIN32
+        std::wstring Utf8ToWString
+        (
+            std::string oUTF8Str
+        ) {
+            // バッファサイズの取得
+            int iBufferSize = ::MultiByteToWideChar(CP_UTF8, 0, oUTF8Str.c_str()
+                , -1, (wchar_t*)NULL, 0);
+
+            // バッファの取得
+            wchar_t* wpBufWString = (wchar_t*)new wchar_t[iBufferSize];
+
+            // UTF8 → wstring
+            ::MultiByteToWideChar(CP_UTF8, 0, oUTF8Str.c_str(), -1, wpBufWString
+                , iBufferSize);
+
+            // wstringの生成
+            std::wstring oRet(wpBufWString, wpBufWString + iBufferSize - 1);
+
+            // バッファの破棄
+            delete[] wpBufWString;
+
+            // 変換結果を返す
+            return(oRet);
+        }
+#endif
+
+    }
+
     TiffTextureImage::TiffTextureImage() : image_width(0), image_height(0), image_channels(0) {
 
     }
@@ -22,7 +56,7 @@ namespace tif
 
     //// 指定されたファイルから画像を読み込み、テクスチャ画像を作成
     bool
-    TiffTextureImage::init(const std::string& fileName) {
+        TiffTextureImage::init(const std::string& fileName) {
         TIFF* tiff;
         unsigned int bitpersample = 0;
         unsigned int* rgbaData = NULL;
@@ -33,7 +67,13 @@ namespace tif
             return -1;
         }
 
-        tiff = TIFFOpen(fileName.c_str(), "r");
+#ifdef WIN32
+        const auto u8FileName = Utf8ToWString(std::filesystem::u8path(fileName).u8string());
+#else
+        const auto u8FileName = std::filesystem::u8path(fileName).u8string();
+#endif
+
+        tiff = TIFFOpenW(u8FileName.c_str(), "r");
         if (tiff == NULL) {
             return -1;
         }

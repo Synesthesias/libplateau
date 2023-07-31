@@ -61,8 +61,8 @@ namespace plateau::texture {
             ss << std::setw(6) << std::setfill('0') << ++serialNumber;
             std::string num = ss.str();
 
-            std::filesystem::path save_path = fileName;
-            auto parent_dir = save_path.parent_path();
+            const auto save_path = std::filesystem::u8path(fileName);
+            const auto parent_dir = save_path.parent_path();
             saveFilePath = parent_dir.string() + "\\" + "packed_image_" + num + ".jpg";
         }
     }
