@@ -11769,8 +11769,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0878.jpg</app:imageURI>
-					<app:mimeType>image/jpg</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0878.tif</app:imageURI>
+					<app:mimeType>image/tif</app:mimeType>
 					<app:target uri="#poly_HNAP0878_p2382_9">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0878_p2382_9">0.9785156 0.8601612 0.9785156 0.7893808 0.9921169 0.7893808 0.9921169 0.8601612 0.9785156 0.8601612</app:textureCoordinates>
@@ -12231,8 +12231,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0285.jpg</app:imageURI>
-					<app:mimeType>image/jpg</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0285.png</app:imageURI>
+					<app:mimeType>image/png</app:mimeType>
 					<app:target uri="#poly_HNAP0285_p2524_0">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0285_p2524_0">0.4683193 0.8235294 0.0033344 0.8234677 0.0030675 0.0008819 0.4681583 0.0008819 0.4683193 0.8235294</app:textureCoordinates>
@@ -14301,8 +14301,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0034.jpg</app:imageURI>
-					<app:mimeType>image/jpg</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0034.png</app:imageURI>
+					<app:mimeType>image/png</app:mimeType>
 					<app:target uri="#poly_HNAP0034_p2437_2">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0034_p2437_2">0.3794872 0.2083333 0.3794872 0.0695513 0.4086272 0.0695513 0.4086272 0.2083333 0.3794872 0.2083333</app:textureCoordinates>
@@ -14463,8 +14463,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0279.jpg</app:imageURI>
-					<app:mimeType>image/jpg</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0279.tif</app:imageURI>
+					<app:mimeType>image/tif</app:mimeType>
 					<app:target uri="#poly_HNAP0279_p2471_0">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0279_p2471_0">0.7863528 0.7949308 0.0020945 0.9887004 0 0.7948718 0.7863528 0.7949308</app:textureCoordinates>

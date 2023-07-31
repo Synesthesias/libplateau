@@ -1,5 +1,4 @@
 
-
 #include <plateau/texture/jpeg_image_reader.h>
 
 #include <jpeglib.h>
@@ -10,13 +9,6 @@
 #include <regex>
 #include <filesystem>
 
-//#include <png.h>
-
-//#include "png.hpp"
-//
-//
-//using namespace png;
-
 namespace jpeg
 {
     // 画像サイズと、塗りつぶす背景のグレー値で、空のテクスチャ画像を作成
@@ -25,46 +17,28 @@ namespace jpeg
 
         jpegErrorManager = std::make_shared<jpeg_error_mgr>();
 
-        width = w;
-        height = h;
-        channels = 3;
+        image_width = w;
+        image_height = h;
+        image_channels = 3;
         colourSpace = JCS_RGB;
 
-        size_t row_stride = width * channels;
+        size_t row_stride = image_width * image_channels;
 
         bitmapData.clear();
-        bitmapData.reserve(height);
+        bitmapData.reserve(image_height);
 
         std::vector<uint8_t> vec(row_stride, 0);
 
         int index = 0;
-        for (int column = 0; column < width; ++column) {
+        for (int column = 0; column < image_width; ++column) {
             vec[index++] = color;
             vec[index++] = color;
             vec[index++] = color;
         }
 
-        for (int row = 0; row < height; ++row) {
-
-            ;
+        for (int row = 0; row < image_height; ++row) {
             bitmapData.push_back(vec);
         }
-    }
-
-    std::string ReplaceString
-    (
-          std::string String1   // 置き換え対象
-        , std::string String2   // 検索対象
-        , std::string String3   // 置き換える内容
-    ) {
-        std::string::size_type  Pos(String1.find(String2));
-
-        while (Pos != std::string::npos) {
-            String1.replace(Pos, String2.length(), String3);
-            Pos = String1.find(String2, Pos + String3.length());
-        }
-
-        return String1;
     }
 
     //// 指定されたファイルから画像を読み込み、テクスチャ画像を作成
@@ -110,17 +84,17 @@ namespace jpeg
             jpeg_start_decompress(decompressInfo.get());
 
             filePath = fileName;
-            width = decompressInfo->output_width;
-            height = decompressInfo->output_height;
-            channels = decompressInfo->output_components;
+            image_width = decompressInfo->output_width;
+            image_height = decompressInfo->output_height;
+            image_channels = decompressInfo->output_components;
             colourSpace = decompressInfo->out_color_space;
 
-            size_t row_stride = width * channels;
+            size_t row_stride = image_width * image_channels;
 
             bitmapData.clear();
-            bitmapData.reserve(height);
+            bitmapData.reserve(image_height);
 
-            while (decompressInfo->output_scanline < height) {
+            while (decompressInfo->output_scanline < image_height) {
                 std::vector<uint8_t> vec(row_stride);
                 uint8_t* p = vec.data();
                 jpeg_read_scanlines(decompressInfo.get(), &p, 1);
@@ -150,9 +124,9 @@ namespace jpeg
             std::unique_ptr<::jpeg_compress_struct, decltype(decomp)> compInfo(new jpeg_compress_struct, decomp);
             jpeg_create_compress(compInfo.get());
             jpeg_stdio_dest(compInfo.get(), outFile);
-            compInfo->image_width = width;
-            compInfo->image_height = height;
-            compInfo->input_components = channels;
+            compInfo->image_width = image_width;
+            compInfo->image_height = image_height;
+            compInfo->input_components = image_channels;
             compInfo->in_color_space = static_cast<::J_COLOR_SPACE>(colourSpace);
             compInfo->err = jpeg_std_error(jpegErrorManager.get());
             jpeg_set_defaults(compInfo.get());
@@ -183,20 +157,8 @@ namespace jpeg
         auto toPtr = bitmapData.data();
 
         for (auto y = 0; y < srcHeight; ++y) {
-            std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * channels);
+            std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * image_channels);
         }
     }
-
-    //void
-    //JpegTextureImage::pack(size_t xdelta, size_t ydelta, const PngTextureImage& image, JpegTextureImage& targetImage) {
-    //    auto srcHeight = image.getHeight();
-
-    //    auto fromPtr = image.getBitmapData().data();
-    //    auto toPtr = bitmapData.data();
-
-    //    for (auto y = 0; y < srcHeight; ++y) {
-    //        std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * channels);
-    //    }
-    //}
 } // namespace jpeg
 

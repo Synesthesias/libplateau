@@ -11,10 +11,8 @@
 #include <sstream>
 #include <filesystem>
 
-struct jpeg_error_mgr;
-
 using namespace plateau::polygonMesh;
-using namespace imageReader;
+using namespace image_reader;
 
 namespace plateau::texture {
 
@@ -69,19 +67,20 @@ private:
     size_t vertical_range;          // パッキングの対象となる親の画像のコンテナが配置されている左上のY座標
 };
 
-class TexturePacker
-{
+class TexturePacker {
 public:
     const int defaultResolution = 2048;
     const unsigned char gray = 80;
 
-    explicit TexturePacker() : canvas_width(0), canvas_height(0), vertical_range(0), capacity(0), coverage(0) {}
+    explicit TexturePacker() : canvas_width(0), canvas_height(0), vertical_range(0), capacity(0), coverage(0) {
+    }
     explicit TexturePacker(size_t width, size_t height) : vertical_range(0), capacity(0), coverage(0) {
         canvas_width = width;
         canvas_height = height;
         canvas.init(width, height, gray);
     }
-    ~TexturePacker() {}
+    ~TexturePacker() {
+    }
 
     void setSaveFilePath(std::string fileName);
 
@@ -92,7 +91,9 @@ public:
     void process(Model& model);
     void processNodeRecursive(const Node& node);
 
-    double getCoverage() const { return coverage; } // 呼び出し時のテクスチャ全体に対しての既にパックされた画像の占有率（100%）
+    double getCoverage() const {
+        return coverage;
+    } // 呼び出し時のテクスチャ全体に対しての既にパックされた画像の占有率（100%）
     void update(const size_t _width, const size_t _height, const bool _is_new_container); // 画像のパッキング成功時の処理、第3引数（TRUE:新規コンテナを作成、FALSE:既存コンテナに追加）
     const AtlasInfo insert(const size_t _width, const size_t _height); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
 
@@ -108,7 +109,6 @@ private:
     TextureImage canvas;
     std::filesystem::path saveFilePath;
 };
-
-} // namespace atlas
+} // namespace plateau::texture
 
 

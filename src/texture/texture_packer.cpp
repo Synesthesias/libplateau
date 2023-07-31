@@ -1,5 +1,4 @@
 
-
 #include <plateau/texture/texture_packer.h>
 
 #include <fstream>
@@ -7,7 +6,7 @@
 #include <string>
 #include <vector>
 
-using namespace imageReader;
+using namespace image_reader;
 
 namespace plateau::texture {
 
@@ -58,17 +57,12 @@ namespace plateau::texture {
     TexturePacker::setSaveFilePath(std::string fileName) {
         if (saveFilePath.empty()) {
 
-
             std::stringstream ss;
-
             ss << std::setw(6) << std::setfill('0') << ++serialNumber;
-
             std::string num = ss.str();
 
             std::filesystem::path save_path = fileName;
-
             auto parent_dir = save_path.parent_path();
-
             saveFilePath = parent_dir.string() + "\\" + "packed_image_" + num + ".jpg";
         }
     }
@@ -140,52 +134,53 @@ namespace plateau::texture {
                 }
 
                 auto image = TextureImage(tex_url);
-                auto width = image.getWidth();
-                auto height = image.getHeight();
-                auto info = this->insert(width, height);
-                auto delta = 1.0;
+                if (image.getTextureType() != TextureImage::TextureType::None) {
+                    auto width = image.getWidth();
+                    auto height = image.getHeight();
+                    auto info = this->insert(width, height);
+                    auto delta = 1.0;
 
-                if (info.getValid()) {
+                    if (info.getValid()) {
+                        auto x = info.getLeft();
+                        auto y = info.getTop();
+                        auto w = info.getWidth();
+                        auto h = info.getHeight();
+                        auto u = info.getUPos();
+                        auto v = info.getVPos();
+                        auto ufac = info.getUFactor() * delta;
+                        auto vfac = info.getVFactor() * delta;
+                        auto tex = sub_mesh.getTexturePath();
 
-                    auto x = info.getLeft();
-                    auto y = info.getTop();
-                    auto w = info.getWidth();
-                    auto h = info.getHeight();
-                    auto u = info.getUPos();
-                    auto v = info.getVPos();
-                    auto ufac = info.getUFactor() * delta;
-                    auto vfac = info.getVFactor() * delta;
-                    auto tex = sub_mesh.getTexturePath();
+                        canvas.pack(x, y, image);
+                        setSaveFilePath(image.getImageFilePath());
 
-                    canvas.pack(x, y, image);
-                    setSaveFilePath(image.getImageFilePath());
+                        SubMesh newSubMesh = sub_mesh;
+                        newSubMesh.setTexturePath(saveFilePath.generic_string());
+                        sub_mesh_list.push_back(newSubMesh);
 
-                    SubMesh newSubMesh = sub_mesh;
-                    newSubMesh.setTexturePath(saveFilePath.generic_string());
-                    sub_mesh_list.push_back(newSubMesh);
-
-                    std::vector<TVec2f> newUV1;
-                    for (auto& uv1 : mesh->getUV1()) {
-
-                        double uvx = u + (uv1.x * ufac);
-                        double uvy = 1 - v - vfac + (uv1.y * vfac);
-                        newUV1.push_back(TVec2f(uvx, uvy));
-                    }
-                    mesh->setUV1(newUV1);
-                    ++index;
-                }
-                else {
-                    if (!saveFilePath.empty()) {
-                        this->flush();
-                    }
-
-                    if ((width > canvas_width) || (height > canvas_height)) {
-                        sub_mesh_list.push_back(sub_mesh);
+                        std::vector<TVec2f> newUV1;
+                        for (auto& uv1 : mesh->getUV1()) {
+                            double uvx = u + (uv1.x * ufac);
+                            double uvy = 1 - v - vfac + (uv1.y * vfac);
+                            newUV1.push_back(TVec2f(uvx, uvy));
+                        }
+                        mesh->setUV1(newUV1);
                         ++index;
+                    } else {
+                        if (!saveFilePath.empty()) {
+                            this->flush();
+                        }
+
+                        if ((width > canvas_width) || (height > canvas_height)) {
+                            sub_mesh_list.push_back(sub_mesh);
+                            ++index;
+                        }
+                        continue;
                     }
+                    mesh->setSubMeshes(sub_mesh_list);
                     continue;
                 }
-                mesh->setSubMeshes(sub_mesh_list);
+                ++index;
             }
             processNodeRecursive(child_node);
         }
@@ -237,6 +232,5 @@ namespace plateau::texture {
         }
         return atlas_info;
     }
-
-} // namespace atlas
+} // namespace plateau::texture
 
