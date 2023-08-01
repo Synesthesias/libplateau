@@ -122,8 +122,7 @@ namespace {
 
         if (options.enable_texture_packing) {
 
-            TexturePacker packer;
-            packer.init(options.texture_packing_resolution, options.texture_packing_resolution);
+            TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
             packer.process(out_model);
         }
     }

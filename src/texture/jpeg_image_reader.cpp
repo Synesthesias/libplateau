@@ -9,11 +9,9 @@
 #include <regex>
 #include <filesystem>
 
-namespace jpeg
-{
+namespace plateau::texture {
     // 画像サイズと、塗りつぶす背景のグレー値で、空のテクスチャ画像を作成
-    void
-    JpegTextureImage::init(size_t w, size_t h, size_t color) {
+    void JpegTextureImage::init(size_t w, size_t h, size_t color) {
 
         jpegErrorManager = std::make_shared<jpeg_error_mgr>();
 
@@ -24,26 +22,11 @@ namespace jpeg
 
         size_t row_stride = image_width * image_channels;
 
-        bitmapData.clear();
-        bitmapData.reserve(image_height);
 
-        std::vector<uint8_t> vec(row_stride, 0);
-
-        int index = 0;
-        for (int column = 0; column < image_width; ++column) {
-            vec[index++] = color;
-            vec[index++] = color;
-            vec[index++] = color;
-        }
-
-        for (int row = 0; row < image_height; ++row) {
-            bitmapData.push_back(vec);
-        }
+        bitmapData = std::vector(image_height * image_width * image_channels, static_cast<uint8_t>(color));
     }
 
-    //// 指定されたファイルから画像を読み込み、テクスチャ画像を作成
-    bool
-    JpegTextureImage::init(const std::string& fileName) {
+    bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
         try {
             auto decomp = [](jpeg_decompress_struct* decomp) {
                 jpeg_destroy_decompress(decomp);
@@ -58,10 +41,15 @@ namespace jpeg
 
             //auto regularName = std::regex_replace(fileName, std::regex("\"), "/");
             //auto regularName = ReplaceString(fileName, "\\", "/")
-            auto regularName = std::filesystem::u8path(fileName).u8string();
-            std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regularName.c_str(), "rb"), ptr);
+#ifdef WIN32
+            const auto regular_name = std::filesystem::u8path(file_name).wstring();
+            std::unique_ptr<FILE, decltype(ptr)> inFile(_wfopen(regular_name.c_str(), L"rb"), ptr);
+#else
+            const auto regular_name = std::filesystem::u8path(file_name).u8string();
+            std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regular_name.c_str(), L"rb"), ptr);
+#endif
             if (inFile.get() == NULL) {
-                throw std::runtime_error("ERROR: Open: " + fileName);
+                throw std::runtime_error("ERROR: Open: " + file_name);
             }
 
             decompressInfo->err = jpeg_std_error(jpegErrorManager.get());
@@ -75,30 +63,29 @@ namespace jpeg
 
             jpeg_stdio_src(decompressInfo.get(), inFile.get());
 
-            int header = jpeg_read_header(decompressInfo.get(), TRUE);
-
-            if (header != 1) {
+            if (jpeg_read_header(decompressInfo.get(), TRUE) != 1) {
                 throw std::runtime_error("ERROR: Header: ");
+            }
+
+            filePath = file_name;
+            image_width = decompressInfo->image_width;
+            image_height = decompressInfo->image_height;
+            image_channels = decompressInfo->num_components;
+            colourSpace = decompressInfo->jpeg_color_space;
+
+            if (image_height > height_limit) {
+                jpeg_abort_decompress(decompressInfo.get());
+                return false;
             }
 
             jpeg_start_decompress(decompressInfo.get());
 
-            filePath = fileName;
-            image_width = decompressInfo->output_width;
-            image_height = decompressInfo->output_height;
-            image_channels = decompressInfo->output_components;
-            colourSpace = decompressInfo->out_color_space;
-
-            size_t row_stride = image_width * image_channels;
-
-            bitmapData.clear();
-            bitmapData.reserve(image_height);
-
+            const size_t row_stride = image_width * image_channels;
+            bitmapData = std::vector<uint8_t>(row_stride * image_height);
+            uint8_t* p = bitmapData.data();
             while (decompressInfo->output_scanline < image_height) {
-                std::vector<uint8_t> vec(row_stride);
-                uint8_t* p = vec.data();
                 jpeg_read_scanlines(decompressInfo.get(), &p, 1);
-                bitmapData.push_back(vec);
+                p += row_stride;
             }
             jpeg_finish_decompress(decompressInfo.get());
         }
@@ -109,10 +96,15 @@ namespace jpeg
     }
 
     // 指定されたファイル名で、jpegファイルを保存
-    bool
-    JpegTextureImage::save(const std::string& fileName) const {
+    bool JpegTextureImage::save(const std::string& file_name) {
         try {
-            FILE* outFile = fopen(fileName.c_str(), "wb");
+#ifdef WIN32
+            const auto regular_name = std::filesystem::u8path(file_name).wstring();
+            FILE* outFile = _wfopen(regular_name.c_str(), L"wb");
+#else
+            const auto regular_name = std::filesystem::u8path(file_name).u8string();
+            FILE* outFile = fopen(regular_name.c_str(), "wb");
+#endif
             if (outFile == NULL) {
                 return false;
             }
@@ -133,11 +125,12 @@ namespace jpeg
             jpeg_set_quality(compInfo.get(), 90, TRUE);
             jpeg_start_compress(compInfo.get(), TRUE);
 
-            for (auto const& pixelData : bitmapData) {
+            auto read_ptr = bitmapData.data();
+            for (int line = 0; line < image_height; ++line) {
                 JSAMPROW rowData[1];
-
-                rowData[0] = const_cast<::JSAMPROW>(pixelData.data());
+                rowData[0] = read_ptr;
                 jpeg_write_scanlines(compInfo.get(), rowData, 1);
+                read_ptr += image_width * image_channels;
             }
             jpeg_finish_compress(compInfo.get());
             fclose(outFile);
@@ -149,15 +142,17 @@ namespace jpeg
     }
 
     // 指定された座標（xdelta、ydelta）にimageの画像を転送
-    void
-    JpegTextureImage::pack(size_t xdelta, size_t ydelta, const JpegTextureImage& image, JpegTextureImage& targetImage) {
-        auto srcHeight = image.getHeight();
+    void JpegTextureImage::pack(const size_t x_delta, const size_t y_delta, const JpegTextureImage& image) {
+        const auto src_height = image.getHeight();
+        const auto src_stride = image.getWidth() * image_channels;
+        const auto dst_stride = image_width * image_channels;
 
-        auto fromPtr = image.bitmapData.data();
-        auto toPtr = bitmapData.data();
+        const auto& src = image.bitmapData;
+        // ReSharper disable once CppLocalVariableMayBeConst
+        auto& dst = bitmapData;
 
-        for (auto y = 0; y < srcHeight; ++y) {
-            std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * image_channels);
+        for (size_t y = 0; y < src_height; ++y) {
+            std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride, dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels);
         }
     }
 } // namespace jpeg

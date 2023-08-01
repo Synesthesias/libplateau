@@ -4,27 +4,25 @@
 #include <plateau/texture/jpeg_image_reader.h>
 
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "png.h"
-
-using namespace jpeg;
-
-namespace png
-{
-    class PngTextureImage
-    {
+namespace plateau::texture {
+    class PngTextureImage {
     public:
 
         explicit PngTextureImage();
-    
-        bool init(const std::string& fileName);
-        ~PngTextureImage() {}
 
-        size_t getWidth() const { return image_width; }
-        size_t getHeight() const { return image_height; }
+        bool init(const std::string& fileName);
+        ~PngTextureImage() {
+        }
+
+        size_t getWidth() const {
+            return image_width;
+        }
+        size_t getHeight() const {
+            return image_height;
+        }
         std::vector<std::vector<uint8_t>>& getBitmapData();
 
         void save(const std::string& fileName) const;

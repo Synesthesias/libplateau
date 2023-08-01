@@ -1,32 +1,30 @@
 
 #pragma once
 
-#include <cstdint>
-#include <memory>
 #include <string>
-#include <vector>
 #include <filesystem>
 
 #include <plateau/texture/jpeg_image_reader.h>
 #include <plateau/texture/png_image_reader.h>
 #include <plateau/texture/tiff_image_reader.h>
 
-using namespace std::filesystem;
-using namespace jpeg;
-using namespace png;
-using namespace tif;
-
-namespace image_reader
-{
-
+namespace plateau::texture {
     class TextureImage {
     public:
-        enum class TextureType { None, Jpeg, Png, Tiff };
+        enum class TextureType {
+            None, Jpeg, Png, Tiff
+        };
 
-    public:
+        explicit TextureImage() {
+        }
 
-        explicit TextureImage() {}
-        explicit TextureImage(const std::string& fileName);
+        /**
+         * \brief 指定されたファイルから画像を読み込み、テクスチャ画像を作成します。
+         * \param file_name 画像ファイルのパス
+         * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
+         * \return 読み込みに成功した場合true、それ以外はfalse
+         */
+        explicit TextureImage(const std::string& file_name, const size_t height_limit);
         explicit TextureImage(size_t width, size_t height, size_t gray);
         ~TextureImage() {
         }
@@ -50,7 +48,7 @@ namespace image_reader
             return jpegImage;
         }
 
-        void save(const std::string& fileName) const;
+        void save(const std::string& fileName);
         void pack(size_t xdelta, size_t ydelta, TextureImage& image);
         void pack(size_t xdelta, size_t ydelta, JpegTextureImage& image, JpegTextureImage& targetImage);
         void pack(size_t xdelta, size_t ydelta, TiffTextureImage& image, JpegTextureImage& targetImage);
@@ -70,10 +68,7 @@ namespace image_reader
         const std::string tiffExtension = ".tif";
 
         std::string imageFilePath;
-
-    private:
+        
         bool checkFileExtension(const std::string& fileName, const std::string& fileExtension);
     };
-} // namespace image_reader
-
-
+}

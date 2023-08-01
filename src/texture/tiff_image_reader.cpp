@@ -13,7 +13,7 @@
 #include <windows.h>
 #endif
 
-namespace tif {
+namespace plateau::texture {
     namespace {
 
 #ifdef WIN32

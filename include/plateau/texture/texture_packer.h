@@ -4,111 +4,156 @@
 #include <plateau/polygon_mesh/model.h>
 #include <plateau/texture/image_reader.h>
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
-#include <sstream>
 #include <filesystem>
-
-using namespace plateau::polygonMesh;
-using namespace image_reader;
 
 namespace plateau::texture {
 
-class AtlasInfo {
-public:
+    class AtlasInfo {
+    public:
 
-    explicit AtlasInfo() : valid(false), left(0), top(0), width(0), height(0), uPos(0), vPos(0), uFactor(0), vFactor(0) {}
-    ~AtlasInfo() {}
+        explicit AtlasInfo() : valid(false), left(0), top(0), width(0), height(0), uPos(0), vPos(0), uFactor(0), vFactor(0) {
+        }
+        ~AtlasInfo() {
+        }
 
-    size_t getLeft() const { return left; }
-    size_t getTop() const { return top; }
-    size_t getWidth() const { return width; }
-    size_t getHeight() const { return height; }
-    double getUPos() const { return uPos; }
-    double getVPos() const { return vPos; }
-    double getUFactor() const { return uFactor; }
-    double getVFactor() const { return vFactor; }
+        size_t getLeft() const {
+            return left;
+        }
+        size_t getTop() const {
+            return top;
+        }
+        size_t getWidth() const {
+            return width;
+        }
+        size_t getHeight() const {
+            return height;
+        }
+        double getUPos() const {
+            return uPos;
+        }
+        double getVPos() const {
+            return vPos;
+        }
+        double getUFactor() const {
+            return uFactor;
+        }
+        double getVFactor() const {
+            return vFactor;
+        }
 
-    bool getValid() const;
-    void clear();
-    void set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
-        double uPos, double vPos, double uFactor, double vFactor);
+        bool getValid() const;
+        void clear();
+        void set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
+            double uPos, double vPos, double uFactor, double vFactor);
 
-private:
-    bool valid;     // ƒpƒbƒLƒ“ƒO‚ª¬Œ÷A¸”s‚Ìƒtƒ‰ƒOiTRUE:¬Œ÷AFALSE:¸”sj
-    size_t left;    // ƒpƒbƒLƒ“ƒO‚³‚ê‚½‰æ‘œ‚Ì¶ã‚ÌXÀ•W
-    size_t top;     // ƒpƒbƒLƒ“ƒO‚³‚ê‚½‰æ‘œ‚Ì¶ã‚ÌYÀ•W
-    size_t width;   // ƒpƒbƒLƒ“ƒO‚³‚ê‚½‰æ‘œ‚Ì•
-    size_t height;  // ƒpƒbƒLƒ“ƒO‚³‚ê‚½‰æ‘œ‚Ì‚‚³
-    double uPos;    // uvÀ•W‚Ì¶ãuÀ•W
-    double vPos;    // uvÀ•W‚Ì¶ãvÀ•W
-    double uFactor; // uÀ•W‚Ì”{—¦
-    double vFactor; // vÀ•W‚Ì”{—¦
-};
+    private:
+        bool valid;     // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ãŒæˆåŠŸã—ãŸã‹ã©ã†ã‹
+        size_t left;    // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã•ã‚ŒãŸç”»åƒã®å·¦ä¸Šã®Xåº§æ¨™
+        size_t top;     // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã•ã‚ŒãŸç”»åƒã®å·¦ä¸Šã®Yåº§æ¨™
+        size_t width;   // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã•ã‚ŒãŸç”»åƒã®å¹…
+        size_t height;  // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã•ã‚ŒãŸç”»åƒã®é«˜ã•
+        double uPos;    // uvåº§æ¨™ã®å·¦ä¸Šuåº§æ¨™
+        double vPos;    // uvåº§æ¨™ã®å·¦ä¸Švåº§æ¨™
+        double uFactor; // uåº§æ¨™ã®å€ç‡
+        double vFactor; // våº§æ¨™ã®å€ç‡
+    };
 
-class AtlasContainer {
-public:
+    class AtlasContainer {
+    public:
 
-    explicit AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range);
-    ~AtlasContainer() {}
+        explicit AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range);
+        ~AtlasContainer() {
+        }
 
-    size_t getGap() const { return gap; }
-    size_t getRootHorizontalRange() const { return root_horizontal_range; }
-    size_t getHorizontalRange() const { return horizontal_range; }
-    size_t getVerticalRange() const { return vertical_range; }
-    void add(const size_t _length);
+        size_t getGap() const {
+            return gap;
+        }
+        size_t getRootHorizontalRange() const {
+            return root_horizontal_range;
+        }
+        size_t getHorizontalRange() const {
+            return horizontal_range;
+        }
+        size_t getVerticalRange() const {
+            return vertical_range;
+        }
+        void add(const size_t _length);
 
-private:
-    size_t gap;                     // ‰æ‘œ‚ğŠi”[‚·‚éƒRƒ“ƒeƒi‚Ì‚‚³
-    size_t root_horizontal_range;   // ƒRƒ“ƒeƒi“à‚Å–¢g—p‚Ì—Ìˆæ‚ÌXÀ•W
-    size_t horizontal_range;        // ÅŒã‚Ì‰æ‘œ‚ğƒpƒbƒLƒ“ƒO‚·‚é‚½‚ß‚Ì—Ìˆæ‚ÌXÀ•W
-    size_t vertical_range;          // ƒpƒbƒLƒ“ƒO‚Ì‘ÎÛ‚Æ‚È‚ée‚Ì‰æ‘œ‚ÌƒRƒ“ƒeƒi‚ª”z’u‚³‚ê‚Ä‚¢‚é¶ã‚ÌYÀ•W
-};
+    private:
+        size_t gap;                     // ç”»åƒã‚’æ ¼ç´ã™ã‚‹ã‚³ãƒ³ãƒ†ãƒŠã®é«˜ã•
+        size_t root_horizontal_range;   // ã‚³ãƒ³ãƒ†ãƒŠå†…ã§æœªä½¿ç”¨ã®é ˜åŸŸã®Xåº§æ¨™
+        size_t horizontal_range;        // æœ€å¾Œã®ç”»åƒã‚’ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã™ã‚‹ãŸã‚ã®é ˜åŸŸã®Xåº§æ¨™
+        size_t vertical_range;          // ãƒ‘ãƒƒã‚­ãƒ³ã‚°ã®å¯¾è±¡ã¨ãªã‚‹è¦ªã®ç”»åƒã®ã‚³ãƒ³ãƒ†ãƒŠãŒé…ç½®ã•ã‚Œã¦ã„ã‚‹å·¦ä¸Šã®Yåº§æ¨™
+    };
 
-class TexturePacker {
-public:
-    const int defaultResolution = 2048;
-    const unsigned char gray = 80;
+    class TextureAtlasCanvas {
+    public:
+        const unsigned char gray = 80;
 
-    explicit TexturePacker() : canvas_width(0), canvas_height(0), vertical_range(0), capacity(0), coverage(0) {
-    }
-    explicit TexturePacker(size_t width, size_t height) : vertical_range(0), capacity(0), coverage(0) {
-        canvas_width = width;
-        canvas_height = height;
-        canvas.init(width, height, gray);
-    }
-    ~TexturePacker() {
-    }
+        explicit TextureAtlasCanvas() : canvas_width(0), canvas_height(0), vertical_range(0), capacity(0), coverage(0) {
+        }
 
-    void setSaveFilePath(std::string fileName);
+        explicit TextureAtlasCanvas(size_t width, size_t height) : vertical_range(0), capacity(0), coverage(0) {
+            canvas_width = width;
+            canvas_height = height;
+            canvas.init(width, height, gray);
+        }
 
-    void init(size_t width, size_t height);
-    void clear();
-    void flush();
+        ~TextureAtlasCanvas() {
+        }
 
-    void process(Model& model);
-    void processNodeRecursive(const Node& node);
+        void setSaveFilePathIfEmpty(const std::string& original_file_path);
+        const std::string& getSaveFilePath() const;
 
-    double getCoverage() const {
-        return coverage;
-    } // ŒÄ‚Ño‚µ‚ÌƒeƒNƒXƒ`ƒƒ‘S‘Ì‚É‘Î‚µ‚Ä‚ÌŠù‚ÉƒpƒbƒN‚³‚ê‚½‰æ‘œ‚Ìè—L—¦i100%j
-    void update(const size_t _width, const size_t _height, const bool _is_new_container); // ‰æ‘œ‚ÌƒpƒbƒLƒ“ƒO¬Œ÷‚Ìˆ—A‘æ3ˆø”iTRUE:V‹KƒRƒ“ƒeƒi‚ğì¬AFALSE:Šù‘¶ƒRƒ“ƒeƒi‚É’Ç‰Áj
-    const AtlasInfo insert(const size_t _width, const size_t _height); // w’è‚³‚ê‚½‰æ‘œ—Ìˆæiwidth x heightj‚Ì—Ìˆæ‚ªŠm•Û‚Å‚«‚é‚©ŒŸØA–ß‚è’lAtrasInfo‚Ìuvalidvƒu[ƒ‹’litrue:¬Œ÷Afalse:¸”sj‚Å”»’è‰Â”\
+        TextureImage& getCanvas() {
+            return canvas;
+        }
 
-private:
-    static int serialNumber;
-    std::vector<AtlasContainer> container_list;
-    AtlasInfo atlas_info;
-    size_t canvas_width;
-    size_t canvas_height;
-    size_t vertical_range;
-    size_t capacity;
-    double coverage;
-    TextureImage canvas;
-    std::filesystem::path saveFilePath;
-};
+        void init(size_t width, size_t height);
+        void clear();
+        void flush();
+
+        double getCoverage() const {
+            return coverage;
+        } // å‘¼ã³å‡ºã—æ™‚ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“ã«å¯¾ã—ã¦ã®æ—¢ã«ãƒ‘ãƒƒã‚¯ã•ã‚ŒãŸç”»åƒã®å æœ‰ç‡ï¼ˆ100%ï¼‰
+        void update(const size_t _width, const size_t _height, const bool _is_new_container); // ç”»åƒã®ãƒ‘ãƒƒã‚­ãƒ³ã‚°æˆåŠŸæ™‚ã®å‡¦ç†ã€ç¬¬3å¼•æ•°ï¼ˆTRUE:æ–°è¦ã‚³ãƒ³ãƒ†ãƒŠã‚’ä½œæˆã€FALSE:æ—¢å­˜ã‚³ãƒ³ãƒ†ãƒŠã«è¿½åŠ ï¼‰
+        AtlasInfo insert(const size_t width, const size_t height); // æŒ‡å®šã•ã‚ŒãŸç”»åƒé ˜åŸŸï¼ˆwidth x heightï¼‰ã®é ˜åŸŸãŒç¢ºä¿ã§ãã‚‹ã‹æ¤œè¨¼ã€æˆ»ã‚Šå€¤AtrasInfoã®ã€Œvalidã€ãƒ–ãƒ¼ãƒ«å€¤ï¼ˆtrue:æˆåŠŸã€false:å¤±æ•—ï¼‰ã§åˆ¤å®šå¯èƒ½
+
+    private:
+        std::vector<AtlasContainer> container_list;
+        size_t canvas_width;
+        size_t canvas_height;
+        size_t vertical_range;
+        size_t capacity;
+        double coverage;
+        TextureImage canvas;
+        std::string save_file_path_;
+    };
+
+    class TexturePacker {
+    public:
+        const int default_resolution = 2048;
+
+        explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8)
+            : canvas_width(width)
+            , canvas_height(height) {
+            for (auto i = 0; i < internal_canvas_count; ++i) {
+                canvases_.emplace_back(width, height);
+            }
+        }
+
+        ~TexturePacker() {
+        }
+        
+        void process(plateau::polygonMesh::Model& model);
+        void processNodeRecursive(const plateau::polygonMesh::Node& node);
+        
+    private:
+        std::vector<TextureAtlasCanvas> canvases_;
+        size_t canvas_width;
+        size_t canvas_height;
+    };
 } // namespace plateau::texture
-
-

@@ -1,28 +1,23 @@
 
+#include <cassert>
 #include <plateau/texture/texture_packer.h>
 
-#include <fstream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
-using namespace image_reader;
-
 namespace plateau::texture {
+    using namespace polygonMesh;
 
-    bool
-    AtlasInfo::getValid() const {
+    bool AtlasInfo::getValid() const {
         return valid;
     }
 
-    void
-    AtlasInfo::clear() {
+    void AtlasInfo::clear() {
         this->set_atlas_info(false, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    void
-    AtlasInfo::set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
-        double _uPos, double _vPos, double _uFactor, double _vFactor) {
+    void AtlasInfo::set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
+            double _uPos, double _vPos, double _uFactor, double _vFactor) {
         valid = _valid;
         left = _left;
         top = _top;
@@ -35,76 +30,75 @@ namespace plateau::texture {
     }
 
     AtlasContainer::AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range) {
-
         gap = _gap;
         vertical_range = _vertical_range;
         root_horizontal_range = _horizontal_range;
         horizontal_range = _horizontal_range;
     }
 
-    void
-    AtlasContainer::add(const size_t _length) {
-
-        auto g1 = gap;
+    void AtlasContainer::add(const size_t _length) {
         horizontal_range = root_horizontal_range;
         root_horizontal_range = _length + root_horizontal_range;
     }
 
-    int
-    TexturePacker::serialNumber = 0;
+    void TextureAtlasCanvas::setSaveFilePathIfEmpty(const std::string& original_file_path) {
+        if (!save_file_path_.empty())
+            return;
 
-    void
-    TexturePacker::setSaveFilePath(std::string fileName) {
-        if (saveFilePath.empty()) {
+        auto original_path = std::filesystem::u8path(original_file_path);
+        const auto original_filename_without_ext = original_path.filename().replace_extension("").u8string();
 
+        for (int cnt = 0;; ++cnt) {
             std::stringstream ss;
-            ss << std::setw(6) << std::setfill('0') << ++serialNumber;
+            ss << std::setw(6) << std::setfill('0') << cnt;
             std::string num = ss.str();
 
-            const auto save_path = std::filesystem::u8path(fileName);
-            const auto parent_dir = save_path.parent_path();
-            saveFilePath = parent_dir.string() + "\\" + "packed_image_" + num + ".jpg";
+            const auto new_filename = std::string("packed_image_").append(original_filename_without_ext).append("_").append(num).append(".jpg");
+            const auto& path = original_path.replace_filename(new_filename);
+            if (!std::filesystem::is_regular_file(path)) {
+                save_file_path_ = path.u8string();
+                break;
+            }
         }
     }
 
-    void
-    TexturePacker::init(size_t width, size_t height) {
+    const std::string& TextureAtlasCanvas::getSaveFilePath() const {
+        return save_file_path_;
+    }
+
+    void TextureAtlasCanvas::init(size_t width, size_t height) {
         canvas_width = width;
         canvas_height = height;
         this->clear();
     }
 
-    void
-    TexturePacker::clear() {
+    void TextureAtlasCanvas::clear() {
         vertical_range = 0;
         capacity = 0;
         container_list.clear();
-        saveFilePath.clear();
+        save_file_path_.clear();
         canvas.init(canvas_width, canvas_height, gray);
     }
 
-    void
-    TexturePacker::flush() {
-        canvas.save(saveFilePath.string());
+    void TextureAtlasCanvas::flush() {
+        canvas.save(save_file_path_);
         this->clear();
     }
 
-    void
-    TexturePacker::process(Model& model) {
-
-        for (int i = 0; i < model.getRootNodeCount(); ++i) {
+    void TexturePacker::process(Model& model) {
+        for (size_t i = 0; i < model.getRootNodeCount(); ++i) {
             const auto& child_node = model.getRootNodeAt(i);
             processNodeRecursive(child_node);
         }
 
-        if (!saveFilePath.empty()) {
-            this->flush();
-        }        
+        for (auto& canvas : canvases_) {
+            if (!canvas.getSaveFilePath().empty()) {
+                canvas.flush();
+            }
+        }
     }
 
-    void
-    TexturePacker::processNodeRecursive(const Node& node) {
-
+    void TexturePacker::processNodeRecursive(const Node& node) {
         for (int i = 0; i < node.getChildCount(); ++i) {
             const auto& child_node = node.getChildAt(i);
 
@@ -133,61 +127,80 @@ namespace plateau::texture {
                     continue;
                 }
 
-                auto image = TextureImage(tex_url);
-                if (image.getTextureType() != TextureImage::TextureType::None) {
-                    auto width = image.getWidth();
-                    auto height = image.getHeight();
-                    auto info = this->insert(width, height);
-                    auto delta = 1.0;
-
-                    if (info.getValid()) {
-                        auto x = info.getLeft();
-                        auto y = info.getTop();
-                        auto w = info.getWidth();
-                        auto h = info.getHeight();
-                        auto u = info.getUPos();
-                        auto v = info.getVPos();
-                        auto ufac = info.getUFactor() * delta;
-                        auto vfac = info.getVFactor() * delta;
-                        auto tex = sub_mesh.getTexturePath();
-
-                        canvas.pack(x, y, image);
-                        setSaveFilePath(image.getImageFilePath());
-
-                        SubMesh newSubMesh = sub_mesh;
-                        newSubMesh.setTexturePath(saveFilePath.generic_string());
-                        sub_mesh_list.push_back(newSubMesh);
-
-                        std::vector<TVec2f> newUV1;
-                        for (auto& uv1 : mesh->getUV1()) {
-                            double uvx = u + (uv1.x * ufac);
-                            double uvy = 1 - v - vfac + (uv1.y * vfac);
-                            newUV1.push_back(TVec2f(uvx, uvy));
-                        }
-                        mesh->setUV1(newUV1);
-                        ++index;
-                    } else {
-                        if (!saveFilePath.empty()) {
-                            this->flush();
-                        }
-
-                        if ((width > canvas_width) || (height > canvas_height)) {
-                            sub_mesh_list.push_back(sub_mesh);
-                            ++index;
-                        }
-                        continue;
-                    }
-                    mesh->setSubMeshes(sub_mesh_list);
+                auto image = TextureImage(tex_url, canvas_height);
+                if (image.getTextureType() == TextureImage::TextureType::None) {
+                    ++index;
                     continue;
                 }
+
+                const auto width = image.getWidth();
+                const auto height = image.getHeight();
+
+                if (width > canvas_width || height >= canvas_height) {
+                    sub_mesh_list.push_back(sub_mesh);
+                    ++index;
+                    continue;
+                }
+
+                // canvasのどれかにパックできるか確認
+                TextureAtlasCanvas* target_canvas;
+                AtlasInfo info;
+                for (auto& canvas : canvases_) {
+                    info = canvas.insert(width, height);
+                    if (info.getValid()) {
+                        target_canvas = &canvas;
+                        break;
+                    }
+                }
+
+                // どこにもパック出来なかった場合
+                if (target_canvas == nullptr) {
+                    // 占有率最大のcanvasを取得
+                    double max_coverage = 0.0;
+                    for (auto& canvas : canvases_) {
+                        if (max_coverage < canvas.getCoverage()) {
+                            max_coverage = canvas.getCoverage();
+                            target_canvas = &canvas;
+                        }
+                    }
+
+                    // flushして空にしてから後でパックする。
+                    target_canvas->flush();
+                    info = target_canvas->insert(width, height);
+                    assert(info.getValid());
+                }
+
+                constexpr auto delta = 1.0;
+                const auto x = info.getLeft();
+                const auto y = info.getTop();
+                const auto u = info.getUPos();
+                const auto v = info.getVPos();
+                const auto u_fac = info.getUFactor() * delta;
+                const auto v_fac = info.getVFactor() * delta;
+                auto tex = sub_mesh.getTexturePath();
+
+                target_canvas->getCanvas().pack(x, y, image);
+                target_canvas->setSaveFilePathIfEmpty(image.getImageFilePath());
+
+                SubMesh newSubMesh = sub_mesh;
+                newSubMesh.setTexturePath(target_canvas->getSaveFilePath());
+                sub_mesh_list.push_back(newSubMesh);
+
+                std::vector<TVec2f> newUV1;
+                for (auto& uv1 : mesh->getUV1()) {
+                    const double uv_x = u + (uv1.x * u_fac);
+                    const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
+                    newUV1.emplace_back(uv_x, uv_y);
+                }
+                mesh->setUV1(newUV1);
                 ++index;
+                mesh->setSubMeshes(sub_mesh_list);
             }
             processNodeRecursive(child_node);
         }
     }
 
-    void
-    TexturePacker::update(const size_t _width, const size_t _height, const bool _is_new_container) {
+    void TextureAtlasCanvas::update(const size_t _width, const size_t _height, const bool _is_new_container) {
 
         capacity += (_width * _height);
         coverage = capacity / static_cast<double>(canvas_width * canvas_height) * 100.0;
@@ -197,40 +210,36 @@ namespace plateau::texture {
         }
     }
 
-    const AtlasInfo
-    TexturePacker::insert(const size_t _width, const size_t _height) {
+    AtlasInfo TextureAtlasCanvas::insert(const size_t width, const size_t height) {
+        AtlasInfo atlas_info;
 
-        atlas_info.clear();
         for (auto& container : container_list) {
-            if (container.getGap() == _height) {
-                if (container.getGap() == _height) {
-                    auto length = container.getRootHorizontalRange();
-                    if ((length + _width) <= canvas_width) {
+            if (container.getGap() != height)
+                continue;
 
-                        container.add(_width);
-                        atlas_info.set_atlas_info(true, container.getHorizontalRange(), container.getVerticalRange(), _width, _height,
-                            container.getHorizontalRange() / (double)canvas_width, container.getVerticalRange() / (double)canvas_height,
-                            _width / (double)canvas_width, _height / (double)canvas_height);
-                        this->update(_width, _height, false);
-                        break;
-                    }
-                }
-            }
+            if (container.getRootHorizontalRange() + width > canvas_width)
+                continue;
+
+            container.add(width);
+            atlas_info.set_atlas_info(
+                true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
+                container.getHorizontalRange() / static_cast<double>(canvas_width), container.getVerticalRange() / static_cast<double>(canvas_height),
+                width / static_cast<double>(canvas_width), height / static_cast<double>(canvas_height));
+            this->update(width, height, false);
+
+            break;
         }
 
-        if (!atlas_info.getValid()) {
-            if ((_height + vertical_range) < canvas_height) {
-
-                AtlasContainer container(_height, 0, vertical_range);
-                container.add(_width);
-                container_list.push_back(container);
-                atlas_info.set_atlas_info(true, container.getHorizontalRange(), container.getVerticalRange(), _width, _height,
-                    container.getHorizontalRange() / static_cast<double>(canvas_width), container.getVerticalRange() / static_cast<double>(canvas_height),
-                    _width / static_cast<double>(canvas_width), _height / static_cast<double>(canvas_height));
-                this->update(_width, _height, true);
-            }
+        if (!atlas_info.getValid() && height + vertical_range < canvas_height) {
+            AtlasContainer container(height, 0, vertical_range);
+            container.add(width);
+            container_list.push_back(container);
+            atlas_info.set_atlas_info(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
+                                      container.getHorizontalRange() / static_cast<double>(canvas_width), container.getVerticalRange() / static_cast<double>(canvas_height),
+                                      width / static_cast<double>(canvas_width), height / static_cast<double>(canvas_height));
+            this->update(width, height, true);
         }
+
         return atlas_info;
     }
 } // namespace plateau::texture
-

@@ -2,16 +2,16 @@
 #include <plateau/texture/png_image_reader.h>
 #include <plateau/texture/jpeg_image_reader.h>
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
+#include "png.h"
+
 #define PNG_DEBUG 3
 #define SIGNATURE_NUM 8
 
-namespace png
-{
+namespace plateau::texture {
     png_structp png_ptr;
     png_infop info_ptr;
     size_t number_of_passes;
@@ -22,12 +22,12 @@ namespace png
     }
 
     std::vector<std::vector<uint8_t>>&
-    PngTextureImage::getBitmapData() {
+        PngTextureImage::getBitmapData() {
         return bitmapData;
     }
 
     bool
-    PngTextureImage::init(const std::string& fileName) {
+        PngTextureImage::init(const std::string& fileName) {
         FILE* fi;
         int j;
         unsigned int width, height;
@@ -108,14 +108,14 @@ namespace png
     }
 
     void
-    PngTextureImage::pack(size_t xdelta, size_t ydelta, const PngTextureImage& image, JpegTextureImage& targetImage) {
+        PngTextureImage::pack(size_t xdelta, size_t ydelta, const PngTextureImage& image, JpegTextureImage& targetImage) {
         auto srcHeight = image.getHeight();
 
         auto fromPtr = image.bitmapData.data();
         auto toPtr = targetImage.getBitmapData().data();
 
         for (auto y = 0; y < srcHeight; ++y) {
-            std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * 3);
+            //std::copy(fromPtr[y].begin(), fromPtr[y].end(), toPtr[ydelta + y].begin() + xdelta * 3);
         }
     }
 } // namespace png

@@ -63,12 +63,15 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:LibXml2>
           $<TARGET_FILE:httplib>
           $<TARGET_FILE:zlibstatic>
+          $<TARGET_FILE:png_static>
+          $<TARGET_FILE:tiff>
+          ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
   # windows で libファイル結合します。
   # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
   if(BUILD_LIB_TYPE STREQUAL "static")
-    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic)
+    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png_static tiff)
 
     if(WIN32)
       find_program(MSVC_LIB_TOOL lib.exe)

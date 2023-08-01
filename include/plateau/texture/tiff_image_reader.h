@@ -8,21 +8,26 @@
 
 struct jpeg_error_mgr;
 
-namespace tif
-{
-    class TiffTextureImage
-    {
+namespace plateau::texture {
+    class TiffTextureImage {
     public:
 
-        typedef enum { NONE_COMPRESSION, LZW_COMPRESSION } COMPRESSION_TYPE_t;
+        typedef enum {
+            NONE_COMPRESSION, LZW_COMPRESSION
+        } COMPRESSION_TYPE_t;
 
         explicit TiffTextureImage();
 
         bool init(const std::string& fileName);
-        ~TiffTextureImage() {}
+        ~TiffTextureImage() {
+        }
 
-        size_t getWidth() const { return image_width; }
-        size_t getHeight() const { return image_height; }
+        size_t getWidth() const {
+            return image_width;
+        }
+        size_t getHeight() const {
+            return image_height;
+        }
         std::vector<std::vector<uint8_t>>& getBitmapData();
 
     private:
