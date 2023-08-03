@@ -45,7 +45,7 @@ namespace plateau::texture {
             std::unique_ptr<FILE, decltype(ptr)> inFile(_wfopen(regular_name.c_str(), L"rb"), ptr);
 #else
             const auto regular_name = std::filesystem::u8path(file_name).u8string();
-            std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regular_name.c_str(), L"rb"), ptr);
+            std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regular_name.c_str(), "rb"), ptr);
 #endif
             if (inFile.get() == NULL) {
                 throw std::runtime_error("ERROR: Open: " + file_name);
