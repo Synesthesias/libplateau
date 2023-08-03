@@ -155,7 +155,8 @@ namespace plateau::texture {
 
         void process(plateau::polygonMesh::Model& model);
         void processNodeRecursive(const plateau::polygonMesh::Node& node);
-        
+        void processMesh(plateau::polygonMesh::Mesh* mesh);
+
     private:
         std::vector<TextureAtlasCanvas> canvases_;
         size_t canvas_width_;

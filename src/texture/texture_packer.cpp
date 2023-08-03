@@ -105,102 +105,104 @@ namespace plateau::texture {
     void TexturePacker::processNodeRecursive(const Node& node) {
         for (int i = 0; i < node.getChildCount(); ++i) {
             const auto& child_node = node.getChildAt(i);
-
             Mesh* mesh = child_node.getMesh();
-
-            if (mesh == nullptr) {
-                continue;
-            }
-
-            auto& sub_meshes = mesh->getSubMeshes();
-
-            if (sub_meshes.empty()) {
-                continue;
-            }
-
-            int index = 0;
-            std::vector<SubMesh> sub_mesh_list;
-
-            for (index = 0; index < sub_meshes.size(); ) {
-
-                auto& sub_mesh = sub_meshes[index];
-                const auto& tex_url = sub_mesh.getTexturePath();
-                if (tex_url.empty()) {
-                    sub_mesh_list.push_back(sub_mesh);
-                    ++index;
-                    continue;
-                }
-
-                auto image = TextureImage(tex_url, canvas_height_);
-                if (image.getTextureType() == TextureImage::TextureType::None) {
-                    ++index;
-                    continue;
-                }
-
-                const auto width = image.getWidth();
-                const auto height = image.getHeight();
-
-                if (width > canvas_width_ || height >= canvas_height_) {
-                    sub_mesh_list.push_back(sub_mesh);
-                    ++index;
-                    continue;
-                }
-
-                // canvasのどれかにパックできるか確認
-                TextureAtlasCanvas* target_canvas = nullptr;
-                AtlasInfo info;
-                for (auto& canvas : canvases_) {
-                    info = canvas.insert(width, height);
-                    if (info.getValid()) {
-                        target_canvas = &canvas;
-                        break;
-                    }
-                }
-
-                // どこにもパック出来なかった場合
-                if (target_canvas == nullptr) {
-                    // 占有率最大のcanvasを取得
-                    double max_coverage = 0.0;
-                    for (auto& canvas : canvases_) {
-                        if (max_coverage < canvas.getCoverage()) {
-                            max_coverage = canvas.getCoverage();
-                            target_canvas = &canvas;
-                        }
-                    }
-
-                    // flushして空にしてから後でパックする。
-                    target_canvas->flush();
-                    info = target_canvas->insert(width, height);
-                    assert(info.getValid());
-                }
-
-                constexpr auto delta = 1.0;
-                const auto x = info.getLeft();
-                const auto y = info.getTop();
-                const auto u = info.getUPos();
-                const auto v = info.getVPos();
-                const auto u_fac = info.getUFactor() * delta;
-                const auto v_fac = info.getVFactor() * delta;
-                auto tex = sub_mesh.getTexturePath();
-
-                target_canvas->getCanvas().pack(x, y, image);
-                target_canvas->setSaveFilePathIfEmpty(image.getImageFilePath());
-
-                SubMesh new_sub_mesh = sub_mesh;
-                new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
-                sub_mesh_list.push_back(new_sub_mesh);
-
-                std::vector<TVec2f> new_uv1;
-                for (auto& uv1 : mesh->getUV1()) {
-                    const double uv_x = u + (uv1.x * u_fac);
-                    const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
-                    new_uv1.emplace_back(uv_x, uv_y);
-                }
-                mesh->setUV1(new_uv1);
-                ++index;
-                mesh->setSubMeshes(sub_mesh_list);
-            }
+            processMesh(mesh);
             processNodeRecursive(child_node);
+        }
+    }
+
+    void TexturePacker::processMesh(plateau::polygonMesh::Mesh* mesh) {
+        if (mesh == nullptr) {
+            return;
+        }
+
+        auto& sub_meshes = mesh->getSubMeshes();
+
+        if (sub_meshes.empty()) {
+            return;
+        }
+
+        int index = 0;
+        std::vector<SubMesh> sub_mesh_list;
+
+        for (index = 0; index < sub_meshes.size(); ) {
+
+            auto& sub_mesh = sub_meshes[index];
+            const auto& tex_url = sub_mesh.getTexturePath();
+            if (tex_url.empty()) {
+                sub_mesh_list.push_back(sub_mesh);
+                ++index;
+                continue;
+            }
+
+            auto image = TextureImage(tex_url, canvas_height_);
+            if (image.getTextureType() == TextureImage::TextureType::None) {
+                ++index;
+                continue;
+            }
+
+            const auto width = image.getWidth();
+            const auto height = image.getHeight();
+
+            if (width > canvas_width_ || height >= canvas_height_) {
+                sub_mesh_list.push_back(sub_mesh);
+                ++index;
+                continue;
+            }
+
+            // canvasのどれかにパックできるか確認
+            TextureAtlasCanvas* target_canvas = nullptr;
+            AtlasInfo info;
+            for (auto& canvas : canvases_) {
+                info = canvas.insert(width, height);
+                if (info.getValid()) {
+                    target_canvas = &canvas;
+                    break;
+                }
+            }
+
+            // どこにもパック出来なかった場合
+            if (target_canvas == nullptr) {
+                // 占有率最大のcanvasを取得
+                double max_coverage = 0.0;
+                for (auto& canvas : canvases_) {
+                    if (max_coverage < canvas.getCoverage()) {
+                        max_coverage = canvas.getCoverage();
+                        target_canvas = &canvas;
+                    }
+                }
+
+                // flushして空にしてから後でパックする。
+                target_canvas->flush();
+                info = target_canvas->insert(width, height);
+                assert(info.getValid());
+            }
+
+            constexpr auto delta = 1.0;
+            const auto x = info.getLeft();
+            const auto y = info.getTop();
+            const auto u = info.getUPos();
+            const auto v = info.getVPos();
+            const auto u_fac = info.getUFactor() * delta;
+            const auto v_fac = info.getVFactor() * delta;
+            auto tex = sub_mesh.getTexturePath();
+
+            target_canvas->getCanvas().pack(x, y, image);
+            target_canvas->setSaveFilePathIfEmpty(image.getImageFilePath());
+
+            SubMesh new_sub_mesh = sub_mesh;
+            new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
+            sub_mesh_list.push_back(new_sub_mesh);
+
+            std::vector<TVec2f> new_uv1;
+            for (auto& uv1 : mesh->getUV1()) {
+                const double uv_x = u + (uv1.x * u_fac);
+                const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
+                new_uv1.emplace_back(uv_x, uv_y);
+            }
+            mesh->setUV1(new_uv1);
+            ++index;
+            mesh->setSubMeshes(sub_mesh_list);
         }
     }
 
