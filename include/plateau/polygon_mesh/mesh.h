@@ -49,6 +49,10 @@ namespace plateau::polygonMesh {
 
         void addIndicesList(const std::vector<unsigned>& other_indices, unsigned prev_num_vertices,
                             bool invert_mesh_front_back);
+
+        void setUV1(const std::vector<TVec2f>& other_uv_1);
+        void setUV1(UV&& uv);
+
         /// UV1を追加します。追加した結果、UV1の要素数が頂点数に足りなければ、足りない分を 0 で埋めます。
         void addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size);
 

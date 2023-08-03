@@ -49,4 +49,27 @@ namespace plateau::polygonMesh {
         }
         return ss.str();
     }
+
+    namespace {
+        void getAllMeshesRecursive(std::vector<Mesh*>& meshes, const Node& node) {
+            if(node.polygonExists()) {
+                meshes.push_back(node.getMesh());
+            }
+            auto child_count = node.getChildCount();
+            for(int i=0; i<child_count; i++) {
+                auto& child = node.getChildAt(i);
+                getAllMeshesRecursive(meshes, child);
+            }
+        }
+    }
+
+    std::vector<Mesh*> Model::getAllMeshes() const {
+        std::vector<Mesh*> meshes;
+        auto root_node_count = getRootNodeCount();
+        for(int i=0; i<root_node_count; i++){
+            auto& node = getRootNodeAt(i);
+            getAllMeshesRecursive(meshes, node);
+        }
+        return meshes;
+    }
 }

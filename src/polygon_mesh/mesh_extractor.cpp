@@ -3,12 +3,15 @@
 #include "citygml/texture.h"
 #include "area_mesh_factory.h"
 #include "citygml/cityobject.h"
+#include "plateau/polygon_mesh/map_attacher.h"
 #include <plateau/polygon_mesh/mesh_factory.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
+#include <plateau/dataset/gml_file.h>
 
 namespace {
     using namespace plateau;
     using namespace polygonMesh;
+    using namespace dataset;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options) {
         return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
@@ -118,6 +121,12 @@ namespace {
             out_model.addNode(std::move(lod_node));
         }
         out_model.eraseEmptyNodes();
+
+        // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
+        auto package = GmlFile(city_model.getGmlPath()).getPackage();
+        if(package == PredefinedCityModelPackage::Relief){
+            MapAttacher::attach(out_model, geo_reference);
+        }
     }
 }
 

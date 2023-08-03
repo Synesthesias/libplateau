@@ -96,6 +96,18 @@ namespace plateau::polygonMesh {
         }
     }
 
+    void Mesh::setUV1(const std::vector<TVec2f>& other_uv_1) {
+        // UV1を上書きします。
+        uv1_.clear();
+        for (const auto& vec : other_uv_1) {
+            uv1_.push_back(vec);
+        }
+    }
+
+    void Mesh::setUV1(UV&& uv) {
+        uv1_ = std::move(uv);
+    }
+
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
         for (const auto& vec : other_uv_1) {
@@ -158,6 +170,8 @@ namespace plateau::polygonMesh {
             sub_mesh.debugString(ss, indent + 1);
         }
     }
+
+
 
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;

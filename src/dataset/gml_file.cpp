@@ -9,6 +9,7 @@
 #include <plateau/dataset/mesh_code.h>
 #include <plateau/network/client.h>
 #include <plateau/dataset/lod_searcher.h>
+#include <plateau/dataset/i_dataset_accessor.h>
 
 using namespace plateau::network;
 namespace fs = std::filesystem;
@@ -52,6 +53,10 @@ namespace plateau::dataset {
 
     const std::string& GmlFile::getFeatureType() const {
         return feature_type_;
+    }
+
+    PredefinedCityModelPackage GmlFile::getPackage() const {
+        return UdxSubFolder::getPackage(getFeatureType());
     }
 
     std::string GmlFile::getAppearanceDirectoryPath() const {
