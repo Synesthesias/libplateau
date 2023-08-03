@@ -9,24 +9,26 @@ namespace plateau::texture {
     using namespace polygonMesh;
 
     bool AtlasInfo::getValid() const {
-        return valid;
+        return valid_;
     }
 
     void AtlasInfo::clear() {
-        this->set_atlas_info(false, 0, 0, 0, 0, 0, 0, 0, 0);
+        this->setAtlasInfo(false, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
-    void AtlasInfo::set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
-            double _uPos, double _vPos, double _uFactor, double _vFactor) {
-        valid = _valid;
-        left = _left;
-        top = _top;
-        width = _width;
-        height = _height;
-        uPos = _uPos;
-        vPos = _vPos;
-        uFactor = _uFactor;
-        vFactor = _vFactor;
+    void AtlasInfo::setAtlasInfo(
+            const bool valid, const size_t left, const size_t top,
+            const size_t width, const size_t height,
+            double u_pos, double v_pos, double u_factor, double v_factor) {
+        valid_ = valid;
+        left_ = left;
+        top_ = top;
+        width_ = width;
+        height_ = height;
+        u_pos_ = u_pos;
+        v_pos_ = v_pos;
+        u_factor_ = u_factor;
+        v_factor_ = v_factor;
     }
 
     AtlasContainer::AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range) {
@@ -67,23 +69,25 @@ namespace plateau::texture {
     }
 
     void TextureAtlasCanvas::init(size_t width, size_t height) {
-        canvas_width = width;
-        canvas_height = height;
+        canvas_width_ = width;
+        canvas_height_ = height;
         this->clear();
     }
 
     void TextureAtlasCanvas::clear() {
-        vertical_range = 0;
-        capacity = 0;
-        container_list.clear();
+        vertical_range_ = 0;
+        capacity_ = 0;
+        container_list_.clear();
         save_file_path_.clear();
-        canvas.init(canvas_width, canvas_height, gray);
+        canvas_.init(canvas_width_, canvas_height_, gray);
     }
 
     void TextureAtlasCanvas::flush() {
-        canvas.save(save_file_path_);
+        canvas_.save(save_file_path_);
         this->clear();
     }
+
+    TexturePacker::~TexturePacker() = default;
 
     void TexturePacker::process(Model& model) {
         for (size_t i = 0; i < model.getRootNodeCount(); ++i) {
@@ -127,7 +131,7 @@ namespace plateau::texture {
                     continue;
                 }
 
-                auto image = TextureImage(tex_url, canvas_height);
+                auto image = TextureImage(tex_url, canvas_height_);
                 if (image.getTextureType() == TextureImage::TextureType::None) {
                     ++index;
                     continue;
@@ -136,14 +140,14 @@ namespace plateau::texture {
                 const auto width = image.getWidth();
                 const auto height = image.getHeight();
 
-                if (width > canvas_width || height >= canvas_height) {
+                if (width > canvas_width_ || height >= canvas_height_) {
                     sub_mesh_list.push_back(sub_mesh);
                     ++index;
                     continue;
                 }
 
                 // canvasのどれかにパックできるか確認
-                TextureAtlasCanvas* target_canvas;
+                TextureAtlasCanvas* target_canvas = nullptr;
                 AtlasInfo info;
                 for (auto& canvas : canvases_) {
                     info = canvas.insert(width, height);
@@ -182,17 +186,17 @@ namespace plateau::texture {
                 target_canvas->getCanvas().pack(x, y, image);
                 target_canvas->setSaveFilePathIfEmpty(image.getImageFilePath());
 
-                SubMesh newSubMesh = sub_mesh;
-                newSubMesh.setTexturePath(target_canvas->getSaveFilePath());
-                sub_mesh_list.push_back(newSubMesh);
+                SubMesh new_sub_mesh = sub_mesh;
+                new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
+                sub_mesh_list.push_back(new_sub_mesh);
 
-                std::vector<TVec2f> newUV1;
+                std::vector<TVec2f> new_uv1;
                 for (auto& uv1 : mesh->getUV1()) {
                     const double uv_x = u + (uv1.x * u_fac);
                     const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
-                    newUV1.emplace_back(uv_x, uv_y);
+                    new_uv1.emplace_back(uv_x, uv_y);
                 }
-                mesh->setUV1(newUV1);
+                mesh->setUV1(new_uv1);
                 ++index;
                 mesh->setSubMeshes(sub_mesh_list);
             }
@@ -200,43 +204,43 @@ namespace plateau::texture {
         }
     }
 
-    void TextureAtlasCanvas::update(const size_t _width, const size_t _height, const bool _is_new_container) {
+    void TextureAtlasCanvas::update(const size_t width, const size_t height, const bool is_new_container) {
 
-        capacity += (_width * _height);
-        coverage = capacity / static_cast<double>(canvas_width * canvas_height) * 100.0;
+        capacity_ += (width * height);
+        coverage_ = capacity_ / static_cast<double>(canvas_width_ * canvas_height_) * 100.0;
 
-        if (_is_new_container) {
-            vertical_range += _height;
+        if (is_new_container) {
+            vertical_range_ += height;
         }
     }
 
     AtlasInfo TextureAtlasCanvas::insert(const size_t width, const size_t height) {
         AtlasInfo atlas_info;
 
-        for (auto& container : container_list) {
+        for (auto& container : container_list_) {
             if (container.getGap() != height)
                 continue;
 
-            if (container.getRootHorizontalRange() + width > canvas_width)
+            if (container.getRootHorizontalRange() + width > canvas_width_)
                 continue;
 
             container.add(width);
-            atlas_info.set_atlas_info(
+            atlas_info.setAtlasInfo(
                 true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
-                container.getHorizontalRange() / static_cast<double>(canvas_width), container.getVerticalRange() / static_cast<double>(canvas_height),
-                width / static_cast<double>(canvas_width), height / static_cast<double>(canvas_height));
+                container.getHorizontalRange() / static_cast<double>(canvas_width_), container.getVerticalRange() / static_cast<double>(canvas_height_),
+                width / static_cast<double>(canvas_width_), height / static_cast<double>(canvas_height_));
             this->update(width, height, false);
 
             break;
         }
 
-        if (!atlas_info.getValid() && height + vertical_range < canvas_height) {
-            AtlasContainer container(height, 0, vertical_range);
+        if (!atlas_info.getValid() && height + vertical_range_ < canvas_height_) {
+            AtlasContainer container(height, 0, vertical_range_);
             container.add(width);
-            container_list.push_back(container);
-            atlas_info.set_atlas_info(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
-                                      container.getHorizontalRange() / static_cast<double>(canvas_width), container.getVerticalRange() / static_cast<double>(canvas_height),
-                                      width / static_cast<double>(canvas_width), height / static_cast<double>(canvas_height));
+            container_list_.push_back(container);
+            atlas_info.setAtlasInfo(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
+                                      container.getHorizontalRange() / static_cast<double>(canvas_width_), container.getVerticalRange() / static_cast<double>(canvas_height_),
+                                      width / static_cast<double>(canvas_width_), height / static_cast<double>(canvas_height_));
             this->update(width, height, true);
         }
 

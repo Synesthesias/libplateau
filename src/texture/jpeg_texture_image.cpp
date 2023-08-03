@@ -1,5 +1,5 @@
 
-#include <plateau/texture/jpeg_image_reader.h>
+#include <plateau/texture/jpeg_texture_image.h>
 
 #include <jpeglib.h>
 #include <fstream>
@@ -9,21 +9,22 @@
 #include <regex>
 #include <filesystem>
 
+#include "plateau/texture/png_texture_image.h"
+
 namespace plateau::texture {
-    // ‰æ‘œƒTƒCƒY‚ÆA“h‚è‚Â‚Ô‚·”wŒi‚ÌƒOƒŒ[’l‚ÅA‹ó‚ÌƒeƒNƒXƒ`ƒƒ‰æ‘œ‚ğì¬
+    // ç”»åƒã‚µã‚¤ã‚ºã¨ã€å¡—ã‚Šã¤ã¶ã™èƒŒæ™¯ã®ã‚°ãƒ¬ãƒ¼å€¤ã§ã€ç©ºã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒã‚’ä½œæˆ
     void JpegTextureImage::init(size_t w, size_t h, size_t color) {
 
         jpegErrorManager = std::make_shared<jpeg_error_mgr>();
 
-        image_width = w;
+        image_width_ = w;
         image_height = h;
-        image_channels = 3;
+        image_channels_ = 3;
         colourSpace = JCS_RGB;
 
-        size_t row_stride = image_width * image_channels;
+        size_t row_stride = image_width_ * image_channels_;
 
-
-        bitmapData = std::vector(image_height * image_width * image_channels, static_cast<uint8_t>(color));
+        bitmap_data_ = std::vector(image_height * image_width_ * image_channels_, static_cast<uint8_t>(color));
     }
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
@@ -39,8 +40,6 @@ namespace plateau::texture {
                 fclose(fp);
             };
 
-            //auto regularName = std::regex_replace(fileName, std::regex("\"), "/");
-            //auto regularName = ReplaceString(fileName, "\\", "/")
 #ifdef WIN32
             const auto regular_name = std::filesystem::u8path(file_name).wstring();
             std::unique_ptr<FILE, decltype(ptr)> inFile(_wfopen(regular_name.c_str(), L"rb"), ptr);
@@ -50,7 +49,7 @@ namespace plateau::texture {
 #endif
             if (inFile.get() == NULL) {
                 throw std::runtime_error("ERROR: Open: " + file_name);
-            }
+        }
 
             decompressInfo->err = jpeg_std_error(jpegErrorManager.get());
             jpegErrorManager->error_exit = [](j_common_ptr cinfo) {
@@ -68,9 +67,9 @@ namespace plateau::texture {
             }
 
             filePath = file_name;
-            image_width = decompressInfo->image_width;
+            image_width_ = decompressInfo->image_width;
             image_height = decompressInfo->image_height;
-            image_channels = decompressInfo->num_components;
+            image_channels_ = decompressInfo->num_components;
             colourSpace = decompressInfo->jpeg_color_space;
 
             if (image_height > height_limit) {
@@ -80,22 +79,22 @@ namespace plateau::texture {
 
             jpeg_start_decompress(decompressInfo.get());
 
-            const size_t row_stride = image_width * image_channels;
-            bitmapData = std::vector<uint8_t>(row_stride * image_height);
-            uint8_t* p = bitmapData.data();
+            const size_t row_stride = image_width_ * image_channels_;
+            bitmap_data_ = std::vector<uint8_t>(row_stride * image_height);
+            uint8_t* p = bitmap_data_.data();
             while (decompressInfo->output_scanline < image_height) {
                 jpeg_read_scanlines(decompressInfo.get(), &p, 1);
                 p += row_stride;
             }
             jpeg_finish_decompress(decompressInfo.get());
-        }
+    }
         catch (...) {
             return false;
         }
         return true;
-    }
+}
 
-    // w’è‚³‚ê‚½ƒtƒ@ƒCƒ‹–¼‚ÅAjpegƒtƒ@ƒCƒ‹‚ğ•Û‘¶
+    // æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«åã§ã€jpegãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜
     bool JpegTextureImage::save(const std::string& file_name) {
         try {
 #ifdef WIN32
@@ -107,7 +106,7 @@ namespace plateau::texture {
 #endif
             if (outFile == NULL) {
                 return false;
-            }
+        }
 
             auto decomp = [](jpeg_compress_struct* comp) {
                 jpeg_destroy_compress(comp);
@@ -116,43 +115,56 @@ namespace plateau::texture {
             std::unique_ptr<::jpeg_compress_struct, decltype(decomp)> compInfo(new jpeg_compress_struct, decomp);
             jpeg_create_compress(compInfo.get());
             jpeg_stdio_dest(compInfo.get(), outFile);
-            compInfo->image_width = image_width;
+            compInfo->image_width = image_width_;
             compInfo->image_height = image_height;
-            compInfo->input_components = image_channels;
+            compInfo->input_components = image_channels_;
             compInfo->in_color_space = static_cast<::J_COLOR_SPACE>(colourSpace);
             compInfo->err = jpeg_std_error(jpegErrorManager.get());
             jpeg_set_defaults(compInfo.get());
             jpeg_set_quality(compInfo.get(), 90, TRUE);
             jpeg_start_compress(compInfo.get(), TRUE);
 
-            auto read_ptr = bitmapData.data();
+            auto read_ptr = bitmap_data_.data();
             for (int line = 0; line < image_height; ++line) {
                 JSAMPROW rowData[1];
                 rowData[0] = read_ptr;
                 jpeg_write_scanlines(compInfo.get(), rowData, 1);
-                read_ptr += image_width * image_channels;
+                read_ptr += image_width_ * image_channels_;
             }
             jpeg_finish_compress(compInfo.get());
             fclose(outFile);
-        }
+    }
         catch (...) {
             return false;
         }
         return true;
     }
 
-    // w’è‚³‚ê‚½À•WixdeltaAydeltaj‚Éimage‚Ì‰æ‘œ‚ğ“]‘—
+    // æŒ‡å®šã•ã‚ŒãŸåº§æ¨™ï¼ˆxdeltaã€ydeltaï¼‰ã«imageã®ç”»åƒã‚’è»¢é€
     void JpegTextureImage::pack(const size_t x_delta, const size_t y_delta, const JpegTextureImage& image) {
         const auto src_height = image.getHeight();
-        const auto src_stride = image.getWidth() * image_channels;
-        const auto dst_stride = image_width * image_channels;
+        const auto src_stride = image.getWidth() * image_channels_;
+        const auto dst_stride = image_width_ * image_channels_;
 
-        const auto& src = image.bitmapData;
+        const auto& src = image.bitmap_data_;
         // ReSharper disable once CppLocalVariableMayBeConst
-        auto& dst = bitmapData;
+        auto& dst = bitmap_data_;
 
         for (size_t y = 0; y < src_height; ++y) {
-            std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride, dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels);
+            std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride, dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels_);
+        }
+    }
+
+    void JpegTextureImage::packPng(const size_t x_delta, const size_t y_delta, PngTextureImage& image) {
+        const auto src_height = image.getHeight();
+        const auto dst_stride = image_width_ * image_channels_;
+
+        const auto& src = image.getBitmapData();
+        // ReSharper disable once CppLocalVariableMayBeConst
+        auto& dst = bitmap_data_;
+
+        for (auto y = 0; y < src_height; ++y) {
+            std::copy(src[y].begin(), src[y].end(), dst.begin() + (y + y_delta) * dst_stride + x_delta * 3);
         }
     }
 } // namespace jpeg

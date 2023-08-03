@@ -18,8 +18,7 @@ if( NOT(IOS OR ANDROID) )
   target_link_libraries(plateau PRIVATE ${JPEG_TURBO_LIBRARIES} png_static tiff)
   target_include_directories(plateau PRIVATE
     "${JPEG_TURBO_INCLUDE_DIRS}"
-    "${PNG_INCLUDE}"
-    "${CMAKE_CURRENT_BINARY_DIR}/../3rdparty/libpng"
+    "${PNG_INCLUDE_DIRS}"
     "${TIFF_INCLUDE}")
 else()
   target_link_libraries(plateau PUBLIC 

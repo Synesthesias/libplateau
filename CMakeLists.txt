@@ -158,9 +158,11 @@ if( NOT(IOS OR ANDROID) )
   endif()
 
   ## zlib(FBX SDKの依存関係)
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
   add_subdirectory("3rdparty/zlib")
-  set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/3rdparty/zlib")
+  set(ZLIB_INCLUDE_DIR
+    "${CMAKE_BINARY_DIR}/3rdparty/zlib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
+  include_directories("${ZLIB_INCLUDE_DIR}")
 
   if(UNIX)
     set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
@@ -243,7 +245,9 @@ set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
 set(PNG_STATIC ON CACHE BOOL "Build static lib")
 set(PNG_TESTS OFF CACHE BOOL "Build libpng tests")
 add_subdirectory("3rdparty/libpng")
-set(PNG_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng")
+set(PNG_INCLUDE_DIRS
+  "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
+  "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
 
 ## libtiff
 add_subdirectory("3rdparty/libtiff")

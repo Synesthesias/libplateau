@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "png_texture_image.h"
+
 struct jpeg_error_mgr;
 
 namespace plateau::texture {
@@ -14,37 +16,40 @@ namespace plateau::texture {
         explicit JpegTextureImage() {
         }
 
+        ~JpegTextureImage() = default;
+
         /**
-         * \brief w’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚©‚ç‰æ‘œ‚ğ“Ç‚İ‚İAƒeƒNƒXƒ`ƒƒ‰æ‘œ‚ğì¬‚µ‚Ü‚·B
-         * \param file_name ‰æ‘œƒtƒ@ƒCƒ‹‚ÌƒpƒX
-         * \param height_limit ‰æ‘œ‚Ì‚‚³‚ª‚±‚Ì’l‚ğ’´‚¦‚éê‡‰æ‘œƒf[ƒ^‚Í“Ç‚İ‚Ü‚ê‚Ü‚¹‚ñB
-         * \return “Ç‚İ‚İ‚É¬Œ÷‚µ‚½ê‡trueA‚»‚êˆÈŠO‚Ífalse
+         * \brief æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ç”»åƒã‚’èª­ã¿è¾¼ã¿ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒã‚’ä½œæˆã—ã¾ã™ã€‚
+         * \param file_name ç”»åƒãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
+         * \param height_limit ç”»åƒã®é«˜ã•ãŒã“ã®å€¤ã‚’è¶…ãˆã‚‹å ´åˆç”»åƒãƒ‡ãƒ¼ã‚¿ã¯èª­ã¿è¾¼ã¾ã‚Œã¾ã›ã‚“ã€‚
+         * \return èª­ã¿è¾¼ã¿ã«æˆåŠŸã—ãŸå ´åˆtrueã€ãã‚Œä»¥å¤–ã¯false
          */
         bool init(const std::string& file_name, const size_t height_limit);
         void init(size_t width, size_t height, size_t color);
-        ~JpegTextureImage() {
-        }
 
         size_t getWidth() const {
-            return image_width;
+            return image_width_;
         }
+
         size_t getHeight() const {
             return image_height;
         }
+
         std::vector<uint8_t>& getBitmapData() {
-            return bitmapData;
+            return bitmap_data_;
         }
 
-        bool save(const std::string& fileName);
+        bool save(const std::string& file_name);
         void pack(size_t x_delta, size_t y_delta, const JpegTextureImage& image);
+        void packPng(const size_t x_delta, const size_t y_delta, PngTextureImage& image);
 
     private:
         std::shared_ptr<::jpeg_error_mgr> jpegErrorManager;
-        std::vector<uint8_t> bitmapData;
+        std::vector<uint8_t> bitmap_data_;
         std::string                       filePath;
-        size_t                            image_width;
+        size_t                            image_width_;
         size_t                            image_height;
-        size_t                            image_channels;
+        size_t                            image_channels_;
         int                               colourSpace;
     };
 

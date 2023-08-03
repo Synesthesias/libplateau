@@ -2,7 +2,7 @@
 #pragma once
 
 #include <plateau/polygon_mesh/model.h>
-#include <plateau/texture/image_reader.h>
+#include <plateau/texture/texture_image.h>
 
 #include <memory>
 #include <string>
@@ -14,51 +14,53 @@ namespace plateau::texture {
     class AtlasInfo {
     public:
 
-        explicit AtlasInfo() : valid(false), left(0), top(0), width(0), height(0), uPos(0), vPos(0), uFactor(0), vFactor(0) {
+        explicit AtlasInfo() : valid_(false), left_(0), top_(0), width_(0), height_(0), u_pos_(0), v_pos_(0), u_factor_(0), v_factor_(0) {
         }
         ~AtlasInfo() {
         }
 
         size_t getLeft() const {
-            return left;
+            return left_;
         }
         size_t getTop() const {
-            return top;
+            return top_;
         }
         size_t getWidth() const {
-            return width;
+            return width_;
         }
         size_t getHeight() const {
-            return height;
+            return height_;
         }
         double getUPos() const {
-            return uPos;
+            return u_pos_;
         }
         double getVPos() const {
-            return vPos;
+            return v_pos_;
         }
         double getUFactor() const {
-            return uFactor;
+            return u_factor_;
         }
         double getVFactor() const {
-            return vFactor;
+            return v_factor_;
         }
 
         bool getValid() const;
         void clear();
-        void set_atlas_info(const bool _valid, const size_t _left, const size_t _top, const size_t _width, const size_t _height,
-            double uPos, double vPos, double uFactor, double vFactor);
+        void setAtlasInfo(
+            const bool valid, const size_t left, const size_t top,
+            const size_t width, const size_t height,
+            double u_pos, double v_pos, double u_factor, double v_factor);
 
     private:
-        bool valid;     // パッキングが成功したかどうか
-        size_t left;    // パッキングされた画像の左上のX座標
-        size_t top;     // パッキングされた画像の左上のY座標
-        size_t width;   // パッキングされた画像の幅
-        size_t height;  // パッキングされた画像の高さ
-        double uPos;    // uv座標の左上u座標
-        double vPos;    // uv座標の左上v座標
-        double uFactor; // u座標の倍率
-        double vFactor; // v座標の倍率
+        bool valid_;     // パッキングが成功したかどうか
+        size_t left_;    // パッキングされた画像の左上のX座標
+        size_t top_;     // パッキングされた画像の左上のY座標
+        size_t width_;   // パッキングされた画像の幅
+        size_t height_;  // パッキングされた画像の高さ
+        double u_pos_;    // uv座標の左上u座標
+        double v_pos_;    // uv座標の左上v座標
+        double u_factor_; // u座標の倍率
+        double v_factor_; // v座標の倍率
     };
 
     class AtlasContainer {
@@ -93,13 +95,13 @@ namespace plateau::texture {
     public:
         const unsigned char gray = 80;
 
-        explicit TextureAtlasCanvas() : canvas_width(0), canvas_height(0), vertical_range(0), capacity(0), coverage(0) {
+        explicit TextureAtlasCanvas() : canvas_width_(0), canvas_height_(0), vertical_range_(0), capacity_(0), coverage_(0) {
         }
 
-        explicit TextureAtlasCanvas(size_t width, size_t height) : vertical_range(0), capacity(0), coverage(0) {
-            canvas_width = width;
-            canvas_height = height;
-            canvas.init(width, height, gray);
+        explicit TextureAtlasCanvas(size_t width, size_t height) : vertical_range_(0), capacity_(0), coverage_(0) {
+            canvas_width_ = width;
+            canvas_height_ = height;
+            canvas_.init(width, height, gray);
         }
 
         ~TextureAtlasCanvas() {
@@ -109,27 +111,31 @@ namespace plateau::texture {
         const std::string& getSaveFilePath() const;
 
         TextureImage& getCanvas() {
-            return canvas;
+            return canvas_;
         }
 
         void init(size_t width, size_t height);
         void clear();
         void flush();
 
+        /**
+         * \brief テクスチャ全体に対しての既にパックされた画像の占有率（100%）
+         */
         double getCoverage() const {
-            return coverage;
-        } // 呼び出し時のテクスチャ全体に対しての既にパックされた画像の占有率（100%）
-        void update(const size_t _width, const size_t _height, const bool _is_new_container); // 画像のパッキング成功時の処理、第3引数（TRUE:新規コンテナを作成、FALSE:既存コンテナに追加）
+            return coverage_;
+        }
+
+        void update(const size_t width, const size_t height, const bool is_new_container); // 画像のパッキング成功時の処理、第3引数（TRUE:新規コンテナを作成、FALSE:既存コンテナに追加）
         AtlasInfo insert(const size_t width, const size_t height); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
 
     private:
-        std::vector<AtlasContainer> container_list;
-        size_t canvas_width;
-        size_t canvas_height;
-        size_t vertical_range;
-        size_t capacity;
-        double coverage;
-        TextureImage canvas;
+        std::vector<AtlasContainer> container_list_;
+        size_t canvas_width_;
+        size_t canvas_height_;
+        size_t vertical_range_;
+        size_t capacity_;
+        double coverage_;
+        TextureImage canvas_;
         std::string save_file_path_;
     };
 
@@ -138,22 +144,21 @@ namespace plateau::texture {
         const int default_resolution = 2048;
 
         explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8)
-            : canvas_width(width)
-            , canvas_height(height) {
+            : canvas_width_(width)
+            , canvas_height_(height) {
             for (auto i = 0; i < internal_canvas_count; ++i) {
                 canvases_.emplace_back(width, height);
             }
         }
 
-        ~TexturePacker() {
-        }
-        
+        ~TexturePacker();
+
         void process(plateau::polygonMesh::Model& model);
         void processNodeRecursive(const plateau::polygonMesh::Node& node);
         
     private:
         std::vector<TextureAtlasCanvas> canvases_;
-        size_t canvas_width;
-        size_t canvas_height;
+        size_t canvas_width_;
+        size_t canvas_height_;
     };
 } // namespace plateau::texture
