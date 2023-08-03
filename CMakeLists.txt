@@ -244,6 +244,8 @@ include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
 set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
 set(PNG_STATIC ON CACHE BOOL "Build static lib")
 set(PNG_TESTS OFF CACHE BOOL "Build libpng tests")
+set(PNG_ARM_NEON "off"
+        CACHE STRING "Enable ARM NEON optimizations: on|off; on is default" FORCE)
 set(PNG_ARM_NEON_OPT "0"
    CACHE STRING "Enable ARM NEON optimizations")
 add_subdirectory("3rdparty/libpng")
@@ -252,6 +254,8 @@ set(PNG_INCLUDE_DIRS
   "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
 
 ## libtiff
+set(jpeg OFF CACHE BOOL "use libjpeg" FORCE)
+set(webp OFF CACHE BOOL "use libwebp (required for WEBP compression)" FORCE)
 add_subdirectory("3rdparty/libtiff")
 set(TIFF_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libtiff/libtiff")
 

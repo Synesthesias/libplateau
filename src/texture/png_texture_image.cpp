@@ -3,6 +3,7 @@
 #include <plateau/texture/jpeg_texture_image.h>
 
 #include <cstdio>
+#include <cstring>
 #include <string>
 #include <cstdarg>
 

@@ -28,11 +28,12 @@ namespace plateau::texture {
 
 #ifdef WIN32
         const auto u8_file_name = std::filesystem::u8path(fileName).wstring();
+        tiff = TIFFOpenW(u8_file_name.c_str(), "r");
 #else
         const auto u8_file_name = std::filesystem::u8path(fileName).u8string();
+        tiff = TIFFOpen(u8_file_name.c_str(), "r");
 #endif
 
-        tiff = TIFFOpenW(u8_file_name.c_str(), "r");
         if (tiff == nullptr) {
             return false;
         }
