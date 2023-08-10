@@ -113,6 +113,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 
 ### Windowsでの手動ビルド
 #### C++のビルド
+* Python3のインストールが必要です。
 * Visual Studioのローカルフォルダーを開くからcloneしたリポジトリを開きます。
 * 一度cmakeこけるので再度cmakeします。(CMakeLists.txt開いてCtrl+S)
 * ビルド実行します。(Ctrl+Shift+B)
