@@ -63,6 +63,8 @@ ExternalProject_Add(
         -DENABLE_SHARED=OFF
         -DWITH_SIMD=${WITH_SIMD}
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo
+        -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
         ${ExternalProject_CMAKE_ARGS_hidden}
     BUILD_BYPRODUCTS
         <INSTALL_DIR>/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${CMAKE_STATIC_LIBRARY_SUFFIX}
