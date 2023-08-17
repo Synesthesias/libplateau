@@ -79,7 +79,9 @@ if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+# libjpeg-turboが複数architecture向けビルドをサポートしていないためarm64のみに限定
+# https://github.com/libjpeg-turbo/libjpeg-turbo/blob/main/CMakeLists.txt#L101
+set(CMAKE_OSX_ARCHITECTURES "arm64" CACHE STRING "" FORCE)
 
 if(NOT IOS)
   # このバージョン数値は Unreal Engine と合わせないと Unreal SDK ビルド時に大量の警告が出ます

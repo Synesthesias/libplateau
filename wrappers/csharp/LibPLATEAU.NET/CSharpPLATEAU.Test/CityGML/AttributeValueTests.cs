@@ -26,7 +26,7 @@ namespace PLATEAU.Test.CityGML
 
         [DataTestMethod]
         [DataRow("建物ID", "13111-bldg-147301")]
-        [DataRow("bldg:measuredheight", "2.8（テスト）")]
+        [DataRow("bldg:measuredheight", "2.8")]
         public void AsString_Returns_GML_Value(string key, string valueInGmlFile)
         {
             var actualVal = attrMap[key].AsString;

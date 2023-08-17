@@ -118,7 +118,7 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
     std::vector<std::string> images = {
             "hnap0034.png",
-            "hnap0275.jpg.",
+            "hnap0275.jpg",
             "hnap0276.jpg",
             "hnap0279.tif",
             "hnap0285.png",

@@ -56,6 +56,7 @@ ExternalProject_Add(
     DOWNLOAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libjpeg-turbo"
     INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo"
     UPDATE_COMMAND ""
+    LIST_SEPARATOR |
     CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
         -DWITH_CRT_DLL=${WITH_CRT_DLL}
@@ -65,6 +66,7 @@ ExternalProject_Add(
         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libjpeg-turbo
         -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
         -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+        -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
         ${ExternalProject_CMAKE_ARGS_hidden}
     BUILD_BYPRODUCTS
         <INSTALL_DIR>/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${CMAKE_STATIC_LIBRARY_SUFFIX}
@@ -72,5 +74,5 @@ ExternalProject_Add(
 
 ExternalProject_Get_Property(libjpeg-turbo INSTALL_DIR)
 set(JPEG_TURBO_INCLUDE_DIRS "${INSTALL_DIR}/include/") # "/" is critical.
-set(JPEG_TURBO_LIB_DIR "${INSTALL_DIR}/lib/")
+set(JPEG_TURBO_LIB_DIR "${INSTALL_DIR}/lib")
 set(JPEG_TURBO_LIBRARIES "${JPEG_TURBO_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${lib_name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
