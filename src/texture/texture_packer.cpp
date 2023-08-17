@@ -137,6 +137,7 @@ namespace plateau::texture {
 
             auto image = TextureImage(tex_url, canvas_height_);
             if (image.getTextureType() == TextureImage::TextureType::None) {
+                sub_mesh_list.push_back(sub_mesh);
                 ++index;
                 continue;
             }
@@ -202,8 +203,8 @@ namespace plateau::texture {
             }
             mesh->setUV1(new_uv1);
             ++index;
-            mesh->setSubMeshes(sub_mesh_list);
         }
+        mesh->setSubMeshes(sub_mesh_list);
     }
 
     void TextureAtlasCanvas::update(const size_t width, const size_t height, const bool is_new_container) {
