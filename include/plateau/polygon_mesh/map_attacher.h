@@ -2,6 +2,7 @@
 
 #include <plateau/polygon_mesh/model.h>
 #include <plateau/geometry/geo_reference.h>
+#include <filesystem>
 
 namespace plateau::polygonMesh {
     using namespace plateau::geometry;
@@ -13,7 +14,7 @@ namespace plateau::polygonMesh {
         /**
          * 引数のModelに含まれる各Meshに対し、航空写真または地図を貼り付けます。
          */
-        static void attach(Model& model, const GeoReference& geo_reference);
+        static void attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference);
     };
 
 }

@@ -52,6 +52,11 @@ namespace plateau::network {
          */
         Client(const std::string& server_url, const std::string& api_token);
 
+        /**
+         * PLATEAU APIサーバーを利用せず、シンプルにdownload機能を使いたいだけのときはこちらのデフォルトコンストラクタを利用します。
+         */
+        Client() = default;
+
         static Client createClientForMockServer();
 
         std::string getApiServerUrl() const;

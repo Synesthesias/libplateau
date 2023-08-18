@@ -1,10 +1,10 @@
 #include <plateau/polygon_mesh/map_attacher.h>
-
-namespace {
-
-}
+#include <plateau/basemap/tile_projection.h>
+#include <plateau/network/client.h>
 
 namespace plateau::polygonMesh {
+    using namespace plateau::network;
+    namespace fs = std::filesystem;
 
     namespace {
         /// メッシュのBoundingBoxを計算します。ただし2D(東西南北方向)のみで、高さは無視します。
@@ -30,8 +30,7 @@ namespace plateau::polygonMesh {
         /// メッシュが東西方向に長い場合、メッシュの北東端は正方形の右の辺上にあるので UV(1,y) (0<y<1) です。
         /// メッシュが南北方向に長い場合、メッシュの北東端は正方形の上の辺上にあるので UV(x,1) (0<x<1) です。
         /// 頂点の高さは考慮しません。
-        void setUVForMap(Mesh& mesh) {
-            auto [min, max] = calcBoundingBox2D(mesh);
+        void setUVForMap(Mesh& mesh, const TVec2d min, const TVec2d max) { // NOLINT(performance-unnecessary-value-param)
             auto& vertices = mesh.getVertices();
             auto vertices_count = vertices.size();
             auto uv = std::vector<TVec2f>();
@@ -46,12 +45,41 @@ namespace plateau::polygonMesh {
             }
             mesh.setUV1(std::move(uv));
         }
+
+        void replaceStr(std::string& str, const std::string& from, const std::string& to) {
+            const auto pos = str.find(from);
+            const auto len = from.length();
+            if(pos == std::string::npos || from.empty()) return;
+            str.replace(pos, len, to);
+        }
+
+        std::shared_ptr<std::vector<TileCoordinate>> getTiles(const TVec2d min, const TVec2d max, int zoom_level, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
+            const auto geo_min = geo_reference.unproject(TVec3d(min.x, -99999, min.y));
+            const auto geo_max = geo_reference.unproject(TVec3d(max.x, 99999, max.y));
+            const auto extent = Extent(geo_min, geo_max);
+            return TileProjection::getTileCoordinates(extent, zoom_level);
+        }
+
+        std::string expandMapUrlTemplate(const std::string& map_url_template, const int zoom_level, const TileCoordinate tile) {
+            auto url = map_url_template;
+            replaceStr(url, "{z}", std::to_string(zoom_level));
+            replaceStr(url, "{y}", std::to_string(tile.row));
+            replaceStr(url, "{x}", std::to_string(tile.column));
+            return url;
+        }
     }
 
-    void MapAttacher::attach(Model& model, const GeoReference& geo_reference) {
+    void MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
         auto meshes = model.getAllMeshes();
         for(auto mesh : meshes) {
-            setUVForMap(*mesh);
+            const auto [min, max] = calcBoundingBox2D(*mesh);
+            setUVForMap(*mesh, min, max);
+            Client client = Client();
+            const auto tiles = getTiles(min, max, zoom_level, geo_reference);
+            for(const auto& tile : *tiles) {
+                const auto url = expandMapUrlTemplate(map_url_template, zoom_level, tile);
+                client.download(map_download_dest.u8string(), url);
+            }
         }
     }
 }

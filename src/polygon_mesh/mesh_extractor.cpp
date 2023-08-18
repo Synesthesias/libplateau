@@ -12,6 +12,7 @@ namespace {
     using namespace plateau;
     using namespace polygonMesh;
     using namespace dataset;
+    namespace fs = std::filesystem;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options) {
         return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
@@ -125,7 +126,10 @@ namespace {
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(city_model.getGmlPath()).getPackage();
         if(package == PredefinedCityModelPackage::Relief){
-            MapAttacher::attach(out_model, geo_reference);
+            const auto gml_path = fs::u8path(city_model.getGmlPath());
+            const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "-map");
+            // TODO 下の引数であるURLとzoomLevelはユーザーが指定できるようにする
+            MapAttacher::attach(out_model, "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" , map_download_dest, 15, geo_reference);
         }
     }
 }
