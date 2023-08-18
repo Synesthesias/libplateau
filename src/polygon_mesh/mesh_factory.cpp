@@ -1,5 +1,6 @@
 #include <plateau/polygon_mesh/mesh_factory.h>
 #include "citygml/texture.h"
+#include "citygml/material.h"
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>
 #include <cassert>
@@ -7,6 +8,8 @@
 #include <filesystem>
 
 #include "plateau/polygon_mesh/mesh_merger.h"
+
+
 
 namespace plateau::polygonMesh {
     using namespace citygml;
@@ -89,7 +92,16 @@ namespace plateau::polygonMesh {
                 }
             }
 
-            out_mesh.addSubMesh(texture_path, 0, out_mesh.getIndices().size() - 1);
+            // Materialを取得し SubMesh に設定します。設定されていない場合nullptrが設定されます。
+            auto material = polygon.getMaterialFor("rgbTexture");
+            if (material == nullptr) {
+                // rgbTextureのthemeが存在しない場合
+                auto themes = polygon.getAllMaterialThemes(true);
+                if (!themes.empty())
+                    material = polygon.getMaterialFor(themes.at(0));
+            }
+
+            out_mesh.addSubMesh(texture_path, material, 0, out_mesh.getIndices().size() - 1);
         }
 
         void findAllPolygonsInGeometry(

@@ -37,12 +37,13 @@ namespace plateau::polygonMesh {
             size_t offset = prev_indices_count;
             for (const auto& other_sub_mesh : other_sub_meshes) {
                 const auto& texture_path = other_sub_mesh.getTexturePath();
+                auto material = other_sub_mesh.getMaterial();
                 size_t start_index = other_sub_mesh.getStartIndex() + offset;
                 size_t end_index = other_sub_mesh.getEndIndex() + offset;
                 assert(start_index <= end_index);
                 assert(end_index < mesh.getIndices().size());
                 assert((end_index - start_index + 1) % 3 == 0);
-                mesh.addSubMesh(texture_path, start_index, end_index);
+                mesh.addSubMesh(texture_path, material, start_index, end_index);
             }
         }
 
