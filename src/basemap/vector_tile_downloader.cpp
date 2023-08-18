@@ -23,33 +23,54 @@ VectorTileDownloader::VectorTileDownloader(
 }
 
 
+namespace {
+    void replaceStr(std::string& str, const std::string& from, const std::string& to) {
+        const auto pos = str.find(from);
+        const auto len = from.length();
+        if(pos == std::string::npos || from.empty()) return;
+        str.replace(pos, len, to);
+    }
+
+    /**
+     * URLに含まれる{x},{y},{z}をTileCoordinateの数値に置き換えて返します。
+     */
+    std::string expandMapUrlTemplate(const std::string& map_url_template,const TileCoordinate tile) {
+        auto url = map_url_template;
+        replaceStr(url, "{z}", std::to_string(tile.zoom_level));
+        replaceStr(url, "{y}", std::to_string(tile.row));
+        replaceStr(url, "{x}", std::to_string(tile.column));
+        return url;
+    }
+
+    /// URLからhostを取り出します。
+    std::string calcHost(const std::string& url) {
+        const auto http_pos = url.find("http");
+        if(http_pos == std::string::npos) {
+            throw std::runtime_error("Url does not start with http");
+        }
+        const auto double_slash_pos = url.find("//");
+        if(double_slash_pos == std::string::npos) {
+            throw std::runtime_error("Url does not contain //");
+        }
+        auto slash_pos = url.find('/', double_slash_pos + 2);
+        if(slash_pos == std::string::npos) {
+            slash_pos = url.length();
+        }
+        return url.substr(0, slash_pos);
+    }
+
+}
+
 void VectorTileDownloader::download(
-    const std::string& url,
+    const std::string& url_template,
     const std::string& destination,
     const TileCoordinate& coordinate,
     VectorTile& out_vector_tile
 ) {
     out_vector_tile.coordinate = coordinate;
 
-    //URI編集
-    size_t first = 0;
-    auto last = url.find_first_of('/');
-    std::vector<std::string> strs;
-
-    while (first < url.size()) {
-        std::string subStr(url, first, last - first);
-        strs.push_back(subStr);
-
-        first = last + 1ull;
-        last = url.find_first_of('/', first);
-
-        if (last == std::string::npos) {
-            last = url.size();
-        }
-    }
-
-    std::string host = strs[0] + "/" + strs[1] + "/" + strs[2];
-    std::string path = "/" + strs[3] + "/" + strs[4] + "/" + std::to_string(coordinate.zoom_level) + "/" + std::to_string(coordinate.column) + "/" + std::to_string(coordinate.row) + ".png";
+    const auto path = expandMapUrlTemplate(url_template, coordinate);
+    const auto host = calcHost(path);
 
     httplib::Client client(host);
     std::string body;
@@ -80,10 +101,10 @@ void VectorTileDownloader::download(
     out_vector_tile.image_path = file_path.u8string();
 }
 
-std::shared_ptr<VectorTile> VectorTileDownloader::download(const std::string& url, const std::string& destination,
-    const TileCoordinate& coordinate) {
+std::shared_ptr<VectorTile> VectorTileDownloader::download(const std::string& url_template, const std::string& destination,
+                                                           const TileCoordinate& coordinate) {
     auto result = std::make_shared<VectorTile>();
-    download(url, destination, coordinate, *result);
+    download(url_template, destination, coordinate, *result);
     return result;
 }
 

@@ -1,9 +1,8 @@
 #include <plateau/polygon_mesh/map_attacher.h>
 #include <plateau/basemap/tile_projection.h>
-#include <plateau/network/client.h>
+#include <plateau/basemap/vector_tile_downloader.h>
 
 namespace plateau::polygonMesh {
-    using namespace plateau::network;
     namespace fs = std::filesystem;
 
     namespace {
@@ -46,27 +45,30 @@ namespace plateau::polygonMesh {
             mesh.setUV1(std::move(uv));
         }
 
-        void replaceStr(std::string& str, const std::string& from, const std::string& to) {
-            const auto pos = str.find(from);
-            const auto len = from.length();
-            if(pos == std::string::npos || from.empty()) return;
-            str.replace(pos, len, to);
-        }
-
-        std::shared_ptr<std::vector<TileCoordinate>> getTiles(const TVec2d min, const TVec2d max, int zoom_level, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
+        Extent getExtent(const TVec2d min, const TVec2d max, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
             const auto geo_min = geo_reference.unproject(TVec3d(min.x, -99999, min.y));
             const auto geo_max = geo_reference.unproject(TVec3d(max.x, 99999, max.y));
-            const auto extent = Extent(geo_min, geo_max);
-            return TileProjection::getTileCoordinates(extent, zoom_level);
+            return {geo_min, geo_max};
         }
 
-        std::string expandMapUrlTemplate(const std::string& map_url_template, const int zoom_level, const TileCoordinate tile) {
-            auto url = map_url_template;
-            replaceStr(url, "{z}", std::to_string(zoom_level));
-            replaceStr(url, "{y}", std::to_string(tile.row));
-            replaceStr(url, "{x}", std::to_string(tile.column));
-            return url;
+        /**
+         * VectorTileDownloaderを利用して地図をダウンロードします。
+         * 戻り値はダウンロードした画像パスの配列です。ただし、ダウンロードに失敗した分は空文字列が入ります。
+         */
+        std::vector<std::string> download(const VectorTileDownloader& downloader) {
+            auto downloaded_path = std::vector<std::string>();
+            auto count = downloader.getTileCount();
+            for(int i=0; i<count; i++) {
+                auto tile = downloader.download(i);
+                auto path = std::string("");
+                if(tile->result == HttpResult::Success) {
+                    path = tile->image_path;
+                }
+                downloaded_path.push_back(path);
+            }
+            return downloaded_path;
         }
+
     }
 
     void MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
@@ -74,12 +76,10 @@ namespace plateau::polygonMesh {
         for(auto mesh : meshes) {
             const auto [min, max] = calcBoundingBox2D(*mesh);
             setUVForMap(*mesh, min, max);
-            Client client = Client();
-            const auto tiles = getTiles(min, max, zoom_level, geo_reference);
-            for(const auto& tile : *tiles) {
-                const auto url = expandMapUrlTemplate(map_url_template, zoom_level, tile);
-                client.download(map_download_dest.u8string(), url);
-            }
+            auto extent = getExtent(min, max, geo_reference);
+            auto downloader = VectorTileDownloader(map_download_dest.u8string(), extent, zoom_level);
+            downloader.setUrl(map_url_template);
+            auto image_paths = download(downloader);
         }
     }
 }
