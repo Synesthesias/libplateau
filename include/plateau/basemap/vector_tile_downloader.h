@@ -85,11 +85,14 @@ public:
     std::shared_ptr<VectorTile> download(int index) const;
     bool download(int index, VectorTile& out_vector_tile) const;
 
-    /// TileCoordinateの地図タイルをダウンロードしたとき、その画像ファイルがどこに配置されるべきかを返します。
-    static std::filesystem::path calcDestinationPath(const TileCoordinate& coord, const std::string& destination);
+    /**
+     * TileCoordinateの地図タイルをダウンロードしたとき、その画像ファイルがどこに配置されるべきかを返します。
+     * 具体的には、与えられたパス(destination)の末尾にzoom_levelフォルダ、columnフォルダ、row.extension を付与したパスを返します。
+     */
+    static std::filesystem::path calcDestinationPath(const TileCoordinate& coord, const std::string& destination, const std::string& file_extension);
     std::filesystem::path calcDestinationPath(int index) const;
 
-    const std::string& getUrl();
+    const std::string& getUrl() const;
     /// ここでいうURLとは、タイル画像の座標をプレースホルダとして文字列 "{x}","{y}","{z}"を含めたものを想定します。
     void setUrl(const std::string& value);
     void setExtent(const plateau::geometry::Extent& extent);
