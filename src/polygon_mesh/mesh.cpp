@@ -135,7 +135,7 @@ namespace plateau::polygonMesh {
 
             // 前と同じマテリアルかどうか判定します。
             if (!is_different_tex) {
-                auto& last_material = sub_meshes_.rbegin()->getMaterial();
+                auto last_material = sub_meshes_.rbegin()->getMaterial();
                 if (material != nullptr && last_material != nullptr)
                     is_different_tex = material->getId() != last_material->getId();
                 else if ((material == nullptr && last_material != nullptr) || (material != nullptr && last_material == nullptr))
