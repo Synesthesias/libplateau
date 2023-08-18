@@ -236,8 +236,8 @@ namespace plateau::dataset {
         void copyFiles(const std::set<std::string>& path_set, const fs::path& src_base_path,
                        const fs::path& dest_base_path) {
             for (const auto& path: path_set) {
-                const auto src = fs::path(src_base_path).append(path).make_preferred();
-                const auto dest = fs::path(dest_base_path).append(path).make_preferred();
+                const auto src = fs::path(src_base_path).append(path).make_preferred().lexically_normal();
+                const auto dest = fs::path(dest_base_path).append(path).make_preferred().lexically_normal();
                 if (!fs::exists(src)) {
                     std::cout << "file not exist : " << src.u8string() << std::endl;
                     continue;
