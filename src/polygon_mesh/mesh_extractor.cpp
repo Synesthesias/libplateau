@@ -125,11 +125,11 @@ namespace {
 
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(city_model.getGmlPath()).getPackage();
-        if(package == PredefinedCityModelPackage::Relief){
+        if(package == PredefinedCityModelPackage::Relief && options.attach_map_tile){
             const auto gml_path = fs::u8path(city_model.getGmlPath());
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
             // TODO 下の引数であるURLとzoomLevelはユーザーが指定できるようにする
-            MapAttacher::attach(out_model, "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" , map_download_dest, 15, geo_reference);
+            MapAttacher::attach(out_model, "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" , map_download_dest, options.map_tile_zoom_level , geo_reference);
         }
     }
 }

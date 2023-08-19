@@ -33,7 +33,9 @@ namespace plateau::polygonMesh {
                 coordinate_zone_id(9), // 東京で歪みの少ない直交座標系をデフォルトとします。
                 exclude_city_object_outside_extent(true),
                 exclude_polygons_outside_extent(false),
-                extent(geometry::Extent::all()) // 全範囲をデフォルトとします。
+                extent(geometry::Extent::all()), // 全範囲をデフォルトとします。
+                attach_map_tile(true),
+                map_tile_zoom_level(15)
                 {}
 
     public:
@@ -74,5 +76,16 @@ namespace plateau::polygonMesh {
         bool exclude_polygons_outside_extent;
 
         geometry::Extent extent;
+
+        /**
+         * 土地でのみ利用します。
+         * 地図タイルを貼り付けるかどうかです。
+         */
+        bool attach_map_tile;
+        /**
+         * 土地でのみ利用します。
+         * URLで地図タイルをダウンロードする場合のズームレベルです。
+         */
+        int map_tile_zoom_level;
     };
 }

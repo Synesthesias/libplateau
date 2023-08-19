@@ -10,8 +10,7 @@ namespace PLATEAU.Test.GeometryModel
         {
             using var cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var options = MeshExtractOptions.DefaultValue();
-            options.MinLOD = 2;
-            options.MaxLOD = 2;
+            options.SetLODRange(2, 2);
 
             var model = Model.Create();
             MeshExtractor.Extract(ref model, cityModel, options);
