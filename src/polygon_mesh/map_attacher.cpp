@@ -1,6 +1,6 @@
 #include <plateau/polygon_mesh/map_attacher.h>
-#include <plateau/basemap/tile_projection.h>
 #include <plateau/basemap/vector_tile_downloader.h>
+#include <cfloat>
 
 namespace plateau::polygonMesh {
     namespace fs = std::filesystem;
