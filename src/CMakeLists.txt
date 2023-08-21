@@ -48,7 +48,6 @@ add_subdirectory(dataset)
 add_subdirectory(network)
 add_subdirectory(texture)
 
-
 # libファイルを1つに結合します。
 if(BUILD_LIB_TYPE STREQUAL "static")
 

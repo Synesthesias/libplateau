@@ -89,6 +89,14 @@ namespace plateau::texture {
 
     TexturePacker::~TexturePacker() = default;
 
+    TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
+        : canvas_width_(width)
+        , canvas_height_(height) {
+        for (auto i = 0; i < internal_canvas_count; ++i) {
+            canvases_.emplace_back(width, height);
+        }
+    }
+
     void TexturePacker::process(Model& model) {
         for (size_t i = 0; i < model.getRootNodeCount(); ++i) {
             const auto& child_node = model.getRootNodeAt(i);

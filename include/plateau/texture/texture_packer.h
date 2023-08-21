@@ -143,13 +143,7 @@ namespace plateau::texture {
     public:
         const int default_resolution = 2048;
 
-        explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8)
-            : canvas_width_(width)
-            , canvas_height_(height) {
-            for (auto i = 0; i < internal_canvas_count; ++i) {
-                canvases_.emplace_back(width, height);
-            }
-        }
+        explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8);
 
         ~TexturePacker();
 
