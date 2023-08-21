@@ -35,7 +35,8 @@ namespace plateau::polygonMesh {
                 exclude_polygons_outside_extent(false),
                 extent(geometry::Extent::all()), // 全範囲をデフォルトとします。
                 attach_map_tile(true),
-                map_tile_zoom_level(15)
+                map_tile_zoom_level(15),
+                map_tile_url("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg")
                 {}
 
     public:
@@ -82,10 +83,24 @@ namespace plateau::polygonMesh {
          * 地図タイルを貼り付けるかどうかです。
          */
         bool attach_map_tile;
+
         /**
          * 土地でのみ利用します。
          * URLで地図タイルをダウンロードする場合のズームレベルです。
          */
         int map_tile_zoom_level;
+
+        /**
+         * 土地でのみ利用します。
+         * URLで地図タイルをダウンロードする場合のURLであり、文字列として"{x}","{y}","{z}"を含むものです。
+         * C#とC++でマーシャリングする関係上、charの固定長配列である必要があります。
+         * 配列長を変更する場合、C#の MeshExtractOptions.cs にも変更を加える必要があります。
+         *
+         * 1000文字の根拠:
+         * Wikipediaで登録されている長い言葉のページのURLが収まれば常識的に十分だろうと考えました。
+         * 下のブログによると、2008年時点で最も長いURLは705文字です。
+         * https://ctrlshift.hatenadiary.org/entry/20080119/1200719590
+         */
+        char map_tile_url[1000];
     };
 }

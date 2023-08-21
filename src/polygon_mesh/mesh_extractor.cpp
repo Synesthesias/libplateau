@@ -129,7 +129,7 @@ namespace {
             const auto gml_path = fs::u8path(city_model.getGmlPath());
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
             // TODO 下の引数であるURLとzoomLevelはユーザーが指定できるようにする
-            MapAttacher::attach(out_model, "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" , map_download_dest, options.map_tile_zoom_level , geo_reference);
+            MapAttacher::attach(out_model, options.map_tile_url , map_download_dest, options.map_tile_zoom_level , geo_reference);
         }
     }
 }
