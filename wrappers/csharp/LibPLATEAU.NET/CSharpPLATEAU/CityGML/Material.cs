@@ -4,6 +4,7 @@ using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using static PLATEAU.CityGML.Material;
 
 namespace PLATEAU.CityGML
 {
@@ -11,68 +12,22 @@ namespace PLATEAU.CityGML
     /// <summary>
     /// マテリアル情報です。
     /// </summary>
-    public class Material : Appearance
+    public class Material : Appearance, IEquatable<Material>
     {
         internal Material(IntPtr handle) : base(handle)
         {
         }
 
-        /// <summary>
-        /// マテリアル情報を構造体にしてDictionaryのKeyとして利用します
-        /// </summary>
-        public struct MaterialStruct : IEquatable<MaterialStruct>
+        // IEquatable
+        public bool Equals(Material other)
         {
-            public MaterialStruct(PlateauVector3f df, PlateauVector3f em, PlateauVector3f sp, float am, float sh, float tr, bool sm)
-            {
-                Diffuse = new Vector3(df.X, df.Y, df.Z);
-                Emissive = new Vector3(em.X, em.Y, em.Z);
-                Specular = new Vector3(sp.X, sp.Y, sp.Z);
-                AmbientIntensity = am;
-                Shininess = sh;
-                Transparency = tr;
-                IsSmooth = sm;
-            }
-            
-            public Vector3 Diffuse { get; }
-            public Vector3 Emissive { get; }
-            public Vector3 Specular { get; }
-            public float AmbientIntensity { get; }
-            public float Shininess { get; }
-            public float Transparency { get; }
-            public bool IsSmooth { get; }
-
-            public bool Equals(MaterialStruct other)
-            {
-                return Diffuse.Equals(other.Diffuse) &&
+            return Diffuse.Equals(other.Diffuse) &&
                     Emissive.Equals(other.Emissive) &&
                     Specular.Equals(other.Specular) &&
                     AmbientIntensity.Equals(other.AmbientIntensity) &&
                     Shininess.Equals(other.Shininess) &&
                     Transparency.Equals(other.Transparency) &&
                     IsSmooth.Equals(other.IsSmooth);
-            }
-        }
-
-        public MaterialStruct StructValue => new MaterialStruct(Diffuse,Emissive, Specular, AmbientIntensity,Shininess,Transparency,IsSmooth);
-
-        /// <summary>
-        /// マテリアル情報を文字列として返します
-        /// </summary>
-        public string StringValue
-        {
-            get
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("{0},{1},{2},{3},{4},{5},{6}", 
-                    Diffuse.ToString(), 
-                    Emissive.ToString(), 
-                    Specular.ToString(), 
-                    AmbientIntensity.ToString(), 
-                    Shininess.ToString(), 
-                    Transparency.ToString(), 
-                    Convert.ToInt32(IsSmooth).ToString());
-                return sb.ToString();
-            }
         }
 
         /// <summary> マテリアル情報を返します。 </summary>

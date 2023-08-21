@@ -11,7 +11,7 @@ namespace plateau::polygonMesh {
         }
 
         /**
-         * @brief SubMeshˆÈŠO‚ÌŒ`óî•ñ‚ğƒ}[ƒW‚µ‚Ü‚·B
+         * @brief SubMeshä»¥å¤–ã®å½¢çŠ¶æƒ…å ±ã‚’ãƒãƒ¼ã‚¸ã—ã¾ã™ã€‚
          */
         void mergeShape(Mesh& mesh, const Mesh& other_mesh, const bool invert_mesh_front_back) {
             const auto vertex_count = mesh.getVertices().size();
@@ -24,8 +24,8 @@ namespace plateau::polygonMesh {
         }
 
         /**
-         * mergeŠÖ” ‚ÌƒeƒNƒXƒ`ƒƒ‚ ‚è”Å‚Å‚·B
-         * ƒeƒNƒXƒ`ƒƒ‚É‚Â‚¢‚Ä‚ÍAƒ}[ƒW‚µ‚½Œ‹‰ÊA”ÍˆÍ‚ÆƒeƒNƒXƒ`ƒƒ‚ğ‘Î‰•t‚¯‚é SubMesh ‚ª’Ç‰Á‚³‚ê‚Ü‚·B
+         * mergeé–¢æ•° ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Šç‰ˆã§ã™ã€‚
+         * ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ã¤ã„ã¦ã¯ã€ãƒãƒ¼ã‚¸ã—ãŸçµæœã€ç¯„å›²ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¯¾å¿œä»˜ã‘ã‚‹ SubMesh ãŒè¿½åŠ ã•ã‚Œã¾ã™ã€‚
          */
         void mergeWithTexture(Mesh& mesh, const Mesh& other_mesh, const bool invert_mesh_front_back) {
             if (!isValidMesh(other_mesh)) return;
@@ -48,8 +48,8 @@ namespace plateau::polygonMesh {
         }
 
         /**
-         * mergeŠÖ” ‚ÌƒeƒNƒXƒ`ƒƒ–³‚µ”Å‚Å‚·B
-         * ¶¬‚³‚ê‚é Mesh ‚Ì SubMesh ‚Í‚½‚¾1‚Â‚Å‚ ‚èA‚»‚ÌƒeƒNƒXƒ`ƒƒƒpƒX‚Í‹ó•¶š—ñ‚Æ‚È‚è‚Ü‚·B
+         * mergeé–¢æ•° ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ç„¡ã—ç‰ˆã§ã™ã€‚
+         * ç”Ÿæˆã•ã‚Œã‚‹ Mesh ã® SubMesh ã¯ãŸã 1ã¤ã§ã‚ã‚Šã€ãã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ã‚¹ã¯ç©ºæ–‡å­—åˆ—ã¨ãªã‚Šã¾ã™ã€‚
          */
         void mergeWithoutTexture(
             Mesh& mesh, const Mesh& other_mesh, const bool invert_mesh_front_back) {
