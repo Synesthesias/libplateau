@@ -1,10 +1,7 @@
 ﻿using PLATEAU.Interop;
 using PLATEAU.Native;
 using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
-using static PLATEAU.CityGML.Material;
 
 namespace PLATEAU.CityGML
 {
@@ -16,18 +13,6 @@ namespace PLATEAU.CityGML
     {
         internal Material(IntPtr handle) : base(handle)
         {
-        }
-
-        // IEquatable
-        public bool Equals(Material other)
-        {
-            return Diffuse.Equals(other.Diffuse) &&
-                    Emissive.Equals(other.Emissive) &&
-                    Specular.Equals(other.Specular) &&
-                    AmbientIntensity.Equals(other.AmbientIntensity) &&
-                    Shininess.Equals(other.Shininess) &&
-                    Transparency.Equals(other.Transparency) &&
-                    IsSmooth.Equals(other.IsSmooth);
         }
 
         /// <summary> マテリアル情報を返します。 </summary>
@@ -58,6 +43,24 @@ namespace PLATEAU.CityGML
         public bool IsSmooth =>
             DLLUtil.GetNativeValue<bool>(Handle,
                 NativeMethods.plateau_material_is_smooth);
+
+        // DictionaryのKeyとして使用するためにIEquatableのメソッドで値のみの比較を行います。
+        public bool Equals(Material other)
+        {
+            return Diffuse.Equals(other.Diffuse) &&
+                    Emissive.Equals(other.Emissive) &&
+                    Specular.Equals(other.Specular) &&
+                    AmbientIntensity.Equals(other.AmbientIntensity) &&
+                    Shininess.Equals(other.Shininess) &&
+                    Transparency.Equals(other.Transparency) &&
+                    IsSmooth.Equals(other.IsSmooth);
+        }
+
+        // DictionaryのKeyとして使用するために比較する値のみのObjectのHashCodeを返します
+        public override int GetHashCode()
+        {
+            return new { Diffuse, Emissive, Specular, AmbientIntensity, Shininess, Transparency, IsSmooth }.GetHashCode(); ;
+        }
 
         private static class NativeMethods
         {
