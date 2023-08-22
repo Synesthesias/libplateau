@@ -28,6 +28,7 @@ namespace plateau::polygonMesh {
             max_lod(PolygonMeshUtils::max_lod_in_specification_), // 仕様上ありえる最大LODをデフォルトとします。
             min_lod(0), // 仕様上ありえる最小LODをデフォルトとします。
             export_appearance(true),
+            include_attr_info(true),
             grid_count_of_side(10),
             unit_scale(1.0),
             coordinate_zone_id(9), // 東京で歪みの少ない直交座標系をデフォルトとします。
@@ -45,6 +46,7 @@ namespace plateau::polygonMesh {
         unsigned max_lod;
         unsigned min_lod;
         bool export_appearance;
+        bool include_attr_info;
         /**
          * グリッド分けする時の、1辺の分割数です。
          * この数の2乗がグリッドの数となり、実際にはそれより細かくグループ分けされます。
