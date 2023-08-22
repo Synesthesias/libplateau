@@ -139,6 +139,8 @@ namespace plateau::texture {
         std::string save_file_path_;
     };
 
+    // 実装上の注意：
+    // TexturePacker にAPIを増やすとき、変更が必要なのは texture_packer.cpp に加えて texture_packer_dummy.cpp もであることに注意してください。
     class TexturePacker {
     public:
         const int default_resolution = 2048;

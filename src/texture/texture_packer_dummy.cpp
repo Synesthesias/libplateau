@@ -7,6 +7,9 @@
 #include <vector>
 
 namespace plateau::texture {
+    /**
+     * texture_packer.cpp はモバイル向けのビルドが通らないので、CMakeによって texture_packer_dummy.cpp に置き換えられます。
+     */
     TexturePacker::~TexturePacker() = default;
 
     TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
