@@ -117,15 +117,14 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     // 画像ファイルがコピー先に存在します。
     auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
     std::vector<std::string> images = {
-            "hnap0876.tif",
-            "hnap0878.tif",
-            "hnap0285.tif",
-            "hnap0276.tif",
-            "hnap0275.tif",
-            "hnap0034.tif",
-            "hnap0286.tif",
-            "hnap0279.tif"
-
+            "hnap0034.png",
+            "hnap0275.jpg",
+            "hnap0276.jpg",
+            "hnap0279.tif",
+            "hnap0285.png",
+            "hnap0286.jpg",
+            "hnap0876.jpg",
+            "hnap0878.tif"
     };
     checkFilesExist(images, image_dir);
 

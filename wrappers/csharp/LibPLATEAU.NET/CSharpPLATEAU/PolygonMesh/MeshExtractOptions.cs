@@ -69,8 +69,17 @@ namespace PLATEAU.PolygonMesh
         /// この方法であれば 10km×10km の地形など巨大なオブジェクトにも対応できます。
         /// </summary>
         [MarshalAs(UnmanagedType.U1)] public bool ExcludePolygonsOutsideExtent;
+
+        /// <summary>
+        /// テクスチャ結合（複数のテクスチャ画像を結合する機能）を有効にするかどうかを bool で指定します。
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool EnableTexturePacking;
+
+        /// <summary> テクスチャ結合時の結合先のテクスチャ画像の解像度（縦：texture_packing_resolution x 横:texture_packing_resolution） </summary>
+        public uint TexturePackingResolution;
+
         /// <summary>  対象範囲を緯度・経度・高さで指定します。 </summary>
-         public Extent Extent;
+        public Extent Extent;
         
         /// <summary> デフォルト値の設定を返します。 </summary>
         public static MeshExtractOptions DefaultValue()

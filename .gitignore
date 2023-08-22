@@ -29,3 +29,6 @@ bin
 *.DotSettings.user
 
 # Test data
+
+# Intermidiate build data
+3rdparty/*/*.tar.gz

@@ -12,6 +12,7 @@ namespace PLATEAU.Test.GeometryModel
             var options = MeshExtractOptions.DefaultValue();
             options.MinLOD = 2;
             options.MaxLOD = 2;
+            options.EnableTexturePacking = true;
 
             var model = Model.Create();
             MeshExtractor.Extract(ref model, cityModel, options);
