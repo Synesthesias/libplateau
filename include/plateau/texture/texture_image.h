@@ -7,9 +7,10 @@
 #include <plateau/texture/jpeg_texture_image.h>
 #include <plateau/texture/png_texture_image.h>
 #include <plateau/texture/tiff_texture_image.h>
+#include <libplateau_api.h>
 
 namespace plateau::texture {
-    class TextureImage {
+    class LIBPLATEAU_EXPORT TextureImage {
     public:
         enum class TextureType {
             None, Jpeg, Png, Tiff
@@ -64,11 +65,5 @@ namespace plateau::texture {
         size_t image_height_{};
         unsigned char image_color_{};
         std::string image_file_path_;
-
-        const std::string png_extension_ = ".png";
-        const std::string jpeg_extension_ = ".jpg";
-        const std::string tiff_extension_ = ".tif";
-
-        static bool checkFileExtension(const std::string& file_name, const std::string& file_extension);
     };
 }

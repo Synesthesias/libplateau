@@ -2,26 +2,29 @@
 #include <plateau/texture/texture_image.h>
 
 #include <string>
+#include <filesystem>
 
 namespace plateau::texture {
+    namespace fs = std::filesystem;
     TextureImage::TextureImage(const std::string& file_name, const size_t height_limit) {
         reset();
 
         image_file_path_ = file_name;
+        auto extension = fs::u8path(file_name).extension().u8string();
 
-        if (checkFileExtension(file_name, jpeg_extension_)) {
+        if (extension == ".jpg" || extension == ".jpeg") {
             texture_type_ = TextureType::Jpeg;
             jpeg_image_.init(file_name, height_limit);
 
             image_width_ = jpeg_image_.getWidth();
             image_height_ = jpeg_image_.getHeight();
-        } else if (checkFileExtension(file_name, tiff_extension_)) {
+        } else if (extension == ".tif" || extension == ".tiff") {
             texture_type_ = TextureType::Tiff;
             tiff_image_.init(file_name);
 
             image_width_ = tiff_image_.getWidth();
             image_height_ = tiff_image_.getHeight();
-        } else if (checkFileExtension(file_name, png_extension_)) {
+        } else if (extension == ".png") {
             texture_type_ = TextureType::Png;
             png_image_.init(file_name);
 
@@ -48,16 +51,6 @@ namespace plateau::texture {
         image_height_ = 0;
         image_color_ = 0;
         texture_type_ = TextureType::None;
-    }
-
-    bool TextureImage::checkFileExtension(const std::string& file_name, const std::string& file_extension) {
-        auto is_valid = false;
-
-        const size_t last_pos = file_name.find(file_extension);
-        if (file_name.length() == (last_pos + file_extension.length())) {
-            is_valid = true;
-        }
-        return is_valid;
     }
 
     // 指定されたファイル名で、jpegファイルを保存
