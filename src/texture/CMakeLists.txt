@@ -1,4 +1,5 @@
 if(IOS OR ANDROID)
+    # モバイル向けには texture_packer.cpp のビルドが通らないのでダミーに置き換えます。
     target_sources(plateau PRIVATE
         "texture_packer_dummy.cpp"
     )
