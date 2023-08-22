@@ -79,7 +79,16 @@ if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
 
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "" FORCE)
+# libjpeg-turboが複数architecture向けビルドをサポートしていないため限定
+# https://github.com/libjpeg-turbo/libjpeg-turbo/blob/main/CMakeLists.txt#L101
+set(COUNT 1)
+foreach(ARCH ${CMAKE_OSX_ARCHITECTURES})
+  if(COUNT GREATER 1)
+    message(FATAL_ERROR "libjpeg-turbo contains assembly code, so it cannot be built with multiple values in CMAKE_OSX_ARCHITECTURES.")
+  endif()
+  math(EXPR COUNT "${COUNT}+1")
+endforeach()
+
 
 if(NOT IOS)
   # このバージョン数値は Unreal Engine と合わせないと Unreal SDK ビルド時に大量の警告が出ます
@@ -158,9 +167,11 @@ if( NOT(IOS OR ANDROID) )
   endif()
 
   ## zlib(FBX SDKの依存関係)
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
   add_subdirectory("3rdparty/zlib")
-  set(ZLIB_INCLUDE_DIR "${CMAKE_BINARY_DIR}/3rdparty/zlib")
+  set(ZLIB_INCLUDE_DIR
+    "${CMAKE_BINARY_DIR}/3rdparty/zlib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
+  include_directories("${ZLIB_INCLUDE_DIR}")
 
   if(UNIX)
     set(ZLIB_LIBRARY "${CMAKE_BINARY_DIR}/3rdparty/zlib/libz.a" CACHE STRING "" FORCE)
@@ -235,6 +246,30 @@ set(HTTPLIB_COMPILE TRUE CACHE BOOL "" FORCE)
 add_subdirectory("3rdparty/cpp-httplib")
 set(CPPHTTPLIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/cpp-httplib")
 
+if (NOT(IOS OR ANDROID))
+  ## libjpeg-turbo
+  include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
+
+  ## libpng
+  set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
+  set(PNG_STATIC ON CACHE BOOL "Build static lib")
+  set(PNG_TESTS OFF CACHE BOOL "Build libpng tests")
+  set(PNG_ARM_NEON "off"
+          CACHE STRING "Enable ARM NEON optimizations: on|off; on is default" FORCE)
+  set(PNG_ARM_NEON_OPT "0"
+     CACHE STRING "Enable ARM NEON optimizations")
+  add_subdirectory("3rdparty/libpng")
+  set(PNG_INCLUDE_DIRS
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
+    "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
+
+  ## libtiff
+  set(jpeg OFF CACHE BOOL "use libjpeg" FORCE)
+  set(webp OFF CACHE BOOL "use libwebp (required for WEBP compression)" FORCE)
+  add_subdirectory("3rdparty/libtiff")
+  set(TIFF_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libtiff/libtiff")
+endif()
+
 ####################################
 # libplateau 本体の Cmake ファイルです。
 
@@ -249,6 +284,7 @@ if( NOT(IOS OR ANDROID) )
   add_subdirectory("examples/export_gltf")
   add_subdirectory("examples/export_fbx")
   add_subdirectory("examples/https_mock_test")
+  add_subdirectory("examples/texture_packing")
 endif()
 
 # python

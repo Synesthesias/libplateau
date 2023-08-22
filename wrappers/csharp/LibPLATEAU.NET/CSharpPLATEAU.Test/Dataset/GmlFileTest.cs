@@ -60,7 +60,7 @@ namespace PLATEAU.Test.Dataset
             string[] shouldExists = 
             {
                 "udx/bldg/53392642_bldg_6697_op2.gml",
-                "udx/bldg/53392642_bldg_6697_appearance/hnap0034.tif",
+                "udx/bldg/53392642_bldg_6697_appearance/hnap0034.png",
                 "codelists/Common_prefecture.xml"
             };
             foreach (string filePath in shouldExists)
@@ -115,13 +115,13 @@ namespace PLATEAU.Test.Dataset
             };
             var expectedImages = new[]
             {
-                "53392642_bldg_6697_appearance/hnap0034.tif",
-                "53392642_bldg_6697_appearance/hnap0275.tif",
-                "53392642_bldg_6697_appearance/hnap0276.tif",
+                "53392642_bldg_6697_appearance/hnap0034.png",
+                "53392642_bldg_6697_appearance/hnap0275.jpg",
+                "53392642_bldg_6697_appearance/hnap0276.jpg",
                 "53392642_bldg_6697_appearance/hnap0279.tif",
-                "53392642_bldg_6697_appearance/hnap0285.tif",
-                "53392642_bldg_6697_appearance/hnap0286.tif",
-                "53392642_bldg_6697_appearance/hnap0876.tif",
+                "53392642_bldg_6697_appearance/hnap0285.png",
+                "53392642_bldg_6697_appearance/hnap0286.jpg",
+                "53392642_bldg_6697_appearance/hnap0876.jpg",
                 "53392642_bldg_6697_appearance/hnap0878.tif"
             };
             CollectionAssert.AreEquivalent(expectedCodelists, codelistPaths);

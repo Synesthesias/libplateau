@@ -34,6 +34,8 @@ namespace plateau::polygonMesh {
                 exclude_city_object_outside_extent(true),
                 exclude_polygons_outside_extent(false),
                 extent(geometry::Extent::all()), // 全範囲をデフォルトとします。
+                enable_texture_packing(false),
+                texture_packing_resolution(2048),
                 attach_map_tile(true),
                 map_tile_zoom_level(15),
                 map_tile_url("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg")
@@ -76,6 +78,15 @@ namespace plateau::polygonMesh {
          */
         bool exclude_polygons_outside_extent;
 
+        /**
+         * テクスチャ結合（複数のテクスチャ画像を結合する機能）を有効にするかどうかを bool で指定します。
+         */
+        bool enable_texture_packing;
+
+        /**
+         * テクスチャ結合時の結合先のテクスチャ画像の解像度（縦：texture_packing_resolution x 横:texture_packing_resolution）
+         */
+        unsigned texture_packing_resolution;
         geometry::Extent extent;
 
         /**

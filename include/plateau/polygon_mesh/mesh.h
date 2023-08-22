@@ -42,6 +42,9 @@ namespace plateau::polygonMesh {
         const UV& getUV1() const;
         const UV& getUV4() const;
         const std::vector<SubMesh>& getSubMeshes() const;
+
+        void setSubMeshes(std::vector<SubMesh>& sub_mesh_list);
+
         void reserve(long long vertex_count);
 
         /// 頂点リストの末尾に追加します。

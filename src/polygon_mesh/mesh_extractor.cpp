@@ -7,11 +7,13 @@
 #include <plateau/polygon_mesh/mesh_factory.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/dataset/gml_file.h>
+#include <plateau/texture/texture_packer.h>
 
 namespace {
     using namespace plateau;
     using namespace polygonMesh;
     using namespace dataset;
+    using namespace texture;
     namespace fs = std::filesystem;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options) {
@@ -112,7 +114,6 @@ namespace {
                     lod_node.addChildNode(std::move(primary_node));
                     primary_mesh_factory.incrementPrimaryIndex();
                 }
-
             }
             break;
             default:
@@ -125,11 +126,18 @@ namespace {
 
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(city_model.getGmlPath()).getPackage();
-        if(package == PredefinedCityModelPackage::Relief && options.attach_map_tile){
+        if(package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
             const auto gml_path = fs::u8path(city_model.getGmlPath());
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
             // TODO 下の引数であるURLとzoomLevelはユーザーが指定できるようにする
-            MapAttacher::attach(out_model, options.map_tile_url , map_download_dest, options.map_tile_zoom_level , geo_reference);
+            MapAttacher::attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
+                                geo_reference);
+        }
+
+        // テクスチャを結合します。
+        if (options.enable_texture_packing) {
+            TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
+            packer.process(out_model);
         }
     }
 }

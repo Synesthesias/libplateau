@@ -23,7 +23,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2022, macos-latest, ubuntu-20.04]
-
+        arch: [x86_64]
+        include:
+          - os: macos-latest
+            arch: arm64
     steps:
 
       - uses: actions/checkout@v3
@@ -39,6 +42,7 @@ jobs:
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
           visual_studio_version: "17 2022"
+          arch: ${{ matrix.arch }}
 
   # 2つ目のジョブ。
   # AndroidとiOS用にライブラリをビルド。
@@ -84,13 +88,15 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Android
           mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
           cp ~/a/libplateau-windows/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           cp ~/a/libplateau-windows/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           cp ~/a/libplateau-ubuntu-20.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
-          cp ~/a/libplateau-macos-latest/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-macos-latest-x86_64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-macos-latest-arm64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
           cp ~/a/libplateau-ios-dll/* ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
 
@@ -98,10 +104,12 @@ jobs:
         run: |
           mkdir -p ~/a/plateau-plugins/static-libs/windows
           mkdir -p ~/a/plateau-plugins/static-libs/linux
-          mkdir -p ~/a/plateau-plugins/static-libs/macos
+          mkdir -p ~/a/plateau-plugins/static-libs/macos/x86_64
+          mkdir -p ~/a/plateau-plugins/static-libs/macos/arm64
           cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
           cp ~/a/libplateau-ubuntu-20.04/*.a ~/a/plateau-plugins/static-libs/linux
-          cp ~/a/libplateau-macos-latest/*.a ~/a/plateau-plugins/static-libs/macos
+          cp ~/a/libplateau-macos-latest-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
+          cp ~/a/libplateau-macos-latest-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
 
       - name: upload artifact
         uses: actions/upload-artifact@v3

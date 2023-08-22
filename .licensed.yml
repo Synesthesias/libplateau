@@ -14,3 +14,6 @@ reviewed:
     - pybind11 # BSD-3ライセンスなのでOK
     - zlib # 再配布可能、要ライセンス表示
     - libcitygml # LGPLライセンス、改変部分をpublicリポジトリで公開しているのでOK
+    - libjpeg-turbo # 再配布可能、要ライセンス表示
+    - libpng # 再配布可能、要ライセンス表示
+    - libtiff # 再配布可能、要ライセンス表示
