@@ -5,10 +5,12 @@
 #include "citygml/cityobject.h"
 #include <plateau/polygon_mesh/mesh_factory.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
+#include <plateau/texture/texture_packer.h>
 
 namespace {
     using namespace plateau;
     using namespace polygonMesh;
+    using namespace texture;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options) {
         return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
@@ -108,7 +110,6 @@ namespace {
                     lod_node.addChildNode(std::move(primary_node));
                     primary_mesh_factory.incrementPrimaryIndex();
                 }
-
             }
             break;
             default:
@@ -118,6 +119,12 @@ namespace {
             out_model.addNode(std::move(lod_node));
         }
         out_model.eraseEmptyNodes();
+
+        if (options.enable_texture_packing) {
+
+            TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
+            packer.process(out_model);
+        }
     }
 }
 

@@ -28,6 +28,10 @@ namespace plateau::polygonMesh {
         return texture_path_;
     }
 
+    void SubMesh::setTexturePath(std::string file_path) {
+        texture_path_ = file_path;
+    }    
+
     void SubMesh::setEndIndex(int end_index) {
         end_index_ = end_index;
     }
