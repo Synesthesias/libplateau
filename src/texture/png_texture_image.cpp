@@ -6,6 +6,8 @@
 #include <cstring>
 #include <string>
 #include <cstdarg>
+#include <filesystem>
+#include <iostream>
 
 #include "png.h"
 
@@ -27,7 +29,8 @@ namespace plateau::texture {
         png_infop info;
         png_byte signature[8];
 
-        FILE* fi = fopen(file_name.c_str(), "rb");
+        auto file_path_wstring = std::filesystem::u8path(file_name).wstring();
+        FILE* fi = _wfopen(file_path_wstring.c_str(), L"rb");
         if (fi == nullptr) {
             return false;
         }
@@ -63,6 +66,7 @@ namespace plateau::texture {
         const png_bytepp datap = png_get_rows(png, info);
 
         if (type != PNG_COLOR_TYPE_RGB) {
+            std::cerr << "Invalid png type. Note that png_texture_image.cpp does not support png with alpha channel currently." << std::endl;
             png_destroy_read_struct(&png, &info, nullptr);
             fclose(fi);
             return false;

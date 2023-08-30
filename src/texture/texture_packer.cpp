@@ -133,7 +133,7 @@ namespace plateau::texture {
         int index = 0;
         std::vector<SubMesh> sub_mesh_list;
 
-        for (index = 0; index < sub_meshes.size(); ) {
+        for (index = 0; index < sub_meshes.size(); ) { // TODO continue前やループ末尾の++indexはこのforの(括弧)内に移動できるのでは？
 
             auto& sub_mesh = sub_meshes[index];
             const auto& tex_url = sub_mesh.getTexturePath();
