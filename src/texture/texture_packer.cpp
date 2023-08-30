@@ -111,10 +111,10 @@ namespace plateau::texture {
     }
 
     void TexturePacker::processNodeRecursive(const Node& node) {
+        Mesh* mesh = node.getMesh();
+        processMesh(mesh);
         for (int i = 0; i < node.getChildCount(); ++i) {
             const auto& child_node = node.getChildAt(i);
-            Mesh* mesh = child_node.getMesh();
-            processMesh(mesh);
             processNodeRecursive(child_node);
         }
     }
@@ -171,6 +171,7 @@ namespace plateau::texture {
             }
 
             // どこにもパック出来なかった場合
+            // TODO ここおかしくない？　
             if (target_canvas == nullptr) {
                 // 占有率最大のcanvasを取得
                 double max_coverage = 0.0;

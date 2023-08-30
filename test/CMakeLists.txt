@@ -44,6 +44,7 @@ add_executable(plateau_test
     "test_fbx_writer.cpp"
     "test_lod_searcher.cpp"
     "test_texture_image.cpp"
+    "test_texture_packer.cpp"
         )
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
