@@ -57,7 +57,7 @@ namespace plateau::texture {
 
         png_init_io(png, fi);
         png_set_sig_bytes(png, read_size);
-        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16, nullptr);
+        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, nullptr);
 
         const unsigned int width = png_get_image_width(png, info);
         const unsigned int height = png_get_image_height(png, info);
@@ -66,7 +66,7 @@ namespace plateau::texture {
         const png_bytepp datap = png_get_rows(png, info);
 
         if (type != PNG_COLOR_TYPE_RGB) {
-            std::cerr << "Invalid png type. Note that png_texture_image.cpp does not support png with alpha channel currently." << std::endl;
+            std::cerr << "Invalid png type." << std::endl;
             png_destroy_read_struct(&png, &info, nullptr);
             fclose(fi);
             return false;
