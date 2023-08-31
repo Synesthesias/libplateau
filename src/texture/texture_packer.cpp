@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace plateau::texture {
     using namespace polygonMesh;
@@ -171,7 +172,6 @@ namespace plateau::texture {
             }
 
             // どこにもパック出来なかった場合
-            // TODO ここおかしくない？　
             if (target_canvas == nullptr) {
                 // 占有率最大のcanvasを取得
                 double max_coverage = 0.0;
@@ -204,13 +204,20 @@ namespace plateau::texture {
             new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
             sub_mesh_list.push_back(new_sub_mesh);
 
-            std::vector<TVec2f> new_uv1;
-            for (auto& uv1 : mesh->getUV1()) {
-                const double uv_x = u + (uv1.x * u_fac);
-                const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
-                new_uv1.emplace_back(uv_x, uv_y);
+            // SubMesh中に含まれる頂点番号を求めます。
+            const auto& indices = mesh->getIndices();
+            std::set<size_t> vertices_in_sub_mesh;
+            for(auto i = sub_mesh.getStartIndex(); i <= sub_mesh.getEndIndex(); i++) {
+                vertices_in_sub_mesh.insert(indices.at(i));
             }
-            mesh->setUV1(new_uv1);
+            // SubMesh中に含まれる頂点について、UVを変更します。
+            auto& uv1 = mesh->getUV1();
+            for(const auto vs : vertices_in_sub_mesh) {
+                const double uv_x = u + (uv1.at(vs).x * u_fac);
+                const double uv_y = 1 - v - v_fac + (uv1.at(vs).y * v_fac);
+                uv1[vs] = TVec2f{(float)uv_x, (float)uv_y};
+            }
+
             ++index;
         }
         mesh->setSubMeshes(sub_mesh_list);
