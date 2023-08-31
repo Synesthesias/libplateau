@@ -66,6 +66,7 @@ namespace {
 
 TEST_F(TexturePackerTest, foobarTest) {  // NOLINT // TODO テストに名前をつける
     auto model = createTestModel();
-    auto packer = TexturePacker(513, 513, 10);
+    auto packer = TexturePacker(513, 513, 1);
     packer.process(model);
+    
 }
