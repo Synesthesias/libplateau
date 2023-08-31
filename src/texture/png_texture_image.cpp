@@ -6,6 +6,8 @@
 #include <cstring>
 #include <string>
 #include <cstdarg>
+#include <filesystem>
+#include <iostream>
 
 #include "png.h"
 
@@ -27,7 +29,13 @@ namespace plateau::texture {
         png_infop info;
         png_byte signature[8];
 
-        FILE* fi = fopen(file_name.c_str(), "rb");
+#ifdef WIN32
+        auto file_path_string = std::filesystem::u8path(file_name).wstring();
+        FILE* fi = _wfopen(file_path_string.c_str(), L"rb");
+#else
+        auto file_path_string = std::filesystem::u8path(file_name).u8string();
+        FILE* fi = fopen(file_path_string.c_str(), "rb");
+#endif
         if (fi == nullptr) {
             return false;
         }
@@ -54,7 +62,7 @@ namespace plateau::texture {
 
         png_init_io(png, fi);
         png_set_sig_bytes(png, read_size);
-        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16, nullptr);
+        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, nullptr);
 
         const unsigned int width = png_get_image_width(png, info);
         const unsigned int height = png_get_image_height(png, info);
@@ -63,6 +71,7 @@ namespace plateau::texture {
         const png_bytepp datap = png_get_rows(png, info);
 
         if (type != PNG_COLOR_TYPE_RGB) {
+            std::cerr << "Invalid png type." << std::endl;
             png_destroy_read_struct(&png, &info, nullptr);
             fclose(fi);
             return false;
