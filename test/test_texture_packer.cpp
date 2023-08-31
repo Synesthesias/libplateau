@@ -27,7 +27,7 @@ namespace {
                 "test_image_8.jpg", "test_image_9.jpg", "test_image_10.tif", "test_image_11.tif",
                 "test_image_12.png", "test_image_13.png", "test_image_14.jpg", "test_image_16.jpg"
         };
-        static const auto texture_dir = fs::u8path(u8"./data/日本語パステスト/test_texture_packer");
+        static const auto texture_dir = fs::u8path(u8"../data/日本語パステスト/test_texture_packer");
         TVec3d base_pos = {0, 0, 0};
         unsigned int base_id = 0;
         for(int i=0; i<16; i++) {
@@ -62,11 +62,43 @@ namespace {
         return model;
 
     }
+
+    /// 上のcreateTestModelで生成したModelに対してTexturePacker.processを実行した結果のUV1が想定通りかをチェックします。
+    bool isUvOK(Model& model){
+        std::vector<TVec2f> expect_uv;
+        static const std::vector<TVec2f> rectangle_uv = {
+                {0, 0}, {0,1}, {1, 1}, {1, 0}
+        };
+        for(int i=0; i<4; i++){
+            expect_uv.insert(expect_uv.end(), rectangle_uv.begin(), rectangle_uv.end());
+        }
+        const auto& uv = model.getRootNodeAt(0).getMesh()->getUV1();
+        const auto count = uv.size();
+        for(int i=0; i<count; i++) {
+            const auto diff = uv[i] - expect_uv[i];
+            const auto len = std::sqrt(diff.x * diff.x + diff.y + diff.y);
+            if(len > 0.01){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void deletePackedTextures(Model& model) {
+        const auto& sub_meshes = model.getRootNodeAt(0).getMesh()->getSubMeshes();
+        auto count = sub_meshes.size();
+        for(int i=0; i<count; i++){
+            const auto& texture_path = fs::u8path(sub_meshes.at(i).getTexturePath());
+            if(texture_path.empty()) continue;
+            fs::remove(texture_path);
+        }
+    }
 }
 
-TEST_F(TexturePackerTest, foobarTest) {  // NOLINT // TODO テストに名前をつける
+TEST_F(TexturePackerTest, testUV) {  // NOLINT
     auto model = createTestModel();
     auto packer = TexturePacker(513, 513, 1);
     packer.process(model);
-    
+    EXPECT_TRUE(isUvOK(model));
+    deletePackedTextures(model);
 }
