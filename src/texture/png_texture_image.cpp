@@ -31,7 +31,7 @@ namespace plateau::texture {
 
 #ifdef WIN32
         auto file_path_string = std::filesystem::u8path(file_name).wstring();
-        FILE* fi = _wfopen(file_path_wstring.c_str(), L"rb");
+        FILE* fi = _wfopen(file_path_string.c_str(), L"rb");
 #else
         auto file_path_string = std::filesystem::u8path(file_name).u8string();
         FILE* fi = fopen(file_path_string.c_str(), "rb");
