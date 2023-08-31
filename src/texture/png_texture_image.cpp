@@ -29,8 +29,13 @@ namespace plateau::texture {
         png_infop info;
         png_byte signature[8];
 
-        auto file_path_wstring = std::filesystem::u8path(file_name).wstring();
+#ifdef WIN32
+        auto file_path_string = std::filesystem::u8path(file_name).wstring();
         FILE* fi = _wfopen(file_path_wstring.c_str(), L"rb");
+#else
+        auto file_path_string = std::filesystem::u8path(file_name).u8string();
+        FILE* fi = fopen(file_path_string.c_str(), "rb");
+#endif
         if (fi == nullptr) {
             return false;
         }
