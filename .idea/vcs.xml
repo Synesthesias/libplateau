@@ -7,14 +7,12 @@
     <mapping directory="$PROJECT_DIR$/3rdparty/glTF-SDK/glTF-SDK" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/json" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/libcitygml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rdparty/libpng" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/3rdparty/libtiff" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/libxml2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/openssl-cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/xerces-c" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/zlib" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Debug-Unity/RapidJSON-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Debug-Unity/RapidJSON-src/thirdparty/gtest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Release-Unity/RapidJSON-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Release-Unity/RapidJSON-src/thirdparty/gtest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/test/gtest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/wrappers/python/pybind11" vcs="Git" />
   </component>

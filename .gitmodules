@@ -28,3 +28,9 @@
 [submodule "3rdparty/libxml2"]
 	path = 3rdparty/libxml2
 	url = https://github.com/GNOME/libxml2
+[submodule "3rdparty/libpng"]
+	path = 3rdparty/libpng
+	url = https://github.com/glennrp/libpng
+[submodule "3rdparty/libtiff"]
+	path = 3rdparty/libtiff
+	url = https://github.com/libsdl-org/libtiff

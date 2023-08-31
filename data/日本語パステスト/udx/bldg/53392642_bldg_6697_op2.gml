@@ -28,7 +28,7 @@
 					<gen:value uom="m">0.050</gen:value>
 				</gen:measureAttribute>
 			</gen:genericAttributeSet>
-			<bldg:measuredHeight uom="m">2.8（テスト）</bldg:measuredHeight>
+			<bldg:measuredHeight uom="m">2.8</bldg:measuredHeight>
 			<bldg:lod0RoofEdge>
 				<gml:MultiSurface>
 					<gml:surfaceMember>
@@ -11319,8 +11319,8 @@
 			<app:theme>rgbTexture</app:theme>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0876.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0876.jpg</app:imageURI>
+					<app:mimeType>image/jpg</app:mimeType>
 					<app:target uri="#poly_HNAP0876_p2401_3">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0876_p2401_3">0.7576057 0.6513783 0.7576057 0.6901396 0.7476923 0.6901396 0.7476923 0.6513783 0.7576057 0.6513783</app:textureCoordinates>
@@ -12231,8 +12231,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0285.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0285.png</app:imageURI>
+					<app:mimeType>image/png</app:mimeType>
 					<app:target uri="#poly_HNAP0285_p2524_0">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0285_p2524_0">0.4683193 0.8235294 0.0033344 0.8234677 0.0030675 0.0008819 0.4681583 0.0008819 0.4683193 0.8235294</app:textureCoordinates>
@@ -12267,8 +12267,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0276.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0276.jpg</app:imageURI>
+					<app:mimeType>image/jpg</app:mimeType>
 					<app:target uri="#poly_HNAP0276_p2397_0">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0276_p2397_0">0.0016283 0.9999639 0.955766 0.7041197 0.9565942 1 0.0016283 0.9999639</app:textureCoordinates>
@@ -12333,8 +12333,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0275.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0275.jpg</app:imageURI>
+					<app:mimeType>image/jpg</app:mimeType>
 					<app:target uri="#poly_HNAP0275_p2417_4">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0275_p2417_4">0.6292135 0.473236 0.6292135 0.462033 0.631085 0.462033 0.631085 0.473236 0.6292135 0.473236</app:textureCoordinates>
@@ -14301,8 +14301,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0034.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0034.png</app:imageURI>
+					<app:mimeType>image/png</app:mimeType>
 					<app:target uri="#poly_HNAP0034_p2437_2">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0034_p2437_2">0.3794872 0.2083333 0.3794872 0.0695513 0.4086272 0.0695513 0.4086272 0.2083333 0.3794872 0.2083333</app:textureCoordinates>
@@ -14403,8 +14403,8 @@
 			</app:surfaceDataMember>
 			<app:surfaceDataMember>
 				<app:ParameterizedTexture>
-					<app:imageURI>53392642_bldg_6697_appearance/hnap0286.tif</app:imageURI>
-					<app:mimeType>image/tif</app:mimeType>
+					<app:imageURI>53392642_bldg_6697_appearance/hnap0286.jpg</app:imageURI>
+					<app:mimeType>image/jpg</app:mimeType>
 					<app:target uri="#poly_HNAP0286_p2525_3">
 						<app:TexCoordList>
 							<app:textureCoordinates ring="#line_HNAP0286_p2525_3">0.7165818 0.8737864 0.9935137 0.8737864 0.9935137 0.9921312 0.7165818 0.9921312 0.7165818 0.8737864</app:textureCoordinates>

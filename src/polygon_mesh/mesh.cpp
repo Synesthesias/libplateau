@@ -44,6 +44,10 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
+    void Mesh::setSubMeshes(std::vector<SubMesh>& sub_mesh_list) {
+        sub_meshes_ = sub_mesh_list;
+    }
+
     void Mesh::reserve(long long vertex_count) {
         vertices_.reserve(vertex_count);
         indices_.reserve(vertex_count);
@@ -93,6 +97,14 @@ namespace plateau::polygonMesh {
                 indices_.at(vert1ID) = vert3;
                 indices_.at(vert3ID) = vert1;
             }
+        }
+    }
+
+    void Mesh::setUV1(const std::vector<TVec2f>& other_uv_1) {
+        // UV1を上書きします。
+        uv1_.clear();
+        for (const auto& vec : other_uv_1) {
+            uv1_.push_back(vec);
         }
     }
 

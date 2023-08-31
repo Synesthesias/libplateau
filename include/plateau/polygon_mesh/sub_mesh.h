@@ -30,6 +30,8 @@ namespace plateau::polygonMesh {
 
         std::shared_ptr<const citygml::Material> getMaterial() const;
 
+        void setTexturePath(std::string file_path);
+
         void setEndIndex(int end_index);
 
         /// SubMesh の情報を stringstream に書き込みます。
