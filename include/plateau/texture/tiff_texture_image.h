@@ -16,10 +16,9 @@ namespace plateau::texture {
             NONE_COMPRESSION, LZW_COMPRESSION
         } COMPRESSION_TYPE_t;
 
-        explicit TiffTextureImage();
-
-        bool init(const std::string& fileName);
-        ~TiffTextureImage() {
+        explicit TiffTextureImage(const std::string& file_name) :
+                load_succeed(init(file_name))
+        {
         }
 
         size_t getWidth() const {
@@ -31,10 +30,12 @@ namespace plateau::texture {
         std::vector<std::vector<uint8_t>>& getBitmapData();
 
     private:
+        bool init(const std::string& fileName);
         std::vector<std::vector<uint8_t>> bitmapData;
         unsigned int image_width;
         unsigned int image_height;
-        unsigned int image_channels;
+        uint16_t image_channels;
+        bool load_succeed;
     };
 } // namespace tiff
 

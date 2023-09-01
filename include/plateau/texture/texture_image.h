@@ -54,7 +54,7 @@ namespace plateau::texture {
         TextureType texture_type_;
         std::optional<JpegTextureImage> jpeg_image_;
         std::optional<PngTextureImage> png_image_;
-        TiffTextureImage tiff_image_{};
+        std::optional<TiffTextureImage> tiff_image_;
         size_t image_width_{};
         size_t image_height_{};
         unsigned char image_color_{};

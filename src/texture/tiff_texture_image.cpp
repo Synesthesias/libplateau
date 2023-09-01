@@ -7,9 +7,6 @@
 #include <filesystem>
 
 namespace plateau::texture {
-    TiffTextureImage::TiffTextureImage() : image_width(0), image_height(0), image_channels(0) {
-
-    }
 
     std::vector<std::vector<uint8_t>>&
         TiffTextureImage::getBitmapData() {

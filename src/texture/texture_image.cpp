@@ -21,10 +21,10 @@ namespace plateau::texture {
             image_height_ = jpeg_image_.value().getHeight();
         } else if (extension == ".tif" || extension == ".tiff") {
             texture_type_ = TextureType::Tiff;
-            tiff_image_.init(file_name);
+            tiff_image_ = TiffTextureImage(file_name);
 
-            image_width_ = tiff_image_.getWidth();
-            image_height_ = tiff_image_.getHeight();
+            image_width_ = tiff_image_.value().getWidth();
+            image_height_ = tiff_image_.value().getHeight();
         } else if (extension == ".png") {
             texture_type_ = TextureType::Png;
             png_image_ = PngTextureImage(file_name);
@@ -68,7 +68,7 @@ namespace plateau::texture {
         } else if (image.texture_type_ == TextureType::Tiff) {
 
             auto pimage = image.tiff_image_;
-            pack(x_delta, y_delta, pimage, jpeg_image_.value());
+            pack(x_delta, y_delta, pimage.value(), jpeg_image_.value());
         } else if (image.texture_type_ == TextureType::Png) {
             auto pimage = image.png_image_;
             pack(x_delta, y_delta, pimage.value(), jpeg_image_.value());
