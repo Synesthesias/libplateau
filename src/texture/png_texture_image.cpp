@@ -12,10 +12,6 @@
 #include "png.h"
 
 namespace plateau::texture {
-    png_structp png_ptr;
-    png_infop info_ptr;
-    size_t number_of_passes;
-    png_bytep* row_pointers;
 
 
     std::vector<std::vector<uint8_t>>& PngTextureImage::getBitmapData() {

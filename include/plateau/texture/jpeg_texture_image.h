@@ -39,7 +39,7 @@ namespace plateau::texture {
 
         bool save(const std::string& file_name);
         void pack(size_t x_delta, size_t y_delta, const JpegTextureImage& image);
-        void packPng(const size_t x_delta, const size_t y_delta, PngTextureImage& image);
+        void packPng(size_t x_delta,size_t y_delta, PngTextureImage& image);
 
     private:
         /**
@@ -48,16 +48,16 @@ namespace plateau::texture {
          * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
          * \return 読み込みに成功した場合true、それ以外はfalse
          */
-        bool init(const std::string& file_name, const size_t height_limit);
+        bool init(const std::string& file_name, size_t height_limit);
         void init(size_t width, size_t height, uint8_t color);
 
         std::shared_ptr<::jpeg_error_mgr> jpegErrorManager;
         std::vector<uint8_t> bitmap_data_;
         std::string                       filePath;
-        size_t                            image_width_;
-        size_t                            image_height;
-        size_t                            image_channels_;
-        int                               colourSpace;
+        size_t                            image_width_ = 0;
+        size_t                            image_height = 0;
+        int                            image_channels_ = 0;
+        int                               colourSpace = 0;
     };
 
 } // namespace plateau::texture

@@ -49,7 +49,7 @@ namespace plateau::texture {
             const auto regular_name = std::filesystem::u8path(file_name).u8string();
             std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regular_name.c_str(), "rb"), ptr);
 #endif
-            if (inFile.get() == NULL) {
+            if (inFile == nullptr) {
                 throw std::runtime_error("ERROR: Open: " + file_name);
         }
 
@@ -106,7 +106,7 @@ namespace plateau::texture {
             const auto regular_name = std::filesystem::u8path(file_name).u8string();
             FILE* outFile = fopen(regular_name.c_str(), "wb");
 #endif
-            if (outFile == NULL) {
+            if (outFile == nullptr) {
                 return false;
         }
 
@@ -164,7 +164,6 @@ namespace plateau::texture {
         const auto dst_stride = image_width_ * image_channels_;
 
         const auto& src = image.getBitmapData();
-        // ReSharper disable once CppLocalVariableMayBeConst
         auto& dst = bitmap_data_;
 
         for (auto y = 0; y < src_height; ++y) {

@@ -34,9 +34,9 @@ namespace plateau::texture {
     private:
         bool init(const std::string& file_name);
         std::vector<std::vector<uint8_t>> bitmap_data_;
-        unsigned int image_width_;
-        unsigned int image_height_;
-        unsigned int image_channels_;
+        unsigned int image_width_ = 0;
+        unsigned int image_height_ = 0;
+        unsigned int image_channels_ = 0;
         bool load_succeed;
     };
 }
