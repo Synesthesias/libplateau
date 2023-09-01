@@ -16,8 +16,6 @@ namespace plateau::texture {
             None, Jpeg, Png, Tiff
         };
 
-        explicit TextureImage() = default;
-
         /**
          * \brief 指定されたファイルから画像を読み込み、テクスチャ画像を作成します。
          * \param file_name 画像ファイルのパス

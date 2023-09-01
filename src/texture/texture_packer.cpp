@@ -69,12 +69,6 @@ namespace plateau::texture {
         return save_file_path_;
     }
 
-    void TextureAtlasCanvas::init(size_t width, size_t height) {
-        canvas_width_ = width;
-        canvas_height_ = height;
-        this->clear();
-    }
-
     void TextureAtlasCanvas::clear() {
         vertical_range_ = 0;
         capacity_ = 0;
@@ -88,7 +82,6 @@ namespace plateau::texture {
         this->clear();
     }
 
-    TexturePacker::~TexturePacker() = default;
 
     TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
         : canvas_width_(width)

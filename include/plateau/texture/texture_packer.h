@@ -96,13 +96,10 @@ namespace plateau::texture {
         const unsigned char gray = 80;
 
 
-        explicit TextureAtlasCanvas(size_t width, size_t height) : vertical_range_(0), capacity_(0), coverage_(0) {
-            canvas_width_ = width;
-            canvas_height_ = height;
-            canvas_.init(width, height, gray);
-        }
-
-        ~TextureAtlasCanvas() {
+        explicit TextureAtlasCanvas(size_t width, size_t height) :
+                vertical_range_(0), capacity_(0), coverage_(0),
+                canvas_(width, height, gray),
+                canvas_width_(width), canvas_height_(height) {
         }
 
         void setSaveFilePathIfEmpty(const std::string& original_file_path);
@@ -112,7 +109,7 @@ namespace plateau::texture {
             return canvas_;
         }
 
-        void init(size_t width, size_t height);
+
         void clear();
         void flush();
 
@@ -146,7 +143,7 @@ namespace plateau::texture {
 
         explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8);
 
-        ~TexturePacker();
+        ~TexturePacker() = default;
 
         void process(plateau::polygonMesh::Model& model);
         void processNodeRecursive(const plateau::polygonMesh::Node& node);
