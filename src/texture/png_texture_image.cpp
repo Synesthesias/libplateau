@@ -14,7 +14,7 @@
 namespace plateau::texture {
 
 
-    std::vector<std::vector<uint8_t>>& PngTextureImage::getBitmapData() {
+    const std::vector<std::vector<uint8_t>>& PngTextureImage::getBitmapData() const {
         return bitmap_data_;
     }
 
@@ -30,7 +30,7 @@ namespace plateau::texture {
         auto file_path_string = std::filesystem::u8path(file_name).u8string();
         FILE* fi = fopen(file_path_string.c_str(), "rb");
 #endif
-        if (fi == nullptr) {
+        if (fi == NULL) {
             return false;
         }
 
@@ -41,22 +41,22 @@ namespace plateau::texture {
             return false;
         }
 
-        png = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-        if (png == nullptr) {
+        png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        if (png == NULL) {
             fclose(fi);
             return false;
         }
 
         info = png_create_info_struct(png);
-        if (info == nullptr) {
-            png_destroy_read_struct(&png, nullptr, nullptr);
+        if (info == NULL) {
+            png_destroy_read_struct(&png, NULL, NULL);
             fclose(fi);
             return false;
         }
 
         png_init_io(png, fi);
         png_set_sig_bytes(png, read_size);
-        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, nullptr);
+        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, NULL);
 
         const unsigned int width = png_get_image_width(png, info);
         const unsigned int height = png_get_image_height(png, info);
@@ -66,16 +66,14 @@ namespace plateau::texture {
 
         if (type != PNG_COLOR_TYPE_RGB) {
             std::cerr << "Invalid png type." << std::endl;
-            png_destroy_read_struct(&png, &info, nullptr);
+            png_destroy_read_struct(&png, &info, NULL);
             fclose(fi);
             return false;
         }
 
         image_width_ = width;
         image_height_ = height;
-        if (type == PNG_COLOR_TYPE_RGB) {
-            image_channels_ = 3;
-        }
+        image_channels_ = 3;
 
         const size_t row_stride = image_width_ * image_channels_;
 
@@ -91,7 +89,7 @@ namespace plateau::texture {
             bitmap_data_.push_back(vec);
         }
 
-        png_destroy_read_struct(&png, &info, nullptr);
+        png_destroy_read_struct(&png, &info, NULL);
         fclose(fi);
 
         return true;

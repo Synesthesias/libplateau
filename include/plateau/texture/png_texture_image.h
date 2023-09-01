@@ -29,7 +29,7 @@ namespace plateau::texture {
             return load_succeed;
         }
 
-        std::vector<std::vector<uint8_t>>& getBitmapData();
+        const std::vector<std::vector<uint8_t>>& getBitmapData() const;
 
     private:
         bool init(const std::string& file_name);
