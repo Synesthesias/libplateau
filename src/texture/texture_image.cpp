@@ -27,11 +27,12 @@ namespace plateau::texture {
             image_height_ = tiff_image_.getHeight();
         } else if (extension == ".png") {
             texture_type_ = TextureType::Png;
-            bool result = png_image_.init(file_name);
+            png_image_ = PngTextureImage(file_name);
+            bool result = png_image_.value().loadSucceed();
             if(!result) std::cerr << "Failed to load png image. file = " << file_name << std::endl;
 
-            image_width_ = png_image_.getWidth();
-            image_height_ = png_image_.getHeight();
+            image_width_ = png_image_.value().getWidth();
+            image_height_ = png_image_.value().getHeight();
         }
     }
     
@@ -70,7 +71,7 @@ namespace plateau::texture {
             pack(x_delta, y_delta, pimage, jpeg_image_.value());
         } else if (image.texture_type_ == TextureType::Png) {
             auto pimage = image.png_image_;
-            pack(x_delta, y_delta, pimage, jpeg_image_.value());
+            pack(x_delta, y_delta, pimage.value(), jpeg_image_.value());
         }
     }
     

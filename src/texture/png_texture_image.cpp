@@ -17,8 +17,6 @@ namespace plateau::texture {
     size_t number_of_passes;
     png_bytep* row_pointers;
 
-    PngTextureImage::PngTextureImage() : image_width_(0), image_height_(0), image_channels_(0) {
-    }
 
     std::vector<std::vector<uint8_t>>& PngTextureImage::getBitmapData() {
         return bitmap_data_;

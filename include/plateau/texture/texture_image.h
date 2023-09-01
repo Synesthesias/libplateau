@@ -47,14 +47,13 @@ namespace plateau::texture {
 
         void save(const std::string& file_name);
         void pack(size_t x_delta, size_t y_delta, const TextureImage& image);
-        void pack(size_t x_delta, size_t y_delta, const JpegTextureImage& image, JpegTextureImage& target_image);
         void pack(size_t x_delta, size_t y_delta, TiffTextureImage& image, JpegTextureImage& target_image);
         void pack(size_t x_delta, size_t y_delta, PngTextureImage& image, JpegTextureImage& target_image);
 
     private:
         TextureType texture_type_;
         std::optional<JpegTextureImage> jpeg_image_;
-        PngTextureImage png_image_{};
+        std::optional<PngTextureImage> png_image_;
         TiffTextureImage tiff_image_{};
         size_t image_width_{};
         size_t image_height_{};
