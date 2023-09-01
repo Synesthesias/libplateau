@@ -3,6 +3,7 @@
 
 #include <string>
 #include <filesystem>
+#include <optional>
 
 #include <plateau/texture/jpeg_texture_image.h>
 #include <plateau/texture/png_texture_image.h>
@@ -23,7 +24,6 @@ namespace plateau::texture {
          */
         explicit TextureImage(const std::string& file_name, const size_t height_limit);
         explicit TextureImage(const size_t width, const size_t height, const size_t gray);
-        ~TextureImage() = default;
 
         void init(size_t width, size_t height, unsigned char gray);
         void reset();
@@ -44,9 +44,6 @@ namespace plateau::texture {
             return image_file_path_;
         }
 
-        JpegTextureImage& getJpegImage() {
-            return jpeg_image_;
-        }
 
         void save(const std::string& file_name);
         void pack(size_t x_delta, size_t y_delta, const TextureImage& image);
@@ -56,7 +53,7 @@ namespace plateau::texture {
 
     private:
         TextureType texture_type_;
-        JpegTextureImage jpeg_image_{};
+        std::optional<JpegTextureImage> jpeg_image_;
         PngTextureImage png_image_{};
         TiffTextureImage tiff_image_{};
         size_t image_width_{};

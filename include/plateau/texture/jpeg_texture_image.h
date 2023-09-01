@@ -13,19 +13,15 @@ struct jpeg_error_mgr;
 namespace plateau::texture {
     class JpegTextureImage {
     public:
-        explicit JpegTextureImage() {
+        explicit JpegTextureImage(const std::string& file_name, size_t height_limit) {
+            init(file_name, height_limit);
         }
 
-        ~JpegTextureImage() = default;
+        explicit JpegTextureImage(size_t width, size_t height, uint8_t color){
+            init(width, height, color);
+        }
 
-        /**
-         * \brief 指定されたファイルから画像を読み込み、テクスチャ画像を作成します。
-         * \param file_name 画像ファイルのパス
-         * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
-         * \return 読み込みに成功した場合true、それ以外はfalse
-         */
-        bool init(const std::string& file_name, const size_t height_limit);
-        void init(size_t width, size_t height, uint8_t color);
+
 
         size_t getWidth() const {
             return image_width_;
@@ -44,6 +40,15 @@ namespace plateau::texture {
         void packPng(const size_t x_delta, const size_t y_delta, PngTextureImage& image);
 
     private:
+        /**
+         * \brief 指定されたファイルから画像を読み込み、テクスチャ画像を作成します。
+         * \param file_name 画像ファイルのパス
+         * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
+         * \return 読み込みに成功した場合true、それ以外はfalse
+         */
+        bool init(const std::string& file_name, const size_t height_limit);
+        void init(size_t width, size_t height, uint8_t color);
+
         std::shared_ptr<::jpeg_error_mgr> jpegErrorManager;
         std::vector<uint8_t> bitmap_data_;
         std::string                       filePath;

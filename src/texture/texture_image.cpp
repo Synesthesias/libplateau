@@ -15,10 +15,10 @@ namespace plateau::texture {
 
         if (extension == ".jpg" || extension == ".jpeg") {
             texture_type_ = TextureType::Jpeg;
-            jpeg_image_.init(file_name, height_limit);
+            jpeg_image_= JpegTextureImage(file_name, height_limit);
 
-            image_width_ = jpeg_image_.getWidth();
-            image_height_ = jpeg_image_.getHeight();
+            image_width_ = jpeg_image_.value().getWidth();
+            image_height_ = jpeg_image_.value().getHeight();
         } else if (extension == ".tif" || extension == ".tiff") {
             texture_type_ = TextureType::Tiff;
             tiff_image_.init(file_name);
@@ -37,14 +37,14 @@ namespace plateau::texture {
     
     TextureImage::TextureImage(const size_t width, const size_t height, const size_t gray) {
         texture_type_ = TextureType::Jpeg;
-        jpeg_image_.init(width, height, gray);
+        jpeg_image_ = JpegTextureImage(width, height, gray);
     }
 
     void TextureImage::init(size_t width, size_t height, unsigned char gray) {
         image_width_ = width;
         image_height_ = height;
         image_color_ = gray;
-        jpeg_image_.init(width, height, gray);
+        jpeg_image_ = JpegTextureImage(width, height, gray);
     }
 
     void
@@ -57,20 +57,20 @@ namespace plateau::texture {
 
     // 指定されたファイル名で、jpegファイルを保存
     void TextureImage::save(const std::string& file_name) {
-        jpeg_image_.save(file_name);
+        jpeg_image_.value().save(file_name);
     }
 
     // 指定された座標（xdelta、ydelta）にimageの画像を転送
     void TextureImage::pack(const size_t x_delta, const size_t y_delta, const TextureImage& image) {
         if (image.texture_type_ == TextureType::Jpeg) {
-            jpeg_image_.pack(x_delta, y_delta, image.jpeg_image_);
+            jpeg_image_.value().pack(x_delta, y_delta, image.jpeg_image_.value());
         } else if (image.texture_type_ == TextureType::Tiff) {
 
             auto pimage = image.tiff_image_;
-            pack(x_delta, y_delta, pimage, jpeg_image_);
+            pack(x_delta, y_delta, pimage, jpeg_image_.value());
         } else if (image.texture_type_ == TextureType::Png) {
             auto pimage = image.png_image_;
-            pack(x_delta, y_delta, pimage, jpeg_image_);
+            pack(x_delta, y_delta, pimage, jpeg_image_.value());
         }
     }
     
