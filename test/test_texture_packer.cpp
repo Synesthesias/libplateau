@@ -10,7 +10,10 @@ namespace fs = std::filesystem;
 class TexturePackerTest : public ::testing::Test {
 public:
     static constexpr int rectangle_count = 16; // テストデータでは、板ポリゴンをこの枚数だけ生成します。
+    static const fs::path texture_dir;
 };
+
+const fs::path TexturePackerTest::texture_dir = fs::u8path(u8"../data/日本語パステスト/test_texture_packer");
 
 namespace {
     /// テスト用のModelを作って返します。
@@ -27,7 +30,7 @@ namespace {
                 "test_image_8.jpg", "test_image_9.jpg", "test_image_10.tif", "test_image_11.tif",
                 "test_image_12.png", "test_image_13.png", "test_image_14.jpg", "test_image_16.jpg"
         };
-        static const auto texture_dir = fs::u8path(u8"../data/日本語パステスト/test_texture_packer");
+
         TVec3d base_pos = {0, 0, 0};
         unsigned int base_id = 0;
         for(int i=0; i < TexturePackerTest::rectangle_count; i++) {
@@ -47,7 +50,7 @@ namespace {
                 TVec2f{0, 0}, TVec2f{0, 1}, TVec2f{1, 1}, TVec2f{1, 0}
             };
 
-            auto texture_path = fs::absolute(fs::path(texture_dir) / fs::u8path(texture_files.at(i)).make_preferred());
+            auto texture_path = fs::absolute(fs::path(TexturePackerTest::texture_dir) / fs::u8path(texture_files.at(i)).make_preferred());
 
             mesh.addVerticesList(vertices);
             mesh.addIndicesList(indices, 0, false);
@@ -96,12 +99,42 @@ namespace {
             fs::remove(texture_path);
         }
     }
+
+    Model packTestData() {
+        auto model = createTestModel();
+        auto packer = TexturePacker(513, 513, 1);
+        packer.process(model);
+        return model;
+    };
 }
 
-TEST_F(TexturePackerTest, testUV) {  // NOLINT
-    auto model = createTestModel();
-    auto packer = TexturePacker(513, 513, 1);
-    packer.process(model);
+TEST_F(TexturePackerTest, isUvOK) {  // NOLINT
+    auto model = packTestData();
     EXPECT_TRUE(isUvOK(model));
+    deletePackedTextures(model);
+}
+
+TEST_F(TexturePackerTest, areFilesExist) {
+    static const std::vector<std::string> expect_files = {
+            "packed_image_test_image_0_000000.jpg",
+            "packed_image_test_image_4_000000.jpg",
+            "packed_image_test_image_8_000000.jpg",
+            "packed_image_test_image_12_000000.jpg"
+    };
+
+    // テクスチャパック前には、パックしたテクスチャは存在しません
+    for(const auto& file_name : expect_files) {
+        const auto path = fs::path(TexturePackerTest::texture_dir) / fs::u8path(file_name);
+        EXPECT_FALSE(fs::exists(path));
+    }
+
+    auto model = packTestData();
+
+    // テクスチャパック後には、パックしたテクスチャが存在します
+    for(const auto& file_name : expect_files) {
+        const auto path = fs::path(TexturePackerTest::texture_dir) / fs::u8path(file_name);
+        EXPECT_TRUE(fs::exists(path));
+    }
+
     deletePackedTextures(model);
 }
