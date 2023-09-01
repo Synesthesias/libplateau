@@ -40,11 +40,11 @@ namespace plateau::texture {
         throw std::runtime_error("unknown image extension.");
     }
     
-    TextureImage::TextureImage(const size_t width, const size_t height, const unsigned char gray) :
-            image_width_(width), image_height_(height), image_color_(gray)
+    TextureImage::TextureImage(const size_t width, const size_t height) :
+            image_width_(width), image_height_(height)
     {
         texture_type_ = TextureType::Jpeg;
-        jpeg_image_ = JpegTextureImage(width, height, gray);
+        jpeg_image_ = JpegTextureImage(width, height, DefaultColor);
     }
 
 
@@ -52,7 +52,6 @@ namespace plateau::texture {
         TextureImage::reset() {
         image_width_ = 0;
         image_height_ = 0;
-        image_color_ = 0;
         texture_type_ = TextureType::None;
     }
 
