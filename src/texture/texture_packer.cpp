@@ -74,7 +74,7 @@ namespace plateau::texture {
         capacity_ = 0;
         container_list_.clear();
         save_file_path_.clear();
-        canvas_.init(canvas_width_, canvas_height_, gray);
+        canvas_ = TextureImage(canvas_width_, canvas_height_, gray);
     }
 
     void TextureAtlasCanvas::flush() {

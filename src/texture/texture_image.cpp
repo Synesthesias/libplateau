@@ -19,12 +19,14 @@ namespace plateau::texture {
 
             image_width_ = jpeg_image_.value().getWidth();
             image_height_ = jpeg_image_.value().getHeight();
+            return;
         } else if (extension == ".tif" || extension == ".tiff") {
             texture_type_ = TextureType::Tiff;
             tiff_image_ = TiffTextureImage(file_name);
 
             image_width_ = tiff_image_.value().getWidth();
             image_height_ = tiff_image_.value().getHeight();
+            return;
         } else if (extension == ".png") {
             texture_type_ = TextureType::Png;
             png_image_ = PngTextureImage(file_name);
@@ -33,20 +35,18 @@ namespace plateau::texture {
 
             image_width_ = png_image_.value().getWidth();
             image_height_ = png_image_.value().getHeight();
+            return;
         }
+        throw std::runtime_error("unknown image extension.");
     }
     
-    TextureImage::TextureImage(const size_t width, const size_t height, const size_t gray) {
+    TextureImage::TextureImage(const size_t width, const size_t height, const unsigned char gray) :
+            image_width_(width), image_height_(height), image_color_(gray)
+    {
         texture_type_ = TextureType::Jpeg;
         jpeg_image_ = JpegTextureImage(width, height, gray);
     }
 
-    void TextureImage::init(size_t width, size_t height, unsigned char gray) {
-        image_width_ = width;
-        image_height_ = height;
-        image_color_ = gray;
-        jpeg_image_ = JpegTextureImage(width, height, gray);
-    }
 
     void
         TextureImage::reset() {

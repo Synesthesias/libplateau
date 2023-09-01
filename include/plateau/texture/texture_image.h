@@ -23,9 +23,8 @@ namespace plateau::texture {
          * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
          */
         explicit TextureImage(const std::string& file_name, const size_t height_limit);
-        explicit TextureImage(const size_t width, const size_t height, const size_t gray);
+        explicit TextureImage(const size_t width, const size_t height, const unsigned char gray);
 
-        void init(size_t width, size_t height, unsigned char gray);
         void reset();
 
         size_t getWidth() const {
