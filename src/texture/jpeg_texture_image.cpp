@@ -8,6 +8,8 @@
 #include <vector>
 #include <regex>
 #include <filesystem>
+#include <cassert>
+#include <iostream>
 
 #include "plateau/texture/png_texture_image.h"
 

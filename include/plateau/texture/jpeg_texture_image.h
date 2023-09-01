@@ -25,7 +25,7 @@ namespace plateau::texture {
          * \return 読み込みに成功した場合true、それ以外はfalse
          */
         bool init(const std::string& file_name, const size_t height_limit);
-        void init(size_t width, size_t height, size_t color);
+        void init(size_t width, size_t height, uint8_t color);
 
         size_t getWidth() const {
             return image_width_;
