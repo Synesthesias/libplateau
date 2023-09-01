@@ -23,10 +23,6 @@ namespace plateau::texture {
             if(!load_succeed) throw std::runtime_error("tiff load failed.");
         }
 
-        bool loadSucceed(){
-            return load_succeed;
-        }
-
         size_t getWidth() const {
             return image_width;
         }
@@ -38,9 +34,9 @@ namespace plateau::texture {
     private:
         bool init(const std::string& fileName);
         std::vector<std::vector<uint8_t>> bitmapData;
-        unsigned int image_width;
-        unsigned int image_height;
-        uint16_t image_channels;
+        unsigned int image_width = 0;
+        unsigned int image_height = 0;
+        uint16_t image_channels = 0;
         bool load_succeed;
     };
 } // namespace tiff

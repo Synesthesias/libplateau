@@ -125,10 +125,9 @@ namespace plateau::texture {
             return;
         }
 
-        int index = 0;
         std::vector<SubMesh> sub_mesh_list;
 
-        for (index = 0; index < sub_meshes.size(); ) { // TODO continue前やループ末尾の++indexはこのforの(括弧)内に移動できるのでは？
+        for (int index = 0; index < sub_meshes.size(); ) { // TODO continue前やループ末尾の++indexはこのforの(括弧)内に移動できるのでは？
 
             auto& sub_mesh = sub_meshes[index];
             const auto& tex_url = sub_mesh.getTexturePath();
@@ -220,7 +219,7 @@ namespace plateau::texture {
     void TextureAtlasCanvas::update(const size_t width, const size_t height, const bool is_new_container) {
 
         capacity_ += (width * height);
-        coverage_ = capacity_ / static_cast<double>(canvas_width_ * canvas_height_) * 100.0;
+        coverage_ = (double)capacity_ / static_cast<double>(canvas_width_ * canvas_height_) * 100.0;
 
         if (is_new_container) {
             vertical_range_ += height;
@@ -240,8 +239,9 @@ namespace plateau::texture {
             container.add(width);
             atlas_info.setAtlasInfo(
                 true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
-                container.getHorizontalRange() / static_cast<double>(canvas_width_), container.getVerticalRange() / static_cast<double>(canvas_height_),
-                width / static_cast<double>(canvas_width_), height / static_cast<double>(canvas_height_));
+                (double)container.getHorizontalRange() / static_cast<double>(canvas_width_),
+                (double)container.getVerticalRange() / static_cast<double>(canvas_height_),
+                (double)width / static_cast<double>(canvas_width_), (double)height / static_cast<double>(canvas_height_));
             this->update(width, height, false);
 
             break;
@@ -252,8 +252,8 @@ namespace plateau::texture {
             container.add(width);
             container_list_.push_back(container);
             atlas_info.setAtlasInfo(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
-                                      container.getHorizontalRange() / static_cast<double>(canvas_width_), container.getVerticalRange() / static_cast<double>(canvas_height_),
-                                      width / static_cast<double>(canvas_width_), height / static_cast<double>(canvas_height_));
+                                    (double)container.getHorizontalRange() / static_cast<double>(canvas_width_), (double)container.getVerticalRange() / static_cast<double>(canvas_height_),
+                                    (double)width / static_cast<double>(canvas_width_), (double)height / static_cast<double>(canvas_height_));
             this->update(width, height, true);
         }
 

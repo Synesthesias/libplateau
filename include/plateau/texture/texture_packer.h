@@ -16,8 +16,6 @@ namespace plateau::texture {
 
         explicit AtlasInfo() : valid_(false), left_(0), top_(0), width_(0), height_(0), u_pos_(0), v_pos_(0), u_factor_(0), v_factor_(0) {
         }
-        ~AtlasInfo() {
-        }
 
         size_t getLeft() const {
             return left_;
@@ -67,8 +65,6 @@ namespace plateau::texture {
     public:
 
         explicit AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range);
-        ~AtlasContainer() {
-        }
 
         size_t getGap() const {
             return gap;
