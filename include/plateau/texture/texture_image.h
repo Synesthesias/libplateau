@@ -22,8 +22,8 @@ namespace plateau::texture {
          * \param file_name 画像ファイルのパス
          * \param height_limit 画像の高さがこの値を超える場合画像データは読み込まれません。
          */
-        explicit TextureImage(const std::string& file_name, const size_t height_limit);
-        explicit TextureImage(const size_t width, const size_t height, const unsigned char gray);
+        explicit TextureImage(const std::string& file_name, size_t height_limit);
+        explicit TextureImage(size_t width, size_t height, unsigned char gray);
 
         void reset();
 
@@ -54,9 +54,9 @@ namespace plateau::texture {
         std::optional<JpegTextureImage> jpeg_image_;
         std::optional<PngTextureImage> png_image_;
         std::optional<TiffTextureImage> tiff_image_;
-        size_t image_width_{};
-        size_t image_height_{};
-        unsigned char image_color_{};
+        size_t image_width_;
+        size_t image_height_;
+        unsigned char image_color_;
         std::string image_file_path_;
     };
 }
