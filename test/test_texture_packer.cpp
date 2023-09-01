@@ -114,7 +114,7 @@ TEST_F(TexturePackerTest, isUvOK) {  // NOLINT
     deletePackedTextures(model);
 }
 
-TEST_F(TexturePackerTest, areFilesExist) {
+TEST_F(TexturePackerTest, packGeneratesTextures) {
     static const std::vector<std::string> expect_files = {
             "packed_image_test_image_0_000000.jpg",
             "packed_image_test_image_4_000000.jpg",
@@ -134,6 +134,11 @@ TEST_F(TexturePackerTest, areFilesExist) {
     for(const auto& file_name : expect_files) {
         const auto path = fs::path(TexturePackerTest::texture_dir) / fs::u8path(file_name);
         EXPECT_TRUE(fs::exists(path));
+
+        // 出力ファイルを画像としてロードできるかチェックします。
+        // 画像ファイルに何か不備がある場合、
+        // 標準エラー出力には出ますが、テストが失敗判定にはならないので人の目でエラーが出ていないか確認する必要があります。
+        auto tex = TextureImage(path.u8string(), 999);
     }
 
     deletePackedTextures(model);

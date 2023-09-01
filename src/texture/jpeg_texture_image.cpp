@@ -133,6 +133,7 @@ namespace plateau::texture {
             }
             jpeg_finish_compress(compInfo.get());
             fclose(outFile);
+            assert(image_width_ * image_height * image_channels_ == bitmap_data_.size());
     }
         catch (...) {
             return false;
