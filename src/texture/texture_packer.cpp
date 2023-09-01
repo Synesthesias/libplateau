@@ -74,6 +74,7 @@ namespace plateau::texture {
         capacity_ = 0;
         container_list_.clear();
         save_file_path_.clear();
+        coverage_ = 0;
         canvas_ = TextureImage(canvas_width_, canvas_height_);
     }
 

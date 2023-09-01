@@ -108,8 +108,6 @@ namespace plateau::texture {
             return canvas_;
         }
 
-
-        void clear();
         void flush();
 
         /**
@@ -123,6 +121,7 @@ namespace plateau::texture {
         AtlasInfo insert(const size_t width, const size_t height); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
 
     private:
+        void clear();
         std::vector<AtlasContainer> container_list_;
         size_t canvas_width_;
         size_t canvas_height_;
