@@ -95,8 +95,6 @@ namespace plateau::texture {
     public:
         const unsigned char gray = 80;
 
-        explicit TextureAtlasCanvas() : canvas_width_(0), canvas_height_(0), vertical_range_(0), capacity_(0), coverage_(0) {
-        }
 
         explicit TextureAtlasCanvas(size_t width, size_t height) : vertical_range_(0), capacity_(0), coverage_(0) {
             canvas_width_ = width;

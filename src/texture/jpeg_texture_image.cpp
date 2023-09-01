@@ -13,7 +13,7 @@
 
 namespace plateau::texture {
     // 画像サイズと、塗りつぶす背景のグレー値で、空のテクスチャ画像を作成
-    void JpegTextureImage::init(size_t w, size_t h, size_t color) {
+    void JpegTextureImage::init(size_t w, size_t h, uint8_t color) {
 
         jpegErrorManager = std::make_shared<jpeg_error_mgr>();
 
@@ -24,7 +24,7 @@ namespace plateau::texture {
 
         size_t row_stride = image_width_ * image_channels_;
 
-        bitmap_data_ = std::vector(image_height * image_width_ * image_channels_, static_cast<uint8_t>(color));
+        bitmap_data_ = std::vector(image_height * image_width_ * image_channels_, color);
     }
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
@@ -136,6 +136,7 @@ namespace plateau::texture {
             assert(image_width_ * image_height * image_channels_ == bitmap_data_.size());
     }
         catch (...) {
+            std::cerr << "Failed to write jpg file." << std::endl;
             return false;
         }
         return true;
