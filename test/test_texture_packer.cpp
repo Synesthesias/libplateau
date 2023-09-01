@@ -52,7 +52,7 @@ namespace {
             mesh.addVerticesList(vertices);
             mesh.addIndicesList(indices, 0, false);
             mesh.addUV1(uv1, vertices.size());
-            mesh.addSubMesh(texture_path.u8string(), mesh.getIndices().size() - 6, mesh.getIndices().size() - 1);
+            mesh.addSubMesh(texture_path.u8string(), nullptr, mesh.getIndices().size() - 6, mesh.getIndices().size() - 1);
 
             base_pos = base_pos + TVec3d{2, 0, 0};
             base_id += 4;
