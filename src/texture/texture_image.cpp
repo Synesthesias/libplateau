@@ -3,6 +3,7 @@
 
 #include <string>
 #include <filesystem>
+#include <iostream>
 
 namespace plateau::texture {
     namespace fs = std::filesystem;
@@ -26,7 +27,8 @@ namespace plateau::texture {
             image_height_ = tiff_image_.getHeight();
         } else if (extension == ".png") {
             texture_type_ = TextureType::Png;
-            png_image_.init(file_name);
+            bool result = png_image_.init(file_name);
+            if(!result) std::cerr << "Failed to load png image. file = " << file_name << std::endl;
 
             image_width_ = png_image_.getWidth();
             image_height_ = png_image_.getHeight();

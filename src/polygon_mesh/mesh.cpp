@@ -36,6 +36,10 @@ namespace plateau::polygonMesh {
         return uv1_;
     }
 
+    UV& Mesh::getUV1() {
+        return uv1_;
+    }
+
     const UV& Mesh::getUV4() const {
         return uv4_;
     }
@@ -100,13 +104,6 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::setUV1(const std::vector<TVec2f>& other_uv_1) {
-        // UV1を上書きします。
-        uv1_.clear();
-        for (const auto& vec : other_uv_1) {
-            uv1_.push_back(vec);
-        }
-    }
 
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
@@ -132,7 +129,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
+    void Mesh::addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
@@ -144,11 +141,20 @@ namespace plateau::polygonMesh {
         } else {
             auto& last_texture_path = sub_meshes_.rbegin()->getTexturePath();
             is_different_tex = texture_path != last_texture_path;
+
+            // 前と同じマテリアルかどうか判定します。
+            if (!is_different_tex) {
+                auto last_material = sub_meshes_.rbegin()->getMaterial();
+                if (material != nullptr && last_material != nullptr)
+                    is_different_tex = material->getId() != last_material->getId();
+                else if ((material == nullptr && last_material != nullptr) || (material != nullptr && last_material == nullptr))
+                    is_different_tex = true;
+            }
         }
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, sub_meshes_);
+            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, material, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
             extendLastSubMesh(sub_mesh_end_index);
@@ -157,7 +163,7 @@ namespace plateau::polygonMesh {
 
     void Mesh::extendLastSubMesh(size_t sub_mesh_end_index) {
         if (sub_meshes_.empty()) {
-            sub_meshes_.emplace_back(0, sub_mesh_end_index, "");
+            sub_meshes_.emplace_back(0, sub_mesh_end_index, "", nullptr);
         } else {
             sub_meshes_.at(sub_meshes_.size() - 1).setEndIndex(sub_mesh_end_index);
         }

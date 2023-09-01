@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 namespace plateau::texture {
     using namespace polygonMesh;
@@ -111,10 +112,10 @@ namespace plateau::texture {
     }
 
     void TexturePacker::processNodeRecursive(const Node& node) {
+        Mesh* mesh = node.getMesh();
+        processMesh(mesh);
         for (int i = 0; i < node.getChildCount(); ++i) {
             const auto& child_node = node.getChildAt(i);
-            Mesh* mesh = child_node.getMesh();
-            processMesh(mesh);
             processNodeRecursive(child_node);
         }
     }
@@ -133,7 +134,7 @@ namespace plateau::texture {
         int index = 0;
         std::vector<SubMesh> sub_mesh_list;
 
-        for (index = 0; index < sub_meshes.size(); ) {
+        for (index = 0; index < sub_meshes.size(); ) { // TODO continue前やループ末尾の++indexはこのforの(括弧)内に移動できるのでは？
 
             auto& sub_mesh = sub_meshes[index];
             const auto& tex_url = sub_mesh.getTexturePath();
@@ -203,13 +204,20 @@ namespace plateau::texture {
             new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
             sub_mesh_list.push_back(new_sub_mesh);
 
-            std::vector<TVec2f> new_uv1;
-            for (auto& uv1 : mesh->getUV1()) {
-                const double uv_x = u + (uv1.x * u_fac);
-                const double uv_y = 1 - v - v_fac + (uv1.y * v_fac);
-                new_uv1.emplace_back(uv_x, uv_y);
+            // SubMesh中に含まれる頂点番号を求めます。
+            const auto& indices = mesh->getIndices();
+            std::set<size_t> vertices_in_sub_mesh;
+            for(auto i = sub_mesh.getStartIndex(); i <= sub_mesh.getEndIndex(); i++) {
+                vertices_in_sub_mesh.insert(indices.at(i));
             }
-            mesh->setUV1(new_uv1);
+            // SubMesh中に含まれる頂点について、UVを変更します。
+            auto& uv1 = mesh->getUV1();
+            for(const auto vs : vertices_in_sub_mesh) {
+                const double uv_x = u + (uv1.at(vs).x * u_fac);
+                const double uv_y = 1 - v - v_fac + (uv1.at(vs).y * v_fac);
+                uv1[vs] = TVec2f{(float)uv_x, (float)uv_y};
+            }
+
             ++index;
         }
         mesh->setSubMeshes(sub_mesh_list);
