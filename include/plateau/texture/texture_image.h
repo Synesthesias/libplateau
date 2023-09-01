@@ -25,8 +25,6 @@ namespace plateau::texture {
         explicit TextureImage(const std::string& file_name, size_t height_limit);
         explicit TextureImage(size_t width, size_t height);
 
-        void reset();
-
         size_t getWidth() const {
             return image_width_;
         }

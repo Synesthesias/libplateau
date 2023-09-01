@@ -8,7 +8,6 @@
 namespace plateau::texture {
     namespace fs = std::filesystem;
     TextureImage::TextureImage(const std::string& file_name, const size_t height_limit) {
-        reset();
 
         image_file_path_ = file_name;
         auto extension = fs::u8path(file_name).extension().u8string();
@@ -48,13 +47,6 @@ namespace plateau::texture {
     }
 
 
-    void
-        TextureImage::reset() {
-        image_width_ = 0;
-        image_height_ = 0;
-        texture_type_ = TextureType::None;
-    }
-
     // 指定されたファイル名で、jpegファイルを保存
     void TextureImage::save(const std::string& file_name) {
         jpeg_image_.value().save(file_name);
@@ -71,6 +63,8 @@ namespace plateau::texture {
         } else if (image.texture_type_ == TextureType::Png) {
             auto pimage = image.png_image_;
             pack(x_delta, y_delta, pimage.value(), jpeg_image_.value());
+        }else {
+            throw std::runtime_error("unknown texture type.");
         }
     }
     
