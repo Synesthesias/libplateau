@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 struct jpeg_error_mgr;
 
@@ -19,6 +20,11 @@ namespace plateau::texture {
         explicit TiffTextureImage(const std::string& file_name) :
                 load_succeed(init(file_name))
         {
+            if(!load_succeed) throw std::runtime_error("tiff load failed.");
+        }
+
+        bool loadSucceed(){
+            return load_succeed;
         }
 
         size_t getWidth() const {

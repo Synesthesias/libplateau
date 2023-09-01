@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace plateau::texture {
     class PngTextureImage {
@@ -13,6 +14,7 @@ namespace plateau::texture {
         explicit PngTextureImage(const std::string& file_name) :
         load_succeed(init(file_name))
         {
+            if(!load_succeed) throw std::runtime_error("png load failed.");
         };
 
         size_t getWidth() const {

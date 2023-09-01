@@ -17,7 +17,6 @@ namespace plateau::texture {
     bool
         TiffTextureImage::init(const std::string& fileName) {
         TIFF* tiff;
-        unsigned int bits_per_sample = 0;
 
         if (fileName.empty()) {
             return false;
@@ -45,6 +44,7 @@ namespace plateau::texture {
             return false;
         }
 
+        uint16_t bits_per_sample = 0;
         if (!TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bits_per_sample)) {
             TIFFClose(tiff);
             return false;

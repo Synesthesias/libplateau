@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include "png_texture_image.h"
 
@@ -14,7 +15,8 @@ namespace plateau::texture {
     class JpegTextureImage {
     public:
         explicit JpegTextureImage(const std::string& file_name, size_t height_limit) {
-            init(file_name, height_limit);
+            bool result = init(file_name, height_limit);
+            if(!result) throw std::runtime_error("jpeg load failed");
         }
 
         explicit JpegTextureImage(size_t width, size_t height, uint8_t color){
