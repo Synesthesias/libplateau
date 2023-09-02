@@ -94,4 +94,16 @@ namespace plateau::texture {
 
         return true;
     }
+
+    void PngTextureImage::packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) {
+        auto d = dynamic_cast<JpegTextureImage*>(dest); // TODO
+        auto srcHeight = getHeight();
+
+        const auto from_vector = getBitmapData().data();
+        auto& to = d->getBitmapData();
+
+        for (auto y = 0; y < srcHeight; ++y) {
+            std::copy(from_vector[y].begin(), from_vector[y].end(), to.begin() + (y + y_delta) * d->getWidth() * 3 + x_delta * 3);
+        }
+    }
 }

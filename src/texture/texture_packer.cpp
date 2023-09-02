@@ -51,7 +51,7 @@ namespace plateau::texture {
     }
 
     void TextureAtlasCanvas::flush() {
-        canvas_.save(save_file_path_);
+        canvas_->save(save_file_path_);
     }
 
 
@@ -59,7 +59,7 @@ namespace plateau::texture {
         : canvas_width_(width)
         , canvas_height_(height) {
         for (auto i = 0; i < internal_canvas_count; ++i) {
-            canvases_.emplace_back(width, height);
+            canvases_.push_back(std::make_shared<TextureAtlasCanvas>(width, height));
         }
     }
 
@@ -70,8 +70,8 @@ namespace plateau::texture {
         }
 
         for (auto& canvas : canvases_) {
-            if (!canvas.getSaveFilePath().empty()) {
-                canvas.flush();
+            if (!canvas->getSaveFilePath().empty()) {
+                canvas->flush();
             }
         }
     }
@@ -108,15 +108,17 @@ namespace plateau::texture {
                 continue;
             }
 
-            auto image = TextureImage(tex_url, canvas_height_);
-            if (image.getTextureType() == TextureImage::TextureType::None) {
+
+            bool texture_load_succeed = false;
+            auto image = TextureImageBase::tryCreateFromFile(tex_url, canvas_height_, texture_load_succeed);
+            if (!texture_load_succeed) {
                 sub_mesh_list.push_back(sub_mesh);
                 ++index;
                 continue;
             }
 
-            const auto width = image.getWidth();
-            const auto height = image.getHeight();
+            const auto width = image->getWidth();
+            const auto height = image->getHeight();
 
             if (width > canvas_width_ || height >= canvas_height_) {
                 sub_mesh_list.push_back(sub_mesh);
@@ -128,9 +130,9 @@ namespace plateau::texture {
             TextureAtlasCanvas* target_canvas = nullptr;
             AtlasInfo info = AtlasInfo::empty();
             for (auto& canvas : canvases_) {
-                info = canvas.insert(width, height);
+                info = canvas->insert(width, height);
                 if (info.getValid()) {
-                    target_canvas = &canvas;
+                    target_canvas = canvas.get();
                     break;
                 }
             }
@@ -142,13 +144,13 @@ namespace plateau::texture {
                 size_t max_coverage_index = 0;
                 for (auto i=0; i<canvases_.size(); i++) {
                     auto& canvas = canvases_[i];
-                    if (max_coverage < canvas.getCoverage()) {
-                        max_coverage = canvas.getCoverage();
+                    if (max_coverage < canvas->getCoverage()) {
+                        max_coverage = canvas->getCoverage();
                         max_coverage_index = i;
                     }
                 }
                 // flushして空にしてから後でパックする。
-                target_canvas = &canvases_[max_coverage_index];
+                target_canvas = canvases_[max_coverage_index].get();
                 target_canvas->flush();
                 *target_canvas = TextureAtlasCanvas(canvas_width_, canvas_height_);
                 info = target_canvas->insert(width, height);
@@ -165,8 +167,8 @@ namespace plateau::texture {
             const auto v_fac = info.getVFactor() * delta;
             auto tex = sub_mesh.getTexturePath();
 
-            target_canvas->getCanvas().pack(x, y, image);
-            target_canvas->setSaveFilePathIfEmpty(image.getImageFilePath());
+            image->packTo(&target_canvas->getCanvas(), x, y);
+            target_canvas->setSaveFilePathIfEmpty(image->getFilePath());
 
             SubMesh new_sub_mesh = sub_mesh;
             new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());

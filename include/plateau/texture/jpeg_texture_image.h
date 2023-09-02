@@ -8,42 +8,53 @@
 #include <stdexcept>
 
 #include "png_texture_image.h"
+#include <plateau/texture/texture_image_base.h>
 
 struct jpeg_error_mgr;
 
 namespace plateau::texture {
-    class JpegTextureImage {
+    class JpegTextureImage : public TextureImageBase {
     public:
 
         /**
          * jpegファイルをロードします。
          */
-        explicit JpegTextureImage(const std::string& file_name, size_t height_limit) {
-            bool result = init(file_name, height_limit);
-            if(!result) throw std::runtime_error("jpeg load failed");
-        }
+        explicit JpegTextureImage(const std::string& file_name, size_t height_limit) :
+            load_succeed_(init(file_name, height_limit))
+        {
+        };
 
         /**
          * 新規の画像をメモリ上に作ります。
          */
         explicit JpegTextureImage(size_t width, size_t height, uint8_t color){
             init(width, height, color);
-        }
+        };
 
-        size_t getWidth() const {
+        size_t getWidth() const override {
             return image_width_;
-        }
+        };
 
-        size_t getHeight() const {
+        size_t getHeight() const override {
             return image_height;
-        }
+        };
+
+        const std::string& getFilePath() const override{
+            return filePath;
+        };
 
         std::vector<uint8_t>& getBitmapData() {
             return bitmap_data_;
-        }
+        };
 
-        bool save(const std::string& file_name);
-        void pack(size_t x_delta, size_t y_delta, const JpegTextureImage& image);
+        bool loadSucceed() {
+            return load_succeed_;
+        };
+
+        bool save(const std::string& file_path) override;
+
+        void packTo(TextureImageBase* dest, const size_t x_delta, const size_t y_delta) override;
+
         void packPng(size_t x_delta,size_t y_delta, PngTextureImage& image);
 
     private:
@@ -63,6 +74,7 @@ namespace plateau::texture {
         size_t                            image_height = 0;
         int                            image_channels_ = 0;
         int                               colourSpace = 0;
+        bool load_succeed_;
     };
 
 } // namespace plateau::texture

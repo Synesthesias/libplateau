@@ -2,7 +2,7 @@
 #pragma once
 
 #include <plateau/polygon_mesh/model.h>
-#include <plateau/texture/texture_image.h>
+#include <plateau/texture/texture_image_base.h>
 
 #include <memory>
 #include <string>
@@ -96,15 +96,16 @@ namespace plateau::texture {
 
         explicit TextureAtlasCanvas(size_t width, size_t height) :
                 vertical_range_(0), capacity_(0), coverage_(0),
-                canvas_(width, height),
+                canvas_(TextureImageBase::createNewTexture(width, height)),
                 canvas_width_(width), canvas_height_(height) {
         }
+
 
         void setSaveFilePathIfEmpty(const std::string& original_file_path);
         const std::string& getSaveFilePath() const;
 
-        TextureImage& getCanvas() {
-            return canvas_;
+        TextureImageBase& getCanvas() {
+            return *canvas_;
         }
 
         void flush();
@@ -126,7 +127,7 @@ namespace plateau::texture {
         size_t vertical_range_;
         size_t capacity_;
         double coverage_;
-        TextureImage canvas_;
+        std::unique_ptr<TextureImageBase> canvas_;
         std::string save_file_path_;
     };
 
@@ -143,7 +144,7 @@ namespace plateau::texture {
         void processMesh(plateau::polygonMesh::Mesh* mesh);
 
     private:
-        std::vector<TextureAtlasCanvas> canvases_;
+        std::vector<std::shared_ptr<TextureAtlasCanvas>> canvases_;
         size_t canvas_width_;
         size_t canvas_height_;
     };

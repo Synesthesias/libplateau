@@ -98,10 +98,10 @@ namespace plateau::texture {
 }
 
     // 指定されたファイル名で、jpegファイルを保存
-    bool JpegTextureImage::save(const std::string& file_name) {
+    bool JpegTextureImage::save(const std::string& file_path) {
         try {
 #ifdef WIN32
-            const auto regular_name = std::filesystem::u8path(file_name).wstring();
+            const auto regular_name = std::filesystem::u8path(file_path).wstring();
             FILE* outFile = _wfopen(regular_name.c_str(), L"wb");
 #else
             const auto regular_name = std::filesystem::u8path(file_name).u8string();
@@ -145,18 +145,19 @@ namespace plateau::texture {
         return true;
     }
 
-    // 指定された座標（xdelta、ydelta）にimageの画像を転送
-    void JpegTextureImage::pack(const size_t x_delta, const size_t y_delta, const JpegTextureImage& image) {
-        const auto src_height = image.getHeight();
-        const auto src_stride = image.getWidth() * image_channels_;
-        const auto dst_stride = image_width_ * image_channels_;
+    void JpegTextureImage::packTo(TextureImageBase* dest, const size_t x_delta, const size_t y_delta) {
+        auto d = dynamic_cast<JpegTextureImage*>(dest); // TODO
+        const auto src_height = getHeight();
+        const auto src_stride = getWidth() * image_channels_;
+        const auto dst_stride = d->image_width_ * d->image_channels_;
 
-        const auto& src = image.bitmap_data_;
+        const auto& src = bitmap_data_;
         // ReSharper disable once CppLocalVariableMayBeConst
-        auto& dst = bitmap_data_;
+        auto& dst = d->bitmap_data_;
 
         for (size_t y = 0; y < src_height; ++y) {
-            std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride, dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels_);
+            std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride,
+                      dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels_);
         }
     }
 

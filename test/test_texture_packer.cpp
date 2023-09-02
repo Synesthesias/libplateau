@@ -140,9 +140,11 @@ TEST_F(TexturePackerTest, packGeneratesTextures) {
         // 出力ファイルを画像としてロードできるかチェックします。
         // 画像ファイルに何か不備がある場合、
         // 標準エラー出力には出ますが、テストが失敗判定にはならないので人の目でエラーが出ていないか確認する必要があります。
-        auto tex = TextureImage(path.u8string(), 999);
-        EXPECT_TRUE(tex.getHeight() == pack_texture_height);
-        EXPECT_TRUE(tex.getWidth() == pack_texture_width);
+        bool load_result = false;
+        auto tex = TextureImageBase::tryCreateFromFile(path.u8string(), 999, load_result);
+        EXPECT_TRUE(load_result);
+        EXPECT_TRUE(tex->getHeight() == pack_texture_height);
+        EXPECT_TRUE(tex->getWidth() == pack_texture_width);
     }
 
     deletePackedTextures(model);
