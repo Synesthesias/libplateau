@@ -103,7 +103,7 @@ namespace plateau::texture {
             const auto regular_name = std::filesystem::u8path(file_path).wstring();
             FILE* outFile = _wfopen(regular_name.c_str(), L"wb");
 #else
-            const auto regular_name = std::filesystem::u8path(file_name).u8string();
+            const auto regular_name = std::filesystem::u8path(file_path).u8string();
             FILE* outFile = fopen(regular_name.c_str(), "wb");
 #endif
             if (outFile == nullptr) {
