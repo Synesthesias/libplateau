@@ -117,7 +117,6 @@ namespace plateau::texture {
         AtlasInfo insert(const size_t width, const size_t height); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
 
     private:
-        void clear();
         std::vector<AtlasContainer> container_list_;
         size_t canvas_width_;
         size_t canvas_height_;
@@ -133,11 +132,8 @@ namespace plateau::texture {
     /// TexturePacker にAPIを増やすとき、変更が必要なのは texture_packer.cpp に加えて texture_packer_dummy.cpp もであることに注意してください。
     class LIBPLATEAU_EXPORT TexturePacker {
     public:
-        const int default_resolution = 2048;
 
         explicit TexturePacker(size_t width, size_t height, const int internal_canvas_count = 8);
-
-        ~TexturePacker() = default;
 
         void process(plateau::polygonMesh::Model& model);
         void processNodeRecursive(const plateau::polygonMesh::Node& node);

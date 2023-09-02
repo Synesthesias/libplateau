@@ -69,18 +69,8 @@ namespace plateau::texture {
         return save_file_path_;
     }
 
-    void TextureAtlasCanvas::clear() {
-        vertical_range_ = 0;
-        capacity_ = 0;
-        container_list_.clear();
-        save_file_path_.clear();
-        coverage_ = 0;
-        canvas_ = TextureImage(canvas_width_, canvas_height_);
-    }
-
     void TextureAtlasCanvas::flush() {
         canvas_.save(save_file_path_);
-        this->clear();
     }
 
 
@@ -168,15 +158,18 @@ namespace plateau::texture {
             if (target_canvas == nullptr) {
                 // 占有率最大のcanvasを取得
                 double max_coverage = 0.0;
-                for (auto& canvas : canvases_) {
+                size_t max_coverage_index = 0;
+                for (auto i=0; i<canvases_.size(); i++) {
+                    auto& canvas = canvases_[i];
                     if (max_coverage < canvas.getCoverage()) {
                         max_coverage = canvas.getCoverage();
-                        target_canvas = &canvas;
+                        max_coverage_index = i;
                     }
                 }
-
                 // flushして空にしてから後でパックする。
+                target_canvas = &canvases_[max_coverage_index];
                 target_canvas->flush();
+                *target_canvas = TextureAtlasCanvas(canvas_width_, canvas_height_);
                 info = target_canvas->insert(width, height);
                 assert(info.getValid());
             }
