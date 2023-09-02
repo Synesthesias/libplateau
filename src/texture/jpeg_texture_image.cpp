@@ -89,6 +89,7 @@ namespace plateau::texture {
                 p += row_stride;
             }
             jpeg_finish_decompress(decompressInfo.get());
+            assert(bitmap_data_.size() == image_width_ * image_height * image_channels_);
     }
         catch (...) {
             return false;

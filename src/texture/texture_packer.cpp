@@ -13,25 +13,6 @@ namespace plateau::texture {
         return valid_;
     }
 
-    void AtlasInfo::clear() {
-        this->setAtlasInfo(false, 0, 0, 0, 0, 0, 0, 0, 0);
-    }
-
-    void AtlasInfo::setAtlasInfo(
-            const bool valid, const size_t left, const size_t top,
-            const size_t width, const size_t height,
-            double u_pos, double v_pos, double u_factor, double v_factor) {
-        valid_ = valid;
-        left_ = left;
-        top_ = top;
-        width_ = width;
-        height_ = height;
-        u_pos_ = u_pos;
-        v_pos_ = v_pos;
-        u_factor_ = u_factor;
-        v_factor_ = v_factor;
-    }
-
     AtlasContainer::AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range) {
         gap = _gap;
         vertical_range = _vertical_range;
@@ -145,7 +126,7 @@ namespace plateau::texture {
 
             // canvasのどれかにパックできるか確認
             TextureAtlasCanvas* target_canvas = nullptr;
-            AtlasInfo info;
+            AtlasInfo info = AtlasInfo::empty();
             for (auto& canvas : canvases_) {
                 info = canvas.insert(width, height);
                 if (info.getValid()) {
@@ -171,8 +152,9 @@ namespace plateau::texture {
                 target_canvas->flush();
                 *target_canvas = TextureAtlasCanvas(canvas_width_, canvas_height_);
                 info = target_canvas->insert(width, height);
-                assert(info.getValid());
             }
+
+            assert(info.getValid());
 
             constexpr auto delta = 1.0;
             const auto x = info.getLeft();
@@ -220,7 +202,7 @@ namespace plateau::texture {
     }
 
     AtlasInfo TextureAtlasCanvas::insert(const size_t width, const size_t height) {
-        AtlasInfo atlas_info;
+        AtlasInfo atlas_info = AtlasInfo::empty();
 
         for (auto& container : container_list_) {
             if (container.getGap() != height)
@@ -230,7 +212,7 @@ namespace plateau::texture {
                 continue;
 
             container.add(width);
-            atlas_info.setAtlasInfo(
+            atlas_info = AtlasInfo(
                 true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
                 (double)container.getHorizontalRange() / static_cast<double>(canvas_width_),
                 (double)container.getVerticalRange() / static_cast<double>(canvas_height_),
@@ -244,7 +226,7 @@ namespace plateau::texture {
             AtlasContainer container(height, 0, vertical_range_);
             container.add(width);
             container_list_.push_back(container);
-            atlas_info.setAtlasInfo(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
+            atlas_info = AtlasInfo(true, container.getHorizontalRange(), container.getVerticalRange(), width, height,
                                     (double)container.getHorizontalRange() / static_cast<double>(canvas_width_), (double)container.getVerticalRange() / static_cast<double>(canvas_height_),
                                     (double)width / static_cast<double>(canvas_width_), (double)height / static_cast<double>(canvas_height_));
             this->update(width, height, true);

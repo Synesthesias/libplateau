@@ -14,16 +14,21 @@ struct jpeg_error_mgr;
 namespace plateau::texture {
     class JpegTextureImage {
     public:
+
+        /**
+         * jpegファイルをロードします。
+         */
         explicit JpegTextureImage(const std::string& file_name, size_t height_limit) {
             bool result = init(file_name, height_limit);
             if(!result) throw std::runtime_error("jpeg load failed");
         }
 
+        /**
+         * 新規の画像をメモリ上に作ります。
+         */
         explicit JpegTextureImage(size_t width, size_t height, uint8_t color){
             init(width, height, color);
         }
-
-
 
         size_t getWidth() const {
             return image_width_;

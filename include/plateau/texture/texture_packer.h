@@ -14,7 +14,15 @@ namespace plateau::texture {
     class AtlasInfo {
     public:
 
-        explicit AtlasInfo() : valid_(false), left_(0), top_(0), width_(0), height_(0), u_pos_(0), v_pos_(0), u_factor_(0), v_factor_(0) {
+        explicit AtlasInfo(const bool valid, const size_t left, const size_t top,
+                           const size_t width, const size_t height,
+                           double u_pos, double v_pos, double u_factor, double v_factor) :
+                valid_(valid), left_(left), top_(top), width_(width), height_(height),
+                u_pos_(u_pos), v_pos_(v_pos), u_factor_(u_factor), v_factor_(v_factor) {
+        }
+
+        static AtlasInfo empty() {
+            return AtlasInfo(false, 0, 0, 0, 0, 0, 0, 0, 0);
         }
 
         size_t getLeft() const {
@@ -43,11 +51,6 @@ namespace plateau::texture {
         }
 
         bool getValid() const;
-        void clear();
-        void setAtlasInfo(
-            const bool valid, const size_t left, const size_t top,
-            const size_t width, const size_t height,
-            double u_pos, double v_pos, double u_factor, double v_factor);
 
     private:
         bool valid_;     // パッキングが成功したかどうか
