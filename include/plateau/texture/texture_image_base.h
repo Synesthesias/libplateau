@@ -19,6 +19,7 @@ namespace plateau::texture {
         virtual bool save(const std::string& file_path) = 0;
         virtual void packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) = 0;
         virtual const std::string& getFilePath() const = 0;
+        virtual bool loadSucceed() const = 0;
         virtual ~TextureImageBase() = default;
 
     private:
@@ -44,6 +45,10 @@ namespace plateau::texture {
 
         virtual const std::string& getFilePath() const override {
             return empty_file_path_;
+        }
+
+        virtual bool loadSucceed() const override {
+            return false;
         }
 
         const std::string empty_file_path_ = "";

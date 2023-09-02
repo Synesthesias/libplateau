@@ -43,7 +43,7 @@ namespace plateau::texture {
             return file_path_;
         };
 
-        bool loadSucceed(){
+        virtual bool loadSucceed() const override{
             return load_succeed_;
         };
 

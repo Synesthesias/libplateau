@@ -96,7 +96,10 @@ namespace plateau::texture {
     }
 
     void PngTextureImage::packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) {
-        auto d = dynamic_cast<JpegTextureImage*>(dest); // TODO
+        auto d = dynamic_cast<JpegTextureImage*>(dest);
+        if(d == nullptr) {
+            std::runtime_error("dest of packTo only supports jpeg.");
+        }
         auto srcHeight = getHeight();
 
         const auto from_vector = getBitmapData().data();

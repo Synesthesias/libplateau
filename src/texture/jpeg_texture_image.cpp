@@ -4,7 +4,6 @@
 #include <jpeglib.h>
 #include <fstream>
 #include <stdexcept>
-#include <string>
 #include <vector>
 #include <regex>
 #include <filesystem>
@@ -146,7 +145,10 @@ namespace plateau::texture {
     }
 
     void JpegTextureImage::packTo(TextureImageBase* dest, const size_t x_delta, const size_t y_delta) {
-        auto d = dynamic_cast<JpegTextureImage*>(dest); // TODO
+        auto d = dynamic_cast<JpegTextureImage*>(dest);
+        if(d == nullptr) {
+            throw std::runtime_error("dest of packTo only supports jpeg.");
+        }
         const auto src_height = getHeight();
         const auto src_stride = getWidth() * image_channels_;
         const auto dst_stride = d->image_width_ * d->image_channels_;
@@ -161,16 +163,5 @@ namespace plateau::texture {
         }
     }
 
-    void JpegTextureImage::packPng(const size_t x_delta, const size_t y_delta, PngTextureImage& image) {
-        const auto src_height = image.getHeight();
-        const auto dst_stride = image_width_ * image_channels_;
-
-        const auto& src = image.getBitmapData();
-        auto& dst = bitmap_data_;
-
-        for (auto y = 0; y < src_height; ++y) {
-            std::copy(src[y].begin(), src[y].end(), dst.begin() + (y + y_delta) * dst_stride + x_delta * 3);
-        }
-    }
 } // namespace jpeg
 

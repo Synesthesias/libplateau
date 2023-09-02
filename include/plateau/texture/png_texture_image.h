@@ -26,7 +26,6 @@ namespace plateau::texture {
 
         bool save(const std::string& file_path) override{
             throw std::runtime_error("Outputting png file is not supported.");
-            return false;
         }
 
         void packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) override;
@@ -35,7 +34,7 @@ namespace plateau::texture {
             return file_path_;
         }
 
-        bool loadSucceed() const {
+        virtual bool loadSucceed() const override {
             return load_succeed;
         }
 

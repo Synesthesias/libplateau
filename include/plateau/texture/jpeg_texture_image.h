@@ -47,7 +47,7 @@ namespace plateau::texture {
             return bitmap_data_;
         };
 
-        bool loadSucceed() {
+        virtual bool loadSucceed() const override {
             return load_succeed_;
         };
 
@@ -55,7 +55,6 @@ namespace plateau::texture {
 
         void packTo(TextureImageBase* dest, const size_t x_delta, const size_t y_delta) override;
 
-        void packPng(size_t x_delta,size_t y_delta, PngTextureImage& image);
 
     private:
         /**
