@@ -51,7 +51,10 @@ namespace plateau::texture {
     }
 
     void TextureAtlasCanvas::flush() {
-        canvas_->save(save_file_path_);
+        bool result = canvas_->save(save_file_path_);
+        if(!result) {
+            throw std::runtime_error("failed to write image file.");
+        }
     }
 
 
