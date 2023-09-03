@@ -23,9 +23,8 @@ namespace plateau::texture {
         image_channels_ = 3;
         colourSpace = JCS_RGB;
 
-        size_t row_stride = image_width_ * image_channels_;
-
         bitmap_data_ = std::vector(image_height * image_width_ * image_channels_, color);
+        assert(getWidth() * getHeight() * image_channels_ == bitmap_data_.size());
     }
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
@@ -51,7 +50,7 @@ namespace plateau::texture {
 #endif
             if (inFile == nullptr) {
                 throw std::runtime_error("ERROR: Open: " + file_name);
-        }
+            }
 
             decompressInfo->err = jpeg_std_error(jpegErrorManager.get());
             jpegErrorManager->error_exit = [](j_common_ptr cinfo) {
@@ -88,10 +87,12 @@ namespace plateau::texture {
                 jpeg_read_scanlines(decompressInfo.get(), &p, 1);
                 p += row_stride;
             }
+            assert(p == (&bitmap_data_.at(bitmap_data_.size() - 1)) + 1);
             jpeg_finish_decompress(decompressInfo.get());
             assert(bitmap_data_.size() == image_width_ * image_height * image_channels_);
     }
         catch (...) {
+            std::cout << "jpeg load error" << std::endl;
             return false;
         }
         return true;
@@ -135,6 +136,7 @@ namespace plateau::texture {
                 jpeg_write_scanlines(compInfo.get(), rowData, 1);
                 read_ptr += image_width_ * image_channels_;
             }
+            assert(read_ptr == bitmap_data_.data() + bitmap_data_.size());
             jpeg_finish_compress(compInfo.get());
             fclose(outFile);
             assert(image_width_ * image_height * image_channels_ == bitmap_data_.size());
@@ -153,15 +155,14 @@ namespace plateau::texture {
         }
         const auto src_height = getHeight();
         const auto src_stride = getWidth() * image_channels_;
-        const auto dst_stride = d->image_width_ * d->image_channels_;
+        const auto dst_stride = d->getWidth() * d->image_channels_;
 
         const auto& src = bitmap_data_;
-        // ReSharper disable once CppLocalVariableMayBeConst
         auto& dst = d->bitmap_data_;
 
         for (size_t y = 0; y < src_height; ++y) {
             std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride,
-                      dst.begin() + (y + y_delta) * dst_stride + x_delta * image_channels_);
+                      dst.begin() + (y + y_delta) * dst_stride + x_delta * d->image_channels_);
         }
     }
 
