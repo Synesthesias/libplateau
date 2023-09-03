@@ -32,6 +32,7 @@ namespace plateau::texture {
         try {
             auto decomp = [](jpeg_decompress_struct* decomp) {
                 jpeg_destroy_decompress(decomp);
+                delete(decomp);
             };
 
             std::unique_ptr<jpeg_decompress_struct, decltype(decomp)> decompressInfo(new jpeg_decompress_struct, decomp);
@@ -112,6 +113,7 @@ namespace plateau::texture {
 
             auto decomp = [](jpeg_compress_struct* comp) {
                 jpeg_destroy_compress(comp);
+                delete(comp);
             };
 
             std::unique_ptr<::jpeg_compress_struct, decltype(decomp)> compInfo(new jpeg_compress_struct, decomp);
