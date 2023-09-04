@@ -8,6 +8,9 @@
 #include <stdexcept>
 
 namespace plateau::texture {
+    /**
+     * png画像を扱うクラスです。
+     */
     class PngTextureImage : public TextureImageBase {
     public:
         explicit PngTextureImage(const std::string& file_path) :
@@ -25,6 +28,7 @@ namespace plateau::texture {
         }
 
         bool save(const std::string& file_path) override{
+            // 未実装です。詳しくは親クラスのコメントを参照してください。
             throw std::runtime_error("Outputting png file is not supported.");
         }
 

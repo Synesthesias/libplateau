@@ -13,6 +13,9 @@
 struct jpeg_error_mgr;
 
 namespace plateau::texture {
+    /**
+     * jpeg画像を扱うクラスです。
+     */
     class JpegTextureImage : public TextureImageBase {
     public:
 

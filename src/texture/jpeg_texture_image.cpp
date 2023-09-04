@@ -42,6 +42,8 @@ namespace plateau::texture {
     }
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
+        // libjpegを使ってjpegを扱うとき、APIは主に2種類あります。jpeg_で始まる名前のAPIか、tj_で始まる名前のAPIです。
+        // jpeg_系APIでjpegをロードしたとき、Macでのみ発生する不可解なメモリ系エラーに悩まされました。tj_系APIに移行したところ修正されたという経緯があります。
         try{
 #ifdef WIN32
             const auto regular_name = std::filesystem::u8path(file_name).wstring();
@@ -93,45 +95,70 @@ namespace plateau::texture {
     // 指定されたファイル名で、jpegファイルを保存
     bool JpegTextureImage::save(const std::string& file_path) {
         try {
+            auto tj_instance = tj3Init(TJINIT_COMPRESS);
+            tj3Set(tj_instance, TJPARAM_SUBSAMP, 0);
+            tj3Set(tj_instance, TJPARAM_QUALITY, 90);
+            tj3Set(tj_instance, TJPARAM_FASTDCT, 0);
+            const auto* const bitmap = bitmap_data_.data();
+            auto pixel_format = TJCS_RGB;
+            const auto pitch = image_width_ * tjPixelSize[pixel_format];
+            size_t jpeg_size = 0;
+            unsigned char* jpeg_buf = nullptr;
+            tj3Compress8(tj_instance, bitmap, image_width_, pitch, image_height, pixel_format, &jpeg_buf, &jpeg_size);
+
+            tj3Destroy(tj_instance); tj_instance = nullptr;
+
 #ifdef WIN32
             const auto regular_name = std::filesystem::u8path(file_path).wstring();
-            FILE* outFile = _wfopen(regular_name.c_str(), L"wb");
+            std::unique_ptr<FILE, decltype(closeFile)> jpeg_file_uptr(_wfopen(regular_name.c_str(), L"wb"), closeFile);
 #else
             const auto regular_name = std::filesystem::u8path(file_path).u8string();
-            FILE* outFile = fopen(regular_name.c_str(), "wb");
+            std::unique_ptr<FILE, decltype(closeFile)> jpeg_file_uptr(fopen(regular_name.c_str(), "wb"), closeFile);
 #endif
-            if (outFile == nullptr) {
-                return false;
-        }
-
-            auto decomp = [](jpeg_compress_struct* comp) {
-                jpeg_destroy_compress(comp);
-                delete(comp);
-            };
-
-            std::unique_ptr<::jpeg_compress_struct, decltype(decomp)> compInfo(new jpeg_compress_struct, decomp);
-            jpeg_create_compress(compInfo.get());
-            jpeg_stdio_dest(compInfo.get(), outFile);
-            compInfo->image_width = image_width_;
-            compInfo->image_height = image_height;
-            compInfo->input_components = image_channels_;
-            compInfo->in_color_space = JCS_RGB;//static_cast<::J_COLOR_SPACE>(colourSpace);
-            compInfo->err = jpeg_std_error(jpegErrorManager.get());
-            jpeg_set_defaults(compInfo.get());
-            jpeg_set_quality(compInfo.get(), 90, TRUE);
-            jpeg_start_compress(compInfo.get(), TRUE);
-
-            auto read_ptr = bitmap_data_.data();
-            for (int line = 0; line < image_height; ++line) {
-                JSAMPROW rowData[1];
-                rowData[0] = read_ptr;
-                jpeg_write_scanlines(compInfo.get(), rowData, 1);
-                read_ptr += image_width_ * image_channels_;
+            if(jpeg_file_uptr == nullptr) {
+                throw std::runtime_error("could not open jpeg file for write.");
             }
-            assert(read_ptr == bitmap_data_.data() + bitmap_data_.size());
-            jpeg_finish_compress(compInfo.get());
-            fclose(outFile);
-            assert(image_width_ * image_height * image_channels_ == bitmap_data_.size());
+            fwrite(jpeg_buf, jpeg_size, 1, jpeg_file_uptr.get());
+            tj3Free(jpeg_buf); jpeg_buf = nullptr;
+//#ifdef WIN32
+//            const auto regular_name = std::filesystem::u8path(file_path).wstring();
+//            FILE* outFile = _wfopen(regular_name.c_str(), L"wb");
+//#else
+//            const auto regular_name = std::filesystem::u8path(file_path).u8string();
+//            FILE* outFile = fopen(regular_name.c_str(), "wb");
+//#endif
+//            if (outFile == nullptr) {
+//                return false;
+//        }
+//
+//            auto decomp = [](jpeg_compress_struct* comp) {
+//                jpeg_destroy_compress(comp);
+//                delete(comp);
+//            };
+//
+//            std::unique_ptr<::jpeg_compress_struct, decltype(decomp)> compInfo(new jpeg_compress_struct, decomp);
+//            jpeg_create_compress(compInfo.get());
+//            jpeg_stdio_dest(compInfo.get(), outFile);
+//            compInfo->image_width = image_width_;
+//            compInfo->image_height = image_height;
+//            compInfo->input_components = image_channels_;
+//            compInfo->in_color_space = JCS_RGB;//static_cast<::J_COLOR_SPACE>(colourSpace);
+//            compInfo->err = jpeg_std_error(jpegErrorManager.get());
+//            jpeg_set_defaults(compInfo.get());
+//            jpeg_set_quality(compInfo.get(), 90, TRUE);
+//            jpeg_start_compress(compInfo.get(), TRUE);
+//
+//            auto read_ptr = bitmap_data_.data();
+//            for (int line = 0; line < image_height; ++line) {
+//                JSAMPROW rowData[1];
+//                rowData[0] = read_ptr;
+//                jpeg_write_scanlines(compInfo.get(), rowData, 1);
+//                read_ptr += image_width_ * image_channels_;
+//            }
+//            assert(read_ptr == bitmap_data_.data() + bitmap_data_.size());
+//            jpeg_finish_compress(compInfo.get());
+//            fclose(outFile);
+//            assert(image_width_ * image_height * image_channels_ == bitmap_data_.size());
     }
         catch (...) {
             std::cerr << "Failed to write jpg file." << std::endl;
