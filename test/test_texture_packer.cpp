@@ -30,7 +30,7 @@ namespace {
                 "test_image_0.png", "test_image_1.png", "test_image_2.jpg", "test_image_3.jpg",
                 "test_image_4.tif", "test_image_5.tif", "test_image_6.png", "test_image_7.png",
                 "test_image_8.jpg", "test_image_9.jpg", "test_image_10.tif", "test_image_11.tif",
-                "test_image_12.png", "test_image_13.png", "test_image_14.jpg", "test_image_16.jpg"
+                "test_image_12.png", "test_image_13.png", "test_image_14.jpg", "test_image_15.jpg"
         };
 
         TVec3d base_pos = {0, 0, 0};
