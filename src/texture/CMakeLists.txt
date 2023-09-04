@@ -6,9 +6,9 @@ if(IOS OR ANDROID)
 else()
     target_sources(plateau PRIVATE
         "texture_packer.cpp"
-        "texture_image.cpp"
         "jpeg_texture_image.cpp"
         "png_texture_image.cpp"
         "tiff_texture_image.cpp"
+        "texture_image_base.cpp"
     )
 endif()

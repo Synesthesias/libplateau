@@ -43,7 +43,6 @@ add_executable(plateau_test
     "test_server_dataset_accessor.cpp"
     "test_fbx_writer.cpp"
     "test_lod_searcher.cpp"
-    "test_texture_image.cpp"
     "test_texture_packer.cpp"
         )
 

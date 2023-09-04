@@ -5,22 +5,18 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include "plateau/texture/jpeg_texture_image.h"
 
 namespace plateau::texture {
-    TiffTextureImage::TiffTextureImage() : image_width(0), image_height(0), image_channels(0) {
 
-    }
-
-    std::vector<std::vector<uint8_t>>&
-        TiffTextureImage::getBitmapData() {
-        return bitmapData;
+    std::vector<uint8_t>& TiffTextureImage::getBitmapData() {
+        throw std::runtime_error("getBitmapData of tiff is not supported.");
     }
 
     //// 指定されたファイルから画像を読み込み、テクスチャ画像を作成
     bool
         TiffTextureImage::init(const std::string& fileName) {
         TIFF* tiff;
-        unsigned int bits_per_sample = 0;
 
         if (fileName.empty()) {
             return false;
@@ -48,6 +44,7 @@ namespace plateau::texture {
             return false;
         }
 
+        uint16_t bits_per_sample = 0;
         if (!TIFFGetField(tiff, TIFFTAG_BITSPERSAMPLE, &bits_per_sample)) {
             TIFFClose(tiff);
             return false;
@@ -97,6 +94,18 @@ namespace plateau::texture {
         free(rgba_data);
 
         return true;
+    }
+
+    void TiffTextureImage::packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) {
+        auto srcHeight = getHeight();
+
+        const auto from_vector = bitmapData.data();
+        auto& to = dest->getBitmapData();
+        auto dest_width = dest->getWidth();
+
+        for (auto y = 0; y < srcHeight; ++y) {
+            std::copy(from_vector[y].begin(), from_vector[y].end(), to.begin() + (y + y_delta) * dest_width * 3 + x_delta * 3);
+        }
     }
 } // namespace tiff
 
