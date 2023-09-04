@@ -29,9 +29,7 @@ namespace plateau::texture {
     }
 
     namespace{
-        const auto closeFile = [](FILE* file){
-            fclose(file);
-        };
+
 
         const auto deleteJpegBuffer = [](unsigned char* jpeg_buffer) {
             tj3Free(jpeg_buffer);
@@ -44,6 +42,9 @@ namespace plateau::texture {
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
         try{
+            const auto closeFile = [](FILE* f){
+                fclose(f);
+            };
 #ifdef WIN32
             const auto regular_name = std::filesystem::u8path(file_name).wstring();
             std::unique_ptr<FILE, decltype(closeFile)> jpeg_file_uptr(_wfopen(regular_name.c_str(), L"rb"), closeFile);
@@ -65,7 +66,6 @@ namespace plateau::texture {
             std::unique_ptr<unsigned char, decltype(deleteJpegBuffer)> jpeg_buf_uptr((unsigned char*)tj3Alloc(jpeg_file_size), deleteJpegBuffer);
             const auto jpeg_buf = jpeg_buf_uptr.get();
             fread(jpeg_buf, jpeg_file_size, 1, jpeg_file);
-            fclose(jpeg_file);
 
             std::unique_ptr<void, decltype(deleteTjInstance)> tj_instance_uptr((tjhandle)tj3Init(TJINIT_DECOMPRESS), deleteTjInstance);
             if(tj_instance_uptr == nullptr) {
