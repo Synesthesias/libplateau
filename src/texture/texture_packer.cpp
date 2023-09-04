@@ -130,18 +130,19 @@ namespace plateau::texture {
             }
 
             // canvasのどれかにパックできるか確認
-            TextureAtlasCanvas* target_canvas = nullptr;
+            int target_canvas_id = -1;
             AtlasInfo info = AtlasInfo::empty();
-            for (auto& canvas : canvases_) {
+            for (int i=0; i<canvases_.size(); i++) {
+                auto& canvas = canvases_.at(i);
                 info = canvas->insert(width, height);
                 if (info.getValid()) {
-                    target_canvas = canvas.get();
+                    target_canvas_id = i;
                     break;
                 }
             }
 
             // どこにもパック出来なかった場合
-            if (target_canvas == nullptr) {
+            if (target_canvas_id < 0) {
                 // 占有率最大のcanvasを取得
                 double max_coverage = 0.0;
                 size_t max_coverage_index = 0;
@@ -153,10 +154,10 @@ namespace plateau::texture {
                     }
                 }
                 // flushして空にしてから後でパックする。
-                target_canvas = canvases_[max_coverage_index].get();
-                target_canvas->flush();
-                *target_canvas = TextureAtlasCanvas(canvas_width_, canvas_height_);
-                info = target_canvas->insert(width, height);
+                target_canvas_id = (int)max_coverage_index;
+                canvases_.at(max_coverage_index)->flush();
+                canvases_.at(max_coverage_index) = std::make_shared<TextureAtlasCanvas>(canvas_width_, canvas_height_);
+                info = canvases_.at(max_coverage_index)->insert(width, height);
             }
 
             assert(info.getValid());
@@ -170,6 +171,7 @@ namespace plateau::texture {
             const auto v_fac = info.getVFactor() * delta;
             auto tex = sub_mesh.getTexturePath();
 
+            auto& target_canvas = canvases_.at(target_canvas_id);
             image->packTo(&target_canvas->getCanvas(), x, y);
             target_canvas->setSaveFilePathIfEmpty(image->getFilePath());
 
