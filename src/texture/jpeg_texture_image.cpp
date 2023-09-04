@@ -28,121 +28,70 @@ namespace plateau::texture {
         assert(getWidth() * getHeight() * image_channels_ == bitmap_data_.size());
     }
 
+    namespace{
+        const auto closeFile = [](FILE* file){
+            fclose(file);
+        };
+
+        const auto deleteJpegBuffer = [](unsigned char* jpeg_buffer) {
+            tj3Free(jpeg_buffer);
+        };
+
+        const auto deleteTjInstance = [](tjhandle tj_instance) {
+            tj3Destroy(tj_instance);
+        };
+    }
+
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
-
+        try{
 #ifdef WIN32
-        const auto regular_name = std::filesystem::u8path(file_name).wstring();
-        auto jpeg_file = _wfopen(regular_name.c_str(), L"rb");
+            const auto regular_name = std::filesystem::u8path(file_name).wstring();
+            std::unique_ptr<FILE, decltype(closeFile)> jpeg_file_uptr(_wfopen(regular_name.c_str(), L"rb"), closeFile);
 #else
-        const auto regular_name = std::filesystem::u8path(file_name).u8string();
-        auto jpeg_file = fopen(regular_name.c_str(), "rb");
+            const auto regular_name = std::filesystem::u8path(file_name).u8string();
+            std::unique_ptr<FILE, decltype(closeFile)> jpeg_file_uptr(fopen(regular_name.c_str(), "rb"), closeFile);
 #endif
-        if(jpeg_file == nullptr){
-            throw std::runtime_error("could not open jpeg file.");
+            if(jpeg_file_uptr == nullptr){
+                throw std::runtime_error("could not open jpeg file.");
+            }
+            const auto jpeg_file = jpeg_file_uptr.get();
+
+            fseek(jpeg_file, 0, SEEK_END);
+            auto jpeg_file_size = ftell(jpeg_file);
+            fseek(jpeg_file, 0, SEEK_SET);
+            if(jpeg_file_size < 0){
+                throw std::runtime_error("could not get file size of jpeg.");
+            }
+            std::unique_ptr<unsigned char, decltype(deleteJpegBuffer)> jpeg_buf_uptr((unsigned char*)tj3Alloc(jpeg_file_size), deleteJpegBuffer);
+            const auto jpeg_buf = jpeg_buf_uptr.get();
+            fread(jpeg_buf, jpeg_file_size, 1, jpeg_file);
+            fclose(jpeg_file);
+
+            std::unique_ptr<void, decltype(deleteTjInstance)> tj_instance_uptr((tjhandle)tj3Init(TJINIT_DECOMPRESS), deleteTjInstance);
+            if(tj_instance_uptr == nullptr) {
+                throw std::runtime_error("could not create jpeg decompress instance");
+            }
+            const auto tj_instance = tj_instance_uptr.get();
+
+            tj3DecompressHeader(tj_instance, jpeg_buf, jpeg_file_size);
+            auto w = tj3Get(tj_instance, TJPARAM_JPEGWIDTH);
+            if( w < 0 ) {
+                throw std::runtime_error("failed to get jpeg width.");
+            }
+            filePath = file_name;
+            image_width_ = w;
+            image_height = tj3Get(tj_instance, TJPARAM_JPEGHEIGHT);
+            auto in_subsamp = tj3Get(tj_instance, TJPARAM_SUBSAMP);
+            colourSpace = tj3Get(tj_instance, TJPARAM_COLORSPACE);
+            auto pixel_format = TJPF_RGB;
+            image_channels_ = tjPixelSize[pixel_format];
+            bitmap_data_ = std::vector<unsigned char>(image_width_ * image_height * image_channels_);
+            tj3Decompress8(tj_instance, jpeg_buf, jpeg_file_size, bitmap_data_.data(), 0, pixel_format);
+            return true;
+        }catch(...){
+            std::cerr << "Failed to load jpeg file." << std::endl;
+            return false;
         }
-
-        fseek(jpeg_file, 0, SEEK_END);
-        auto jpeg_file_size = ftell(jpeg_file);
-        fseek(jpeg_file, 0, SEEK_SET);
-        if(jpeg_file_size < 0){
-            throw std::runtime_error("could not get file size of jpeg.");
-        }
-        auto jpeg_buf = (unsigned char*)tj3Alloc(jpeg_file_size);
-        fread(jpeg_buf, jpeg_file_size, 1, jpeg_file);
-        fclose(jpeg_file);
-
-        auto tj_instance = tj3Init(TJINIT_DECOMPRESS);
-        if(tj_instance == nullptr) {
-            throw std::runtime_error("could not create jpeg decompress instance");
-        }
-
-        tj3DecompressHeader(tj_instance, jpeg_buf, jpeg_file_size);
-        auto w = tj3Get(tj_instance, TJPARAM_JPEGWIDTH);
-        if( w < 0 ) {
-            throw std::runtime_error("failed to get jpeg width.");
-        }
-        filePath = file_name;
-        image_width_ = w;
-        image_height = tj3Get(tj_instance, TJPARAM_JPEGHEIGHT);
-        auto in_subsamp = tj3Get(tj_instance, TJPARAM_SUBSAMP);
-        colourSpace = tj3Get(tj_instance, TJPARAM_COLORSPACE);
-        auto pixel_format = TJPF_RGB;
-        image_channels_ = tjPixelSize[pixel_format];
-        bitmap_data_ = std::vector<unsigned char>(image_width_ * image_height * image_channels_);
-        tj3Decompress8(tj_instance, jpeg_buf, jpeg_file_size, bitmap_data_.data(), 0, pixel_format);
-        tj3Free(jpeg_buf); jpeg_buf = nullptr;
-        tj3Destroy(tj_instance); tj_instance = nullptr;
-        return true;
-
-
-//        try {
-//            auto decomp = [](jpeg_decompress_struct* decomp) {
-//                jpeg_destroy_decompress(decomp);
-//                delete(decomp);
-//            };
-//
-//            std::unique_ptr<jpeg_decompress_struct, decltype(decomp)> decompressInfo(new jpeg_decompress_struct, decomp);
-//            jpegErrorManager = std::make_shared<jpeg_error_mgr>();
-//
-//            auto ptr = [](FILE* fp) {
-//                fclose(fp);
-//            };
-//
-//#ifdef WIN32
-//            const auto regular_name = std::filesystem::u8path(file_name).wstring();
-//            std::unique_ptr<FILE, decltype(ptr)> inFile(_wfopen(regular_name.c_str(), L"rb"), ptr);
-//#else
-//            const auto regular_name = std::filesystem::u8path(file_name).u8string();
-//            std::unique_ptr<FILE, decltype(ptr)> inFile(fopen(regular_name.c_str(), "rb"), ptr);
-//#endif
-//            if (inFile == nullptr) {
-//                throw std::runtime_error("ERROR: Open: " + file_name);
-//            }
-//
-//            decompressInfo->err = jpeg_std_error(jpegErrorManager.get());
-//            jpegErrorManager->error_exit = [](j_common_ptr cinfo) {
-//                char jpegLastErrorMsg[JMSG_LENGTH_MAX];
-//                (*(cinfo->err->format_message))(cinfo, jpegLastErrorMsg);
-//                throw std::runtime_error(jpegLastErrorMsg);
-//            };
-//
-//            jpeg_create_decompress(decompressInfo.get());
-//
-//            jpeg_stdio_src(decompressInfo.get(), inFile.get());
-//
-//            if (jpeg_read_header(decompressInfo.get(), TRUE) != 1) {
-//                throw std::runtime_error("ERROR: Header: ");
-//            }
-//
-//            filePath = file_name;
-//            image_width_ = decompressInfo->image_width;
-//            image_height = decompressInfo->image_height;
-//            image_channels_ = decompressInfo->num_components;
-//            colourSpace = decompressInfo->jpeg_color_space;
-//
-//            if (image_height > height_limit) {
-//                jpeg_abort_decompress(decompressInfo.get());
-//                return false;
-//            }
-//
-//            jpeg_start_decompress(decompressInfo.get());
-//
-//            const size_t row_stride = image_width_ * image_channels_;
-//            bitmap_data_ = std::vector<uint8_t>(row_stride * image_height);
-//            uint8_t* p = bitmap_data_.data();
-//            while (decompressInfo->output_scanline < image_height) {
-//                jpeg_read_scanlines(decompressInfo.get(), &p, 1);
-//                p += row_stride;
-//            }
-//            assert(p == (&bitmap_data_.at(bitmap_data_.size() - 1)) + 1);
-//            jpeg_finish_decompress(decompressInfo.get());
-//            assert(bitmap_data_.size() == image_width_ * image_height * image_channels_);
-//    }
-//        catch (...) {
-//            std::cout << "jpeg load error" << std::endl;
-//            return false;
-//        }
-//        return true;
 }
 
     // 指定されたファイル名で、jpegファイルを保存
