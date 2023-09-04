@@ -42,8 +42,6 @@ namespace plateau::texture {
     }
 
     bool JpegTextureImage::init(const std::string& file_name, const size_t height_limit) {
-        // libjpegを使ってjpegを扱うとき、APIは主に2種類あります。jpeg_で始まる名前のAPIか、tj_で始まる名前のAPIです。
-        // jpeg_系APIでjpegをロードしたとき、Macでのみ発生する不可解なメモリ系エラーに悩まされました。tj_系APIに移行したところ修正されたという経緯があります。
         try{
 #ifdef WIN32
             const auto regular_name = std::filesystem::u8path(file_name).wstring();
@@ -95,6 +93,7 @@ namespace plateau::texture {
     // 指定されたファイル名で、jpegファイルを保存
     bool JpegTextureImage::save(const std::string& file_path) {
         try {
+            std::cerr << "Important : Using JpegTextureImage::save() is not recommended. See comment in jpeg_textgure_image.h." << std::endl;
             std::unique_ptr<void, decltype(deleteTjInstance)> tj_instance_uptr((tjhandle)tj3Init(TJINIT_COMPRESS), deleteTjInstance);
             auto tj_instance = tj_instance_uptr.get();
             tj3Set(tj_instance, TJPARAM_SUBSAMP, 0);
