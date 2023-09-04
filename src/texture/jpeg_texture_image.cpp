@@ -22,7 +22,6 @@ namespace plateau::texture {
         image_width_ = w;
         image_height = h;
         image_channels_ = 3;
-        colourSpace = JCS_RGB;
 
         bitmap_data_ = std::vector(image_height * image_width_ * image_channels_, color);
         assert(getWidth() * getHeight() * image_channels_ == bitmap_data_.size());
@@ -80,8 +79,6 @@ namespace plateau::texture {
             filePath = file_name;
             image_width_ = w;
             image_height = tj3Get(tj_instance, TJPARAM_JPEGHEIGHT);
-            auto in_subsamp = tj3Get(tj_instance, TJPARAM_SUBSAMP);
-            colourSpace = tj3Get(tj_instance, TJPARAM_COLORSPACE);
             auto pixel_format = TJPF_RGB;
             image_channels_ = tjPixelSize[pixel_format];
             bitmap_data_ = std::vector<unsigned char>(image_width_ * image_height * image_channels_);

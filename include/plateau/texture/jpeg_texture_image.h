@@ -72,7 +72,6 @@ namespace plateau::texture {
         size_t                            image_width_ = 0;
         size_t                            image_height = 0;
         int                            image_channels_ = 0;
-        int                               colourSpace = 0;
         bool load_succeed_;
     };
 
