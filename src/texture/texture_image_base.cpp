@@ -28,8 +28,8 @@ namespace plateau::texture {
 
 
     std::unique_ptr<TextureImageBase> TextureImageBase::createNewTexture(size_t width, size_t height) {
-        auto jpeg_image = std::make_unique<JpegTextureImage>(width, height, 80);
-        return jpeg_image;
+        auto image = std::make_unique<PngTextureImage>(width, height, 80);
+        return image;
     }
 }
 

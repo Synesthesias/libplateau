@@ -9,6 +9,15 @@
 namespace plateau::texture {
     using namespace polygonMesh;
 
+    TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
+            : canvas_width_(width)
+            , canvas_height_(height) {
+        for (auto i = 0; i < internal_canvas_count; ++i) {
+            canvases_.push_back(std::make_shared<TextureAtlasCanvas>(width, height));
+        }
+    }
+
+
     bool AtlasInfo::getValid() const {
         return valid_;
     }
@@ -37,7 +46,7 @@ namespace plateau::texture {
             ss << std::setw(6) << std::setfill('0') << cnt;
             std::string num = ss.str();
 
-            const auto new_filename = std::string("packed_image_").append(original_filename_without_ext).append("_").append(num).append(".jpg");
+            const auto new_filename = std::string("packed_image_").append(original_filename_without_ext).append("_").append(num).append(".png");
             const auto& path = original_path.replace_filename(new_filename);
             if (!std::filesystem::is_regular_file(path)) {
                 save_file_path_ = path.u8string();
@@ -54,15 +63,6 @@ namespace plateau::texture {
         bool result = canvas_->save(save_file_path_);
         if(!result) {
             throw std::runtime_error("failed to write image file.");
-        }
-    }
-
-
-    TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
-        : canvas_width_(width)
-        , canvas_height_(height) {
-        for (auto i = 0; i < internal_canvas_count; ++i) {
-            canvases_.push_back(std::make_shared<TextureAtlasCanvas>(width, height));
         }
     }
 

@@ -46,7 +46,7 @@ namespace plateau::texture {
             return filePath;
         };
 
-        std::vector<uint8_t>& getBitmapData() {
+        std::vector<uint8_t>& getBitmapData() override {
             return bitmap_data_;
         };
 

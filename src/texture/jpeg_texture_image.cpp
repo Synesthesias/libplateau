@@ -130,20 +130,16 @@ namespace plateau::texture {
     }
 
     void JpegTextureImage::packTo(TextureImageBase* dest, const size_t x_delta, const size_t y_delta) {
-        auto d = dynamic_cast<JpegTextureImage*>(dest);
-        if(d == nullptr) {
-            throw std::runtime_error("dest of packTo only supports jpeg.");
-        }
         const auto src_height = getHeight();
         const auto src_stride = getWidth() * image_channels_;
-        const auto dst_stride = d->getWidth() * d->image_channels_;
+        const auto dst_stride = dest->getWidth() * 3;
 
         const auto& src = bitmap_data_;
-        auto& dst = d->bitmap_data_;
+        auto& dst = dest->getBitmapData();
 
         for (size_t y = 0; y < src_height; ++y) {
             std::copy(src.begin() + y * src_stride, src.begin() + (y + 1) * src_stride,
-                      dst.begin() + (y + y_delta) * dst_stride + x_delta * d->image_channels_);
+                      dst.begin() + (y + y_delta) * dst_stride + x_delta * 3);
         }
     }
 

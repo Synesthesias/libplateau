@@ -52,7 +52,7 @@ namespace plateau::texture {
             return load_succeed_;
         };
 
-        std::vector<std::vector<uint8_t>>& getBitmapData();
+        std::vector<uint8_t>& getBitmapData() override;
 
     private:
         bool init(const std::string& fileName);

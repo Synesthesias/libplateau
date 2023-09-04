@@ -4,6 +4,7 @@
 #include <string>
 #include <stdexcept>
 #include <libplateau_api.h>
+#include <vector>
 
 namespace plateau::texture {
     /**
@@ -14,11 +15,6 @@ namespace plateau::texture {
 
         // 実装上の注意:
         // すべての子クラスがこのクラスの抽象関数をすべて実装しているわけではないことに注意してください。
-        // 例えば、save()できるのはJpegTextureImageのみであり、PngTextureImage, TiffTextureImageは未実装につき例外を発します。
-        // packTo(dest)のdestもJpegTextureImageのみを受け付け、Png, Tiffの場合は例外を発します。
-        // それで良い理由:
-        // TexturePackerの実装の仕組みは、新しくJpegTextureImageを作り、そこにjpeg, png, tiffファイルの内容を詰め込んでjpegファイルを出力するものです。
-        // そのため、画像ファイルのロードはjpeg, png, tiffの3パターンを実装していますが、packする先と出力機能はjpegのみあれば十分です。
 
         /**
          * ファイルパスから画像を読み込みます。
@@ -36,6 +32,7 @@ namespace plateau::texture {
         virtual void packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) = 0;
         virtual const std::string& getFilePath() const = 0;
         virtual bool loadSucceed() const = 0;
+        virtual std::vector<uint8_t>& getBitmapData() = 0;
         virtual ~TextureImageBase() = default;
 
     private:
@@ -65,6 +62,10 @@ namespace plateau::texture {
 
         virtual bool loadSucceed() const override {
             return false;
+        }
+
+        virtual std::vector<uint8_t>& getBitmapData() override {
+            throw std::runtime_error("not supported");
         }
 
         const std::string empty_file_path_ = "";

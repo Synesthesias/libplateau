@@ -9,9 +9,8 @@
 
 namespace plateau::texture {
 
-    std::vector<std::vector<uint8_t>>&
-        TiffTextureImage::getBitmapData() {
-        return bitmapData;
+    std::vector<uint8_t>& TiffTextureImage::getBitmapData() {
+        throw std::runtime_error("getBitmapData of tiff is not supported.");
     }
 
     //// 指定されたファイルから画像を読み込み、テクスチャ画像を作成
@@ -98,17 +97,14 @@ namespace plateau::texture {
     }
 
     void TiffTextureImage::packTo(TextureImageBase* dest, size_t x_delta, size_t y_delta) {
-        auto d = dynamic_cast<JpegTextureImage*>(dest);
-        if(d == nullptr) {
-            std::runtime_error("dest of packTo only supports jpeg.");
-        }
         auto srcHeight = getHeight();
 
-        const auto from_vector = getBitmapData().data();
-        auto& to = d->getBitmapData();
+        const auto from_vector = bitmapData.data();
+        auto& to = dest->getBitmapData();
+        auto dest_width = dest->getWidth();
 
         for (auto y = 0; y < srcHeight; ++y) {
-            std::copy(from_vector[y].begin(), from_vector[y].end(), to.begin() + (y + y_delta) * d->getWidth() * 3 + x_delta * 3);
+            std::copy(from_vector[y].begin(), from_vector[y].end(), to.begin() + (y + y_delta) * dest_width * 3 + x_delta * 3);
         }
     }
 } // namespace tiff

@@ -118,10 +118,10 @@ TEST_F(TexturePackerTest, isUvOK) {  // NOLINT
 
 TEST_F(TexturePackerTest, packGeneratesTextures) {
     static const std::vector<std::string> expect_files = {
-            "packed_image_test_image_0_000000.jpg",
-            "packed_image_test_image_4_000000.jpg",
-            "packed_image_test_image_8_000000.jpg",
-            "packed_image_test_image_12_000000.jpg"
+            "packed_image_test_image_0_000000.png",
+            "packed_image_test_image_4_000000.png",
+            "packed_image_test_image_8_000000.png",
+            "packed_image_test_image_12_000000.png"
     };
 
     // テクスチャパック前には、パックしたテクスチャは存在しません
