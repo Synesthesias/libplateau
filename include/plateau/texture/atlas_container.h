@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstddef>
+
 namespace plateau::texture {
     class AtlasContainer {
     public:
 
-        explicit AtlasContainer(const size_t _gap, const size_t _horizontal_range, const size_t _vertical_range);
+        explicit AtlasContainer(size_t _gap, size_t _horizontal_range, size_t _vertical_range);
 
         size_t getGap() const {
             return gap;
