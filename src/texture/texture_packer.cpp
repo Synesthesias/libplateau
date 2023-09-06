@@ -87,11 +87,25 @@ namespace plateau::texture {
         for (int index = 0; index < sub_meshes.size(); ) { // TODO continue前やループ末尾の++indexはこのforの(括弧)内に移動できるのでは？
 
             auto& sub_mesh = sub_meshes[index];
-            const auto& tex_url = sub_mesh.getTexturePath();
+            const auto& tex_url = std::filesystem::u8path(sub_mesh.getTexturePath()).make_preferred().u8string();
             if (tex_url.empty()) {
                 sub_mesh_list.push_back(sub_mesh);
                 ++index;
                 continue;
+            }
+
+            // すでにパック済みならばそれを利用
+            AtlasInfo packed_info = AtlasInfo::empty();
+            TextureAtlasCanvas* packed_atlas_canvas_ptr = nullptr;
+            if(isTexturePacked(tex_url, packed_atlas_canvas_ptr, packed_info)) {
+                if(packed_atlas_canvas_ptr != nullptr) {
+                    SubMesh new_sub_mesh = sub_mesh;
+                    new_sub_mesh.setTexturePath(packed_atlas_canvas_ptr->getSaveFilePath());
+                    updateUVOfSubMesh(mesh, sub_mesh, packed_info);
+                    sub_mesh_list.push_back(new_sub_mesh);
+                    ++index;
+                    continue;
+                }
             }
 
 
@@ -110,20 +124,6 @@ namespace plateau::texture {
                 sub_mesh_list.push_back(sub_mesh);
                 ++index;
                 continue;
-            }
-
-            // すでにパック済みならばそれを利用
-            AtlasInfo packed_info = AtlasInfo::empty();
-            TextureAtlasCanvas* packed_atlas_canvas_ptr = nullptr;
-            if(isTexturePacked(tex_url, packed_atlas_canvas_ptr, packed_info)) {
-                if(packed_atlas_canvas_ptr != nullptr) {
-                    SubMesh new_sub_mesh = sub_mesh;
-                    new_sub_mesh.setTexturePath(packed_atlas_canvas_ptr->getSaveFilePath());
-                    updateUVOfSubMesh(mesh, sub_mesh, packed_info);
-                    sub_mesh_list.push_back(new_sub_mesh);
-                    ++index;
-                    continue;
-                }
             }
 
             // canvasのどれかにパックできるか確認
