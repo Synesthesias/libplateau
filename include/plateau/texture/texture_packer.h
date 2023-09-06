@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include <filesystem>
 
@@ -16,13 +17,13 @@ namespace plateau::texture {
 
         explicit AtlasInfo(const bool valid, const size_t left, const size_t top,
                            const size_t width, const size_t height,
-                           double u_pos, double v_pos, double u_factor, double v_factor) :
+                           double u_pos, double v_pos, double u_factor, double v_factor, std::string src_texture_path) :
                 valid_(valid), left_(left), top_(top), width_(width), height_(height),
-                u_pos_(u_pos), v_pos_(v_pos), u_factor_(u_factor), v_factor_(v_factor) {
+                u_pos_(u_pos), v_pos_(v_pos), u_factor_(u_factor), v_factor_(v_factor), src_texture_path(std::move(src_texture_path)) {
         }
 
         static AtlasInfo empty() {
-            return AtlasInfo(false, 0, 0, 0, 0, 0, 0, 0, 0);
+            return AtlasInfo(false, 0, 0, 0, 0, 0, 0, 0, 0, "");
         }
 
         size_t getLeft() const {
@@ -52,6 +53,10 @@ namespace plateau::texture {
 
         bool getValid() const;
 
+        const std::string& getSrcTexturePath() const {
+            return src_texture_path;
+        };
+
     private:
         bool valid_;     // パッキングが成功したかどうか
         size_t left_;    // パッキングされた画像の左上のX座標
@@ -62,6 +67,7 @@ namespace plateau::texture {
         double v_pos_;    // uv座標の左上v座標
         double u_factor_; // u座標の倍率
         double v_factor_; // v座標の倍率
+        std::string src_texture_path;
     };
 
     class AtlasContainer {
@@ -90,9 +96,9 @@ namespace plateau::texture {
         size_t vertical_range;          // パッキングの対象となる親の画像のコンテナが配置されている左上のY座標
     };
 
+
     class TextureAtlasCanvas {
     public:
-
 
         explicit TextureAtlasCanvas(size_t width, size_t height) :
                 vertical_range_(0), capacity_(0), coverage_(0),
@@ -117,8 +123,9 @@ namespace plateau::texture {
             return coverage_;
         }
 
-        void update(const size_t width, const size_t height, const bool is_new_container); // 画像のパッキング成功時の処理、第3引数（TRUE:新規コンテナを作成、FALSE:既存コンテナに追加）
-        AtlasInfo insert(const size_t width, const size_t height); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
+        void update(const size_t width, const size_t height, const bool is_new_container, const AtlasInfo& packed_texture_info); // 画像のパッキング成功時の処理、第3引数（TRUE:新規コンテナを作成、FALSE:既存コンテナに追加）
+        AtlasInfo insert(const size_t width, const size_t height, const std::string& src_texture_path); // 指定された画像領域（width x height）の領域が確保できるか検証、戻り値AtrasInfoの「valid」ブール値（true:成功、false:失敗）で判定可能
+        bool isTexturePacked(const std::string& src_file_path, AtlasInfo& out_atlas_info);
 
     private:
         std::vector<AtlasContainer> container_list_;
@@ -129,6 +136,7 @@ namespace plateau::texture {
         double coverage_;
         std::unique_ptr<TextureImageBase> canvas_;
         std::string save_file_path_;
+        std::vector<AtlasInfo> packed_textures_info;
     };
 
     /// テクスチャのアトラス化をします。
@@ -144,8 +152,10 @@ namespace plateau::texture {
         void processMesh(plateau::polygonMesh::Mesh* mesh);
 
     private:
+        bool isTexturePacked(const std::string& src_file_path, TextureAtlasCanvas*& out_contained_canvas_ptr, AtlasInfo& out_atlas_info);
         std::vector<std::shared_ptr<TextureAtlasCanvas>> canvases_;
         size_t canvas_width_;
         size_t canvas_height_;
+
     };
 } // namespace plateau::texture
