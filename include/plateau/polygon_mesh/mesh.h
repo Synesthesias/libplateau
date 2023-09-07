@@ -40,6 +40,7 @@ namespace plateau::polygonMesh {
 
         const std::vector<unsigned>& getIndices() const;
         const UV& getUV1() const;
+        UV& getUV1();
         const UV& getUV4() const;
         const std::vector<SubMesh>& getSubMeshes() const;
 
@@ -73,7 +74,7 @@ namespace plateau::polygonMesh {
          * 代わりに extendLastSubMesh を実行します。
          * なぜなら、同じテクスチャであればサブメッシュを分けるのは無意味で描画負荷を増やすだけと思われるためです。
          */
-        void addSubMesh(const std::string& texture_path, size_t sub_mesh_start_index, size_t sub_mesh_end_index);
+        void addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index);
 
         /**
          * 直前の SubMesh の範囲を拡大し、範囲の終わりがindicesリストの最後を指すようにします。

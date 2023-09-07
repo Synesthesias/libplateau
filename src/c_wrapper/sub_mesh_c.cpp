@@ -1,5 +1,6 @@
 #include "libplateau_c.h"
 #include <plateau/polygon_mesh/sub_mesh.h>
+#include <citygml/material.h>
 using namespace libplateau;
 using namespace plateau::polygonMesh;
 extern "C"{
@@ -18,13 +19,18 @@ extern "C"{
                         SubMesh,
                         handle->getTexturePath())
 
+    DLL_PTR_FUNC(plateau_sub_mesh_get_material,
+                SubMesh,
+                citygml::Material,
+                handle->getMaterial().get())
+
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_sub_mesh(
             SubMesh** out_sub_mesh_ptr,
             const int start_index,
             const int end_index,
             const char* const texture_path
     ) {
-        *out_sub_mesh_ptr = new SubMesh(start_index, end_index, texture_path);
+        *out_sub_mesh_ptr = new SubMesh(start_index, end_index, texture_path, nullptr);
         return APIResult::Success;
     }
 

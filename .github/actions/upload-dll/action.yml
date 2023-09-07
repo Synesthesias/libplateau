@@ -26,6 +26,7 @@ runs:
       with:
         shell_type: ${{ inputs.shell_type }}
         visual_studio_version: ${{ inputs.visual_studio_version }}
+        arch: ${{ inputs.arch }}
 
     - name: Copy DLL for Windows
       if: runner.os == 'Windows'

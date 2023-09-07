@@ -87,12 +87,12 @@ TEST_F(MeshMergerTest, mesh_add_sub_mesh) {
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32) };
     std::vector<SubMesh> sub_meshes = {
-            SubMesh(0, 2, "")
+            SubMesh(0, 2, "", nullptr)
     };
 
     auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
 
-    mesh.addSubMesh("test.png", 3, 5);
+    mesh.addSubMesh("test.png", nullptr, 3, 5);
 
     const auto sub_mesh = mesh.getSubMeshes().at(1);
     ASSERT_EQ("test.png", sub_mesh.getTexturePath());
@@ -110,7 +110,7 @@ TEST_F(MeshMergerTest, mesh_merger_merge) {
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32)};
     std::vector<SubMesh> sub_meshes = {
-            SubMesh(0, 2, "")
+            SubMesh(0, 2, "", nullptr)
     };
 
     std::vector<TVec3d> vertices_to_add = { TVec3d(14, 15, 16),
@@ -121,7 +121,7 @@ TEST_F(MeshMergerTest, mesh_merger_merge) {
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32) };
     std::vector<SubMesh> sub_meshes_to_add = {
-            SubMesh(0, 2, "")
+            SubMesh(0, 2, "", nullptr)
     };
 
     auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
