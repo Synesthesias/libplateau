@@ -181,6 +181,23 @@ namespace plateau::polygonMesh {
         }
     }
 
+    std::tuple<TVec3d, TVec3d> Mesh::calcBoundingBox() const {
+        auto min = TVec3d(DBL_MAX, DBL_MAX, DBL_MAX);
+        auto max = TVec3d(DBL_MIN, DBL_MIN, DBL_MAX);
+        auto& vertices = getVertices();
+        auto vertices_count = vertices.size();
+        for(int i=0; i<vertices_count; i++) {
+            const auto pos3d = vertices.at(i);
+            min.x = std::min(min.x, pos3d.x);
+            min.y = std::min(min.y, pos3d.y);
+            min.z = std::min(min.z, pos3d.z);
+            max.x = std::max(max.x, pos3d.x);
+            max.y = std::max(max.y, pos3d.y);
+            max.z = std::max(max.z, pos3d.z);
+        }
+        return {min, max};
+    }
+
 
 
     const CityObjectList& Mesh::getCityObjectList() const {

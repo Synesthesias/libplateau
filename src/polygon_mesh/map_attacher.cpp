@@ -6,21 +6,7 @@ namespace plateau::polygonMesh {
     namespace fs = std::filesystem;
 
     namespace {
-        /// メッシュのBoundingBoxを計算します。ただし2D(東西南北方向)のみで、高さは無視します。
-        std::tuple<TVec2d, TVec2d> calcBoundingBox2D(Mesh& mesh) {
-            auto min = TVec2(DBL_MAX, DBL_MAX);
-            auto max = TVec2(DBL_MIN, DBL_MIN);
-            auto& vertices = mesh.getVertices();
-            auto vertices_count = vertices.size();
-            for(int i=0; i<vertices_count; i++) {
-                auto pos3d = vertices.at(i);
-                min.x = std::min(min.x, pos3d.x);
-                min.y = std::min(min.y, pos3d.z);
-                max.x = std::max(max.x, pos3d.x);
-                max.y = std::max(max.y, pos3d.z);
-            }
-            return {min, max};
-        }
+
 
         /// 地図タイルを貼り付ける準備として、メッシュにUVを設定します。
         /// メッシュの頂点のうち、もっとも南西にある箇所をUV(0,0)とします。
@@ -29,26 +15,33 @@ namespace plateau::polygonMesh {
         /// メッシュが東西方向に長い場合、メッシュの北東端は正方形の右の辺上にあるので UV(1,y) (0<y<1) です。
         /// メッシュが南北方向に長い場合、メッシュの北東端は正方形の上の辺上にあるので UV(x,1) (0<x<1) です。
         /// 頂点の高さは考慮しません。
-        void setUVForMap(Mesh& mesh, const TVec2d min, const TVec2d max) { // NOLINT(performance-unnecessary-value-param)
+        void setUVForMap(Mesh& mesh, const TVec3d min_arg, const TVec3d max_arg, const GeoReference& geo_ref) { // NOLINT(performance-unnecessary-value-param)
             auto& vertices = mesh.getVertices();
             auto vertices_count = vertices.size();
             auto uv = std::vector<TVec2f>();
             uv.reserve(vertices_count);
-            auto size2d = max - min;
+            const auto min = geo_ref.convertAxisToENU(min_arg);
+            const auto max = geo_ref.convertAxisToENU(max_arg);
+            const auto diff = max - min;
+            auto size2d = TVec2d(diff.x, diff.y);
             auto size_longer = std::max(size2d.x, size2d.y); // 縦と横のうち長い方の長さを採用します。非正方形の地形でテクスチャが引き伸ばされることを防ぎます。
             for(int i=0; i<vertices_count; i++) {
-                auto v = vertices.at(i);
+                const auto v_with_src_axis = vertices.at(i);
+                const auto v = GeoReference::convertAxisToENU(geo_ref.getCoordinateSystem(), v_with_src_axis);
                 auto uv_x = (float)((v.x - min.x) / size_longer);
-                auto uv_y = (float)((v.z - min.y) / size_longer);
+                auto uv_y = (float)((v.y - min.y) / size_longer);
                 uv.emplace_back(uv_x, uv_y);
             }
             mesh.setUV1(std::move(uv));
         }
 
-        Extent getExtent(const TVec2d min, const TVec2d max, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
-            const auto geo_min = geo_reference.unproject(TVec3d(min.x, -99999, min.y));
-            const auto geo_max = geo_reference.unproject(TVec3d(max.x, 99999, max.y));
-            return {geo_min, geo_max};
+        Extent getExtent(const TVec3d min, const TVec3d max, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
+            const auto geo_min = geo_reference.unproject(min);
+            const auto geo_max = geo_reference.unproject(max);
+            return {
+                {geo_min.latitude, geo_min.longitude, -99999},
+                { geo_max.latitude, geo_max.longitude, 99999}
+            };
         }
 
         /**
@@ -74,8 +67,9 @@ namespace plateau::polygonMesh {
     void MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
         auto meshes = model.getAllMeshes();
         for(auto mesh : meshes) {
-            const auto [min, max] = calcBoundingBox2D(*mesh);
-            setUVForMap(*mesh, min, max);
+            if(mesh->getVertices().empty()) continue;
+            const auto [min, max] = mesh->calcBoundingBox();
+            setUVForMap(*mesh, min, max, geo_reference);
             auto extent = getExtent(min, max, geo_reference);
             auto downloader = VectorTileDownloader(map_download_dest.u8string(), extent, zoom_level);
             downloader.setUrl(map_url_template);

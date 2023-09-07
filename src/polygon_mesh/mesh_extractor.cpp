@@ -129,8 +129,7 @@ namespace {
         if(package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
             const auto gml_path = fs::u8path(city_model.getGmlPath());
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
-            // TODO 下の引数であるURLとzoomLevelはユーザーが指定できるようにする
-            MapAttacher::attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
+            MapAttacher().attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
                                 geo_reference);
         }
 
