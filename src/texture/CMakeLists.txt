@@ -10,5 +10,7 @@ else()
         "png_texture_image.cpp"
         "tiff_texture_image.cpp"
         "texture_image_base.cpp"
+        "texture_atlas_canvas.cpp"
+        "atlas_container.cpp"
     )
 endif()
