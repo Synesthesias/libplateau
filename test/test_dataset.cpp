@@ -63,11 +63,11 @@ TEST_F(DatasetTest, getGmlsServer) { // NOLINT
         actual_gml_files.push_back(gml_file.getPath());
     }
     const std::vector<std::string> expected_files = {
-            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",
-            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml",
-            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
-            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
-            u8"https://plateau-api-mock-v2.deta.dev/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6697_park_op.gml"
+            u8"https://plateauapimockv3-1-w3921743.deta.app/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml",
+            u8"https://plateauapimockv3-1-w3921743.deta.app/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392670_bldg_6697_2_op.gml",
+            u8"https://plateauapimockv3-1-w3921743.deta.app/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
+            u8"https://plateauapimockv3-1-w3921743.deta.app/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6668_2_op.gml",
+            u8"https://plateauapimockv3-1-w3921743.deta.app/13100_tokyo23-ku_2020_citygml_3_2_op/udx/luse/533926_luse_6697_park_op.gml"
     };
     checkVectors(expected_files, actual_gml_files);
 }
@@ -117,15 +117,14 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
     // 画像ファイルがコピー先に存在します。
     auto image_dir = fs::path(bldg_dir).append("53392642_bldg_6697_appearance");
     std::vector<std::string> images = {
-            "hnap0876.tif",
-            "hnap0878.tif",
-            "hnap0285.tif",
-            "hnap0276.tif",
-            "hnap0275.tif",
-            "hnap0034.tif",
-            "hnap0286.tif",
-            "hnap0279.tif"
-
+            "hnap0034.png",
+            "hnap0275.jpg",
+            "hnap0276.jpg",
+            "hnap0279.tif",
+            "hnap0285.png",
+            "hnap0286.jpg",
+            "hnap0876.jpg",
+            "hnap0878.tif"
     };
     checkFilesExist(images, image_dir);
 

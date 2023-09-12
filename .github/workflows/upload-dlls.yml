@@ -22,8 +22,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-latest, ubuntu-20.04]
-
+        os: [windows-2022, macos-latest, ubuntu-20.04]
+        arch: [x86_64]
+        include:
+          - os: macos-latest
+            arch: arm64
     steps:
 
       - uses: actions/checkout@v3
@@ -34,48 +37,12 @@ jobs:
           ssh-private-key: |
             ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
 
-      - name: checkout submodules
-        shell: bash
-        run: git submodule update --init --recursive
-
-      - name: Build
-        uses: ./.github/actions/build
+      - name: Upload Dll
+        uses: ./.github/actions/upload-dll
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
-
-      - name: Copy DLL for Windows
-        if: runner.os == 'Windows'
-        run: |
-          mkdir D:\a\output -Force
-          Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release-Unity\bin\* -Destination D:\a\output
-          Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\CSharpPLATEAU\bin\Release\netstandard2.0\CSharpPLATEAU.dll -Destination D:\a\output
-
-      - name: Copy lib for Windows
-        if: runner.os == 'Windows'
-        run: |
-          Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release-Unreal\src\${{env.BUILD_TYPE}}\plateau_combined.lib -Destination D:\a\output
-
-      - name: Upload DLL for Windows
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v2
-        with:
-          name: libplateau-windows
-          path: D:\a\output
-
-      - name: Copy Libraries for Ubuntu and MacOS
-        if: runner.os != 'Windows'
-        run: |
-          mkdir $HOME/output/
-          find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so -or -name *.dylib | xargs -I {} cp -v {} $HOME/output
-          find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau*.a | xargs -I {} cp -v {} $HOME/output
-          echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
-
-      - name: Upload DLL(so, dylib) for Ubuntu and MacOS
-        if: runner.os != 'Windows'
-        uses: actions/upload-artifact@v2
-        with:
-          name: libplateau-${{matrix.os}}
-          path: ${{env.HOME}}/output/
+          visual_studio_version: "17 2022"
+          arch: ${{ matrix.arch }}
 
   # 2つ目のジョブ。
   # AndroidとiOS用にライブラリをビルド。
@@ -99,92 +66,10 @@ jobs:
           ssh-private-key: |
             ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
 
-      - name: checkout submodules
-        shell: bash
-        run: git submodule update --init --recursive
-
-      - name: setup ubuntu
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get --quiet update --yes
-          sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-
-      - name: setup JDK 1.8
-        if: runner.os == 'Linux'
-        uses: actions/setup-java@v2
+      - name: Upload Dlls for Mobile
+        uses: ./.github/actions/upload-mobile-dlls
         with:
-          distribution: 'zulu'
-          java-version: '11'
-
-      - name: download Android SDK
-        if: runner.os == 'Linux'
-        run: |
-          wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
-          unzip -d android-sdk-linux android-sdk.zip
-          sudo mkdir -p /root/.android
-          sudo touch /root/.android/repositories.cfg
-          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platforms;android-${{ matrix.compile-sdk }}" >/dev/null
-          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "platform-tools" >/dev/null
-          echo y | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. "build-tools;${{ matrix.build-tools }}" >/dev/null
-          export ANDROID_SDK_ROOT=$PWD
-          export PATH=$PATH:$PWD/platform-tools/
-          set +o pipefail
-          yes | android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --licenses
-          set -o pipefail
-
-      - name: install Android NDK
-        if: runner.os == 'Linux'
-        run: android-sdk-linux/cmdline-tools/bin/sdkmanager --sdk_root=. --install "ndk;${{ matrix.ndk-version }}" 
-
-      - name: Insert NDK path
-        if: runner.os == 'Linux'
-        run: |
-          echo "ndk.dir=$PWD/ndk/${{ matrix.ndk-version }}" >> ./local.properties
-
-      - name: Install ninja-build tool
-        if: runner.os == 'Linux'
-        uses: seanmiddleditch/gha-setup-ninja@v3
-
-      - name: Configure CMake for Android
-        if: runner.os == 'Linux'
-        run: >
-          cmake
-          -S ${{github.workspace}} 
-          -B ${{github.workspace}}/out/build/x64-Release 
-          -G "Ninja" 
-          -D ANDROID_PLATFORM=android-23
-          -D ANDROID_ABI=arm64-v8a 
-          -D CMAKE_MAKE_PROGRAM=ninja
-          -D CMAKE_BUILD_TYPE=Release
-          -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
-
-      - name: Configure CMake for iOS
-        if: runner.os == 'MacOS'
-        run: >
-          cmake
-          -S ${{github.workspace}} 
-          -B ${{github.workspace}}/out/build/x64-Release 
-          -G "Xcode" 
-          -D CMAKE_SYSTEM_NAME=iOS
-          -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0
-          -D CMAKE_BUILD_TYPE=Release
-
-      - name: Build by CMake
-        run: cmake --build ${{github.workspace}}/out/build/x64-Release --config Release
-
-      - name: Upload framework for Android
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v2
-        with:
-          name: libplateau-android-dll
-          path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
-
-      - name: Upload framework for iOS
-        if: runner.os == 'MacOS'
-        uses: actions/upload-artifact@v2
-        with:
-          name: libplateau-ios-dll
-          path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
+          shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
 
   # 3つ目のジョブです。
   # OSごとのアーティファクトを1つにまとめます。
@@ -203,13 +88,15 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          mkdir -p ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           mkdir -p ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           mkdir -p ~/a/plateau-plugins/dynamic-libs/Android
           mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
           cp ~/a/libplateau-windows/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           cp ~/a/libplateau-windows/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           cp ~/a/libplateau-ubuntu-20.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
-          cp ~/a/libplateau-macos-latest/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-macos-latest-x86_64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-macos-latest-arm64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
           cp ~/a/libplateau-ios-dll/* ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
 
@@ -217,10 +104,12 @@ jobs:
         run: |
           mkdir -p ~/a/plateau-plugins/static-libs/windows
           mkdir -p ~/a/plateau-plugins/static-libs/linux
-          mkdir -p ~/a/plateau-plugins/static-libs/macos
+          mkdir -p ~/a/plateau-plugins/static-libs/macos/x86_64
+          mkdir -p ~/a/plateau-plugins/static-libs/macos/arm64
           cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
           cp ~/a/libplateau-ubuntu-20.04/*.a ~/a/plateau-plugins/static-libs/linux
-          cp ~/a/libplateau-macos-latest/*.a ~/a/plateau-plugins/static-libs/macos
+          cp ~/a/libplateau-macos-latest-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
+          cp ~/a/libplateau-macos-latest-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
 
       - name: upload artifact
         uses: actions/upload-artifact@v3

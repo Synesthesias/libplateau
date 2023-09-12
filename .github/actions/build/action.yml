@@ -5,6 +5,13 @@ inputs:
   shell_type:
     description: "利用するシェルを引数で渡します。"
     required: true
+  visual_studio_version:
+    description: "ビルドで利用する Visual Studio のバージョンです。Windowsでのみ利用します。"
+    required: true
+  arch:
+    description: "ビルド対象のCPUアーキテクチャです。MacOSでのみ利用します。"
+    required: false
+    default: "x86_64"
 
 runs:
   using: Composite
@@ -55,6 +62,7 @@ runs:
         -D CMAKE_CXX_FLAGS="-w"
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
+        -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
@@ -75,6 +83,7 @@ runs:
         -D CMAKE_CXX_FLAGS="-w"
         -D BUILD_LIB_TYPE=static
         -D RUNTIME_LIB_TYPE=MD
+        -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
 
@@ -85,7 +94,7 @@ runs:
         cmake
         -S ${{github.workspace}}
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
-        -G "Visual Studio 16 2019"
+        -G "Visual Studio ${{ inputs.visual_studio_version }}"
         -D CMAKE_INSTALL_PREFIX="C:/ninja"
         -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
         -D CMAKE_CXX_FLAGS="-w"

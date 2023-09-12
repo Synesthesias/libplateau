@@ -34,6 +34,7 @@ using namespace plateau::geometry;
             }
             auto result = downloader->download(index, tile);
             if(!result) return APIResult::ErrorValueNotFound;
+            if(tile.result != HttpResult::Success) return APIResult::ErrorValueNotFound;
             return APIResult::Success;
         } API_CATCH
         return APIResult::ErrorUnknown;

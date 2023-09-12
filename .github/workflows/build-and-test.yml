@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-latest, ubuntu-20.04]
+        os: [windows-2022, macos-latest, ubuntu-20.04]
 
     steps:
 
@@ -37,6 +37,7 @@ jobs:
       uses: ./.github/actions/build
       with:
         shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
+        visual_studio_version: "17 2022"
 
     - name: Run Test
       run: |

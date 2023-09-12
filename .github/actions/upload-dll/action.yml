@@ -1,0 +1,91 @@
+# 現在の Github Actions のランナーのOSでビルドし、その結果をアーティファクトとしてアップロードします。
+
+inputs:
+  shell_type:
+    description: "利用するシェルを引数で渡します。"
+    required: true
+  visual_studio_version:
+    description: "ビルドで利用する Visual Studio のバージョンです。Windowsでのみ利用します。"
+    required: true
+  arch:
+    description: "ビルド対象のCPUアーキテクチャです。MacOSでのみ利用します。"
+    required: false
+    default: "x86_64"
+
+runs:
+  using: Composite
+
+  steps:
+
+    - name: checkout submodules
+      shell: bash
+      run: git submodule update --init --recursive
+
+    - name: Build
+      uses: ./.github/actions/build
+      with:
+        shell_type: ${{ inputs.shell_type }}
+        visual_studio_version: ${{ inputs.visual_studio_version }}
+        arch: ${{ inputs.arch }}
+
+    - name: Copy DLL for Windows
+      if: runner.os == 'Windows'
+      run: |
+        mkdir D:\a\output -Force
+        Copy-Item -Filter "*.dll" -Path ${{github.workspace}}\out\build\x64-Release-Unity\bin\* -Destination D:\a\output
+        Copy-Item -Path ${{github.workspace}}\wrappers\csharp\LibPLATEAU.NET\CSharpPLATEAU\bin\Release\netstandard2.0\CSharpPLATEAU.dll -Destination D:\a\output
+      shell: pwsh
+
+    - name: Copy lib for Windows
+      if: runner.os == 'Windows'
+      run: |
+        Copy-Item -Path ${{ github.workspace }}\out\build\x64-Release-Unreal\src\${{env.BUILD_TYPE}}\plateau_combined.lib -Destination D:\a\output
+      shell: pwsh
+
+    - name: Upload DLL for Windows
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: libplateau-windows
+        path: D:\a\output
+
+    - name: Copy Libraries for Ubuntu
+      if: runner.os == 'Linux'
+      run: |
+        mkdir $HOME/output/
+        find ${{github.workspace}}/out/build/x64-Release-Unity -name *.so | xargs -I {} cp -v {} $HOME/output
+        find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau.a | xargs -I {} cp -v {} $HOME/output
+        echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
+    - name: Copy Libraries for MacOS(x86_64)
+      if: runner.os == 'MacOS' && inputs.arch == 'x86_64'
+      run: |
+        mkdir $HOME/output/
+        find ${{github.workspace}}/out/build/x64-Release-Unity -name *.dylib | xargs -I {} cp -v {} $HOME/output
+        find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau_combined.a | xargs -I {} cp -v {} $HOME/output
+        echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
+    - name: Copy Libraries for MacOS(arm64)
+      if: runner.os == 'MacOS' && inputs.arch == 'arm64'
+      run: |
+        mkdir $HOME/output/
+        find ${{github.workspace}}/out/build/x64-Release-Unity -name *.dylib | xargs -I {} cp -v {} $HOME/output
+        find ${{github.workspace}}/out/build/x64-Release-Unreal -name libplateau_combined.a | xargs -I {} cp -v {} $HOME/output
+        echo "HOME=$(echo $HOME)" >> $GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
+    - name: Upload DLL(so) for Ubuntu
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v2
+      with:
+        name: libplateau-${{matrix.os}}
+        path: ${{env.HOME}}/output/
+
+    - name: Upload DLL(dylib) for MacOS
+      if: runner.os == 'MacOS'
+      uses: actions/upload-artifact@v2
+      with:
+        name: libplateau-${{matrix.os}}-${{matrix.arch}}
+        path: ${{env.HOME}}/output/

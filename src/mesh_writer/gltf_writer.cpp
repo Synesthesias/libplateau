@@ -205,13 +205,13 @@ namespace plateau::meshWriter {
 
         node_name_ = node.getName();
 
-        auto& mesh = node.getMesh();
-        if (mesh.has_value()) {
-            const auto& vertices = mesh.value().getVertices();
-            const auto& all_indices = mesh.value().getIndices();
-            const auto& uvs = mesh.value().getUV1();
+        auto mesh = node.getMesh();
+        if (mesh != nullptr) {
+            const auto& vertices = mesh->getVertices();
+            const auto& all_indices = mesh->getIndices();
+            const auto& uvs = mesh->getUV1();
 
-            const auto& sub_meshes = mesh.value().getSubMeshes();
+            const auto& sub_meshes = mesh->getSubMeshes();
             if (!sub_meshes.empty()) {
 
                 //position

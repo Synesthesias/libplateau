@@ -21,7 +21,7 @@ namespace plateau::dataset {
         const auto dataset_source = DatasetSource::createServer("23ku", network::Client::createClientForMockServer());
         const auto accessor = dataset_source.getAccessor();
         auto packages = accessor->getPackages();
-        ASSERT_EQ((unsigned  long)0b1111, (unsigned long)packages);
+        ASSERT_EQ((unsigned  long)0b1001111, (unsigned long)packages);
     }
 
     TEST_F(ServerDatasetAccessorTest, getmaxLod) { // NOLINT

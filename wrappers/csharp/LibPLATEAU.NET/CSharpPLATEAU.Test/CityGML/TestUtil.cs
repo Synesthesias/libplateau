@@ -22,7 +22,7 @@ namespace PLATEAU.Test.CityGML {
         /// </summary>
         public static CityModel LoadTestGMLFile(GmlFileCase gmlFileCase, bool optimize = true, bool tessellate = true, bool ignoreGeometries = false)
         {
-            var parserParams = new CitygmlParserParams(optimize, tessellate, ignoreGeometries);
+            var parserParams = new CitygmlParserParams(optimize, true, tessellate, ignoreGeometries);
             var cityModel = CityGml.Load(GmlPaths[gmlFileCase], parserParams, LogCallbacks.StdOut);
             return cityModel;
         }

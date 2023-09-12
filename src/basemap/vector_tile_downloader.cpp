@@ -8,7 +8,7 @@
 
 namespace fs = std::filesystem;
 
-const std::string VectorTileDownloader::default_url_ = "http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
+const std::string VectorTileDownloader::default_url_ = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
 
 VectorTileDownloader::VectorTileDownloader(
     const std::string& destination,
@@ -51,9 +51,11 @@ void VectorTileDownloader::download(
     std::string host = strs[0] + "/" + strs[1] + "/" + strs[2];
     std::string path = "/" + strs[3] + "/" + strs[4] + "/" + std::to_string(coordinate.zoom_level) + "/" + std::to_string(coordinate.column) + "/" + std::to_string(coordinate.row) + ".png";
 
-
     httplib::Client client(host);
     std::string body;
+    client.set_connection_timeout(5, 0);
+    client.enable_server_certificate_verification(false);
+
     auto result = client.Get(
         path, httplib::Headers(),
         [&](const httplib::Response& response) {
@@ -63,6 +65,12 @@ void VectorTileDownloader::download(
             body.append(data, data_length);
             return true; // return 'false' if you want to cancel the request.
         });
+
+    if (result.error() != httplib::Error::Success) {
+        out_vector_tile.image_path.clear();
+        out_vector_tile.result = static_cast<HttpResult>(result.error());
+        return;
+    }
 
     auto file_path = calcDestinationPath(coordinate, destination);
     create_directories(file_path.parent_path());
