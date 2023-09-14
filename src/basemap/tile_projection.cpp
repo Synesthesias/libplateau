@@ -30,8 +30,8 @@ std::shared_ptr<std::vector<TileCoordinate>> TileProjection::getTileCoordinates(
     const int max_y = lat2tileY(extent.min.latitude, zoomLevel);
 
     auto tileCoordinates = std::make_shared<std::vector<TileCoordinate>>();
-    for (int x = min_x; x <= max_x; x++) {
-        for (int y = min_y; y <= max_y; y++) {
+    for (int y = min_y; y <= max_y; y++) {
+        for (int x = min_x; x <= max_x; x++) {
             TileCoordinate coordinate{};
             coordinate.column = x;
             coordinate.row = y;

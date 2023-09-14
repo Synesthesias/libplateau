@@ -1,9 +1,13 @@
 #include <plateau/polygon_mesh/map_attacher.h>
 #include <plateau/basemap/vector_tile_downloader.h>
+#include <plateau/texture/texture_image_base.h>
+#include <plateau/texture/texture_packer.h>
 #include <cfloat>
+#include <cassert>
 
 namespace plateau::polygonMesh {
     namespace fs = std::filesystem;
+    using namespace plateau::texture;
 
     namespace {
 
@@ -44,36 +48,74 @@ namespace plateau::polygonMesh {
             };
         }
 
-        /**
-         * VectorTileDownloaderを利用して地図をダウンロードします。
-         * 戻り値はダウンロードした画像パスの配列です。ただし、ダウンロードに失敗した分は空文字列が入ります。
-         */
-        std::vector<std::string> download(const VectorTileDownloader& downloader) {
-            auto downloaded_path = std::vector<std::string>();
-            auto count = downloader.getTileCount();
-            for(int i=0; i<count; i++) {
-                auto tile = downloader.download(i);
-                auto path = std::string("");
-                if(tile->result == HttpResult::Success) {
-                    path = tile->image_path;
-                }
-                downloaded_path.push_back(path);
-            }
-            return downloaded_path;
-        }
-
     }
 
     void MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
         auto meshes = model.getAllMeshes();
-        for(auto mesh : meshes) {
+        for(int i=0; i<meshes.size(); i++) {
+            auto mesh = meshes.at(i);
             if(mesh->getVertices().empty()) continue;
+
+            // UVを貼ります。
             const auto [min, max] = mesh->calcBoundingBox();
             setUVForMap(*mesh, min, max, geo_reference);
+
+            // 地図タイルをダウンロードします。
             auto extent = getExtent(min, max, geo_reference);
             auto downloader = VectorTileDownloader(map_download_dest.u8string(), extent, zoom_level);
             downloader.setUrl(map_url_template);
-            auto image_paths = download(downloader);
+            auto tiles = downloader.downloadAll();
+
+            if(!tiles.anyTileSucceed()) continue;
+
+            // タイル画像の大きさを求めます。
+            size_t tile_image_width = 0;
+            size_t tile_image_height = 0;
+            for(const auto& tile : tiles.tiles()) {
+                if(tile.result != HttpResult::Success) continue;
+                bool image_loaded = false;
+                auto image = TextureImageBase::tryCreateFromFile(tile.image_path, 9999, image_loaded);
+                if(!image_loaded) continue;
+                tile_image_width = image->getWidth();
+                tile_image_height = image->getHeight();
+                // 大きさはすべて同じと仮定するので、1つ確認すれば十分とします。
+                break;
+            }
+            auto min_col = tiles.minColumn();
+            auto max_col = tiles.maxColumn();
+            auto min_row = tiles.minRow();
+            auto max_row = tiles.maxRow();
+            assert(min_col <= max_col);
+            assert(min_row <= max_row);
+            size_t combined_image_width = tile_image_width * (max_col - min_col + 1);
+            size_t combined_image_height = tile_image_height * (max_row - min_row + 1);
+
+            // タイルを結合します。
+            auto packer = TexturePacker(combined_image_width, combined_image_height);
+            auto combined_tile_dir = fs::u8path(tiles.firstSucceed().image_path)
+                    .remove_filename()
+                    .parent_path()
+                    .parent_path()
+                    .parent_path();
+            std::string combined_file_name = "combined_map_for_mesh_" + std::to_string(i) + "_";
+            packer.setSaveFilePath(combined_tile_dir, combined_file_name);
+            for (auto r = min_row; r <= max_row; r++) {
+                for (auto c = min_col; c <= max_col; c++) {
+                    const auto& tile = tiles.getTile(c, r);
+                    bool image_loaded = false;
+                    auto image = TextureImageBase::tryCreateFromFile(tile.image_path, 9999, image_loaded);
+                    int pack_canvas_id = -1;
+                    if (!image_loaded) {
+                        auto blank_image = TextureImageBase::createNewTexture(tile_image_width, tile_image_height);
+                        packer.packImage(blank_image.get(),
+                                         "dummy_path_blank_image " + std::to_string(c) + std::to_string(r),
+                                         pack_canvas_id);
+                        continue;
+                    }
+                    packer.packImage(image.get(), tile.image_path, pack_canvas_id);
+                }
+            }
+            packer.flush();
         }
     }
 }

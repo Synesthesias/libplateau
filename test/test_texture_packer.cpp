@@ -10,8 +10,8 @@ namespace fs = std::filesystem;
 class  TexturePackerTest : public ::testing::Test {
 public:
     static constexpr int rectangle_count = 16; // テストデータでは、板ポリゴンをこの枚数だけ生成します。
-    static constexpr int pack_texture_width = 513;
-    static constexpr int pack_texture_height = 513;
+    static constexpr int pack_texture_width = 512;
+    static constexpr int pack_texture_height = 512;
     static const fs::path texture_dir;
     static const std::vector<std::string> texture_files_each_different;
     static const std::vector<std::string> expect_files;

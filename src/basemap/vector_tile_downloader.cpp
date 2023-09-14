@@ -10,6 +10,46 @@ namespace fs = std::filesystem;
 
 const std::string VectorTileDownloader::default_url_ = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png";
 
+VectorTiles::VectorTiles(std::vector<VectorTile> tiles) :
+        tiles_(std::move(tiles)),
+        min_column_(INT_MAX), min_row_(INT_MAX), max_column_(INT_MIN), max_row_(INT_MIN){
+    // 最小最大を求めます。
+    for(const auto& tile : tiles_) {
+        const auto coord = tile.coordinate;
+        min_column_ = std::min(min_column_, coord.column);
+        min_row_ = std::min(min_row_, coord.row);
+        max_column_ = std::max(max_column_, coord.column);
+        max_row_ = std::max(max_row_, coord.row);
+    }
+}
+
+bool VectorTiles::anyTileSucceed() {
+    if(tiles_.empty()) return false;
+    for(const auto& tile : tiles_) {
+        if(tile.result == HttpResult::Success) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const VectorTile& VectorTiles::firstSucceed() const {
+    for(const auto& tile : tiles_) {
+        if(tile.result == HttpResult::Success) {
+            return tile;
+        }
+    }
+    throw std::runtime_error("succeed tile is not found.");
+}
+
+const VectorTile& VectorTiles::getTile(int column, int row) const {
+    for(const auto& tile : tiles_) {
+        auto coord = tile.coordinate;
+        if(coord.column == column && coord.row == row) return tile;
+    }
+    throw std::runtime_error("tile not found.");
+}
+
 VectorTileDownloader::VectorTileDownloader(
     const std::string& destination,
     const plateau::geometry::Extent& extent,
@@ -107,6 +147,17 @@ std::shared_ptr<VectorTile> VectorTileDownloader::download(const std::string& ur
     auto result = std::make_shared<VectorTile>();
     download(url_template, destination, coordinate, *result);
     return result;
+}
+
+VectorTiles VectorTileDownloader::downloadAll() const {
+    auto tiles = std::vector<VectorTile>();
+    auto count = getTileCount();
+    for(int i=0; i<count; i++) {
+        auto tile = download(i);
+        tiles.push_back(*tile);
+    }
+    auto ret = VectorTiles(tiles);
+    return ret;
 }
 
 fs::path VectorTileDownloader::calcDestinationPath(const TileCoordinate& coord, const std::string& destination, const std::string& file_extension) {

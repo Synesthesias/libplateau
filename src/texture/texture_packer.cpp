@@ -6,9 +6,11 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <filesystem>
 
 namespace plateau::texture {
     using namespace polygonMesh;
+    namespace fs = std::filesystem;
 
     TexturePacker::TexturePacker(size_t width, size_t height, const int internal_canvas_count)
             : canvas_width_(width)
@@ -29,8 +31,12 @@ namespace plateau::texture {
             processNodeRecursive(child_node);
         }
 
+        flush();
+    }
+
+    void TexturePacker::flush() {
         for (auto& canvas : canvases_) {
-            if (!canvas->getSaveFilePath().empty()) {
+            if (!canvas->getSaveFilePath().empty() && canvas->isTouched()) {
                 canvas->flush();
             }
         }
@@ -70,6 +76,7 @@ namespace plateau::texture {
             }
         }
     }
+
 
     void TexturePacker::processMesh(plateau::polygonMesh::Mesh* mesh) {
         if (mesh == nullptr) {
@@ -117,54 +124,18 @@ namespace plateau::texture {
                 continue;
             }
 
-            const auto width = image->getWidth();
-            const auto height = image->getHeight();
-
-            if (width > canvas_width_ || height >= canvas_height_) {
+            if (image->getWidth() > canvas_width_ || image->getHeight() >= canvas_height_) {
                 sub_mesh_list.push_back(sub_mesh);
                 ++index;
                 continue;
             }
 
-            // canvasのどれかにパックできるか確認
             int target_canvas_id = -1;
-            AtlasInfo info = AtlasInfo::empty();
-            for (int i=0; i<canvases_.size(); i++) {
-                auto& canvas = canvases_.at(i);
-                info = canvas->insert(width, height, tex_url);
-                if (info.getValid()) {
-                    target_canvas_id = i;
-                    break;
-                }
-            }
-
-            // どこにもパック出来なかった場合
-            if (target_canvas_id < 0) {
-                // 占有率最大のcanvasを取得
-                double max_coverage = 0.0;
-                size_t max_coverage_index = 0;
-                for (auto i=0; i<canvases_.size(); i++) {
-                    auto& canvas = canvases_[i];
-                    if (max_coverage < canvas->getCoverage()) {
-                        max_coverage = canvas->getCoverage();
-                        max_coverage_index = i;
-                    }
-                }
-                // flushして空にしてから後でパックする。
-                target_canvas_id = (int)max_coverage_index;
-                canvases_.at(max_coverage_index)->flush();
-                canvases_.at(max_coverage_index) = std::make_shared<TextureAtlasCanvas>(canvas_width_, canvas_height_);
-                info = canvases_.at(max_coverage_index)->insert(width, height, tex_url);
-            }
-
-            assert(info.getValid());
+            auto info = packImage(image.get(), tex_url, target_canvas_id);
 
 
-            auto& target_canvas = canvases_.at(target_canvas_id);
-            image->packTo(&target_canvas->getCanvas(), info.getLeft(), info.getTop());
-            target_canvas->setSaveFilePathIfEmpty(image->getFilePath());
             SubMesh new_sub_mesh = sub_mesh;
-            new_sub_mesh.setTexturePath(target_canvas->getSaveFilePath());
+            new_sub_mesh.setTexturePath(canvases_.at(target_canvas_id)->getSaveFilePath());
             sub_mesh_list.push_back(new_sub_mesh);
 
             updateUVOfSubMesh(mesh, sub_mesh, info);
@@ -172,6 +143,51 @@ namespace plateau::texture {
             ++index;
         }
         mesh->setSubMeshes(sub_mesh_list);
+    }
+
+    AtlasInfo TexturePacker::packImage(TextureImageBase* image, const std::string& src_tex_path, int& out_target_canvas_id) {
+        const auto width = image->getWidth();
+        const auto height = image->getHeight();
+
+
+        // canvasのどれかにパックできるか確認
+        out_target_canvas_id = -1;
+        AtlasInfo info = AtlasInfo::empty();
+        for (int i=0; i<canvases_.size(); i++) {
+            auto& canvas = canvases_.at(i);
+            info = canvas->insert(width, height, src_tex_path);
+            if (info.getValid()) {
+                out_target_canvas_id = i;
+                break;
+            }
+        }
+
+        // どこにもパック出来なかった場合
+        if (out_target_canvas_id < 0) {
+            // 占有率最大のcanvasを取得
+            double max_coverage = 0.0;
+            size_t max_coverage_index = 0;
+            for (auto i=0; i<canvases_.size(); i++) {
+                auto& canvas = canvases_[i];
+                if (max_coverage < canvas->getCoverage()) {
+                    max_coverage = canvas->getCoverage();
+                    max_coverage_index = i;
+                }
+            }
+            // flushして空にしてから後でパックする。
+            out_target_canvas_id = (int)max_coverage_index;
+            canvases_.at(max_coverage_index)->flush();
+            canvases_.at(max_coverage_index) = std::make_shared<TextureAtlasCanvas>(canvas_width_, canvas_height_);
+            info = canvases_.at(max_coverage_index)->insert(width, height, src_tex_path);
+        }
+
+        assert(info.getValid());
+
+
+        auto& target_canvas = canvases_.at(out_target_canvas_id);
+        image->packTo(&target_canvas->getCanvas(), info.getLeft(), info.getTop());
+        target_canvas->setDefaultSaveFilePathIfEmpty(image->getFilePath());
+        return info;
     }
 
     void TextureAtlasCanvas::update(const size_t width, const size_t height, const bool is_new_container, const AtlasInfo& packed_texture_info) {
@@ -183,6 +199,7 @@ namespace plateau::texture {
         if (is_new_container) {
             vertical_range_ += height;
         }
+        is_touched_ = true;
     }
 
     AtlasInfo TextureAtlasCanvas::insert(const size_t width, const size_t height, const std::string& src_texture_path) {
@@ -207,7 +224,7 @@ namespace plateau::texture {
             break;
         }
 
-        if (!atlas_info.getValid() && height + vertical_range_ < canvas_height_) {
+        if (!atlas_info.getValid() && height + vertical_range_ <= canvas_height_) {
             AtlasContainer container(height, 0, vertical_range_);
             container.add(width);
             container_list_.push_back(container);
@@ -234,6 +251,14 @@ namespace plateau::texture {
             }
         }
         return false;
+    }
+
+    void TexturePacker::setSaveFilePath(const std::filesystem::path& dir, const std::string& file_name_without_extension) {
+        for(int i=0; i<canvases_.size(); i++) {
+            const auto& canvas = canvases_.at(i);
+            auto path = fs::path(dir) / fs::u8path((file_name_without_extension) + std::to_string(i) + ".png");
+            canvas->setSaveFilePath(path);
+        }
     }
 
 } // namespace plateau::texture

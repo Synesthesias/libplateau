@@ -3,6 +3,7 @@
 #include <memory>
 #include <libplateau_api.h>
 #include <filesystem>
+#include <utility>
 #include "plateau/geometry/geo_coordinate.h"
 
 /**
@@ -46,6 +47,36 @@ struct VectorTile {
 };
 
 /**
+ * VectorTileの集合です。
+ * タイル座標の最小最大も提供します。
+ */
+class VectorTiles {
+public:
+    VectorTiles(std::vector<VectorTile> tiles);
+    std::vector<VectorTile>& tiles() {return tiles_;};
+    int minColumn(){return min_column_;};
+    int minRow(){return min_row_;};
+    int maxColumn(){return max_column_;};
+    int maxRow(){return max_row_;};
+    /**
+     * タイルのダウンロードに1つでも成功していればtrueを返します。
+     */
+    bool anyTileSucceed();
+    const VectorTile& firstSucceed() const;
+
+    /**
+     * タイル集合のうち、タイル座標が引数に相当するものを探して返します。
+     */
+    const VectorTile& getTile(int column, int row) const;
+private:
+    std::vector<VectorTile> tiles_;
+    int min_column_;
+    int min_row_;
+    int max_column_;
+    int max_row_;
+};
+
+/**
  * 地理院地図タイルをダウンロードして画像ファイルとして保存します。
  */
 class LIBPLATEAU_EXPORT VectorTileDownloader {
@@ -84,6 +115,11 @@ public:
     */
     std::shared_ptr<VectorTile> download(int index) const;
     bool download(int index, VectorTile& out_vector_tile) const;
+
+    /**
+    * メンバー変数である範囲、ズームレベルに該当する地図タイルをすべてダウンロードし、そのタイル情報を返します。
+    */
+    VectorTiles downloadAll() const;
 
     /**
      * TileCoordinateの地図タイルをダウンロードしたとき、その画像ファイルがどこに配置されるべきかを返します。

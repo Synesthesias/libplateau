@@ -12,7 +12,7 @@ class MapAttacherTest : public ::testing::Test {
 };
 
 TEST_F(MapAttacherTest, AttachGeneratesImageFiles) { // NOLINT
-    const auto test_dir = fs::u8path(u8"../data/日本語パステスト/map_attacher_text");
+    const auto test_dir = fs::u8path(u8"../data/日本語パステスト/test_map_attacher");
     fs::remove_all(test_dir);
     fs::create_directories(test_dir);
     auto mesh = Mesh();
@@ -42,5 +42,5 @@ TEST_F(MapAttacherTest, AttachGeneratesImageFiles) { // NOLINT
         EXPECT_TRUE(fs::exists(path)) << path.u8string() << " exists";
     }
 
-    fs::remove_all(test_dir);
+//    fs::remove_all(test_dir);
 }
