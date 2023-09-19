@@ -182,8 +182,10 @@ namespace plateau::polygonMesh {
     }
 
     std::tuple<TVec3d, TVec3d> Mesh::calcBoundingBox() const {
-        auto min = TVec3d(DBL_MAX, DBL_MAX, DBL_MAX);
-        auto max = TVec3d(DBL_MIN, DBL_MIN, DBL_MAX);
+        constexpr double double_min = std::numeric_limits<double>::lowest();
+        constexpr double double_max = std::numeric_limits<double>::infinity();
+        auto min = TVec3d(double_max, double_max, double_max);
+        auto max = TVec3d(double_min, double_min, double_min);
         auto& vertices = getVertices();
         auto vertices_count = vertices.size();
         for(int i=0; i<vertices_count; i++) {

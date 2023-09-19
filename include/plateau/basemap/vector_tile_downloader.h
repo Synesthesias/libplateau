@@ -35,6 +35,11 @@ struct TileCoordinate {
     int column;
     int row;
     int zoom_level;
+
+    TileCoordinate(int column, int row, int zoom_level) :
+            column(column), row(row), zoom_level(zoom_level) {};
+
+    TileCoordinate() : TileCoordinate(-1, -1, -1) {};
 };
 
 /**
@@ -49,15 +54,21 @@ struct VectorTile {
 /**
  * VectorTileの集合です。
  * タイル座標の最小最大も提供します。
+ * ズームレベルはすべて同じと仮定します。
  */
 class VectorTiles {
 public:
     VectorTiles(std::vector<VectorTile> tiles);
     std::vector<VectorTile>& tiles() {return tiles_;};
-    int minColumn(){return min_column_;};
-    int minRow(){return min_row_;};
-    int maxColumn(){return max_column_;};
-    int maxRow(){return max_row_;};
+    int minColumn() const{return min_column_;};
+    int minRow() const{return min_row_;};
+    int maxColumn() const{return max_column_;};
+    int maxRow() const{return max_row_;};
+    int zoomLevel() const {return zoom_level_;};
+
+    /// 緯度経度の最小と最大をExtent型で返します。
+    plateau::geometry::Extent extent() const;
+
     /**
      * タイルのダウンロードに1つでも成功していればtrueを返します。
      */
@@ -74,6 +85,7 @@ private:
     int min_row_;
     int max_column_;
     int max_row_;
+    int zoom_level_;
 };
 
 /**

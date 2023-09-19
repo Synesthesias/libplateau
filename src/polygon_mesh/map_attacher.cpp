@@ -13,28 +13,27 @@ namespace plateau::polygonMesh {
 
 
         /// 地図タイルを貼り付ける準備として、メッシュにUVを設定します。
-        /// メッシュの頂点のうち、もっとも南西にある箇所をUV(0,0)とします。
-        /// メッシュを包む正方形の中でもっとも北東の箇所をUV(1,1)とします。
-        /// メッシュが正方形の場合、メッシュの北東端は UV(1,1)です。
-        /// メッシュが東西方向に長い場合、メッシュの北東端は正方形の右の辺上にあるので UV(1,y) (0<y<1) です。
-        /// メッシュが南北方向に長い場合、メッシュの北東端は正方形の上の辺上にあるので UV(x,1) (0<x<1) です。
+        /// まず、UVを0を最小、1を最大と仮定して計算します。
         /// 頂点の高さは考慮しません。
-        void setUVForMap(Mesh& mesh, const TVec3d min_arg, const TVec3d max_arg, const GeoReference& geo_ref) { // NOLINT(performance-unnecessary-value-param)
-            auto& vertices = mesh.getVertices();
-            auto vertices_count = vertices.size();
+        /// 次に、UVの最小から最大の範囲について、(0,0)から(1,1)の範囲を変換してuv_minからuv_maxの範囲に投影します。
+        void setUVForMap(Mesh& mesh, const TVec3d bounding_box_min_arg, const TVec3d bounding_box_max_arg, const GeoReference& geo_ref, const TVec2f uv_min, const TVec2f uv_max) { // NOLINT(performance-unnecessary-value-param)
+            const auto& vertices = mesh.getVertices();
+            const auto vertices_count = vertices.size();
             auto uv = std::vector<TVec2f>();
             uv.reserve(vertices_count);
-            const auto min = geo_ref.convertAxisToENU(min_arg);
-            const auto max = geo_ref.convertAxisToENU(max_arg);
+            const auto min = geo_ref.convertAxisToENU(bounding_box_min_arg);
+            const auto max = geo_ref.convertAxisToENU(bounding_box_max_arg);
             const auto diff = max - min;
-            auto size2d = TVec2d(diff.x, diff.y);
-            auto size_longer = std::max(size2d.x, size2d.y); // 縦と横のうち長い方の長さを採用します。非正方形の地形でテクスチャが引き伸ばされることを防ぎます。
+            const auto size2d = TVec2d(diff.x, diff.y);
+//            const auto size_longer = std::max(size2d.x, size2d.y); // 縦と横のうち長い方の長さを採用します。非正方形の地形でテクスチャが引き伸ばされることを防ぎます。
             for(int i=0; i<vertices_count; i++) {
                 const auto v_with_src_axis = vertices.at(i);
                 const auto v = GeoReference::convertAxisToENU(geo_ref.getCoordinateSystem(), v_with_src_axis);
-                auto uv_x = (float)((v.x - min.x) / size_longer);
-                auto uv_y = (float)((v.y - min.y) / size_longer);
-                uv.emplace_back(uv_x, uv_y);
+                const auto uv_x_norm = (float)((v.x - min.x) / size2d.x);
+                const auto uv_y_norm = (float)((v.y - min.y) / size2d.y);
+                const auto uv_norm = TVec2f(uv_x_norm, uv_y_norm);
+                const auto uv_corrected = uv_min + uv_norm * (uv_max - uv_min);
+                uv.push_back(uv_corrected);
             }
             mesh.setUV1(std::move(uv));
         }
@@ -56,9 +55,7 @@ namespace plateau::polygonMesh {
             auto mesh = meshes.at(i);
             if(mesh->getVertices().empty()) continue;
 
-            // UVを貼ります。
             const auto [min, max] = mesh->calcBoundingBox();
-            setUVForMap(*mesh, min, max, geo_reference);
 
             // 地図タイルをダウンロードします。
             auto extent = getExtent(min, max, geo_reference);
@@ -116,6 +113,14 @@ namespace plateau::polygonMesh {
                 }
             }
             packer.flush();
+
+            // 緯度経度を計算します。
+            const auto image_extent = tiles.extent();
+            const auto mesh_uv_min = image_extent.uvAt(extent.min);
+            const auto mesh_uv_max = image_extent.uvAt(extent.max);
+
+            // UVを貼ります。
+            setUVForMap(*mesh, min, max, geo_reference, mesh_uv_min, mesh_uv_max);
         }
     }
 }

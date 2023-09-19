@@ -6,6 +6,34 @@ namespace plateau::geometry {
     using namespace citygml;
     using namespace polygonMesh;
 
+    GeoCoordinate GeoCoordinate::operator+(GeoCoordinate op) const {
+        return {
+                latitude + op.latitude,
+                longitude + op.longitude,
+                height + op.height
+                };
+    }
+
+    GeoCoordinate GeoCoordinate::operator*(double op) const {
+        return {
+            latitude * op,
+            longitude * op,
+            height * op
+        };
+    }
+
+    GeoCoordinate GeoCoordinate::operator-(GeoCoordinate op) const {
+        return GeoCoordinate(*this) + (op * -1);
+    }
+
+    GeoCoordinate GeoCoordinate::operator/(GeoCoordinate op) const {
+        constexpr double double_max = std::numeric_limits<double>::infinity();
+        const auto lat = op.latitude == 0 ? double_max : latitude / op.latitude;
+        const auto lon = op.longitude == 0 ? double_max : longitude / op.longitude;
+        const auto h = op.height == 0 ? double_max : height / op.height;
+        return {lat, lon, h};
+    }
+
     bool Extent::contains(GeoCoordinate point) const {
         return min.latitude <= point.latitude &&
                max.latitude >= point.latitude &&
@@ -51,4 +79,11 @@ namespace plateau::geometry {
                 );
         return ret;
     }
+
+    TVec2f Extent::uvAt(GeoCoordinate coord) const {
+        const auto len = max - min;
+        const auto diff = coord - min;
+        const auto ratio = diff / len;
+        return {(float)ratio.longitude, (float)ratio.latitude};
+    };
 }

@@ -42,5 +42,5 @@ TEST_F(MapAttacherTest, AttachGeneratesImageFiles) { // NOLINT
         EXPECT_TRUE(fs::exists(path)) << path.u8string() << " exists";
     }
 
-//    fs::remove_all(test_dir);
+    fs::remove_all(test_dir);
 }
