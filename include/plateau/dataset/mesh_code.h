@@ -12,13 +12,44 @@ namespace plateau::dataset {
         explicit MeshCode(const std::string& code);
         MeshCode() = default;
 
+        /**
+         * \brief メッシュコードを文字列として取得します。
+         */
         std::string get() const;
+
+        /**
+         * \brief メッシュコードの緯度経度範囲を取得します。
+         */
         geometry::Extent getExtent() const;
+
+        /**
+         * \brief 座標点を含む3次メッシュを取得します。
+         */
         static MeshCode getThirdMesh(const geometry::GeoCoordinate& coordinate);
+
+        /**
+         * \brief 座標範囲を含む3次メッシュを全て取得します。
+         */
         static void getThirdMeshes(const geometry::Extent& extent, std::vector<MeshCode>& mesh_codes);
+
+        /**
+         * \brief 座標範囲を含む3次メッシュを全て取得します。
+         */
         static std::shared_ptr<std::vector<MeshCode>> getThirdMeshes(const geometry::Extent& extent);
+
+        /**
+         * \brief 地域メッシュが内包されるかどうかを計算します。
+         */
         bool isWithin(const MeshCode& other) const;
+
+        /**
+         * \brief 地域メッシュを2次メッシュとして取得します。
+        */
         MeshCode asSecond() const;
+
+        /**
+         * \brief メッシュコードが適切な値かどうかを返します。
+        */
         bool isValid() const;
 
         bool operator==(const MeshCode& other) const;
@@ -34,6 +65,10 @@ namespace plateau::dataset {
         int second_col_;
         int third_row_;
         int third_col_;
+        int fourth_row_;
+        int fourth_col_;
+        int fifth_row_;
+        int fifth_col_;
         int level_;
         bool is_valid_;
 
