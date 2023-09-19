@@ -48,6 +48,10 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
+    std::vector<SubMesh>& Mesh::getSubMeshes() {
+        return sub_meshes_;
+    }
+
     void Mesh::setSubMeshes(std::vector<SubMesh>& sub_mesh_list) {
         sub_meshes_ = sub_mesh_list;
     }

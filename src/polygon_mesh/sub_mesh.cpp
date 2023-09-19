@@ -35,7 +35,7 @@ namespace plateau::polygonMesh {
     }
 
     void SubMesh::setTexturePath(std::string file_path) {
-        texture_path_ = file_path;
+        texture_path_ = std::move(file_path);
     }    
 
     void SubMesh::setEndIndex(int end_index) {

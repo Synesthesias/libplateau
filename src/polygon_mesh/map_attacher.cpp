@@ -95,6 +95,8 @@ namespace plateau::polygonMesh {
                     .parent_path()
                     .parent_path();
             std::string combined_file_name = "combined_map_for_mesh_" + std::to_string(i) + "_";
+            // TODO 下の ".png" の決め打ちはあまり良くない
+            const auto combined_image_path = fs::path(combined_tile_dir) / fs::u8path(combined_file_name + "0.png");
             packer.setSaveFilePath(combined_tile_dir, combined_file_name);
             for (auto r = min_row; r <= max_row; r++) {
                 for (auto c = min_col; c <= max_col; c++) {
@@ -121,6 +123,12 @@ namespace plateau::polygonMesh {
 
             // UVを貼ります。
             setUVForMap(*mesh, min, max, geo_reference, mesh_uv_min, mesh_uv_max);
+
+            // テクスチャを結合後の地図タイルにします。
+            for(auto& sub_mesh : mesh->getSubMeshes()) {
+                if(!sub_mesh.getTexturePath().empty()) continue;
+                sub_mesh.setTexturePath(combined_image_path.u8string());
+            }
         }
     }
 }

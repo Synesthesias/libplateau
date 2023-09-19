@@ -43,6 +43,7 @@ namespace plateau::polygonMesh {
         UV& getUV1();
         const UV& getUV4() const;
         const std::vector<SubMesh>& getSubMeshes() const;
+        std::vector<SubMesh>& getSubMeshes();
 
         void setSubMeshes(std::vector<SubMesh>& sub_mesh_list);
 
