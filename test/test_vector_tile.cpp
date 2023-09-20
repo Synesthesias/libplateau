@@ -18,28 +18,28 @@ TEST_F(VectorTileTest, VectorTileTest) {
     std::string destination = "./Basemap";
     VectorTileDownloader downloader(destination, extent);
 
-    ASSERT_EQ(downloader.getTileCount(), 4);
+    EXPECT_EQ(downloader.getTileCount(), 4);
 
     auto coordinate = downloader.getTile(0);
 
-    ASSERT_EQ(coordinate.zoom_level, 15);
-    ASSERT_EQ(coordinate.column, 29106);
-    ASSERT_EQ(coordinate.row, 12918);
+    EXPECT_EQ(coordinate.zoom_level, 15);
+    EXPECT_EQ(coordinate.column, 29106);
+    EXPECT_EQ(coordinate.row, 12918);
 
-    coordinate = downloader.getTile(1);
+    coordinate = downloader.getTile(2);
 
-    ASSERT_EQ(coordinate.zoom_level, 15);
-    ASSERT_EQ(coordinate.column, 29106);
-    ASSERT_EQ(coordinate.row, 12919);
+    EXPECT_EQ(coordinate.zoom_level, 15);
+    EXPECT_EQ(coordinate.column, 29106);
+    EXPECT_EQ(coordinate.row, 12919);
 
     VectorTile tile;
     downloader.download(0, tile);
 
-    ASSERT_EQ(tile.coordinate.zoom_level, 15);
-    ASSERT_EQ(tile.coordinate.column, 29106);
-    ASSERT_EQ(tile.coordinate.row, 12918);
-    ASSERT_EQ(tile.image_path, std::filesystem::u8path(destination).append("15").append("29106").append("12918.png").u8string());
-    ASSERT_EQ(tile.image_path, downloader.calcDestinationPath(0));
+    EXPECT_EQ(tile.coordinate.zoom_level, 15);
+    EXPECT_EQ(tile.coordinate.column, 29106);
+    EXPECT_EQ(tile.coordinate.row, 12918);
+    EXPECT_EQ(tile.image_path, std::filesystem::u8path(destination).append("15").append("29106").append("12918.png").u8string());
+    EXPECT_EQ(tile.image_path, downloader.calcDestinationPath(0));
 
     ASSERT_TRUE(std::filesystem::exists(tile.image_path));
     std::filesystem::remove_all(destination);

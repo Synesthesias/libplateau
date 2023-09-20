@@ -124,6 +124,12 @@ namespace {
         }
         out_model.eraseEmptyNodes();
 
+        // テクスチャを結合します。
+        if (options.enable_texture_packing) {
+            TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
+            packer.process(out_model);
+        }
+
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(city_model.getGmlPath()).getPackage();
         if(package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
@@ -131,12 +137,6 @@ namespace {
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
             MapAttacher().attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
                                 geo_reference);
-        }
-
-        // テクスチャを結合します。
-        if (options.enable_texture_packing) {
-            TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
-            packer.process(out_model);
         }
     }
 }
