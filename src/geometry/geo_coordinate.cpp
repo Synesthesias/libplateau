@@ -34,23 +34,28 @@ namespace plateau::geometry {
         return {lat, lon, h};
     }
 
-    bool Extent::contains(GeoCoordinate point) const {
-        return min.latitude <= point.latitude &&
-               max.latitude >= point.latitude &&
-               min.longitude <= point.longitude &&
-               max.longitude >= point.longitude &&
+    bool Extent::contains(GeoCoordinate point, bool ignore_height) const {
+        const auto is_contain = min.latitude <= point.latitude &&
+            max.latitude >= point.latitude &&
+            min.longitude <= point.longitude &&
+            max.longitude >= point.longitude;
+
+        if (ignore_height)
+            return is_contain;
+
+        return is_contain &&
                min.height <= point.height &&
                max.height >= point.height;
     }
 
-    bool Extent::contains(TVec3d point) const {
-        return contains(GeoCoordinate(point.x, point.y, point.z));
+    bool Extent::contains(TVec3d point, bool ignore_height) const {
+        return contains(GeoCoordinate(point.x, point.y, point.z), ignore_height);
     }
 
-    bool Extent::contains(const CityObject& city_obj) const{
+    bool Extent::contains(const CityObject& city_obj, bool ignore_height) const{
         try{
             auto pos = PolygonMeshUtils::cityObjPos(city_obj);
-            return contains(pos);
+            return contains(pos, ignore_height);
         }catch(std::invalid_argument& e){
             // 位置不明は false 扱いとします。
             return false;

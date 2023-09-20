@@ -16,13 +16,22 @@ namespace {
     using namespace texture;
     namespace fs = std::filesystem;
 
-    bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options) {
-        return options.exclude_city_object_outside_extent && !options.extent.contains(city_obj);
+    bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
+        if (!options.exclude_city_object_outside_extent)
+            return false;
+
+        for (const auto& extent : extents) {
+            if (extent.contains(city_obj))
+                return false;
+        }
+
+        return true;
     }
 
     void extractInner(
         Model& out_model, const citygml::CityModel& city_model,
-        const MeshExtractOptions& options) {
+        const MeshExtractOptions& options,
+        const std::vector<geometry::Extent>& extents) {
 
         if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
 
@@ -40,7 +49,7 @@ namespace {
                 // model -> LODノード -> グループごとのノード
 
                 // 3D都市モデルをグループに分け、グループごとにメッシュをマージします。
-                auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference);
+                auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
                 // グループごとのノードを追加します。
                 for (auto& [group_id, mesh] : result) {
                     auto node = Node("group" + std::to_string(group_id), std::move(mesh));
@@ -59,11 +68,11 @@ namespace {
                 // 主要地物ごとにメッシュを結合します。
                 for (auto primary_object : all_primary_city_objects_in_model) {
                     // 範囲外ならスキップします。
-                    if (shouldSkipCityObj(*primary_object, options))
+                    if (shouldSkipCityObj(*primary_object, options, extents))
                         continue;
 
                     // 主要地物のメッシュを作ります。
-                    MeshFactory mesh_factory(nullptr, options, geo_reference);
+                    MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
                     
                     if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
                         mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, city_model.getGmlPath());
@@ -89,12 +98,12 @@ namespace {
                         PrimaryCityObjectTypes::getPrimaryTypeMask());
                 for (auto primary_city_object : primary_city_objects) {
                     // 範囲外ならスキップします。
-                    if (shouldSkipCityObj(*primary_city_object, options))
+                    if (shouldSkipCityObj(*primary_city_object, options, extents))
                         continue;
 
                     // 主要地物のノードを作成します。
                     std::unique_ptr<Mesh> primary_mesh;
-                    MeshFactory primary_mesh_factory(nullptr, options, geo_reference);
+                    MeshFactory primary_mesh_factory(nullptr, options, extents, geo_reference);
                     if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_city_object)) {
                         primary_mesh_factory.addPolygonsInPrimaryCityObject(*primary_city_object, lod, city_model.getGmlPath());
                         primary_mesh = primary_mesh_factory.releaseMesh();
@@ -104,7 +113,7 @@ namespace {
                     // 最小地物ごとにノードを作成
                     auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_city_object);
                     for (auto atomic_object : atomic_objects) {
-                        MeshFactory atomic_mesh_factory(nullptr, options, geo_reference);
+                        MeshFactory atomic_mesh_factory(nullptr, options, extents, geo_reference);
                         atomic_mesh_factory.addPolygonsInAtomicCityObject(
                             *primary_city_object, *atomic_object,
                             lod, city_model.getGmlPath());
@@ -151,8 +160,27 @@ namespace plateau::polygonMesh {
 
     void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model,
                                 const MeshExtractOptions& options) {
-        extractInner(out_model, city_model, options);
+        extractInner(out_model, city_model, options, { plateau::geometry::Extent::all() });
     }
+
+    std::shared_ptr<Model> MeshExtractor::extractInExtents(
+        const citygml::CityModel& city_model, const MeshExtractOptions& options,
+        const std::vector<plateau::geometry::Extent>& extents) {
+
+        auto result = std::make_shared<Model>();
+        extractInExtents(*result, city_model, options, extents);
+        return result;
+    }
+
+    void MeshExtractor::extractInExtents(
+        Model& out_model, const citygml::CityModel& city_model,
+        const MeshExtractOptions& options,
+        const std::vector<plateau::geometry::Extent>& extents) {
+
+        extractInner(out_model, city_model, options, extents);
+    }
+
+
 
     bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
         // LOD2以上の建築物以外の場合主要地物の形状を含める

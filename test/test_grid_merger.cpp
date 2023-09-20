@@ -21,9 +21,9 @@ protected:
 };
 
 TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices) { // NOLINT
-    auto result = AreaMeshFactory::gridMerge(*city_model_, mesh_extract_options_, 0, geo_reference_);
+    auto result = AreaMeshFactory::gridMerge(*city_model_, mesh_extract_options_, 0, geo_reference_, { Extent::all() });
     int num_mesh_with_vert = 0;
-    for (const auto& [id, mesh]: result) {
+    for (const auto& [id, mesh] : result) {
         if (!mesh->getVertices().empty()) {
             num_mesh_with_vert++;
         }
@@ -32,8 +32,8 @@ TEST_F(GridMergerTest, gridMerge_returns_meshes_with_vertices) { // NOLINT
 }
 
 TEST_F(GridMergerTest, gridMerge_uv_size_matches_num_of_vertices) { // NOLINT
-    auto result = AreaMeshFactory::gridMerge(*city_model_, mesh_extract_options_, 0, geo_reference_);
-    for (const auto& [id, mesh]: result) {
+    auto result = AreaMeshFactory::gridMerge(*city_model_, mesh_extract_options_, 0, geo_reference_, { Extent::all() });
+    for (const auto& [id, mesh] : result) {
         auto size_of_uv1 = mesh->getUV1().size();
         auto size_of_uv4 = mesh->getUV4().size();
         auto num_of_vertices = mesh->getVertices().size();

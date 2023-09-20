@@ -7,6 +7,11 @@
 #include "plateau/geometry/geo_coordinate.h"
 
 namespace plateau::dataset {
+    /**
+     * \brief 地域メッシュコードを表します。
+     * 
+     * 2~5次メッシュの緯度経度範囲の取得、緯度経度範囲を内包する3次メッシュの取得を行う機能を提供しています。
+     */
     class LIBPLATEAU_EXPORT MeshCode {
     public:
         explicit MeshCode(const std::string& code);
@@ -16,6 +21,11 @@ namespace plateau::dataset {
          * \brief メッシュコードを文字列として取得します。
          */
         std::string get() const;
+
+        /**
+         * \brief メッシュコードの次数を取得します。
+         */
+        int getLevel() const;
 
         /**
          * \brief メッシュコードの緯度経度範囲を取得します。
@@ -46,6 +56,11 @@ namespace plateau::dataset {
          * \brief 地域メッシュを2次メッシュとして取得します。
         */
         MeshCode asSecond() const;
+
+        /**
+         * \brief レベル2以上の範囲で１段階上のレベルの地域メッシュに変換します。
+        */
+        MeshCode& upper();
 
         /**
          * \brief メッシュコードが適切な値かどうかを返します。

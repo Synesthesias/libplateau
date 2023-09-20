@@ -36,7 +36,7 @@ namespace plateau::dataset {
          * メッシュコードの文字列からレベル（詳細度）を返します。
          * 文字列が不正な場合は -1 を返します。
          */
-        int getLevel(const std::string& code) {
+        int parseLevel(const std::string& code) {
             if (code.size() == 6) {
                 return 2;
             }
@@ -98,7 +98,7 @@ namespace plateau::dataset {
 
     MeshCode::MeshCode(const std::string& code) {
         is_valid_ = true;
-        level_ = getLevel(code);
+        level_ = parseLevel(code);
         if (level_ < 0) {
             is_valid_ = false;
             return;
@@ -239,6 +239,13 @@ namespace plateau::dataset {
         return result;
     }
 
+    MeshCode& MeshCode::upper() {
+        // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
+        level_ = std::max(2, level_ - 1);
+
+        return *this;
+    }
+
     std::string MeshCode::get() const {
         std::ostringstream oss;
         oss << std::setfill('0') << std::setw(2) << first_row_;
@@ -267,6 +274,10 @@ namespace plateau::dataset {
         oss << std::setw(1) << fifth_num;
 
         return oss.str();
+    }
+
+    int MeshCode::getLevel() const {
+        return level_;
     }
 
     bool MeshCode::isValid() const {
