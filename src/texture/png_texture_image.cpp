@@ -62,7 +62,7 @@ namespace plateau::texture {
         png_init_io(png, fi);
         png_set_sig_bytes(png, read_size);
         png_set_expand(png);
-        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, NULL);
+        png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA | PNG_TRANSFORM_GRAY_TO_RGB, NULL);
 
         const unsigned int width = png_get_image_width(png, info);
         const unsigned int height = png_get_image_height(png, info);
