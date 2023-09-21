@@ -48,6 +48,10 @@ namespace plateau::polygonMesh {
         return sub_meshes_;
     }
 
+    std::vector<SubMesh>& Mesh::getSubMeshes() {
+        return sub_meshes_;
+    }
+
     void Mesh::setSubMeshes(std::vector<SubMesh>& sub_mesh_list) {
         sub_meshes_ = sub_mesh_list;
     }
@@ -104,6 +108,10 @@ namespace plateau::polygonMesh {
         }
     }
 
+
+    void Mesh::setUV1(UV&& uv) {
+        uv1_ = std::move(uv);
+    }
 
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
@@ -176,6 +184,27 @@ namespace plateau::polygonMesh {
             sub_mesh.debugString(ss, indent + 1);
         }
     }
+
+    std::tuple<TVec3d, TVec3d> Mesh::calcBoundingBox() const {
+        constexpr double double_min = std::numeric_limits<double>::lowest();
+        constexpr double double_max = std::numeric_limits<double>::infinity();
+        auto min = TVec3d(double_max, double_max, double_max);
+        auto max = TVec3d(double_min, double_min, double_min);
+        auto& vertices = getVertices();
+        auto vertices_count = vertices.size();
+        for(int i=0; i<vertices_count; i++) {
+            const auto pos3d = vertices.at(i);
+            min.x = std::min(min.x, pos3d.x);
+            min.y = std::min(min.y, pos3d.y);
+            min.z = std::min(min.z, pos3d.z);
+            max.x = std::max(max.x, pos3d.x);
+            max.y = std::max(max.y, pos3d.y);
+            max.z = std::max(max.z, pos3d.z);
+        }
+        return {min, max};
+    }
+
+
 
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;

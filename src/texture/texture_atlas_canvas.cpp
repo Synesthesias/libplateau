@@ -4,7 +4,7 @@
 
 namespace plateau::texture {
     namespace fs = std::filesystem;
-    void TextureAtlasCanvas::setSaveFilePathIfEmpty(const std::string& original_file_path) {
+    void TextureAtlasCanvas::setDefaultSaveFilePathIfEmpty(const std::string& original_file_path) {
         if (!save_file_path_.empty())
             return;
 
@@ -23,6 +23,10 @@ namespace plateau::texture {
                 break;
             }
         }
+    }
+
+    void TextureAtlasCanvas::setSaveFilePath(const std::filesystem::path& path){
+        save_file_path_ = path.u8string();
     }
 
     const std::string& TextureAtlasCanvas::getSaveFilePath() const {
