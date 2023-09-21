@@ -2,7 +2,6 @@
 #include <plateau/basemap/vector_tile_downloader.h>
 #include <plateau/texture/texture_image_base.h>
 #include <plateau/texture/texture_packer.h>
-#include <cfloat>
 #include <cassert>
 
 namespace plateau::polygonMesh {

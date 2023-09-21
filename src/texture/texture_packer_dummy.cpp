@@ -22,4 +22,25 @@ namespace plateau::texture {
         // Do nothing
         return;
     }
+
+    void TexturePacker::processNodeRecursive(const plateau::polygonMesh::Node& node) {
+        return;
+    }
+
+    void TexturePacker::processMesh(plateau::polygonMesh::Mesh* mesh) {
+        return;
+    }
+
+    void TexturePacker::flush(){
+        return;
+    }
+
+    AtlasInfo TexturePacker::packImage(TextureImageBase* image, const std::string& src_tex_path, int& out_target_canvas_id){
+        return AtlasInfo::empty();
+    }
+
+    void TexturePacker::setSaveFilePath(const std::filesystem::path& dir,
+                                        const std::string& file_name_without_extension) {
+        return;
+    }
 } // namespace plateau::texture
