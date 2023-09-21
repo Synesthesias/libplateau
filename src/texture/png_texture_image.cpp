@@ -61,20 +61,21 @@ namespace plateau::texture {
 
         png_init_io(png, fi);
         png_set_sig_bytes(png, read_size);
+        png_set_expand(png);
         png_read_png(png, info, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_STRIP_ALPHA, NULL);
 
         const unsigned int width = png_get_image_width(png, info);
         const unsigned int height = png_get_image_height(png, info);
         const png_byte type = png_get_color_type(png, info);
 
-        const png_bytepp datap = png_get_rows(png, info);
-
-        if (type != PNG_COLOR_TYPE_RGB) {
+        if (type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_PALETTE) {
             std::cerr << "Invalid png type." << std::endl;
             png_destroy_read_struct(&png, &info, NULL);
             fclose(fi);
             return false;
         }
+
+        const png_bytepp datap = png_get_rows(png, info);
 
         image_width_ = width;
         image_height_ = height;

@@ -13,8 +13,9 @@ namespace  plateau::polygonMesh {
     public:
         /**
          * 引数のModelに含まれる各Meshに対し、航空写真または地図を貼り付けます。
+         * 正常に読み込むことができた地図タイルの数を返します。
          */
-        void attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference);
+        int attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference);
     };
 
 }

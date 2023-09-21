@@ -49,7 +49,8 @@ namespace plateau::polygonMesh {
 
     }
 
-    void MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
+    int MapAttacher::attach(Model& model, const std::string& map_url_template, const std::filesystem::path& map_download_dest, const int zoom_level, const GeoReference& geo_reference) {
+        int success_load_tile_count = 0;
         auto meshes = model.getAllMeshes();
         for(int i=0; i<meshes.size(); i++) {
             auto mesh = meshes.at(i);
@@ -112,6 +113,7 @@ namespace plateau::polygonMesh {
                         continue;
                     }
                     packer.packImage(image.get(), tile.image_path, pack_canvas_id);
+                    success_load_tile_count++;
                 }
             }
             packer.flush();
@@ -130,5 +132,6 @@ namespace plateau::polygonMesh {
                 sub_mesh.setTexturePath(combined_image_path.u8string());
             }
         }
+        return success_load_tile_count;
     }
 }
