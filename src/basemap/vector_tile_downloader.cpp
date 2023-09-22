@@ -1,7 +1,7 @@
-#include <plateau/basemap/vector_tile_downloader.h>
-#include <plateau/basemap/tile_projection.h>
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib.h>
+#include <plateau/basemap/vector_tile_downloader.h>
+#include <plateau/basemap/tile_projection.h>
 #include <filesystem>
 #include <fstream>
 
@@ -130,25 +130,10 @@ void VectorTileDownloader::download(
 ) {
     out_vector_tile.coordinate = coordinate;
 
-    const auto path = expandMapUrlTemplate(url_template, coordinate);
-    const auto host = calcHost(path);
-
-    httplib::Client client(host);
     std::string body;
-    client.set_connection_timeout(5, 0);
-    client.enable_server_certificate_verification(false);
+    auto result = httpRequest(url_template, coordinate, body);
 
-    auto result = client.Get(
-        path, httplib::Headers(),
-        [&](const httplib::Response& response) {
-            return true; // return 'false' if you want to cancel the request.
-        },
-        [&](const char* data, size_t data_length) {
-            body.append(data, data_length);
-            return true; // return 'false' if you want to cancel the request.
-        });
-
-    if (result.error() != httplib::Error::Success) {
+    if (result.error() != httplib::Error::Success || result->status != 200) {
         out_vector_tile.image_path.clear();
         out_vector_tile.result = static_cast<HttpResult>(result.error());
         return;
@@ -158,9 +143,29 @@ void VectorTileDownloader::download(
     const auto file_path = calcDestinationPath(coordinate, destination, file_extension);
     create_directories(file_path.parent_path());
     std::fstream fs(file_path, std::ios::out | std::ios::binary | std::ios::trunc);
-    fs.write(body.c_str(), body.length());
+    fs.write(body.c_str(), (std::streamsize)body.length());
 
     out_vector_tile.image_path = file_path.u8string();
+}
+
+httplib::Result VectorTileDownloader::httpRequest(const std::string& url_template, TileCoordinate tile_coordinate, std::string& out_body) {
+    const auto path = expandMapUrlTemplate(url_template, tile_coordinate);
+    const auto host = calcHost(path);
+
+    httplib::Client client(host);
+    client.set_connection_timeout(1, 0);
+    client.enable_server_certificate_verification(false);
+
+    auto result = client.Get(
+            path, httplib::Headers(),
+            [&](const httplib::Response& response) {
+                return true; // return 'false' if you want to cancel the request.
+            },
+            [&](const char* data, size_t data_length) {
+                out_body.append(data, data_length);
+                return true; // return 'false' if you want to cancel the request.
+            });
+    return result;
 }
 
 std::shared_ptr<VectorTile> VectorTileDownloader::download(const std::string& url_template, const std::string& destination,

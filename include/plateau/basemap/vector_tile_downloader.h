@@ -6,6 +6,8 @@
 #include <utility>
 #include "plateau/geometry/geo_coordinate.h"
 
+namespace httplib{ class Result; }
+
 /**
  * Http通信のエラーです。(Httplib::Error)
  */
@@ -127,6 +129,7 @@ public:
     */
     std::shared_ptr<VectorTile> download(int index) const;
     bool download(int index, VectorTile& out_vector_tile) const;
+    static httplib::Result httpRequest(const std::string& url_template, TileCoordinate tile_coordinate, std::string& out_body);
 
     /**
     * メンバー変数である範囲、ズームレベルに該当する地図タイルをすべてダウンロードし、そのタイル情報を返します。
