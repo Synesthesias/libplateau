@@ -208,6 +208,10 @@ namespace plateau::polygonMesh {
         return {min, max};
     }
 
+    bool Mesh::hasVertices() const {
+        return !vertices_.empty();
+    }
+
 
 
     const CityObjectList& Mesh::getCityObjectList() const {

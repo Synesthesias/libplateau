@@ -42,7 +42,7 @@ namespace {
             });
 
             for(int j=0; j<4; j++) {
-                auto city_obj_index = city_object_indices.at(j);
+                auto city_obj_index = city_object_indices.at(i);
                 uv4.emplace_back(city_obj_index.primary_index, city_obj_index.atomic_index);
             }
 
@@ -79,6 +79,7 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     const auto& first_atomic_mesh = first_atomic.getMesh();
     ASSERT_EQ(first_atomic_mesh->getVertices().size(), 4);
     const auto first_uv4 = first_atomic_mesh->getUV4().at(0);
-    EXPECT_TRUE((int)first_uv4.x == 0);
-    EXPECT_TRUE((int)first_uv4.y == 1);
+    const auto first_city_obj_id = CityObjectIndex::fromUV(first_uv4);
+    EXPECT_EQ(first_city_obj_id.primary_index, 0);
+    EXPECT_EQ(first_city_obj_id.atomic_index, 0);
 }
