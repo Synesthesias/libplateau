@@ -10,7 +10,7 @@ namespace PLATEAU.Test.CityGML
     public class TextureTests
     {
         private static CityModel cityModel;
-        private static Texture texture;
+        private static PLATEAU.CityGML.Texture texture;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
