@@ -217,4 +217,8 @@ namespace plateau::polygonMesh {
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;
     }
+
+    void Mesh::setCityObjectList(const CityObjectList& city_obj_list) {
+        city_object_list_ = city_obj_list;
+    }
 }

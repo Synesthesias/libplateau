@@ -90,6 +90,7 @@ namespace plateau::polygonMesh {
 
     public:
         CityObjectList() = default;
+        CityObjectList(const std::vector<std::tuple<CityObjectIndex, std::string>>& initial_val);
 
         const std::string& getAtomicGmlID(const CityObjectIndex& city_object_index) const;
         const std::string& getPrimaryGmlID(int index) const;
@@ -101,6 +102,10 @@ namespace plateau::polygonMesh {
         CityObjectIndex getCityObjectIndex(const std::string& gml_id) const;
 
         void add(const CityObjectIndex& key, const std::string& value);
+
+        size_t size() const;
+
+        bool operator==(const CityObjectList& other) const;
 
     private:
         std::map<CityObjectIndex, std::string> city_object_index_to_gml_id_;

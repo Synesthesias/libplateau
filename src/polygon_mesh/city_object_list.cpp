@@ -3,6 +3,13 @@
 #include <string>
 
 namespace plateau::polygonMesh {
+
+    CityObjectList::CityObjectList(const std::vector<std::tuple<CityObjectIndex, std::string>>& initial_val) {
+        for(const auto& [city_obj_index, gml_id] : initial_val) {
+            city_object_index_to_gml_id_[city_obj_index] = gml_id;
+        }
+    };
+
     const std::string& CityObjectList::getAtomicGmlID(const CityObjectIndex& city_object_index) const {
         return city_object_index_to_gml_id_.at(city_object_index);
     }
@@ -33,5 +40,20 @@ namespace plateau::polygonMesh {
 
     void CityObjectList::add(const CityObjectIndex& key, const std::string& value) {
         city_object_index_to_gml_id_[key] = value;
+    }
+
+    size_t CityObjectList::size() const {
+        return city_object_index_to_gml_id_.size();
+    }
+
+    bool CityObjectList::operator==(const CityObjectList& other) const {
+        if(size() != other.size()) return false;
+        auto other_iter = other.city_object_index_to_gml_id_.begin();
+        for(const auto& this_pair : city_object_index_to_gml_id_){
+            const auto& other_pair = *other_iter;
+            if(this_pair != other_pair) return false;
+            other_iter++;
+        }
+        return true;
     }
 }
