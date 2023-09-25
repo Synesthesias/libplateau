@@ -70,7 +70,7 @@ namespace plateau::polygonMesh {
         };
 
         std::string toString() const {
-            return std::to_string(primary_index) + "-" + std::to_string(atomic_index);
+            return std::to_string(primary_index) + "," + std::to_string(atomic_index);
         };
     };
 

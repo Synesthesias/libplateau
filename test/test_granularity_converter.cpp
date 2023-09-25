@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "plateau/polygon_mesh/model.h"
 #include <plateau/granularity_convert/granularity_converter.h>
+#include <queue>
 
 using namespace plateau::granularityConvert;
 using namespace plateau::polygonMesh;
@@ -63,23 +64,56 @@ namespace {
     }
 }
 
+namespace {
+
+    /// 引数で与えられたModelの各Nodeを幅優先探索の順番で調べ、引数の各vector.at(index)と一致するかどうか調べます。
+    void checkModelBFS(const Model& model,
+                       const std::vector<bool>& expect_has_mesh,
+                       const std::vector<int>& expect_vertex_count, // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
+                       const std::vector<CityObjectIndex>& expect_city_obj_id){
+        std::queue<const Node*> queue;
+        for(int i=0; i<model.getRootNodeCount(); i++){
+            queue.push(&model.getRootNodeAt(i));
+        }
+
+        for(int node_index = 0; !queue.empty(); node_index++){
+            const auto node = queue.front();
+            queue.pop();
+
+            EXPECT_EQ(!(node->getMesh() == nullptr), expect_has_mesh.at(node_index));
+            if(node->getMesh() != nullptr) {
+                const auto mesh = node->getMesh();
+                const auto vertex_count = mesh->getVertices().size();
+                EXPECT_EQ(vertex_count, expect_vertex_count.at(node_index));
+                for(int i=0; i<vertex_count; i++){
+                    const auto city_obj_id = CityObjectIndex::fromUV(mesh->getUV4().at(i));
+                    EXPECT_EQ(city_obj_id, expect_city_obj_id.at(node_index));
+                }
+            }
+
+            for(int i=0; i<node->getChildCount(); i++){
+                queue.push(&node->getChildAt(i));
+            }
+        }
+    }
+}
+
 TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     auto area_model = createTestModelOfAreaGranularity();
     auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto converter = GranularityConverter();
     auto atomic_model = converter.convert(area_model, option);
 
-    ASSERT_EQ(atomic_model.getRootNodeCount(), 1);
-    const auto& root_node = atomic_model.getRootNodeAt(0);
-
-    const auto& first_primary = root_node.getChildAt(0);
-    ASSERT_EQ(first_primary.getChildCount(), 2);
-    const auto& first_atomic = first_primary.getChildAt(0);
-    ASSERT_TRUE(first_atomic.getMesh() != nullptr);
-    const auto& first_atomic_mesh = first_atomic.getMesh();
-    ASSERT_EQ(first_atomic_mesh->getVertices().size(), 4);
-    const auto first_uv4 = first_atomic_mesh->getUV4().at(0);
-    const auto first_city_obj_id = CityObjectIndex::fromUV(first_uv4);
-    EXPECT_EQ(first_city_obj_id.primary_index, 0);
-    EXPECT_EQ(first_city_obj_id.atomic_index, 0);
+    checkModelBFS(atomic_model,
+                  {false, true, true, true, true, true, true},
+                  {0, 4, 4, 4, 4, 4, 4},
+                  {
+                          { -999, -999}, // ルートノードはメッシュを持ちません
+                          {0, -1},
+                          {1, -1},
+                          {0, 0},
+                          {0, 1},
+                          {1, 0},
+                          {1, 1}}
+    );
 }
