@@ -38,6 +38,7 @@ namespace plateau::polygonMesh {
 
         Node& getChildAt(unsigned int index);
         const Node& getChildAt(unsigned int index) const;
+        Node& getLastChildNode();
 
         /**
          * 子のうち、子もなくメッシュもないノードを削除します。再帰的に行われます。

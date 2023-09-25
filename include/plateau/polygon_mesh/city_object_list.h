@@ -64,6 +64,10 @@ namespace plateau::polygonMesh {
                 ? false
                 : atomic_index < other.atomic_index;
         }
+
+        std::string toString() const {
+            return std::to_string(primary_index) + "-" + std::to_string(atomic_index);
+        };
     };
 
     /**

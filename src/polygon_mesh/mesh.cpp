@@ -113,6 +113,10 @@ namespace plateau::polygonMesh {
         uv1_ = std::move(uv);
     }
 
+    void Mesh::setUV4(UV&& uv4) {
+        uv4_ = std::move(uv4);
+    }
+
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
         for (const auto& vec : other_uv_1) {

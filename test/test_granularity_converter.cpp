@@ -51,6 +51,10 @@ namespace {
         }
 
         auto mesh = std::make_unique<Mesh>(Mesh());
+        mesh->addVerticesList(vertices);
+        mesh->addIndicesList(indices, 0, false);
+        mesh->setUV1(std::move(uv1));
+        mesh->setUV4(std::move(uv4));
         auto node = Node("node");
         node.setMesh(std::move(mesh));
         auto model = Model();
@@ -65,9 +69,10 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     auto converter = GranularityConverter();
     auto atomic_model = converter.convert(area_model, option);
 
-    ASSERT_EQ(atomic_model.getRootNodeCount(), 2);
+    ASSERT_EQ(atomic_model.getRootNodeCount(), 1);
+    const auto& root_node = atomic_model.getRootNodeAt(0);
 
-    const auto& first_primary = atomic_model.getRootNodeAt(0);
+    const auto& first_primary = root_node.getChildAt(0);
     ASSERT_EQ(first_primary.getChildCount(), 2);
     const auto& first_atomic = first_primary.getChildAt(0);
     ASSERT_TRUE(first_atomic.getMesh() != nullptr);

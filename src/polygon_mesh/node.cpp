@@ -46,6 +46,10 @@ namespace plateau::polygonMesh {
         return child_nodes_.at(index);
     }
 
+    Node& Node::getLastChildNode() {
+        return child_nodes_.at(getChildCount() - 1);
+    }
+
     void Node::eraseEmptyChildren() {
         const auto new_end = std::remove_if(child_nodes_.begin(), child_nodes_.end(), [](Node& child) {
             child.eraseEmptyChildren();
