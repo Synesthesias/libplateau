@@ -133,6 +133,7 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                           {0, 0}
                   },
                   {
+                          {CityObjectList()},
                           {{{{0, 0}, "primary-0"}}},
                           {{{{0, 0}, "primary-1"}}},
                           {{{{0, 0}, "atomic-0-0"}}},

@@ -58,7 +58,7 @@ namespace plateau::granularityConvert {
                     next_index.push_back((long)current_vert_id);
                     dst_vertices.push_back(src_vertices.at(i));
                     dst_uv1.push_back(src_uv1.at(i));
-                    dst_uv4.push_back(src_uv4.at(i));
+                    dst_uv4.emplace_back(0, 0); // 最小地物単位にすると、CityObjectIndexはすべて(0, 0)になります。なぜなら、最小地物単位とはUV4によるメッシュ内区別が不要になるほど細かくノードを分割したものだからです。
                     ++current_vert_id;
                 }else{
                     next_index.push_back(-1);
@@ -101,17 +101,16 @@ namespace plateau::granularityConvert {
                 if(src_node.getMesh() != nullptr) {
 
                     // どのインデックスが含まれるかを列挙します。
-                    const auto mesh = src_node.getMesh();
-                    if(mesh!=nullptr){
-
-                    }
+                    const auto src_mesh = src_node.getMesh();
                     std::set<CityObjectIndex> indices_in_mesh;
                     std::set<int> primary_indices_in_mesh;
-                    for(const auto& uv4 : mesh->getUV4()) {
+                    for(const auto& uv4 : src_mesh->getUV4()) {
                         auto id = CityObjectIndex::fromUV(uv4);
                         indices_in_mesh.insert(id);
                         primary_indices_in_mesh.insert(id.primary_index);
                     }
+
+                    const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
                     // PrimaryIndexごとにノードを作ります。
                     for(auto primary_id : primary_indices_in_mesh) {
@@ -119,8 +118,9 @@ namespace plateau::granularityConvert {
                         dst_node.addChildNode(std::move(primary_node_tmp));
                         auto& primary_node = dst_node.getLastChildNode();
 
-                        auto primary_mesh = filterByCityObjIndex(*mesh, CityObjectIndex(primary_id, -1));
+                        auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1));
                         if(primary_mesh.hasVertices()){
+                            primary_mesh.setCityObjectList({{{{0, 0}, src_city_obj_list.getPrimaryGmlID(primary_id)}}});
                             primary_node.setMesh(std::make_unique<Mesh>(primary_mesh));
                         }
 
@@ -132,15 +132,15 @@ namespace plateau::granularityConvert {
                             primary_node.addChildNode(std::move(atomic_node_tmp));
                             auto& atomic_node = primary_node.getLastChildNode();
 
-                            auto atomic_mesh = filterByCityObjIndex(*mesh, id);
+                            auto atomic_mesh = filterByCityObjIndex(*src_mesh, id);
                             if(atomic_mesh.hasVertices()){
+                                atomic_mesh.setCityObjectList({{{{0, 0}, src_city_obj_list.getAtomicGmlID(id)}}});
                                 atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                             }
 
                         }
                     }
 
-                    // TODO ここに分解処理
                 }
 
                 // 子をキューに積みます。
