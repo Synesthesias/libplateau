@@ -83,14 +83,16 @@ namespace {
                        const std::vector<std::string>& expect_node_name,
                        const std::vector<bool>& expect_has_mesh,
                        const std::vector<int>& expect_vertex_count, // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
-                       const std::vector<CityObjectIndex>& expect_city_obj_id,
+                       const std::vector<std::set<CityObjectIndex>>& expect_city_obj_id_set,
                        const std::vector<CityObjectList>& expect_city_obj_list){
         std::queue<const Node*> queue;
+
         for(int i=0; i<model.getRootNodeCount(); i++){
             queue.push(&model.getRootNodeAt(i));
         }
 
-        for(int node_index = 0; !queue.empty(); node_index++){
+        int node_index = 0;
+        for(; !queue.empty(); node_index++){
             const auto node = queue.front();
             queue.pop();
 
@@ -100,10 +102,12 @@ namespace {
                 const auto mesh = node->getMesh();
                 const auto vertex_count = mesh->getVertices().size();
                 EXPECT_EQ(vertex_count, expect_vertex_count.at(node_index));
+                std::set<CityObjectIndex> obj_indices_in_mesh;
                 for(int i=0; i<vertex_count; i++){
                     const auto city_obj_id = CityObjectIndex::fromUV(mesh->getUV4().at(i));
-                    EXPECT_EQ(city_obj_id, expect_city_obj_id.at(node_index));
+                    obj_indices_in_mesh.insert(city_obj_id);
                 }
+                EXPECT_EQ(obj_indices_in_mesh, expect_city_obj_id_set.at(node_index));
                 EXPECT_EQ(mesh->getCityObjectList(), expect_city_obj_list.at(node_index));
             }
 
@@ -111,6 +115,7 @@ namespace {
                 queue.push(&node->getChildAt(i));
             }
         }
+        EXPECT_EQ(node_index, expect_node_name.size());
     }
 }
 
@@ -119,8 +124,6 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     const auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto converter = GranularityConverter();
     auto atomic_model = converter.convert(area_model, option);
-
-    const auto expect_city_obj_list = CityObjectList();
 
     checkModelBFS(atomic_model,
                   {
@@ -133,15 +136,17 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                         "atomic-1-1"
                   },
                   {false, true, true, true, true, true, true},
+                          // 各ノードの頂点数は4です。（ルート除く）
                   {0, 4, 4, 4, 4, 4, 4},
                   {
-                          { -999, -999}, // ルートノードはメッシュを持ちません
-                          {0, 0},
-                          {0, 0},
-                          {0, 0},
-                          {0, 0},
-                          {0, 0},
-                          {0, 0}
+                          // 各ノードのCityObjectIndexは(0,0)です。
+                          {{ -999, -999}}, // ルートノードはメッシュを持ちません
+                          {{0, 0}},
+                           {{0, 0}},
+                          {{0, 0}},
+                          {{0, 0}},
+                          {{0, 0}},
+                          {{0, 0}}
                   },
                   {
                           {CityObjectList()},
@@ -153,4 +158,36 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                           {{{{0, 0}, "atomic-1-1"}}}
                   }
     );
+}
+
+
+TEST_F(GranularityConverterTest, convertFromAreaToArea) { // NOLINT
+    const auto src_model = createTestModelOfAreaGranularity();
+    const auto option = GranularityConvertOption(MeshGranularity::PerCityModelArea, 10);
+    auto converter = GranularityConverter();
+    auto dst_model = converter.convert(src_model, option);
+
+    checkModelBFS(dst_model,
+                  {"combined"},
+                  {true},
+                          // 頂点数は四角形ポリゴンを複数マージしたものです。
+                  {4 * 6},
+                  {
+                          // 1つのメッシュの中に6通りのCityObjectIndexが含まれます。
+                          {
+                                  {0, -1}, {0, 0},
+                                  {0, 1}, {1, -1},
+                                  {1, 0}, {1, 1}
+                          }
+                  },
+                  {
+                          {{
+                                   {{0, -1}, "primary-0"},
+                                   {{0, 0}, "atomic-0-0"},
+                                   {{0, 1}, "atomic-0-1"},
+                                   {{1, -1}, "primary-1"},
+                                   {{1, 0}, "atomic-1-0"},
+                                   {{1, 1}, "atomic-1-1"}
+                           }}
+                  });
 }

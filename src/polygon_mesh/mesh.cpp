@@ -1,4 +1,5 @@
 #include <plateau/polygon_mesh/mesh.h>
+#include <plateau/polygon_mesh/mesh_merger.h>
 
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
@@ -212,9 +213,17 @@ namespace plateau::polygonMesh {
         return !vertices_.empty();
     }
 
+    void Mesh::merge(const Mesh& other_mesh, const bool invert_mesh_front_back, const bool include_textures) {
+        MeshMerger::mergeMesh(*this, other_mesh, invert_mesh_front_back, include_textures);
+    }
+
 
 
     const CityObjectList& Mesh::getCityObjectList() const {
+        return city_object_list_;
+    }
+
+    CityObjectList& Mesh::getCityObjectList() {
         return city_object_list_;
     }
 

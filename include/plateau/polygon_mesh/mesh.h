@@ -88,11 +88,14 @@ namespace plateau::polygonMesh {
         void debugString(std::stringstream& ss, int indent) const;
 
         const CityObjectList& getCityObjectList() const;
+        CityObjectList& getCityObjectList();
         void setCityObjectList(const CityObjectList& city_obj_list);
 
         /// 頂点座標の最小・最大をタプル形式(min, max)で返します。
         std::tuple<TVec3d, TVec3d> calcBoundingBox() const;
         bool hasVertices() const;
+
+        void merge(const Mesh& other_mesh, const bool invert_mesh_front_back, const bool include_textures);
 
     private:
         friend class MeshFactory;

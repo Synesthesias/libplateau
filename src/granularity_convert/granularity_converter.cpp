@@ -116,6 +116,7 @@ namespace plateau::granularityConvert {
                     for(auto primary_id : primary_indices_in_mesh) {
                         const auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary_id);
                         auto primary_node_tmp = Node(primary_gml_id);
+                        primary_node_tmp.setIsPrimary(true);
                         dst_node.addChildNode(std::move(primary_node_tmp));
                         auto& primary_node = dst_node.getLastChildNode();
 
@@ -156,19 +157,97 @@ namespace plateau::granularityConvert {
             return dst;
         }
 
-        /// srcが最小地物単位であることを前提に、optionに沿ってポリゴンをマージします。
-        Model merge(const Model& src, GranularityConvertOption option) {
-            // TODO
-            Model dst = Model();
-            return dst;
+        void mergePrimaryNodeAndChildren(const Node& src_node_arg, Mesh& dst_mesh, int primary_id) {
+            std::queue<const Node*> queue;
+            queue.push(&src_node_arg);
+            long next_atomic_id = 0;
+
+            while(!queue.empty()){
+                const auto& src_node = *queue.front();
+                queue.pop();
+
+                // メッシュをマージします。
+                if(src_node.getMesh() != nullptr) {
+                    // 元メッシュをコピーします。重いので注意してください。
+                    auto src_mesh_copy = Mesh(*src_node.getMesh());
+                    // UV4を置き換えます。
+                    int atomic_id;
+                    if(src_node.isPrimary()){
+                        atomic_id = -1;
+                    }else{
+                        atomic_id = next_atomic_id;
+                        next_atomic_id++;
+                    }
+                    auto uv4 = CityObjectIndex(primary_id, atomic_id).toUV();
+                    auto uv4s = std::vector<TVec2f>(src_mesh_copy.getUV4().size(), uv4);
+                    src_mesh_copy.setUV4(std::move(uv4s));
+                    // マージします。
+                    dst_mesh.merge(src_mesh_copy, false, true);
+
+                    // CityObjectListを更新します。
+                    const auto& src_city_obj_list = src_node.getMesh()->getCityObjectList();
+                    // 入力は最小地物単位であるという前提なので、srcのCityObjectIndexは(0,0)です。
+                    const auto& gml_id = src_city_obj_list.getAtomicGmlID(CityObjectIndex(0, 0));
+                    auto& dst_city_obj_list = dst_mesh.getCityObjectList();
+                    CityObjectIndex dst_city_obj_index;
+                    dst_city_obj_index = CityObjectIndex(primary_id, atomic_id);
+                    dst_city_obj_list.add(dst_city_obj_index, gml_id);
+                }
+
+                // 子ノードをキューに入れます。
+                for(int i=0; i<src_node.getChildCount(); i++) {
+                    queue.push(&src_node.getChildAt(i));
+                }
+            }
+
         }
+
+        Model convertFromAtomicToArea(const Model& src) {
+            auto dst_model = Model();
+            auto dst_node_tmp = Node("combined");
+            dst_model.addNode(std::move(dst_node_tmp));
+            auto& dst_node = dst_model.getRootNodeAt(0);
+            dst_node.setMesh(std::make_unique<Mesh>());
+            auto& dst_mesh = *dst_node.getMesh();
+            auto queue = NodeBFSQueue();
+            // ルートノードを探索キューに加えます。
+            for(int i=0; i<src.getRootNodeCount(); i++) {
+                auto& src_root_node = src.getRootNodeAt(i);
+                queue.push(src_root_node, dst_node);
+            }
+
+            // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
+            long primary_id = 0;
+            while(!queue.empty()) {
+                const auto& src_node = std::get<0>(queue.pop());
+                if(src_node.isPrimary()) {
+                    // PrimaryなNodeが見つかったら、そのノードと子をマージします。
+                    mergePrimaryNodeAndChildren(src_node, dst_mesh, primary_id);
+                    primary_id++;
+                }else{
+                    // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
+                    for(int i=0; i<src_node.getChildCount(); i++) {
+                        queue.push(src_node.getChildAt(i), dst_node);
+                    }
+                }
+            }
+            return dst_model;
+        }
+
     }
 
     Model GranularityConverter::convert(const Model& src, GranularityConvertOption option) {
         // 組み合わせの数を減らすため、まず最小地物に変換してから望みの粒度に変換します。
         auto atomic = convertToAtomic(src);
-//        auto converted = merge(atomic, option);
-//        return converted;
-        return atomic;
+        switch(option.granularity_){
+            case MeshGranularity::PerAtomicFeatureObject:
+                return atomic;
+            case MeshGranularity::PerPrimaryFeatureObject:
+                throw std::runtime_error("not implemented"); // TODO
+            case MeshGranularity::PerCityModelArea:
+                return convertFromAtomicToArea(atomic);
+            default:
+                throw std::runtime_error("unknown argument");
+        }
     }
 }

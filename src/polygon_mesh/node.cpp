@@ -6,7 +6,8 @@ namespace plateau::polygonMesh {
 
     Node::Node(std::string name) :
         name_(std::move(name)),
-        mesh_(nullptr) {
+        mesh_(nullptr),
+        is_primary_(false){
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
@@ -81,5 +82,13 @@ namespace plateau::polygonMesh {
         for (const auto& child : child_nodes_) {
             child.debugString(ss, indent + 1);
         }
+    }
+
+    void Node::setIsPrimary(bool is_primary) {
+        is_primary_ = is_primary;
+    }
+
+    bool Node::isPrimary() const {
+        return is_primary_;
     }
 }

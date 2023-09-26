@@ -50,9 +50,13 @@ namespace plateau::polygonMesh {
 
         /// Node 以下の階層構造を stringstream に書き込みます。
         void debugString(std::stringstream& ss, int indent) const;
+
+        void setIsPrimary(bool is_primary_); // GranularityConverterでのみ利用します。
+        bool isPrimary() const; // GranularityConverterでのみ利用します。
     private:
         std::string name_;
         std::vector<Node> child_nodes_;
         std::unique_ptr<Mesh> mesh_;
+        bool is_primary_; // GranularityConverterでのみ利用します。
     };
 }
