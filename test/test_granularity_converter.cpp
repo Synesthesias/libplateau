@@ -85,6 +85,13 @@ namespace {
                        const std::vector<int>& expect_vertex_count, // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
                        const std::vector<std::set<CityObjectIndex>>& expect_city_obj_id_set,
                        const std::vector<CityObjectList>& expect_city_obj_list){
+
+        auto expect_size = expect_node_name.size();
+        ASSERT_EQ(expect_size, expect_has_mesh.size());
+        ASSERT_EQ(expect_size, expect_vertex_count.size());
+        ASSERT_EQ(expect_size, expect_city_obj_id_set.size());
+        ASSERT_EQ(expect_size, expect_city_obj_list.size());
+
         std::queue<const Node*> queue;
 
         for(int i=0; i<model.getRootNodeCount(); i++){
@@ -126,7 +133,7 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     auto atomic_model = converter.convert(area_model, option);
 
     checkModelBFS(atomic_model,
-                  {
+                  std::vector<std::string>{
                         "node",
                         "primary-0",
                         "primary-1",
@@ -135,27 +142,27 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                         "atomic-1-0",
                         "atomic-1-1"
                   },
-                  {false, true, true, true, true, true, true},
+                  std::vector<bool>{false, true, true, true, true, true, true},
                           // 各ノードの頂点数は4です。（ルート除く）
-                  {0, 4, 4, 4, 4, 4, 4},
-                  {
+                  std::vector<int>{0, 4, 4, 4, 4, 4, 4},
+                 std::vector<std::set<CityObjectIndex>>{
                           // 各ノードのCityObjectIndexは(0,0)です。
-                          {{ -999, -999}}, // ルートノードはメッシュを持ちません
-                          {{0, 0}},
-                           {{0, 0}},
-                          {{0, 0}},
-                          {{0, 0}},
-                          {{0, 0}},
-                          {{0, 0}}
+                          std::set<CityObjectIndex>{CityObjectIndex{ -999, -999}}, // ルートノードはメッシュを持ちません
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
+                          std::set<CityObjectIndex>{CityObjectIndex{0, 0}}
                   },
-                  {
-                          {CityObjectList()},
-                          {{{{0, 0}, "primary-0"}}},
-                          {{{{0, 0}, "primary-1"}}},
-                          {{{{0, 0}, "atomic-0-0"}}},
-                          {{{{0, 0}, "atomic-0-1"}}},
-                          {{{{0, 0}, "atomic-1-0"}}},
-                          {{{{0, 0}, "atomic-1-1"}}}
+                  std::vector<CityObjectList>{
+                          CityObjectList(),
+                          CityObjectList{{{CityObjectIndex{0, 0}, "primary-0"}}},
+                          CityObjectList{{{CityObjectIndex{0, 0}, "primary-1"}}},
+                          CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-0"}}},
+                          CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-1"}}},
+                          CityObjectList{{{CityObjectIndex{0, 0}, "atomic-1-0"}}},
+                          CityObjectList {{{CityObjectIndex{0, 0}, "atomic-1-1"}}}
                   }
     );
 }
@@ -168,26 +175,59 @@ TEST_F(GranularityConverterTest, convertFromAreaToArea) { // NOLINT
     auto dst_model = converter.convert(src_model, option);
 
     checkModelBFS(dst_model,
-                  {"combined"},
-                  {true},
+                  std::vector<std::string>{"combined"},
+                  std::vector<bool>{true},
                           // 頂点数は四角形ポリゴンを複数マージしたものです。
-                  {4 * 6},
-                  {
+                  std::vector<int>{4 * 6},
+                  std::vector<std::set<CityObjectIndex>>{
                           // 1つのメッシュの中に6通りのCityObjectIndexが含まれます。
-                          {
-                                  {0, -1}, {0, 0},
-                                  {0, 1}, {1, -1},
-                                  {1, 0}, {1, 1}
+                          std::set<CityObjectIndex>{
+                                  CityObjectIndex{0, -1},
+                                  CityObjectIndex{0, 0},
+                                  CityObjectIndex{0, 1},
+                                  CityObjectIndex{1, -1},
+                                  CityObjectIndex{1, 0},
+                                  CityObjectIndex{1, 1}
                           }
                   },
-                  {
-                          {{
-                                   {{0, -1}, "primary-0"},
-                                   {{0, 0}, "atomic-0-0"},
-                                   {{0, 1}, "atomic-0-1"},
-                                   {{1, -1}, "primary-1"},
-                                   {{1, 0}, "atomic-1-0"},
-                                   {{1, 1}, "atomic-1-1"}
+                  std::vector<CityObjectList>{
+                          CityObjectList{{
+                                   {CityObjectIndex{0, -1}, "primary-0"},
+                                   {CityObjectIndex{0, 0}, "atomic-0-0"},
+                                   {CityObjectIndex{0, 1}, "atomic-0-1"},
+                                   {CityObjectIndex{1, -1}, "primary-1"},
+                                   {CityObjectIndex{1, 0}, "atomic-1-0"},
+                                   {CityObjectIndex{1, 1}, "atomic-1-1"}
                            }}
+                  });
+}
+
+TEST_F(GranularityConverterTest, ConvertFromAreaToPrimary) { // NOLINT
+    const auto src_model = createTestModelOfAreaGranularity();
+    const auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto converter = GranularityConverter();
+    auto dst_model = converter.convert(src_model, option);
+    checkModelBFS(dst_model,
+                  std::vector<std::string>{"node", "primary-0", "primary-1"},
+                  std::vector<bool>{false, true, true},
+                  std::vector<int>{0, 4 * 3, 4 * 3},
+                  std::vector<std::set<CityObjectIndex>>{
+                          std::set<CityObjectIndex>(),
+                          std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}
+                          },
+                          std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}}
+                  },
+                  std::vector<CityObjectList>{
+                          CityObjectList(),
+                          CityObjectList{{{
+                                                  {CityObjectIndex{0, -1}, "primary-0"},
+                                                  {CityObjectIndex{0, 0}, "atomic-0-0"},
+                                                  {CityObjectIndex{0, 1}, "atomic-0-1"}
+                                          }}},
+                          CityObjectList{{{
+                                                  {CityObjectIndex{0, -1}, "primary-1"},
+                                                  {CityObjectIndex{0, 0}, "atomic-1-0"},
+                                                  {CityObjectIndex{0, 1}, "atomic-1-1"}
+                                          }}}
                   });
 }

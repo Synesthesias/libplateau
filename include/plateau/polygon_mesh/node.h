@@ -53,6 +53,7 @@ namespace plateau::polygonMesh {
 
         void setIsPrimary(bool is_primary_); // GranularityConverterでのみ利用します。
         bool isPrimary() const; // GranularityConverterでのみ利用します。
+        void reserveChild(size_t reserve_count);
     private:
         std::string name_;
         std::vector<Node> child_nodes_;

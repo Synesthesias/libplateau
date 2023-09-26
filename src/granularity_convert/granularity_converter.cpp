@@ -52,7 +52,7 @@ namespace plateau::granularityConvert {
             std::vector<long> next_index;
             next_index.reserve(vertex_count);
             std::size_t current_vert_id = 0;
-            for(std::size_t i=0; i<vertex_count; i++){
+            for(std::size_t i=0; i<vertex_count; i++) {
                 auto src_id = CityObjectIndex::fromUV(src_uv4.at(i));
                 if( src_id == filter_id) {
                     next_index.push_back((long)current_vert_id);
@@ -83,16 +83,20 @@ namespace plateau::granularityConvert {
             return ret;
         }
 
+        /// モデルを最小地物単位に変換します。引数の結合単位は問いません。
         Model convertToAtomic(const Model& src) {
-            Model dst = Model();
+            Model dst_model = Model();
             auto queue = NodeBFSQueue();
+
+            // reserveを忘れると、vectorの再割り当てによってキューの参照が壊れる点に注意してください。ここ以下のノード追加する処理はすべてreserveを考慮する必要があります。
+            dst_model.reserveRootNodes(src.getRootNodeCount());
 
             // ルートノードをdstに作って探索キューに入れます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
                 auto& src_node = src.getRootNodeAt(i);
                 auto dst_node = Node(src_node.getName());
-                dst.addNode(std::move(dst_node));
-                queue.push(src_node, dst.getRootNodeAt(i));
+                dst_model.addNode(std::move(dst_node));
+                queue.push(src_node, dst_model.getRootNodeAt(i));
             }
 
             // 幅優先探索の順番で変換します。
@@ -113,6 +117,7 @@ namespace plateau::granularityConvert {
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
                     // PrimaryIndexごとにノードを作ります。
+                    dst_node.reserveChild(primary_indices_in_mesh.size());
                     for(auto primary_id : primary_indices_in_mesh) {
                         const auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary_id);
                         auto primary_node_tmp = Node(primary_gml_id);
@@ -127,6 +132,7 @@ namespace plateau::granularityConvert {
                         }
 
                         // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
+                        primary_node.reserveChild(indices_in_mesh.size());
                         for(const auto& id : indices_in_mesh) {
                             if(id.primary_index != primary_id) continue;
                             if(id.atomic_index < 0) continue;
@@ -154,9 +160,10 @@ namespace plateau::granularityConvert {
                 }
             }
 
-            return dst;
+            return dst_model;
         }
 
+        /// 主要地物のノードとその子ノードを結合したものを、引数dst_meshに格納します。
         void mergePrimaryNodeAndChildren(const Node& src_node_arg, Mesh& dst_mesh, int primary_id) {
             std::queue<const Node*> queue;
             queue.push(&src_node_arg);
@@ -202,13 +209,16 @@ namespace plateau::granularityConvert {
 
         }
 
+        /// 最小地物単位のモデルを受け取り、それを地域単位に変換したモデルを返します。
         Model convertFromAtomicToArea(const Model& src) {
             auto dst_model = Model();
             auto dst_node_tmp = Node("combined");
             dst_model.addNode(std::move(dst_node_tmp));
             auto& dst_node = dst_model.getRootNodeAt(0);
+            dst_node.setIsPrimary(true);
             dst_node.setMesh(std::make_unique<Mesh>());
             auto& dst_mesh = *dst_node.getMesh();
+            dst_model.reserveRootNodes(src.getRootNodeCount());
             auto queue = NodeBFSQueue();
             // ルートノードを探索キューに加えます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
@@ -226,8 +236,43 @@ namespace plateau::granularityConvert {
                     primary_id++;
                 }else{
                     // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
+                    dst_node.reserveChild(src_node.getChildCount());
                     for(int i=0; i<src_node.getChildCount(); i++) {
                         queue.push(src_node.getChildAt(i), dst_node);
+                    }
+                }
+            }
+            return dst_model;
+        }
+
+        /// 最小地物単位のモデルを受け取り、それを主要地物単位に変換したモデルを返します。
+        Model convertFromAtomicToPrimary(const Model& src_model){
+            auto dst_model = Model();
+            NodeBFSQueue queue;
+            dst_model.reserveRootNodes(src_model.getRootNodeCount());
+            // ルートノードを探索キューに加えると同時に、dst_modelに同じノードを準備します。
+            for(int i=0; i<src_model.getRootNodeCount(); i++) {
+                const auto& src_node = src_model.getRootNodeAt(i);
+                dst_model.addNode(Node(src_node.getName()));
+                auto& dst_node = dst_model.getRootNodeAt(i);
+                queue.push(src_node, dst_node);
+            }
+            // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
+            while(!queue.empty()) {
+                const auto& [src_node, dst_node] = queue.pop();
+                if(src_node.isPrimary()) {
+                    // Primaryなら、src_nodeとその子を結合したメッシュをdst_nodeに持たせます。
+                    auto dst_mesh = std::make_unique<Mesh>();
+                    mergePrimaryNodeAndChildren(src_node, *dst_mesh, 0);
+                    dst_node.setMesh(std::move(dst_mesh));
+                }else{
+                    dst_node.reserveChild(dst_node.getChildCount() + src_node.getChildCount());
+                    // Primaryでないなら、子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
+                    for(int i=0; i<src_node.getChildCount(); i++) {
+                        const auto& src_child = src_node.getChildAt(i);
+                        dst_node.addChildNode(Node(src_child.getName()));
+                        auto& dst_child = dst_node.getLastChildNode();
+                        queue.push(src_child, dst_child);
                     }
                 }
             }
@@ -243,7 +288,7 @@ namespace plateau::granularityConvert {
             case MeshGranularity::PerAtomicFeatureObject:
                 return atomic;
             case MeshGranularity::PerPrimaryFeatureObject:
-                throw std::runtime_error("not implemented"); // TODO
+                return convertFromAtomicToPrimary(atomic);
             case MeshGranularity::PerCityModelArea:
                 return convertFromAtomicToArea(atomic);
             default:

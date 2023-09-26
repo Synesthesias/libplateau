@@ -91,4 +91,8 @@ namespace plateau::polygonMesh {
     bool Node::isPrimary() const {
         return is_primary_;
     }
+
+    void Node::reserveChild(size_t reserve_count) {
+        child_nodes_.reserve(reserve_count);
+    }
 }

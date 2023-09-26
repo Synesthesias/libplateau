@@ -72,4 +72,8 @@ namespace plateau::polygonMesh {
         }
         return meshes;
     }
+
+    void Model::reserveRootNodes(size_t reserve_count) {
+        root_nodes_.reserve(reserve_count);
+    }
 }
