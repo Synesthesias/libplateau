@@ -114,7 +114,8 @@ namespace plateau::granularityConvert {
 
                     // PrimaryIndexごとにノードを作ります。
                     for(auto primary_id : primary_indices_in_mesh) {
-                        auto primary_node_tmp = Node(std::to_string(primary_id));
+                        const auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary_id);
+                        auto primary_node_tmp = Node(primary_gml_id);
                         dst_node.addChildNode(std::move(primary_node_tmp));
                         auto& primary_node = dst_node.getLastChildNode();
 
@@ -128,7 +129,8 @@ namespace plateau::granularityConvert {
                         for(const auto& id : indices_in_mesh) {
                             if(id.primary_index != primary_id) continue;
                             if(id.atomic_index < 0) continue;
-                            auto atomic_node_tmp = Node(id.toString());
+                            const auto& atomic_gml_id = src_city_obj_list.getAtomicGmlID(id);
+                            auto atomic_node_tmp = Node(atomic_gml_id);
                             primary_node.addChildNode(std::move(atomic_node_tmp));
                             auto& atomic_node = primary_node.getLastChildNode();
 

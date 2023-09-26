@@ -80,6 +80,7 @@ namespace {
 
     /// 引数で与えられたModelの各Nodeを幅優先探索の順番で調べ、引数の各vector.at(index)と一致するかどうか調べます。
     void checkModelBFS(const Model& model,
+                       const std::vector<std::string>& expect_node_name,
                        const std::vector<bool>& expect_has_mesh,
                        const std::vector<int>& expect_vertex_count, // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
                        const std::vector<CityObjectIndex>& expect_city_obj_id,
@@ -93,6 +94,7 @@ namespace {
             const auto node = queue.front();
             queue.pop();
 
+            EXPECT_EQ(node->getName(), expect_node_name.at(node_index));
             EXPECT_EQ(!(node->getMesh() == nullptr), expect_has_mesh.at(node_index));
             if(node->getMesh() != nullptr) {
                 const auto mesh = node->getMesh();
@@ -121,6 +123,15 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
     const auto expect_city_obj_list = CityObjectList();
 
     checkModelBFS(atomic_model,
+                  {
+                        "node",
+                        "primary-0",
+                        "primary-1",
+                        "atomic-0-0",
+                        "atomic-0-1",
+                        "atomic-1-0",
+                        "atomic-1-1"
+                  },
                   {false, true, true, true, true, true, true},
                   {0, 4, 4, 4, 4, 4, 4},
                   {
