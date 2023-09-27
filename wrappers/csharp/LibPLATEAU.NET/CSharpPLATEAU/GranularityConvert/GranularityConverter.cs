@@ -30,7 +30,7 @@ namespace PLATEAU.GranularityConvert
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public class GranularityConvertOption
+    public struct GranularityConvertOption
     {
         private MeshGranularity granularity;
         private int gridCount; // 地域単位でのみ利用
