@@ -94,6 +94,8 @@ namespace plateau::polygonMesh {
 
         const std::string& getAtomicGmlID(const CityObjectIndex& city_object_index) const;
         const std::string& getPrimaryGmlID(int index) const;
+        bool tryGetPrimaryGmlID(int index, std::string& out_gml_id) const;
+        bool tryGetAtomicGmlID(const CityObjectIndex& city_obj_index, std::string& out_gml_id) const;
 
         void getAllKeys(std::vector<CityObjectIndex>& keys) const;
 

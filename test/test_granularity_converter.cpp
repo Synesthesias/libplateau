@@ -22,6 +22,7 @@ namespace {
         std::vector<unsigned int> indices;
         std::vector<TVec2f> uv1;
         std::vector<TVec2f> uv4;
+        std::vector<SubMesh> sub_meshes;
 
         const std::vector<CityObjectIndex> city_object_indices = {
                 {0, -1}, {0,0}, {0,1},
@@ -37,10 +38,14 @@ namespace {
                     base_pos + TVec3d{1, 0, 0}
             });
 
-            indices.insert(indices.end(), {
+            std::vector<unsigned int> new_indices = {
                     base_id, base_id + 1, base_id + 2,
                     base_id, base_id + 2, base_id + 3
-            });
+            };
+            indices.insert(indices.end(), new_indices.begin(), new_indices.end());
+
+            auto new_sub_mesh = SubMesh(indices.size() - new_indices.size(), indices.size()-1, "dummy_tex_path_" + std::to_string(i), nullptr);
+            sub_meshes.push_back(new_sub_mesh);
 
             uv1.insert(uv1.end(), {
                     TVec2f{0, 0}, TVec2f{0, 1}, TVec2f{1, 1}, TVec2f{1, 0}

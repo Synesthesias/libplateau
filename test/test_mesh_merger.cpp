@@ -86,11 +86,12 @@ TEST_F(MeshMergerTest, mesh_add_sub_mesh) {
     std::vector<TVec2f> uv_1 = { TVec2f(0.11, 0.12),
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32) };
+    std::vector<TVec2f> uv_4 = {{0,0}, {0,0}, {0,0}};
     std::vector<SubMesh> sub_meshes = {
             SubMesh(0, 2, "", nullptr)
     };
 
-    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
+    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(uv_4), std::move(sub_meshes), CityObjectList());
 
     mesh.addSubMesh("test.png", nullptr, 3, 5);
 
@@ -109,6 +110,7 @@ TEST_F(MeshMergerTest, mesh_merger_merge) {
     std::vector<TVec2f> uv_1 = {TVec2f(0.11, 0.12),
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32)};
+    std::vector<TVec2f> uv_4 = {{0,0}, {0,0}, {0,0}};
     std::vector<SubMesh> sub_meshes = {
             SubMesh(0, 2, "", nullptr)
     };
@@ -120,13 +122,14 @@ TEST_F(MeshMergerTest, mesh_merger_merge) {
     std::vector<TVec2f> uv_1_to_add = { TVec2f(0.11, 0.12),
                                 TVec2f(0.21, 0.22),
                                 TVec2f(0.31, 0.32) };
+    std::vector<TVec2f> uv_4_to_add = {{1,0}, {1,0}, {1,0} };
     std::vector<SubMesh> sub_meshes_to_add = {
             SubMesh(0, 2, "", nullptr)
     };
 
-    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
+    auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(uv_4), std::move(sub_meshes), CityObjectList());
 
-    auto mesh_to_add = Mesh(std::move(vertices_to_add), std::move(indices_to_add), std::move(uv_1_to_add), std::move(sub_meshes_to_add), CityObjectList());
+    auto mesh_to_add = Mesh(std::move(vertices_to_add), std::move(indices_to_add), std::move(uv_1_to_add), std::move(uv_4_to_add), std::move(sub_meshes_to_add), CityObjectList());
 
     MeshMerger::mergeMesh(mesh, mesh_to_add, false, true);
     ASSERT_EQ(33, mesh.getVertices().at(2).z);

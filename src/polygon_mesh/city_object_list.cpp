@@ -18,6 +18,23 @@ namespace plateau::polygonMesh {
         return city_object_index_to_gml_id_.at({ index, CityObjectIndex::invalidIndex() });
     }
 
+    bool CityObjectList::tryGetPrimaryGmlID(int index, std::string& out_gml_id) const {
+        auto key = CityObjectIndex(index, CityObjectIndex::invalidIndex());
+        if(city_object_index_to_gml_id_.find(key) == city_object_index_to_gml_id_.end()){
+            return false;
+        }
+        out_gml_id = city_object_index_to_gml_id_.at(key);
+        return true;
+    }
+
+    bool CityObjectList::tryGetAtomicGmlID(const CityObjectIndex& city_obj_index, std::string& out_gml_id) const {
+        if(city_object_index_to_gml_id_.find(city_obj_index) == city_object_index_to_gml_id_.end()){
+            return false;
+        }
+        out_gml_id = city_object_index_to_gml_id_.at(city_obj_index);
+        return true;
+    }
+
     void CityObjectList::getAllKeys(std::vector<CityObjectIndex>& keys) const {
         for (const auto& [key, _] : city_object_index_to_gml_id_) {
             keys.push_back(key);

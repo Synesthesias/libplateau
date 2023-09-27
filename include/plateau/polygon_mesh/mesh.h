@@ -32,7 +32,7 @@ namespace plateau::polygonMesh {
     public:
         Mesh();
 
-        Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+        Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, UV&& uv_4,
             std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list);
 
         std::vector<TVec3d>& getVertices();

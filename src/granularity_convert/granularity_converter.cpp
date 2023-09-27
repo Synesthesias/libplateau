@@ -38,10 +38,12 @@ namespace plateau::granularityConvert {
             const auto vertex_count = src_vertices.size();
             const auto& src_uv1 = src.getUV1();
             const auto& src_uv4 = src.getUV4();
+            const auto& src_sub_meshes = src.getSubMeshes();
 
             auto dst_vertices = std::vector<TVec3d>();
             auto dst_uv1 = std::vector<TVec2f>();
             auto dst_uv4 = std::vector<TVec2f>();
+            auto dst_sub_meshes = std::vector<SubMesh>();
             dst_vertices.reserve(src.getVertices().size());
             dst_uv1.reserve(src.getUV1().size());
             dst_uv4.reserve(src.getUV4().size());
@@ -75,11 +77,15 @@ namespace plateau::granularityConvert {
                 dst_indices.push_back(next_id);
             }
 
+            // TODO SubMeshはあとで考える。
+            dst_sub_meshes.push_back(SubMesh(0, dst_indices.size()-1, "", nullptr));
+
             auto ret = Mesh();
             ret.addVerticesList(dst_vertices);
             ret.addIndicesList(dst_indices, 0, false);
             ret.setUV1(std::move(dst_uv1));
             ret.setUV4(std::move(dst_uv4));
+            ret.setSubMeshes(dst_sub_meshes);
             return ret;
         }
 
@@ -119,7 +125,8 @@ namespace plateau::granularityConvert {
                     // PrimaryIndexごとにノードを作ります。
                     dst_node.reserveChild(primary_indices_in_mesh.size() + src_node.getChildCount());
                     for(auto primary_id : primary_indices_in_mesh) {
-                        const auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary_id);
+                        std::string primary_gml_id = "gml_id_not_found";
+                        src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
                         auto primary_node_tmp = Node(primary_gml_id);
                         primary_node_tmp.setIsPrimary(true);
                         dst_node.addChildNode(std::move(primary_node_tmp));
@@ -127,7 +134,7 @@ namespace plateau::granularityConvert {
 
                         auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1));
                         if(primary_mesh.hasVertices()){
-                            primary_mesh.setCityObjectList({{{{0, 0}, src_city_obj_list.getPrimaryGmlID(primary_id)}}});
+                            primary_mesh.setCityObjectList({{{{0, 0}, primary_gml_id}}});
                             primary_node.setMesh(std::make_unique<Mesh>(primary_mesh));
                         }
 
@@ -136,14 +143,15 @@ namespace plateau::granularityConvert {
                         for(const auto& id : indices_in_mesh) {
                             if(id.primary_index != primary_id) continue;
                             if(id.atomic_index < 0) continue;
-                            const auto& atomic_gml_id = src_city_obj_list.getAtomicGmlID(id);
+                            std::string atomic_gml_id = "gml_id_not_found";
+                            src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                             auto atomic_node_tmp = Node(atomic_gml_id);
                             primary_node.addChildNode(std::move(atomic_node_tmp));
                             auto& atomic_node = primary_node.getLastChildNode();
 
                             auto atomic_mesh = filterByCityObjIndex(*src_mesh, id);
                             if(atomic_mesh.hasVertices()){
-                                atomic_mesh.setCityObjectList({{{{0, 0}, src_city_obj_list.getAtomicGmlID(id)}}});
+                                atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
                                 atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                             }
                         }
@@ -196,7 +204,8 @@ namespace plateau::granularityConvert {
                     // CityObjectListを更新します。
                     const auto& src_city_obj_list = src_node.getMesh()->getCityObjectList();
                     // 入力は最小地物単位であるという前提なので、srcのCityObjectIndexは(0,0)です。
-                    const auto& gml_id = src_city_obj_list.getAtomicGmlID(CityObjectIndex(0, 0));
+                    std::string gml_id = "gml_id_not_found";
+                    src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, 0), gml_id);
                     auto& dst_city_obj_list = dst_mesh.getCityObjectList();
                     CityObjectIndex dst_city_obj_index;
                     dst_city_obj_index = CityObjectIndex(primary_id, atomic_id);

@@ -12,11 +12,12 @@ namespace plateau::polygonMesh {
         , uv4_(UV()) {
     }
 
-    Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+    Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, UV&& uv_4,
                std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list)
         : vertices_(std::move(vertices))
         , indices_(std::move(indices))
         , uv1_(std::move(uv_1))
+        , uv4_(std::move(uv_4))
         , sub_meshes_(std::move(sub_meshes))
         , city_object_list_(std::move(city_object_list)) {
     }
