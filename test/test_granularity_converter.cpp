@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "plateau/polygon_mesh/model.h"
+#include "citygml/citygml.h"
 #include <plateau/granularity_convert/granularity_converter.h>
+#include <plateau/polygon_mesh/mesh_extractor.h>
 #include <queue>
 
 using namespace plateau::granularityConvert;
@@ -230,4 +232,15 @@ TEST_F(GranularityConverterTest, ConvertFromAreaToPrimary) { // NOLINT
                                                   {CityObjectIndex{0, 1}, "atomic-1-1"}
                                           }}}
                   });
+}
+
+TEST_F(GranularityConverterTest, ConvertFromTestGmlFile) { // NOLINT
+    auto parser_params = citygml::ParserParams();
+    auto city_model = citygml::load(u8"../data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml", parser_params);
+    auto extract_option = MeshExtractOptions();
+    auto src_model = MeshExtractor::extract(*city_model, extract_option);
+    auto convert_option_area = GranularityConvertOption(MeshGranularity::PerCityModelArea, 10);
+    auto convert_option_feature = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto dst_model_area = GranularityConverter().convert(*src_model, convert_option_area);
+    auto dst_model_feature = GranularityConverter().convert(*src_model, convert_option_feature);
 }

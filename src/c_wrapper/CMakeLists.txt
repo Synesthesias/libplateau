@@ -53,6 +53,7 @@ add_library(c_wrapper OBJECT
   "city_object_list_c.cpp"
   "material_c.cpp"
   "map_zoom_level_searcher_c.cpp"
+  "granularity_converter_c.cpp"
         )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)

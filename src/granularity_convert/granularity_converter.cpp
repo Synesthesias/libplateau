@@ -117,7 +117,7 @@ namespace plateau::granularityConvert {
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
                     // PrimaryIndexごとにノードを作ります。
-                    dst_node.reserveChild(primary_indices_in_mesh.size());
+                    dst_node.reserveChild(primary_indices_in_mesh.size() + src_node.getChildCount());
                     for(auto primary_id : primary_indices_in_mesh) {
                         const auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary_id);
                         auto primary_node_tmp = Node(primary_gml_id);
@@ -146,16 +146,18 @@ namespace plateau::granularityConvert {
                                 atomic_mesh.setCityObjectList({{{{0, 0}, src_city_obj_list.getAtomicGmlID(id)}}});
                                 atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                             }
-
                         }
                     }
 
                 }
 
                 // 子をキューに積みます。
+                dst_node.reserveChild(src_node.getChildCount());
                 for(int i=0; i<src_node.getChildCount(); i++) {
                     auto& src_child = src_node.getChildAt(i);
-                    auto dst_child = Node(src_child.getName());
+                    auto dst_child_tmp = Node(src_child.getName());
+                    dst_node.addChildNode(std::move(dst_child_tmp));
+                    auto& dst_child = dst_node.getLastChildNode();
                     queue.push(src_child, dst_child);
                 }
             }
@@ -213,12 +215,13 @@ namespace plateau::granularityConvert {
         Model convertFromAtomicToArea(const Model& src) {
             auto dst_model = Model();
             auto dst_node_tmp = Node("combined");
+            dst_model.reserveRootNodes(src.getRootNodeCount());
             dst_model.addNode(std::move(dst_node_tmp));
             auto& dst_node = dst_model.getRootNodeAt(0);
             dst_node.setIsPrimary(true);
             dst_node.setMesh(std::make_unique<Mesh>());
             auto& dst_mesh = *dst_node.getMesh();
-            dst_model.reserveRootNodes(src.getRootNodeCount());
+
             auto queue = NodeBFSQueue();
             // ルートノードを探索キューに加えます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
