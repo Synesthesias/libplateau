@@ -142,7 +142,7 @@ namespace plateau::granularityConvert {
                         primary_node.reserveChild(indices_in_mesh.size());
                         for(const auto& id : indices_in_mesh) {
                             if(id.primary_index != primary_id) continue;
-                            if(id.atomic_index < 0) continue;
+                            if(id.atomic_index == CityObjectIndex::invalidIndex()) continue;
                             std::string atomic_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                             auto atomic_node_tmp = Node(atomic_gml_id);

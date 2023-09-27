@@ -39,6 +39,7 @@ namespace PLATEAU.PolygonMesh
             var result = NativeMethods.plateau_create_mesh_9(
                 out var newMeshPtr,
                 vertices, vertices.Length, indices, indices.Length, uv1, uv1.Length,
+                uv4, uv4.Length,
                 subMeshPointers, subMeshes.Length
             );
             DLLUtil.CheckDllError(result);
