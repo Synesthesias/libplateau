@@ -75,10 +75,12 @@ namespace {
         city_objs.add({1, 1}, "atomic-1-1");
         mesh->setCityObjectList(city_objs);
 
-        auto node = Node("node");
-        node.setMesh(std::move(mesh));
+        // ノード構成を作ります。
         auto model = Model();
-        model.addNode(std::move(node));
+        auto& gml_node = model.addNode(Node("gml_node"));
+        auto& lod_node = gml_node.addChildNode(Node("lod_node"));
+        auto& mesh_node = lod_node.addChildNode(Node("mesh_node"));
+        mesh_node.setMesh(std::move(mesh));
 
         return model;
     }
@@ -142,7 +144,8 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
 
     checkModelBFS(atomic_model,
                   std::vector<std::string>{
-                        "node",
+                        "gml_node",
+                        "lod_node",
                         "primary-0",
                         "primary-1",
                         "atomic-0-0",
@@ -150,12 +153,13 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                         "atomic-1-0",
                         "atomic-1-1"
                   },
-                  std::vector<bool>{false, true, true, true, true, true, true},
+                  std::vector<bool>{false, false, true, true, true, true, true, true},
                           // 各ノードの頂点数は4です。（ルート除く）
-                  std::vector<int>{0, 4, 4, 4, 4, 4, 4},
+                  std::vector<int>{0, 0, 4, 4, 4, 4, 4, 4},
                  std::vector<std::set<CityObjectIndex>>{
                           // 各ノードのCityObjectIndexは(0,0)です。
-                          std::set<CityObjectIndex>{CityObjectIndex{ -999, -999}}, // ルートノードはメッシュを持ちません
+                          std::set<CityObjectIndex>{CityObjectIndex{-999, -999}}, // メッシュを持たないモードはこの値は無視されるので何でもよいです
+                          std::set<CityObjectIndex>{CityObjectIndex{ -999, -999}},
                           std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
                           std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
                           std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
@@ -164,6 +168,7 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                           std::set<CityObjectIndex>{CityObjectIndex{0, 0}}
                   },
                   std::vector<CityObjectList>{
+                          CityObjectList(),
                           CityObjectList(),
                           CityObjectList{{{CityObjectIndex{0, 0}, "primary-0"}}},
                           CityObjectList{{{CityObjectIndex{0, 0}, "primary-1"}}},
@@ -216,16 +221,18 @@ TEST_F(GranularityConverterTest, ConvertFromAreaToPrimary) { // NOLINT
     auto converter = GranularityConverter();
     auto dst_model = converter.convert(src_model, option);
     checkModelBFS(dst_model,
-                  std::vector<std::string>{"node", "primary-0", "primary-1"},
-                  std::vector<bool>{false, true, true},
-                  std::vector<int>{0, 4 * 3, 4 * 3},
+                  std::vector<std::string>{"gml_node", "lod_node", "primary-0", "primary-1"},
+                  std::vector<bool>{false, false, true, true},
+                  std::vector<int>{0, 0, 4 * 3, 4 * 3},
                   std::vector<std::set<CityObjectIndex>>{
+                          std::set<CityObjectIndex>(),
                           std::set<CityObjectIndex>(),
                           std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}
                           },
                           std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}}
                   },
                   std::vector<CityObjectList>{
+                          CityObjectList(),
                           CityObjectList(),
                           CityObjectList{{{
                                                   {CityObjectIndex{0, -1}, "primary-0"},

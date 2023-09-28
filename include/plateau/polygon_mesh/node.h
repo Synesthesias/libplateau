@@ -32,13 +32,14 @@ namespace plateau::polygonMesh {
         Mesh* getMesh() const;
         void setMesh(std::unique_ptr<Mesh>&& mesh);
 
-        void addChildNode(Node&& node);
+        /// Nodeをmoveで追加し、追加後のNodeを返します。
+        Node& addChildNode(Node&& node);
+
         Node& addEmptyChildNode(const std::string& name);
         size_t getChildCount() const;
 
         Node& getChildAt(unsigned int index);
         const Node& getChildAt(unsigned int index) const;
-        Node& getLastChildNode();
 
         /**
          * 子のうち、子もなくメッシュもないノードを削除します。再帰的に行われます。

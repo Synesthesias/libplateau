@@ -31,8 +31,8 @@ namespace plateau::polygonMesh {
 
         static std::shared_ptr<Model> createModel();
 
-        /// 作った Node は move で渡すことを想定しています。
-        void addNode(Node&& node);
+        /// Nodeをmoveで追加します。追加した後のNodeを返します。
+        Node& addNode(Node&& node);
 
         Node& addEmptyNode(const std::string& name);
 

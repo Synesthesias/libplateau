@@ -15,8 +15,9 @@ namespace plateau::polygonMesh {
         mesh_(std::move(mesh)) {
     }
 
-    void Node::addChildNode(Node&& node) {
+    Node& Node::addChildNode(Node&& node) {
         child_nodes_.push_back(std::forward<Node>(node));
+        return child_nodes_.at(child_nodes_.size()-1);
     }
 
     Node& Node::addEmptyChildNode(const std::string& name) {
@@ -45,10 +46,6 @@ namespace plateau::polygonMesh {
 
     const Node& Node::getChildAt(unsigned int index) const {
         return child_nodes_.at(index);
-    }
-
-    Node& Node::getLastChildNode() {
-        return child_nodes_.at(getChildCount() - 1);
     }
 
     void Node::eraseEmptyChildren() {

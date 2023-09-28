@@ -8,9 +8,9 @@ namespace plateau::granularityConvert {
 
     /// ノードを幅優先探索で処理するためのノードキューです。
     class NodeBFSQueue {
-        using NodeT = std::tuple<const Node&, Node&>; // 変換前ノードと、それに対応する変換後ノードのタプル
+        using NodeT = std::tuple<const Node*, Node*>; // 変換前ノードと、それに対応する変換後ノードのタプル
     public:
-        void push(const Node& src_node, Node& dst_node) {
+        void push(const Node* src_node, Node* dst_node) {
             auto node = NodeT(src_node, dst_node);
             queue.push(node);
         };
@@ -102,16 +102,16 @@ namespace plateau::granularityConvert {
                 auto& src_node = src.getRootNodeAt(i);
                 auto dst_node = Node(src_node.getName());
                 dst_model.addNode(std::move(dst_node));
-                queue.push(src_node, dst_model.getRootNodeAt(i));
+                queue.push(&src_node, &dst_model.getRootNodeAt(i));
             }
 
             // 幅優先探索の順番で変換します。
             while(!queue.empty()) {
                 auto [src_node, dst_node] = queue.pop();
-                if(src_node.getMesh() != nullptr) {
+                if(src_node->getMesh() != nullptr) {
 
                     // どのインデックスが含まれるかを列挙します。
-                    const auto src_mesh = src_node.getMesh();
+                    const auto src_mesh = src_node->getMesh();
                     std::set<CityObjectIndex> indices_in_mesh;
                     std::set<int> primary_indices_in_mesh;
                     for(const auto& uv4 : src_mesh->getUV4()) {
@@ -123,14 +123,13 @@ namespace plateau::granularityConvert {
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
                     // PrimaryIndexごとにノードを作ります。
-                    dst_node.reserveChild(primary_indices_in_mesh.size() + src_node.getChildCount());
+                    dst_node->reserveChild(primary_indices_in_mesh.size() + src_node->getChildCount());
                     for(auto primary_id : primary_indices_in_mesh) {
                         std::string primary_gml_id = "gml_id_not_found";
                         src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
                         auto primary_node_tmp = Node(primary_gml_id);
                         primary_node_tmp.setIsPrimary(true);
-                        dst_node.addChildNode(std::move(primary_node_tmp));
-                        auto& primary_node = dst_node.getLastChildNode();
+                        auto& primary_node = dst_node->addChildNode(std::move(primary_node_tmp));
 
                         auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1));
                         if(primary_mesh.hasVertices()){
@@ -146,8 +145,7 @@ namespace plateau::granularityConvert {
                             std::string atomic_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                             auto atomic_node_tmp = Node(atomic_gml_id);
-                            primary_node.addChildNode(std::move(atomic_node_tmp));
-                            auto& atomic_node = primary_node.getLastChildNode();
+                            auto& atomic_node = primary_node.addChildNode(std::move(atomic_node_tmp));
 
                             auto atomic_mesh = filterByCityObjIndex(*src_mesh, id);
                             if(atomic_mesh.hasVertices()){
@@ -160,13 +158,12 @@ namespace plateau::granularityConvert {
                 }
 
                 // 子をキューに積みます。
-                dst_node.reserveChild(src_node.getChildCount());
-                for(int i=0; i<src_node.getChildCount(); i++) {
-                    auto& src_child = src_node.getChildAt(i);
+                dst_node->reserveChild(src_node->getChildCount());
+                for(int i=0; i<src_node->getChildCount(); i++) {
+                    auto& src_child = src_node->getChildAt(i);
                     auto dst_child_tmp = Node(src_child.getName());
-                    dst_node.addChildNode(std::move(dst_child_tmp));
-                    auto& dst_child = dst_node.getLastChildNode();
-                    queue.push(src_child, dst_child);
+                    auto& dst_child = dst_node->addChildNode(std::move(dst_child_tmp));
+                    queue.push(&src_child, &dst_child);
                 }
             }
 
@@ -235,22 +232,22 @@ namespace plateau::granularityConvert {
             // ルートノードを探索キューに加えます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
                 auto& src_root_node = src.getRootNodeAt(i);
-                queue.push(src_root_node, dst_node);
+                queue.push(&src_root_node, &dst_node);
             }
 
             // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
             long primary_id = 0;
             while(!queue.empty()) {
                 const auto& src_node = std::get<0>(queue.pop());
-                if(src_node.isPrimary()) {
+                if(src_node->isPrimary()) {
                     // PrimaryなNodeが見つかったら、そのノードと子をマージします。
-                    mergePrimaryNodeAndChildren(src_node, dst_mesh, primary_id);
+                    mergePrimaryNodeAndChildren(*src_node, dst_mesh, primary_id);
                     primary_id++;
                 }else{
                     // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
-                    dst_node.reserveChild(src_node.getChildCount());
-                    for(int i=0; i<src_node.getChildCount(); i++) {
-                        queue.push(src_node.getChildAt(i), dst_node);
+                    dst_node.reserveChild(src_node->getChildCount());
+                    for(int i=0; i<src_node->getChildCount(); i++) {
+                        queue.push(&src_node->getChildAt(i), &dst_node);
                     }
                 }
             }
@@ -267,24 +264,23 @@ namespace plateau::granularityConvert {
                 const auto& src_node = src_model.getRootNodeAt(i);
                 dst_model.addNode(Node(src_node.getName()));
                 auto& dst_node = dst_model.getRootNodeAt(i);
-                queue.push(src_node, dst_node);
+                queue.push(&src_node, &dst_node);
             }
             // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
             while(!queue.empty()) {
                 const auto& [src_node, dst_node] = queue.pop();
-                if(src_node.isPrimary()) {
+                if(src_node->isPrimary()) {
                     // Primaryなら、src_nodeとその子を結合したメッシュをdst_nodeに持たせます。
                     auto dst_mesh = std::make_unique<Mesh>();
-                    mergePrimaryNodeAndChildren(src_node, *dst_mesh, 0);
-                    dst_node.setMesh(std::move(dst_mesh));
+                    mergePrimaryNodeAndChildren(*src_node, *dst_mesh, 0);
+                    dst_node->setMesh(std::move(dst_mesh));
                 }else{
-                    dst_node.reserveChild(dst_node.getChildCount() + src_node.getChildCount());
+                    dst_node->reserveChild(dst_node->getChildCount() + src_node->getChildCount());
                     // Primaryでないなら、子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
-                    for(int i=0; i<src_node.getChildCount(); i++) {
-                        const auto& src_child = src_node.getChildAt(i);
-                        dst_node.addChildNode(Node(src_child.getName()));
-                        auto& dst_child = dst_node.getLastChildNode();
-                        queue.push(src_child, dst_child);
+                    for(int i=0; i<src_node->getChildCount(); i++) {
+                        const auto& src_child = src_node->getChildAt(i);
+                        auto& dst_child = dst_node->addChildNode(Node(src_child.getName()));
+                        queue.push(&src_child, &dst_child);
                     }
                 }
             }
