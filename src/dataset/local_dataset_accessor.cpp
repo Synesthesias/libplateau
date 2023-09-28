@@ -196,7 +196,7 @@ namespace plateau::dataset {
         for (auto mesh_code : mesh_codes) {
             // 各地域メッシュについて上位の地域メッシュも含め登録する。
             // 重複する地域メッシュはinsert関数で弾かれる。
-            for (; mesh_code.getLevel() > 2; mesh_code = mesh_code.upper()) {
+            for (; mesh_code.getLevel() >= 2; mesh_code = mesh_code.upper()) {
                 mesh_codes_str_set.insert(mesh_code.get());
             }
         }
