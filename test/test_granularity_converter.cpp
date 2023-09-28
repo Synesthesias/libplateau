@@ -65,6 +65,7 @@ namespace {
         mesh->addIndicesList(indices, 0, false);
         mesh->setUV1(std::move(uv1));
         mesh->setUV4(std::move(uv4));
+        mesh->setSubMeshes(sub_meshes);
 
         auto city_objs = CityObjectList();
         city_objs.add({0,-1}, "primary-0");
@@ -94,13 +95,15 @@ namespace {
                        const std::vector<bool>& expect_has_mesh,
                        const std::vector<int>& expect_vertex_count, // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
                        const std::vector<std::set<CityObjectIndex>>& expect_city_obj_id_set,
-                       const std::vector<CityObjectList>& expect_city_obj_list){
+                       const std::vector<CityObjectList>& expect_city_obj_list,
+                       const std::vector<std::vector<SubMesh>>& expect_sub_meshes_list){
 
         auto expect_size = expect_node_name.size();
         ASSERT_EQ(expect_size, expect_has_mesh.size());
         ASSERT_EQ(expect_size, expect_vertex_count.size());
         ASSERT_EQ(expect_size, expect_city_obj_id_set.size());
         ASSERT_EQ(expect_size, expect_city_obj_list.size());
+        ASSERT_EQ(expect_size, expect_sub_meshes_list.size());
 
         std::queue<const Node*> queue;
 
@@ -126,6 +129,14 @@ namespace {
                 }
                 EXPECT_EQ(obj_indices_in_mesh, expect_city_obj_id_set.at(node_index));
                 EXPECT_EQ(mesh->getCityObjectList(), expect_city_obj_list.at(node_index));
+
+                // SubMeshの一致を確認します。
+                const auto& sub_meshes = mesh->getSubMeshes();
+                const auto& expect_sub_meshes = expect_sub_meshes_list.at(node_index);
+                EXPECT_EQ(sub_meshes.size(), expect_sub_meshes.size());
+                for(int i=0; i<sub_meshes.size(); i++) {
+                    EXPECT_EQ(sub_meshes.at(i), expect_sub_meshes.at(i));
+                }
             }
 
             for(int i=0; i<node->getChildCount(); i++){
@@ -175,7 +186,17 @@ TEST_F(GranularityConverterTest, convertFromAreaToAtomic) { // NOLINT
                           CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-0"}}},
                           CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-1"}}},
                           CityObjectList{{{CityObjectIndex{0, 0}, "atomic-1-0"}}},
-                          CityObjectList {{{CityObjectIndex{0, 0}, "atomic-1-1"}}}
+                          CityObjectList{{{CityObjectIndex{0, 0}, "atomic-1-1"}}}
+                  },
+                  std::vector<std::vector<SubMesh>>{
+                          {},
+                          {},
+                          {SubMesh(0, 5, "dummy_tex_path_0", nullptr)},
+                          {SubMesh(0, 5, "dummy_tex_path_5", nullptr)},
+                          {SubMesh(0, 5, "dummy_tex_path_1", nullptr)},
+                          {SubMesh(0, 5, "dummy_tex_path_2", nullptr)},
+                          {SubMesh(0, 5, "dummy_tex_path_3", nullptr)},
+                          {SubMesh(0, 5, "dummy_tex_path_4", nullptr)},
                   }
     );
 }
@@ -211,8 +232,20 @@ TEST_F(GranularityConverterTest, convertFromAreaToArea) { // NOLINT
                                    {CityObjectIndex{1, -1}, "primary-1"},
                                    {CityObjectIndex{1, 0}, "atomic-1-0"},
                                    {CityObjectIndex{1, 1}, "atomic-1-1"}
-                           }}
-                  });
+                                         }}
+                  },
+                  std::vector<std::vector<SubMesh>>{
+                          {
+                              SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                              SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                              SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                              SubMesh(18, 23, "dummy_tex_path_5", nullptr),
+                              SubMesh(24, 29, "dummy_tex_path_3", nullptr),
+                              SubMesh(30, 35, "dummy_tex_path_4", nullptr)
+                          }
+                  }
+
+    );
 }
 
 TEST_F(GranularityConverterTest, ConvertFromAreaToPrimary) { // NOLINT
@@ -244,7 +277,22 @@ TEST_F(GranularityConverterTest, ConvertFromAreaToPrimary) { // NOLINT
                                                   {CityObjectIndex{0, 0}, "atomic-1-0"},
                                                   {CityObjectIndex{0, 1}, "atomic-1-1"}
                                           }}}
-                  });
+                  },
+                  std::vector<std::vector<SubMesh>>{
+                          {},
+                          {},
+                          {
+                                  SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                                  SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                                  SubMesh(12, 17, "dummy_tex_path_2", nullptr)
+                          },
+                          {
+                                      SubMesh(0, 5, "dummy_tex_path_5", nullptr),
+                                      SubMesh(6, 11, "dummy_tex_path_3", nullptr),
+                                      SubMesh(12, 17, "dummy_tex_path_4", nullptr)
+                          }
+                  }
+    );
 }
 
 std::shared_ptr<Model> loadTestGML() {
