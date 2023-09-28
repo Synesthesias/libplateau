@@ -20,6 +20,10 @@ namespace plateau::polygonMesh {
         return child_nodes_.at(child_nodes_.size()-1);
     }
 
+    void Node::setChildNodes(std::vector<Node>&& child_nodes) {
+        child_nodes_ = std::move(child_nodes);
+    }
+
     Node& Node::addEmptyChildNode(const std::string& name) {
         return child_nodes_.emplace_back(name);
     }

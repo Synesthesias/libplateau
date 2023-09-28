@@ -34,6 +34,7 @@ namespace plateau::polygonMesh {
 
         /// Nodeをmoveで追加し、追加後のNodeを返します。
         Node& addChildNode(Node&& node);
+        void setChildNodes(std::vector<Node>&& child_nodes);
 
         Node& addEmptyChildNode(const std::string& name);
         size_t getChildCount() const;
