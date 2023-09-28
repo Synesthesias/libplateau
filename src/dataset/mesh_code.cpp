@@ -91,7 +91,7 @@ namespace plateau::dataset {
                 return false;
 
             // 番号順に左下→右下→左上→右上
-            out_num = row * 2 + col;
+            out_num = row * 2 + col + 1;
             return true;
         }
     }
@@ -241,7 +241,9 @@ namespace plateau::dataset {
 
     MeshCode& MeshCode::upper() {
         // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
-        level_ = std::max(2, level_ - 1);
+        level_ = std::max(1, level_ - 1);
+        if (level_ < 2)
+            is_valid_ = false;
 
         return *this;
     }

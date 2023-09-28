@@ -59,7 +59,7 @@ namespace PLATEAU.Dataset
             }
 
             // 番号順に左下→右下→左上→右上
-            num = row * 2 + col;
+            num = row * 2 + col + 1;
             return true;
         }
 
