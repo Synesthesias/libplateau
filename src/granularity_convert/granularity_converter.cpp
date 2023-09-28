@@ -74,7 +74,7 @@ namespace plateau::granularityConvert {
          * before: gml_node <- lod_node <- group_node <- primary_node <- atomic_node
          * after:  gml_node <- lod_node <- primary_node <- atomic_node
          */
-        void moveNodesWithMeshToParent(Model& model) {
+        void movePrimaryNodesToParent(Model& model) {
             // 幅優先探索の探索キューです。
             auto queue = NodeQueueOfIndexOfParent();
 
@@ -85,7 +85,7 @@ namespace plateau::granularityConvert {
 
             while(!queue.empty()) {
                 auto [parent_node, child_index] = queue.pop();
-                // 子ノードのうち、メッシュを持つものを親ノードに移動します。
+                // 子ノードのうち、主要地物に相当するものを親ノードに移動します。
                 // ここで親に移動したノードは、以降の探索から外れます。幅優先探索のため、親は探索済みとみなされます。
                 // なお、ループの中では毎回current_nodeを取得する必要があります。
                 // current_nodeを使い回してしまうと、親にノードが増えたとき、vectorの再割り当てによってポインタが無効になることがあります。
@@ -93,7 +93,7 @@ namespace plateau::granularityConvert {
                 for(int i=0; i<NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model)->getChildCount(); i++) {
                     auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
                     auto child_node = &current_node->getChildAt(i);
-                    if(child_node->getMesh() != nullptr) {
+                    if(child_node->isPrimary()) {
                         parent_node->addChildNode(std::move(*child_node));
                         child_indices_to_delete.insert(i);
                     }
@@ -425,7 +425,7 @@ namespace plateau::granularityConvert {
         // 例：上の行の実行後、次のようなNode構成になります。
         // gml_node <- lod_node <- group_node <- primary_node <- atomic_node
 
-        moveNodesWithMeshToParent(atomic);
+        movePrimaryNodesToParent(atomic);
 
         // 例：上の行の実行後、次のようなNode構成になります。
         // gml_node <- lod_node
