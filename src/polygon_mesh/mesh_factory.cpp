@@ -333,10 +333,15 @@ namespace plateau::polygonMesh {
 
         const auto geometry_count = city_obj.getGeometriesCount();
         out_vertices_count = 0;
+
+        std::vector<Extent> extents = { Extent::all() };
+        if (options_.exclude_polygons_outside_extent)
+            extents = extents_;
+
         for (unsigned i = 0; i < geometry_count; i++) {
             findAllPolygonsInGeometry(
                 city_obj.getGeometry(i), out_polygons, lod,
-                out_vertices_count, extents_);
+                out_vertices_count, extents);
         }
     }
 
