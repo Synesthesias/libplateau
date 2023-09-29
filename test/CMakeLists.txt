@@ -48,6 +48,7 @@ add_executable(plateau_test
     "test_texture_image_base.cpp"
     "test_map_zoom_level_searcher.cpp"
     "test_granularity_converter.cpp"
+    "test_granularity_converter_model_for_test.cpp"
         )
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
