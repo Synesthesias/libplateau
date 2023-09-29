@@ -1,42 +1,45 @@
 #pragma once
 #include "plateau/polygon_mesh/model.h"
 
+/// Nodeの状態がどのようなものと期待するかです。
+class NodeExpect {
+public:
+    NodeExpect(
+            const std::string& node_name,
+            bool have_mesh,
+            int vertices_count,
+            const std::set<plateau::polygonMesh::CityObjectIndex>& city_obj_id_set,
+            const plateau::polygonMesh::CityObjectList& city_obj_list,
+            const std::vector<plateau::polygonMesh::SubMesh>& sub_meshes) :
+            expect_node_name_(node_name), expect_have_mesh_(have_mesh),
+            expect_vertex_count_(vertices_count), expect_city_obj_id_set_(city_obj_id_set),
+            expect_city_obj_list_(city_obj_list), expect_sub_meshes_(sub_meshes)
+            {};
+    void checkNode(const plateau::polygonMesh::Node* node);
+private:
+    const std::string expect_node_name_;
+    const bool expect_have_mesh_;
+    const int expect_vertex_count_;
+    const std::set<plateau::polygonMesh::CityObjectIndex> expect_city_obj_id_set_;
+    const plateau::polygonMesh::CityObjectList expect_city_obj_list_;
+    const std::vector<plateau::polygonMesh::SubMesh> expect_sub_meshes_;
+};
+
 /// ModelのNode構成がどのようなものになっていると期待するかです。
 /// 各Nodeに期待する状態が、幅優先探索の順番でvectorで表現されます。
 class ModelExpect {
-    using TExpectNodesName = std::vector<std::string>;
-    using TExpectHaveMesh = std::vector<bool>;
-    using TExpectVerticesCount = std::vector<int>;
-    using TExpectCityObjsIdSet = std::vector<std::set<plateau::polygonMesh::CityObjectIndex>>;
-    using TExpectCityObjsList = std::vector<plateau::polygonMesh::CityObjectList>;
-    using TExpectSubMeshesList = std::vector<std::vector<plateau::polygonMesh::SubMesh>>;
 public:
-    ModelExpect(
-            TExpectNodesName  expect_nodes_name,
-            TExpectHaveMesh  expect_have_mesh,
-            TExpectVerticesCount  expect_vertices_count,
-            TExpectCityObjsIdSet  expect_city_objs_id_set,
-            TExpectCityObjsList  expect_city_objs_lists,
-            TExpectSubMeshesList  expect_sub_meshes_list
-    ) :
-            expect_nodes_name_(std::move(expect_nodes_name)),
-            expect_have_mesh_(std::move(expect_have_mesh)),
-            expect_vertices_count_(std::move(expect_vertices_count)),
-            expect_city_objs_id_set_(std::move(expect_city_objs_id_set)),
-            expect_city_objs_list_(std::move(expect_city_objs_lists)),
-            expect_sub_meshes_list_(std::move(expect_sub_meshes_list))
+    ModelExpect(const std::vector<NodeExpect>& expect_nodes) :
+        expect_nodes_(expect_nodes)
     {
 
     };
 
-    size_t nodeSize() const;
+    NodeExpect at(size_t i) const {return expect_nodes_.at(i);}
 
-    const TExpectNodesName expect_nodes_name_;
-    const TExpectHaveMesh expect_have_mesh_;
-    const TExpectVerticesCount expect_vertices_count_; // expect_vertex_countとexpect_city_obj_idはMeshを持たないノードに関しては無視されます。
-    const TExpectCityObjsIdSet expect_city_objs_id_set_;
-    const TExpectCityObjsList expect_city_objs_list_;
-    const TExpectSubMeshesList expect_sub_meshes_list_;
+    size_t nodeCount() const {return expect_nodes_.size();};
+
+    const std::vector<NodeExpect> expect_nodes_;
 };
 
 
@@ -50,7 +53,7 @@ public:
     ModelForTest(plateau::polygonMesh::Model&& src_model, TGranularityToExpect& convert_expects) :
             src_model_(std::move(src_model)),
             convert_expects_(convert_expects) {};
-    void test();
+    void test(plateau::polygonMesh::MeshGranularity granularity);
 private:
     plateau::polygonMesh::Model src_model_;
     TGranularityToExpect convert_expects_;

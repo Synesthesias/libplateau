@@ -8,8 +8,16 @@ using namespace plateau::granularityConvert;
 using namespace plateau::polygonMesh;
 
 
-TEST_F(GranularityConverterTest, convertAreaModel) { // NOLINT
-    createTestModelOfArea().test();
+TEST_F(GranularityConverterTest, convertAreaToAtomic) { // NOLINT
+    createTestModelOfArea().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToPrimary) { // NOLINT
+    createTestModelOfArea().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToArea) { // NOLINT
+    createTestModelOfArea().test(MeshGranularity::PerCityModelArea);
 }
 
 namespace {
@@ -47,6 +55,7 @@ TEST_F(GranularityConverterTest, RootNodeAreaToAtomic) { // NOLINT
 
 
 namespace {
+    /// 地域単位のテスト用メッシュを作ります。
     std::unique_ptr<Mesh> createTestMeshOfAreaGranularity() {
         TVec3d base_pos = {0, 0, 0};
         unsigned int base_id = 0;
@@ -110,129 +119,70 @@ namespace {
         return mesh;
     }
 
+    /// 地域単位のモデルを変換したときにどうなるかをここに記述します。
     ModelForTest::TGranularityToExpect createExpectsForTestMeshArea() {
-        auto atomic_expect = ModelExpect(std::vector<std::string>{
-                                                 "gml_node",
-                                                 "lod_node",
-                                                 "primary-0",
-                                                 "primary-1",
-                                                 "atomic-0-0",
-                                                 "atomic-0-1",
-                                                 "atomic-1-0",
-                                                 "atomic-1-1"
-                                         },
-                                         std::vector<bool>{false, false, true, true, true, true, true, true},
-                // 各ノードの頂点数は4です。（ルート除く）
-                                         std::vector<int>{0, 0, 4, 4, 4, 4, 4, 4},
-                                         std::vector<std::set<CityObjectIndex>>{
-                                                 // 各ノードのCityObjectIndexは(0,0)です。
-                                                 std::set<CityObjectIndex>{
-                                                         CityObjectIndex{-999, -999}}, // メッシュを持たないモードはこの値は無視されるので何でもよいです
-                                                 std::set<CityObjectIndex>{CityObjectIndex{-999, -999}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}},
-                                                 std::set<CityObjectIndex>{CityObjectIndex{0, 0}}
-                                         },
-                                         std::vector<CityObjectList>{
-                                                 CityObjectList(),
-                                                 CityObjectList(),
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "primary-0"}}},
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "primary-1"}}},
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-0"}}},
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "atomic-0-1"}}},
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "atomic-1-0"}}},
-                                                 CityObjectList{{{CityObjectIndex{0, 0}, "atomic-1-1"}}}
-                                         },
-                                         std::vector<std::vector<SubMesh>>{
-                                                 {},
-                                                 {},
-                                                 {SubMesh(0, 5, "dummy_tex_path_0", nullptr)},
-                                                 {SubMesh(0, 5, "dummy_tex_path_5", nullptr)},
-                                                 {SubMesh(0, 5, "dummy_tex_path_1", nullptr)},
-                                                 {SubMesh(0, 5, "dummy_tex_path_2", nullptr)},
-                                                 {SubMesh(0, 5, "dummy_tex_path_3", nullptr)},
-                                                 {SubMesh(0, 5, "dummy_tex_path_4", nullptr)},
-                                         });
+        // メッシュを持たないオブジェクトはCityObjectIndexは無視されるので何の値でも良いです。
+        const CityObjectIndex none_coi = {-999, -999};
 
+        // 最小地物単位の場合
+        auto atomic_expect = ModelExpect(
+                std::vector<NodeExpect>{
+                    NodeExpect("gml_node", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("primary-0", true, 4, {{{0, 0}}}, {{{{0,0}, "primary-0"}}}, {SubMesh(0,5,"dummy_tex_path_0",nullptr)}),
+                    NodeExpect("primary-1", true, 4, {{{0, 0}}}, {{{{0,0}, "primary-1"}}}, {SubMesh(0,5,"dummy_tex_path_5",nullptr)}),
+                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
+                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
+                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)}),
+                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_4",nullptr)})
+                });
+
+        // 主要地物の場合
         auto primary_expect = ModelExpect(
-                std::vector<std::string>{"gml_node", "lod_node", "primary-0", "primary-1"},
-                std::vector<bool>{false, false, true, true},
-                std::vector<int>{0, 0, 4 * 3, 4 * 3},
-                std::vector<std::set<CityObjectIndex>>{
-                        std::set<CityObjectIndex>(),
-                        std::set<CityObjectIndex>(),
-                        std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}
-                        },
-                        std::set<CityObjectIndex>{{{0, -1}, {0, 0}, {0, 1}}}
-                },
-                std::vector<CityObjectList>{
-                        CityObjectList(),
-                        CityObjectList(),
-                        CityObjectList{{{
-                                                {CityObjectIndex{0, -1}, "primary-0"},
-                                                {CityObjectIndex{0, 0}, "atomic-0-0"},
-                                                {CityObjectIndex{0, 1}, "atomic-0-1"}
-                                        }}},
-                        CityObjectList{{{
-                                                {CityObjectIndex{0, -1}, "primary-1"},
-                                                {CityObjectIndex{0, 0}, "atomic-1-0"},
-                                                {CityObjectIndex{0, 1}, "atomic-1-1"}
-                                        }}}
-                },
-                std::vector<std::vector<SubMesh>>{
-                        {},
-                        {},
-                        {
-                                SubMesh(0, 5, "dummy_tex_path_0", nullptr),
-                                SubMesh(6, 11, "dummy_tex_path_1", nullptr),
-                                SubMesh(12, 17, "dummy_tex_path_2", nullptr)
-                        },
-                        {
-                                SubMesh(0, 5, "dummy_tex_path_5", nullptr),
-                                SubMesh(6, 11, "dummy_tex_path_3", nullptr),
-                                SubMesh(12, 17, "dummy_tex_path_4", nullptr)
-                        }
-                }
-        );
+                std::vector<NodeExpect>{
+                    NodeExpect("gml_node", false, 0, {{}}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {{}}, {}, {}),
+                    NodeExpect("primary-0", true, 4*3, {{{0,-1}, {0,0}, {0,1}}}, {{{{0,-1}, "primary-0"}, {{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
+                               {SubMesh(0,5,"dummy_tex_path_0",nullptr),
+                                SubMesh(6,11,"dummy_tex_path_1", nullptr),
+                                SubMesh(12,17,"dummy_tex_path_2",nullptr)
+                               }),
+                    NodeExpect("primary-1", true, 4*3, {{{0,-1}, {0,0}, {0,1}}}, {{{{0,-1}, "primary-1"}, {{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}},
+                                {SubMesh(0,5,"dummy_tex_path_5",nullptr),
+                                 SubMesh(6,11,"dummy_tex_path_3", nullptr),
+                                 SubMesh(12,17,"dummy_tex_path_4",nullptr)}
+                                )
+                });
+
+        // 地域単位の場合
         auto area_expect = ModelExpect(
-                std::vector<std::string>{"combined"},
-                std::vector<bool>{true},
-                // 頂点数は四角形ポリゴンを複数マージしたものです。
-                std::vector<int>{4 * 6},
-                std::vector<std::set<CityObjectIndex>>{
-                        // 1つのメッシュの中に6通りのCityObjectIndexが含まれます。
-                        std::set<CityObjectIndex>{
-                                CityObjectIndex{0, -1},
-                                CityObjectIndex{0, 0},
-                                CityObjectIndex{0, 1},
-                                CityObjectIndex{1, -1},
-                                CityObjectIndex{1, 0},
-                                CityObjectIndex{1, 1}
-                        }
-                },
-                std::vector<CityObjectList>{
-                        CityObjectList{{
-                                               {CityObjectIndex{0, -1}, "primary-0"},
-                                               {CityObjectIndex{0, 0}, "atomic-0-0"},
-                                               {CityObjectIndex{0, 1}, "atomic-0-1"},
-                                               {CityObjectIndex{1, -1}, "primary-1"},
-                                               {CityObjectIndex{1, 0}, "atomic-1-0"},
-                                               {CityObjectIndex{1, 1}, "atomic-1-1"}
-                                       }}
-                },
-                std::vector<std::vector<SubMesh>>{
-                        {
-                                SubMesh(0, 5, "dummy_tex_path_0", nullptr),
-                                SubMesh(6, 11, "dummy_tex_path_1", nullptr),
-                                SubMesh(12, 17, "dummy_tex_path_2", nullptr),
-                                SubMesh(18, 23, "dummy_tex_path_5", nullptr),
-                                SubMesh(24, 29, "dummy_tex_path_3", nullptr),
-                                SubMesh(30, 35, "dummy_tex_path_4", nullptr)
-                        }
-                }
+                std::vector<NodeExpect>{
+                        NodeExpect("combined", true, 4 * 6,
+                                   {{
+                                            {0, -1},
+                                            {0, 0},
+                                            {0, 1},
+                                            {1, -1},
+                                            {1, 0},
+                                            {1, 1}
+                                    }},
+                                   {{
+                                            {{0, -1}, "primary-0"},
+                                            {{0, 0}, "atomic-0-0"},
+                                            {{0, 1}, "atomic-0-1"},
+                                            {{1, -1}, "primary-1"},
+                                            {{1, 0}, "atomic-1-0"},
+                                            {{1, 1}, "atomic-1-1"}
+                                    }},
+                                   {
+                                           SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                                           SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                                           SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                                           SubMesh(18, 23, "dummy_tex_path_5", nullptr),
+                                           SubMesh(24, 29, "dummy_tex_path_3", nullptr),
+                                           SubMesh(30, 35, "dummy_tex_path_4", nullptr)
+                                   }
+                        )}
         );
 
         auto convert_expects = ModelForTest::TGranularityToExpect{
