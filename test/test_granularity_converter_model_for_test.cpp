@@ -8,7 +8,7 @@
 using namespace plateau::polygonMesh;
 using namespace plateau::granularityConvert;
 
-void NodeExpect::checkNode(const plateau::polygonMesh::Node* node) {
+void NodeExpect::checkNode(const plateau::polygonMesh::Node* node) const {
     EXPECT_EQ(node->getName(), expect_node_name_);
     EXPECT_EQ(!(node->getMesh() == nullptr), expect_have_mesh_);
     if(node->getMesh() != nullptr) {
@@ -76,7 +76,10 @@ void ModelForTest::test(MeshGranularity granularity) {
         };
         std::cout << "====== Testing converting to " << granularity_str << " ======" << std::endl;
         GranularityConvertOption option(granularity, 10);
+
+        // ここで変換します
         auto converted_model = GranularityConverter().convert(src_model_, option);
+
         const auto& expect = convert_expects_.at(granularity);
         checkModelBFS(converted_model, expect);
 }

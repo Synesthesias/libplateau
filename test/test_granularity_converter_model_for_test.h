@@ -17,8 +17,8 @@ public:
             expect_vertex_count_(vertices_count), expect_city_obj_id_set_(city_obj_id_set),
             expect_city_obj_list_(city_obj_list), expect_sub_meshes_(sub_meshes)
             {};
-    void checkNode(const plateau::polygonMesh::Node* node);
-private:
+    void checkNode(const plateau::polygonMesh::Node* node) const;
+
     std::string expect_node_name_;
     bool expect_have_mesh_;
     int expect_vertex_count_;
@@ -37,7 +37,8 @@ public:
 
     };
 
-    NodeExpect at(size_t i) const {return expect_nodes_.at(i);}
+    NodeExpect& at(size_t i) {return expect_nodes_.at(i);};
+    const NodeExpect& at(size_t i) const {return expect_nodes_.at(i);};
 
     size_t nodeCount() const {return expect_nodes_.size();};
 

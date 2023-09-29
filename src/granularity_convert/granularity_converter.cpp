@@ -85,32 +85,38 @@ namespace plateau::granularityConvert {
 
             while(!queue.empty()) {
                 auto [parent_node, child_index] = queue.pop();
-                // 子ノードのうち、主要地物に相当するものを親ノードに移動します。
-                // ここで親に移動したノードは、以降の探索から外れます。幅優先探索のため、親は探索済みとみなされます。
-                // なお、ループの中では毎回current_nodeを取得する必要があります。
-                // current_nodeを使い回してしまうと、親にノードが増えたとき、vectorの再割り当てによってポインタが無効になることがあります。
-                std::set<int> child_indices_to_delete;
-                for(int i=0; i<NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model)->getChildCount(); i++) {
-                    auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-                    auto child_node = &current_node->getChildAt(i);
-                    if(child_node->isPrimary()) {
-                        parent_node->addChildNode(std::move(*child_node));
-                        child_indices_to_delete.insert(i);
-                    }
-                }
-                // 子ノードのうち、親に移動したものを除いた新しい子ノードvectorを作ります。
-                // fixme : 以下の新しいvector<Node>を作る処理は、削除がなければ必要がないので軽量化可能
-                std::vector<Node> next_child_nodes;
-                auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-                for(int i=0; i<current_node->getChildCount(); i++) {
-                    bool is_deleted = child_indices_to_delete.find(i) != child_indices_to_delete.end();
-                    if(!is_deleted) {
-                        auto* child_node = &current_node->getChildAt(i);
-                        next_child_nodes.push_back(std::move(*child_node));
-                    }
-                }
-                current_node->setChildNodes(std::move(next_child_nodes));
 
+                // ルートノードの場合は親がないので子を移動させません。
+                if(parent_node != nullptr) {
+
+                    // 子ノードのうち、主要地物に相当するものを親ノードに移動します。
+                    // ここで親に移動したノードは、以降の探索から外れます。幅優先探索のため、親は探索済みとみなされます。
+                    // なお、ループの中では毎回current_nodeを取得する必要があります。
+                    // current_nodeを使い回してしまうと、親にノードが増えたとき、vectorの再割り当てによってポインタが無効になることがあります。
+                    std::set<int> child_indices_to_delete;
+                    for(int i=0; i<NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model)->getChildCount(); i++) {
+                        auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
+                        auto child_node = &current_node->getChildAt(i);
+                        if(child_node->isPrimary()) {
+                            parent_node->addChildNode(std::move(*child_node));
+                            child_indices_to_delete.insert(i);
+                        }
+                    }
+                    // 子ノードのうち、親に移動したものを除いた新しい子ノードvectorを作ります。
+                    // fixme : 以下の新しいvector<Node>を作る処理は、削除がなければ必要がないので軽量化可能
+                    std::vector<Node> next_child_nodes;
+                    auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
+                    for(int i=0; i<current_node->getChildCount(); i++) {
+                        bool is_deleted = child_indices_to_delete.find(i) != child_indices_to_delete.end();
+                        if(!is_deleted) {
+                            auto* child_node = &current_node->getChildAt(i);
+                            next_child_nodes.push_back(std::move(*child_node));
+                        }
+                    }
+                    current_node->setChildNodes(std::move(next_child_nodes));
+                }
+
+                auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
                 // 子をキューに加えます。
                 for(int i=0; i<current_node->getChildCount(); i++) {
                     queue.push(current_node, i);

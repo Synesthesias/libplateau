@@ -220,16 +220,23 @@ ModelForTest GranularityConverterTest::createTestModelOfArea() {
     return ret;
 }
 
-/// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくしてルートに直接メッシュがあるパターンをテストします。
+/// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
 ModelForTest GranularityConverterTest::createTestModelOfAreaOnlyRoot() {
     auto mesh = createTestMeshOfArea();
     auto model = Model();
-    auto& gml_node = model.addNode(Node("root_node"));
+    auto& root_node = model.addNode(Node("root_node"));
+    root_node.setMesh(std::move(mesh));
 
-    // テストの期待値からgmlノードとlodノードの分を除きます。
+    // テストの期待値からgmlノードとlodノードの分を除いて、ルートノードを追加します。
     auto expects = createExpectsForTestMeshArea();
-    expects.at(MeshGranularity::PerAtomicFeatureObject).eraseRange(0,2);
-    expects.at(MeshGranularity::PerPrimaryFeatureObject).eraseRange(0, 2);
+
+    auto& expects_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    expects_atomic.eraseRange(0,1);
+    expects_atomic.at(0).expect_node_name_ = "root_node";
+
+    auto& expects_feature = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    expects_feature.eraseRange(0, 1);
+    expects_feature.at(0).expect_node_name_ = "root_node";
     auto ret = ModelForTest(std::move(model), expects);
     return ret;
 }
