@@ -20,6 +20,19 @@ TEST_F(GranularityConverterTest, convertAreaToArea) { // NOLINT
     createTestModelOfArea().test(MeshGranularity::PerCityModelArea);
 }
 
+TEST_F(GranularityConverterTest, convertAreaRootToAtomic) { // NOLINT
+    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaRootToPrimaruy) { // NOLINT
+    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaRootToArea) { // NOLINT
+    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerCityModelArea);
+}
+
+
 namespace {
     std::shared_ptr<Model> loadTestGML() {
         auto parser_params = citygml::ParserParams();
@@ -56,7 +69,7 @@ TEST_F(GranularityConverterTest, RootNodeAreaToAtomic) { // NOLINT
 
 namespace {
     /// 地域単位のテスト用メッシュを作ります。
-    std::unique_ptr<Mesh> createTestMeshOfAreaGranularity() {
+    std::unique_ptr<Mesh> createTestMeshOfArea() {
         TVec3d base_pos = {0, 0, 0};
         unsigned int base_id = 0;
         std::vector<TVec3d> vertices;
@@ -195,7 +208,7 @@ namespace {
 }
 
 ModelForTest GranularityConverterTest::createTestModelOfArea() {
-    auto mesh = createTestMeshOfAreaGranularity();
+    auto mesh = createTestMeshOfArea();
 
     auto model = Model();
     auto& gml_node = model.addNode(Node("gml_node"));
@@ -207,9 +220,16 @@ ModelForTest GranularityConverterTest::createTestModelOfArea() {
     return ret;
 }
 
-//ModelForTest createTestModelOfAreaOnlyRoot() {
-//    auto mesh = createTestMeshOfAreaGranularity();
-//    auto expects = createExpectsForTestMeshArea();
-//    auto model = Model();
-//    model.addNode(Node("root_node"));
-//}
+/// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくしてルートに直接メッシュがあるパターンをテストします。
+ModelForTest GranularityConverterTest::createTestModelOfAreaOnlyRoot() {
+    auto mesh = createTestMeshOfArea();
+    auto model = Model();
+    auto& gml_node = model.addNode(Node("root_node"));
+
+    // テストの期待値からgmlノードとlodノードの分を除きます。
+    auto expects = createExpectsForTestMeshArea();
+    expects.at(MeshGranularity::PerAtomicFeatureObject).eraseRange(0,2);
+    expects.at(MeshGranularity::PerPrimaryFeatureObject).eraseRange(0, 2);
+    auto ret = ModelForTest(std::move(model), expects);
+    return ret;
+}

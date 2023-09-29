@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+
 #include "plateau/polygon_mesh/model.h"
 
 /// Nodeの状態がどのようなものと期待するかです。
@@ -17,20 +19,20 @@ public:
             {};
     void checkNode(const plateau::polygonMesh::Node* node);
 private:
-    const std::string expect_node_name_;
-    const bool expect_have_mesh_;
-    const int expect_vertex_count_;
-    const std::set<plateau::polygonMesh::CityObjectIndex> expect_city_obj_id_set_;
-    const plateau::polygonMesh::CityObjectList expect_city_obj_list_;
-    const std::vector<plateau::polygonMesh::SubMesh> expect_sub_meshes_;
+    std::string expect_node_name_;
+    bool expect_have_mesh_;
+    int expect_vertex_count_;
+    std::set<plateau::polygonMesh::CityObjectIndex> expect_city_obj_id_set_;
+    plateau::polygonMesh::CityObjectList expect_city_obj_list_;
+    std::vector<plateau::polygonMesh::SubMesh> expect_sub_meshes_;
 };
 
 /// ModelのNode構成がどのようなものになっていると期待するかです。
 /// 各Nodeに期待する状態が、幅優先探索の順番でvectorで表現されます。
 class ModelExpect {
 public:
-    ModelExpect(const std::vector<NodeExpect>& expect_nodes) :
-        expect_nodes_(expect_nodes)
+    ModelExpect(std::vector<NodeExpect>  expect_nodes) :
+        expect_nodes_(std::move(expect_nodes))
     {
 
     };
@@ -39,7 +41,12 @@ public:
 
     size_t nodeCount() const {return expect_nodes_.size();};
 
-    const std::vector<NodeExpect> expect_nodes_;
+    void eraseRange(int start, int last) {
+        auto begin = expect_nodes_.begin();
+        expect_nodes_.erase(begin+start, begin+last);
+    }
+
+    std::vector<NodeExpect> expect_nodes_;
 };
 
 
