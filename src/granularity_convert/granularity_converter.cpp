@@ -61,7 +61,7 @@ namespace plateau::granularityConvert {
 
             NodePos parent() {
                 auto new_pos = std::vector(positions_.begin(), positions_.end() - 1);
-                return NodePos(new_pos);
+                return {new_pos};
             }
 
             NodePos plus(int next_index) {
@@ -100,102 +100,6 @@ namespace plateau::granularityConvert {
         };
 
 
-        /**
-         * メッシュを含むノードを親に移動します。
-         * 例：
-         * before: gml_node <- lod_node <- group_node <- primary_node <- atomic_node
-         * after:  gml_node <- lod_node <- primary_node <- atomic_node
-         */
-        void moveNodesWithMeshToParent(Model& model) {
-            // 幅優先探索の探索キューです。
-            auto queue = NodeQueueOfIndexOfParent();
-
-            // ルートノードをキューに加えます。
-            for(int i=0; i<model.getRootNodeCount(); i++) {
-                queue.push(nullptr, i);
-            }
-
-            while(!queue.empty()) {
-                auto [parent_node, child_index] = queue.pop();
-
-                auto current_node_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-
-                // 下のif文に、子ノードを親に移動すべき条件を書きます。
-                // ・ルートノードの場合は親がないので子を移動させません。
-                // ・親にすでにメッシュがある場合は上書きさせたくないので移動させません。
-                // ・現在のノードにメッシュがある場合は、親子関係を維持したいので子を動かしません。
-                if(parent_node != nullptr && parent_node->getMesh() == nullptr && current_node_tmp->getMesh() == nullptr) {
-
-                    // 子ノードのうち、メッシュが存在するものを親ノードに移動します。
-                    // なお、ループの中では毎回current_nodeを取得する必要があります。
-                    // current_nodeを使い回してしまうと、親にノードが増えたとき、vectorの再割り当てによってポインタが無効になることがあります。
-                    std::set<int> child_indices_to_delete;
-                    for(int i=0; i<NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model)->getChildCount(); i++) {
-                        auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-                        auto child_node = &current_node->getChildAt(i);
-                        if(child_node->getMesh() != nullptr) {
-
-                            // この段階で、次のような階層構造になっているとします。
-                            // parent <- current(meshなし) <- child(meshあり)
-
-                            // ここで子を親に移動します。
-                            parent_node->addChildNode(std::move(*child_node));
-
-                            // この段階で次のようになります。
-                            // parent
-                            //      ┣ current(meshなし)  これはあとに実行されるeraseEmptyNodesで削除されます。
-                            //      ┗ 旧child(meshあり)
-
-                            // currentの子のi番目は、移動したので削除すべきと覚えておきます。
-                            child_indices_to_delete.insert(i);
-
-                            // 親に移動した子について、さらにその子に移動すべきノードがあるかもしれません。
-                            // 例： parent
-                            //          ┣ current(meshなし) (あとで削除)
-                            //          ┗ 旧child(meshあり) <- meshなしノード (不要) <- meshありノード(必要)
-                            // この末尾のmeshありノードを上の階層に移動したいです。
-                            // したがって、移動したノードも探索キューに加えます。
-                            //
-                            // 補足：
-                            // どのような時に上の例のような階層構造になるかというと、最小地物単位を最小地物単位に変換したとき、下のようになってこのメソッドに入力されます。
-                            //
-                            // lod <- primary(meshなし) <- primary(meshあり) <- atomic(meshなし) <- atomic(meshあり)
-                            //
-                            // これを処理すると、初めてこの行を実行する段階では次のようになっています。
-                            //
-                            // lod
-                            //  ┣ primary(meshなし)
-                            //  ┗ primary(meshあり) <- atomic(meshなし,不要) <- atomic(meshあり)
-                            //
-                            // このケースでのmeshなしノードは不要なので階層構造からスキップしたいです。
-                            queue.push(parent_node, (int)parent_node->getChildCount() - 1);
-                        }
-                    }
-                    // 子ノードのうち、親に移動したものを除いた新しい子ノードvectorを作ります。
-                    // fixme : 以下の新しいvector<Node>を作る処理は、削除がなければ必要がないので軽量化可能
-                    std::vector<Node> next_child_nodes;
-                    auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-                    for(int i=0; i<current_node->getChildCount(); i++) {
-                        bool is_deleted = child_indices_to_delete.find(i) != child_indices_to_delete.end();
-                        if(!is_deleted) {
-                            auto* child_node = &current_node->getChildAt(i);
-                            next_child_nodes.push_back(std::move(*child_node));
-                        }
-                    }
-                    current_node->setChildNodes(std::move(next_child_nodes));
-
-                }
-
-                auto current_node = NodeQueueOfIndexOfParent::getNodeFromParent(parent_node, child_index, model);
-                // 現在ノードの子をキューに加えます。
-                for(int i=0; i<current_node->getChildCount(); i++) {
-                    queue.push(current_node, i);
-                }
-            }
-
-
-        }
-
         /// MeshのうちCityObjectIndexが引数idに一致する箇所のみを取り出したMeshを生成して返します。
         Mesh filterByCityObjIndex(const Mesh& src, CityObjectIndex filter_id, const int uv4_atomic_index) {
             const auto& src_vertices = src.getVertices();
@@ -223,7 +127,7 @@ namespace plateau::granularityConvert {
                     vert_id_transform.push_back((long)current_vert_id);
                     dst_vertices.push_back(src_vertices.at(i));
                     dst_uv1.push_back(src_uv1.at(i));
-                    dst_uv4.push_back({0, (float)uv4_atomic_index});
+                    dst_uv4.emplace_back(0, (float)uv4_atomic_index);
                     ++current_vert_id;
                 }else{
                     vert_id_transform.push_back(-1);
@@ -317,7 +221,6 @@ namespace plateau::granularityConvert {
                         }
                     }
 
-
                     auto src_mesh_tmp = node_pos.toNode(&src)->getMesh();
                     if(src_mesh_tmp != nullptr) {
                         const auto src_node = node_pos.toNode(&src);
@@ -339,7 +242,6 @@ namespace plateau::granularityConvert {
                             auto dst_parent = node_pos.parent().toNode(&dst_model);
                             bool is_parent_primary = dst_parent != nullptr && dst_parent->isPrimary();
 
-
                             Node* primary_node;
                             if(is_parent_primary) {
                                 primary_node = dst_parent;
@@ -359,9 +261,6 @@ namespace plateau::granularityConvert {
                                 }
                             }
 
-
-
-
                             // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
                             for(const auto& id : indices_in_mesh) {
                                 if(id.primary_index != primary_id) continue;
@@ -378,41 +277,15 @@ namespace plateau::granularityConvert {
                                     atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
                                     atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                                 }
-                            } // end for(atomic)
-                        } // end for(primary)
+                            }
+                        }
                         // end if(メッシュがあるとき)
                     }else{ // メッシュがないとき
                          // メッシュのないノードをdstに追加します
                          auto src_node_name = node_pos.toNode(&src)->getName();
                         node_pos.parent().addChildNode(Node(src_node_name), &dst_model);
-
-//                    }
-
-
-
-
                 }
-
-//                // 子をキューに積みます。
-//                while(!src_next_parent_nodes.empty()) {
-//                    auto [src_parent_parent_node, src_child_index] = src_next_parent_nodes.pop();
-//                    auto [dst_parent_parent_node, dst_child_index] = dst_next_parent_nodes.pop();
-////                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
-//                    auto src_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_parent_node, src_child_index, src);
-//                    auto dst_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_parent_node, dst_child_index, dst_model);
-//                    for(int i=0; i<src_parent_node->getChildCount(); i++) {
-//                        auto& src_child = src_parent_node->getChildAt(i);
-////                        if(dst_parent_node->getChildCount() > i && dst_parent_node->getChildAt(i).isPrimary()){
-//                        if(dst_parent_node->getMesh() != nullptr) {
-//                            continue;
-//                        }
-//                        src_queue.push(src_parent_node, i);
-//                        dst_parent_node->addChildNode(Node(src_child.getName()));
-//                        dst_queue.push(dst_parent_node, (int)dst_parent_node->getChildCount() - 1);
-//                    }
-//                }
             }
-
             return dst_model;
         }
 
@@ -467,7 +340,6 @@ namespace plateau::granularityConvert {
                     queue.push(&src_node.getChildAt(i));
                 }
             }
-
         }
 
         /// 最小地物単位のモデルを受け取り、それを地域単位に変換したモデルを返します。
@@ -549,7 +421,6 @@ namespace plateau::granularityConvert {
             }
             return dst_model;
         }
-
     }
 
     Model GranularityConverter::convert(Model& src, GranularityConvertOption option) {
@@ -561,19 +432,9 @@ namespace plateau::granularityConvert {
         auto atomic = convertToAtomic(src);
 
         // 例：上の行の実行後、次のようなNode構成になります。
-        // gml_node <- lod_node <- group_node <- primary_node <- atomic_node
-
-//        moveNodesWithMeshToParent(atomic);
-
-        // 例：上の行の実行後、次のようなNode構成になります。
-        // gml_node <- lod_node
-        //                    ┣ group_node
-        //                    ┗ primary_node <- atomic_node
+        // gml_node <- lod_node <- primary_node <- atomic_node
 
         atomic.eraseEmptyNodes();
-
-        // 例：上の行の実行後、次のようなNode構成になります。
-        // gml_node <- lod_node <- primary_node <- atomic_node
 
         switch(option.granularity_){
             case MeshGranularity::PerAtomicFeatureObject:
