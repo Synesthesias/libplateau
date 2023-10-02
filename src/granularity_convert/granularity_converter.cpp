@@ -287,7 +287,7 @@ namespace plateau::granularityConvert {
                     const static std::string default_gml_id = "gml_id_not_found";
                     std::string gml_id = default_gml_id;
                     src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, 0), gml_id);
-                    if(gml_id == default_gml_id) { // 見つからないとき
+                    if(gml_id == default_gml_id) { // (0,0)でないなら(0,-1)のはず
                         src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, -1), gml_id);
                     }
 
