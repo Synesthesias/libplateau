@@ -259,7 +259,6 @@ namespace plateau::granularityConvert {
                 NodeQueueOfIndexOfParent src_next_parent_nodes;
                 NodeQueueOfIndexOfParent dst_next_parent_nodes;
 
-                int new_node_count_of_dst_parent = 0;
                 while(!src_queue.empty()) {
                     const auto [src_parent_node, src_child_index] = src_queue.pop();
                     const auto [dst_parent_node, dst_child_index] = dst_queue.pop();
@@ -288,7 +287,7 @@ namespace plateau::granularityConvert {
 
                             Node* primary_node;
                             if(is_parent_primary) {
-                                primary_node = dst_parent_node;
+                                primary_node = dst_parent_node; // TODO ここは実行されない
                             }else{
                                 // 親がPrimary Nodeでない場合は、Primary Nodeを作ります。
                                 std::string primary_gml_id = "gml_id_not_found";
@@ -297,7 +296,6 @@ namespace plateau::granularityConvert {
                                 primary_node = dst_parent_node == nullptr ?
                                                      &dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
                                                      &dst_parent_node->addChildNode(Node(primary_gml_id)); // ノードに追加
-                                new_node_count_of_dst_parent++;
                                 primary_node->setIsPrimary(true);
                                 auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1), -1);
                                 if(primary_mesh.hasVertices()){
@@ -327,8 +325,16 @@ namespace plateau::granularityConvert {
                                 }
                             } // end for(atomic)
                         } // end for(primary)
-
-                    } // end if(メッシュがあるとき)
+                        // end if(メッシュがあるとき)
+                    }else{ // メッシュがないとき
+                        // メッシュのないノードをdstに追加します
+                        auto dst_node = Node(NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getName());
+                        if(dst_parent_node == nullptr){
+                            dst_model.addNode(std::move(dst_node));
+                        }else{
+                            dst_parent_node->addChildNode(std::move(dst_node));
+                        }
+                    }
 
                     src_next_parent_nodes.push(src_parent_node, src_child_index);
                     dst_next_parent_nodes.push(dst_parent_node, dst_child_index);
@@ -338,8 +344,8 @@ namespace plateau::granularityConvert {
                 // 子をキューに積みます。
                 while(!src_next_parent_nodes.empty()) {
                     auto [src_parent_parent_node, src_child_index] = src_next_parent_nodes.pop();
-                    auto [dst_parent_parent_node, dst_child_index_old] = dst_next_parent_nodes.pop();
-                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
+                    auto [dst_parent_parent_node, dst_child_index] = dst_next_parent_nodes.pop();
+//                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
                     auto src_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_parent_node, src_child_index, src);
                     auto dst_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_parent_node, dst_child_index, dst_model);
                     for(int i=0; i<src_parent_node->getChildCount(); i++) {
