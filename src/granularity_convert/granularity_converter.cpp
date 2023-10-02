@@ -351,7 +351,9 @@ namespace plateau::granularityConvert {
         /// 最小地物単位のモデルを受け取り、それを地域単位に変換したモデルを返します。
         Model convertFromAtomicToArea(const Model& src) {
             auto dst_model = Model();
-            auto dst_node_tmp = Node("combined");
+            const auto root_node_name = src.getRootNodeCount() == 1 ?
+                    src.getRootNodeAt(0).getName() : "combined";
+            auto dst_node_tmp = Node(root_node_name);
             dst_model.reserveRootNodes(src.getRootNodeCount());
             dst_model.addNode(std::move(dst_node_tmp));
             auto& dst_node = dst_model.getRootNodeAt(0);
