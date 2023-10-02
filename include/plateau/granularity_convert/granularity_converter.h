@@ -3,6 +3,8 @@
 #include <plateau/polygon_mesh/model.h>
 
 namespace plateau::granularityConvert {
+
+
     class LIBPLATEAU_EXPORT GranularityConvertOption {
     public:
         GranularityConvertOption(polygonMesh::MeshGranularity granularity, int grid_count)

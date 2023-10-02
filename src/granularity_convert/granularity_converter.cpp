@@ -45,6 +45,61 @@ namespace plateau::granularityConvert {
             std::queue<TElem> queue_;
         };
 
+
+        class NodePos {
+        public:
+            NodePos(std::vector<int> positions) : positions_(std::move(positions)){};
+
+            Node* toNode(Model* model){
+                if(positions_.empty()) return nullptr;
+                auto node = &model->getRootNodeAt(positions_.at(0));
+                for(int i=1; i<positions_.size(); i++) {
+                    node = &node->getChildAt(positions_.at(i));
+                }
+                return node;
+            };
+
+            NodePos parent() {
+                auto new_pos = std::vector(positions_.begin(), positions_.end() - 1);
+                return NodePos(new_pos);
+            }
+
+            NodePos plus(int next_index) {
+                auto new_pos = std::vector(positions_);
+                new_pos.push_back(next_index);
+                return new_pos;
+            }
+
+            void addChildNode(Node&& node, Model* model) {
+                if(positions_.empty()) {
+                    model->addNode(std::move(node));
+                    return;
+                }
+                toNode(model)->addChildNode(std::move(node));
+            }
+
+        private:
+            std::vector<int> positions_;
+        };
+
+        class NodeQueue {
+        public:
+            void push(NodePos pos){ queue_.push(std::move(pos)); };
+
+            NodePos pop() {
+                auto ret = queue_.front();
+                queue_.pop(); return ret;
+            };
+
+            bool empty() {
+                return queue_.empty();
+            }
+
+        private:
+            std::queue<NodePos> queue_;
+        };
+
+
         /**
          * メッシュを含むノードを親に移動します。
          * 例：
@@ -239,33 +294,33 @@ namespace plateau::granularityConvert {
         Model convertToAtomic(Model& src) {
             Model dst_model = Model();
 
-            // 探索キューであり、変換元のノードを指すキューと、それに対応する変換後のノードを指すキューです。
-            auto src_queue = NodeQueueOfIndexOfParent();
-            auto dst_queue = NodeQueueOfIndexOfParent();
+            // 探索キュー
+            auto queue = NodeQueue();
 
             dst_model.reserveRootNodes(src.getRootNodeCount());
 
-            // ルートノードをdstに作って探索キューに入れます。
+            // ルートノードを探索キューに入れます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
-                auto& src_node = src.getRootNodeAt(i);
-                auto dst_node = Node(src_node.getName());
-                dst_model.addNode(std::move(dst_node));
-                src_queue.push(nullptr, i);
-                dst_queue.push(nullptr, i);
+                queue.push(NodePos({i}));
             }
 
             // 幅優先探索の順番で変換します。
-            while(!src_queue.empty()) {
-                NodeQueueOfIndexOfParent src_next_parent_nodes;
-                NodeQueueOfIndexOfParent dst_next_parent_nodes;
+            while(!queue.empty()) {
 
-                while(!src_queue.empty()) {
-                    const auto [src_parent_node, src_child_index] = src_queue.pop();
-                    auto [dst_parent_node, dst_child_index] = dst_queue.pop();
+                    auto node_pos = queue.pop();
 
-                    auto src_mesh_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getMesh();
+                    // 子をキューに追加
+                    {
+                        auto src_node = node_pos.toNode(&src);
+                        for(int i=0; i<src_node->getChildCount(); i++) {
+                            queue.push(node_pos.plus(i));
+                        }
+                    }
+
+
+                    auto src_mesh_tmp = node_pos.toNode(&src)->getMesh();
                     if(src_mesh_tmp != nullptr) {
-                        const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+                        const auto src_node = node_pos.toNode(&src);
 
                         // どのインデックス(uv4)が含まれるかを列挙します。
                         const auto src_mesh = src_node->getMesh();
@@ -281,22 +336,22 @@ namespace plateau::granularityConvert {
 
                         // PrimaryIndexごとの処理
                         for(auto primary_id : primary_indices_in_mesh) {
-                            bool is_parent_primary = dst_parent_node != nullptr && dst_parent_node->isPrimary();
+                            auto dst_parent = node_pos.parent().toNode(&dst_model);
+                            bool is_parent_primary = dst_parent != nullptr && dst_parent->isPrimary();
 
 
                             Node* primary_node;
                             if(is_parent_primary) {
-                                primary_node = dst_parent_node;
+                                primary_node = dst_parent;
                             }else{
                                 // 親がPrimary Nodeでない場合は、Primary Nodeを作ります。
                                 std::string primary_gml_id = "gml_id_not_found";
                                 src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
                                 // ここでノードを追加します。
-                                primary_node = dst_parent_node == nullptr ?
+                                primary_node = dst_parent == nullptr ?
                                                      &dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
-                                                     &dst_parent_node->addChildNode(Node(primary_gml_id)); // ノードに追加
+                                                     &dst_parent->addChildNode(Node(primary_gml_id)); // ノードに追加
                                 primary_node->setIsPrimary(true);
-                                dst_child_index++; // TODO
                                 auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1), -1);
                                 if(primary_mesh.hasVertices()){
                                     primary_mesh.setCityObjectList({{{{0, -1}, primary_gml_id}}});
@@ -327,43 +382,36 @@ namespace plateau::granularityConvert {
                         } // end for(primary)
                         // end if(メッシュがあるとき)
                     }else{ // メッシュがないとき
-                        // メッシュのないノードをdstに追加します
-//                        auto dst_node = Node(NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getName());
-//                        if(dst_parent_node == nullptr){
-//                            dst_model.addNode(std::move(dst_node));
-//                        }else{
-//                            dst_parent_node->addChildNode(std::move(dst_node));
-//                        }
+                         // メッシュのないノードをdstに追加します
+                         auto src_node_name = node_pos.toNode(&src)->getName();
+                        node_pos.parent().addChildNode(Node(src_node_name), &dst_model);
 
-                    }
-                    // 次に探索すべきノードの親
-                    src_next_parent_nodes.push(src_parent_node, src_child_index);
-                    dst_next_parent_nodes.push(dst_parent_node, dst_child_index);
+//                    }
 
 
 
 
-                }// end while 2段目
-
-                // 子をキューに積みます。
-                while(!src_next_parent_nodes.empty()) {
-                    auto [src_parent_parent_node, src_child_index] = src_next_parent_nodes.pop();
-                    auto [dst_parent_parent_node, dst_child_index] = dst_next_parent_nodes.pop();
-//                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
-                    auto src_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_parent_node, src_child_index, src);
-                    auto dst_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_parent_node, dst_child_index, dst_model);
-                    for(int i=0; i<src_parent_node->getChildCount(); i++) {
-                        auto& src_child = src_parent_node->getChildAt(i);
-//                        if(dst_parent_node->getChildCount() > i && dst_parent_node->getChildAt(i).isPrimary()){
-                        if(dst_parent_node->getMesh() != nullptr) {
-                            continue;
-                        }
-                        src_queue.push(src_parent_node, i);
-                        dst_parent_node->addChildNode(Node(src_child.getName()));
-                        dst_queue.push(dst_parent_node, (int)dst_parent_node->getChildCount() - 1);
-                    }
                 }
-            } // end while 1段目
+
+//                // 子をキューに積みます。
+//                while(!src_next_parent_nodes.empty()) {
+//                    auto [src_parent_parent_node, src_child_index] = src_next_parent_nodes.pop();
+//                    auto [dst_parent_parent_node, dst_child_index] = dst_next_parent_nodes.pop();
+////                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
+//                    auto src_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_parent_node, src_child_index, src);
+//                    auto dst_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_parent_node, dst_child_index, dst_model);
+//                    for(int i=0; i<src_parent_node->getChildCount(); i++) {
+//                        auto& src_child = src_parent_node->getChildAt(i);
+////                        if(dst_parent_node->getChildCount() > i && dst_parent_node->getChildAt(i).isPrimary()){
+//                        if(dst_parent_node->getMesh() != nullptr) {
+//                            continue;
+//                        }
+//                        src_queue.push(src_parent_node, i);
+//                        dst_parent_node->addChildNode(Node(src_child.getName()));
+//                        dst_queue.push(dst_parent_node, (int)dst_parent_node->getChildCount() - 1);
+//                    }
+//                }
+            }
 
             return dst_model;
         }
