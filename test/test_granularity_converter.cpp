@@ -45,15 +45,15 @@ TEST_F(GranularityConverterTest, convertAtomicToAtomic) { // NOLINT
 }
 
 TEST_F(GranularityConverterTest, convertPrimaryToArea) { // NOLINT
-    createTestModelOfAtomic().test(MeshGranularity::PerCityModelArea);
+    createTestModelOfPrimary().test(MeshGranularity::PerCityModelArea);
 }
 
 TEST_F(GranularityConverterTest, convertPrimaryToPrimary) { // NOLINT
-    createTestModelOfAtomic().test(MeshGranularity::PerPrimaryFeatureObject);
+    createTestModelOfPrimary().test(MeshGranularity::PerPrimaryFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertPrimaryToAtomic) { // NOLINT
-    createTestModelOfAtomic().test(MeshGranularity::PerAtomicFeatureObject);
+    createTestModelOfPrimary().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
 
@@ -280,15 +280,13 @@ ModelForTest GranularityConverterTest::createTestModelOfArea_OnlyRoot() {
     auto expects = createExpectsForTestMeshArea();
 
     auto& expects_area = expects.at(MeshGranularity::PerCityModelArea);
-    expects_area.at(0).expect_node_name_ = "root_node";
+    expects_area.at(0).expect_node_name_ = "combined";
 
     auto& expects_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
-    expects_atomic.eraseRange(0,1);
-    expects_atomic.at(0).expect_node_name_ = "root_node";
+    expects_atomic.eraseRange(0,2);
 
-    auto& expects_feature = expects.at(MeshGranularity::PerPrimaryFeatureObject);
-    expects_feature.eraseRange(0, 1);
-    expects_feature.at(0).expect_node_name_ = "root_node";
+    auto& expects_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    expects_primary.eraseRange(0, 2);
 
     auto ret = ModelForTest(std::move(src_model), expects);
 

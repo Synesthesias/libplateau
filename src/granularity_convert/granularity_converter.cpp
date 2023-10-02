@@ -258,9 +258,9 @@ namespace plateau::granularityConvert {
             while(!src_queue.empty()) {
                 const auto [src_parent_node, src_child_index] = src_queue.pop();
                 const auto [dst_parent_node, dst_child_index] = dst_queue.pop();
-                const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
-                const auto dst_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_node, dst_child_index, dst_model);
-                if(src_node->getMesh() != nullptr) {
+                auto src_mesh_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getMesh();
+                if(src_mesh_tmp != nullptr) {
+                    const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
 
                     // どのインデックス(uv4)が含まれるかを列挙します。
                     const auto src_mesh = src_node->getMesh();
@@ -274,12 +274,15 @@ namespace plateau::granularityConvert {
 
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
+
                     // PrimaryIndexごとにノードを作ります。
-                    dst_node->reserveChild(primary_indices_in_mesh.size() + src_node->getChildCount());
                     for(auto primary_id : primary_indices_in_mesh) {
                         std::string primary_gml_id = "gml_id_not_found";
                         src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
-                        auto& primary_node = dst_node->addChildNode(Node(primary_gml_id));
+                        // ここでノードを追加します。
+                        auto& primary_node = dst_parent_node == nullptr ?
+                                dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
+                                dst_parent_node->addChildNode(Node(primary_gml_id)); // ノードに追加
                         primary_node.setIsPrimary(true);
 
                         auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1));
@@ -289,14 +292,12 @@ namespace plateau::granularityConvert {
                         }
 
                         // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
-                        primary_node.reserveChild(indices_in_mesh.size());
                         for(const auto& id : indices_in_mesh) {
                             if(id.primary_index != primary_id) continue;
                             if(id.atomic_index == CityObjectIndex::invalidIndex()) continue;
                             std::string atomic_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
-                            auto atomic_node_tmp = Node(atomic_gml_id);
-                            auto& atomic_node = primary_node.addChildNode(std::move(atomic_node_tmp));
+                            auto& atomic_node = primary_node.addChildNode(Node(atomic_gml_id));
 
                             auto atomic_mesh = filterByCityObjIndex(*src_mesh, id);
                             if(atomic_mesh.hasVertices()){
@@ -308,13 +309,26 @@ namespace plateau::granularityConvert {
 
                 }
 
+
+//                if(dst_parent_node == nullptr) {
+//                    const auto src_node_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+//                    dst_model.reserveRootNodes(dst_model.getRootNodeCount() + src_node_tmp->getChildCount());
+//                        dst_model.reserveRootNodes(999);
+//                }else{
+//                    const auto src_node_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+//                    dst_parent_node->reserveChild(dst_parent_node->getChildCount() + src_node_tmp->getChildCount());
+//                    dst_parent_node->reserveChild(999);
+//                }
+
+                const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+                const auto dst_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_node, dst_child_index, dst_model);
+
                 // 子をキューに積みます。
-                dst_node->reserveChild(src_node->getChildCount());
                 for(int i=0; i<src_node->getChildCount(); i++) {
                     auto& src_child = src_node->getChildAt(i);
-                    auto& dst_child = dst_node->addChildNode(Node(src_child.getName()));
+                    dst_node->addChildNode(Node(src_child.getName()));
                     src_queue.push(src_node, i);
-                    dst_queue.push(dst_node, dst_node->getChildCount() - 1);
+                    dst_queue.push(dst_node, (int)dst_node->getChildCount() - 1);
                 }
             }
 
@@ -461,7 +475,7 @@ namespace plateau::granularityConvert {
         // 例：上の行の実行後、次のようなNode構成になります。
         // gml_node <- lod_node <- group_node <- primary_node <- atomic_node
 
-        moveNodesWithMeshToParent(atomic);
+//        moveNodesWithMeshToParent(atomic);
 
         // 例：上の行の実行後、次のようなNode構成になります。
         // gml_node <- lod_node
