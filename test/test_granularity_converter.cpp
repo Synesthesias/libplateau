@@ -21,15 +21,27 @@ TEST_F(GranularityConverterTest, convertAreaToArea) { // NOLINT
 }
 
 TEST_F(GranularityConverterTest, convertAreaRootToAtomic) { // NOLINT
-    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerAtomicFeatureObject);
+    createTestModelOfArea_OnlyRoot().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertAreaRootToPrimaruy) { // NOLINT
-    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerPrimaryFeatureObject);
+    createTestModelOfArea_OnlyRoot().test(MeshGranularity::PerPrimaryFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertAreaRootToArea) { // NOLINT
-    createTestModelOfAreaOnlyRoot().test(MeshGranularity::PerCityModelArea);
+    createTestModelOfArea_OnlyRoot().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToArea) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToPrimary) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToAtomic) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
 
@@ -170,7 +182,7 @@ namespace {
         // 地域単位の場合
         auto area_expect = ModelExpect(
                 std::vector<NodeExpect>{
-                        NodeExpect("combined", true, 4 * 6,
+                        NodeExpect("gml_node", true, 4 * 6,
                                    {{
                                             {0, -1},
                                             {0, 0},
@@ -220,15 +232,35 @@ ModelForTest GranularityConverterTest::createTestModelOfArea() {
     return ret;
 }
 
+ModelForTest GranularityConverterTest::createTestModelOfAtomic() {
+    // テスト用モデルを手打ちコードで作るのは非常に手間なので、
+    // 地域単位から最小地物単位への変換がうまくいっていることを前提に、変換したものをテストモデルとします。
+    // もし前提機能が壊れた場合、他のテストで検出できるはずです。
+    // その代わり、デバッガでブレークポイントを貼りながら実行する時は変換が2回行われ、Atomicから各種単位への変換は2回目のほうであることに留意してください。
+    auto area_model = createTestModelOfArea();
+    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto atomic_model = GranularityConverter().convert(area_model.getModel(), option);
+    // 期待する変換結果は地域単位と同じです。
+    auto atomic_expect = area_model.getExpects();
+    return {std::move(atomic_model), atomic_expect};
+}
+
 /// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
-ModelForTest GranularityConverterTest::createTestModelOfAreaOnlyRoot() {
+ModelForTest GranularityConverterTest::createTestModelOfArea_OnlyRoot() {
     auto mesh = createTestMeshOfArea();
-    auto model = Model();
-    auto& root_node = model.addNode(Node("root_node"));
+
+    // このメソッドに登場するsrc_modelは、すべて変換前のモデルです。
+    // 変換後のモデルをデバッガで確認したい場合は、ModelForTest::testメソッド内にブレークポイントを貼ってください。
+    auto src_model = Model();
+
+    auto& root_node = src_model.addNode(Node("root_node"));
     root_node.setMesh(std::move(mesh));
 
     // テストの期待値からgmlノードとlodノードの分を除いて、ルートノードを追加します。
     auto expects = createExpectsForTestMeshArea();
+
+    auto& expects_area = expects.at(MeshGranularity::PerCityModelArea);
+    expects_area.at(0).expect_node_name_ = "root_node";
 
     auto& expects_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
     expects_atomic.eraseRange(0,1);
@@ -237,6 +269,8 @@ ModelForTest GranularityConverterTest::createTestModelOfAreaOnlyRoot() {
     auto& expects_feature = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     expects_feature.eraseRange(0, 1);
     expects_feature.at(0).expect_node_name_ = "root_node";
-    auto ret = ModelForTest(std::move(model), expects);
+
+    auto ret = ModelForTest(std::move(src_model), expects);
+
     return ret;
 }

@@ -13,5 +13,6 @@
 class GranularityConverterTest : public ::testing::Test {
 public:
     ModelForTest createTestModelOfArea();
-    ModelForTest createTestModelOfAreaOnlyRoot();
+    ModelForTest createTestModelOfAtomic();
+    ModelForTest createTestModelOfArea_OnlyRoot();
 };

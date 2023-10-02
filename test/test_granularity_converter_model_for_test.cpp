@@ -77,7 +77,7 @@ void ModelForTest::test(MeshGranularity granularity) {
         std::cout << "====== Testing converting to " << granularity_str << " ======" << std::endl;
         GranularityConvertOption option(granularity, 10);
 
-        // ここで変換します
+        // ここで変換します。
         auto converted_model = GranularityConverter().convert(src_model_, option);
 
         const auto& expect = convert_expects_.at(granularity);

@@ -62,6 +62,8 @@ public:
             src_model_(std::move(src_model)),
             convert_expects_(convert_expects) {};
     void test(plateau::polygonMesh::MeshGranularity granularity);
+    plateau::polygonMesh::Model& getModel() {return src_model_;};
+    TGranularityToExpect& getExpects(){return convert_expects_;};
 private:
     plateau::polygonMesh::Model src_model_;
     TGranularityToExpect convert_expects_;
