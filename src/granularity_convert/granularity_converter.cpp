@@ -142,7 +142,7 @@ namespace plateau::granularityConvert {
         }
 
         /// MeshのうちCityObjectIndexが引数idに一致する箇所のみを取り出したMeshを生成して返します。
-        Mesh filterByCityObjIndex(const Mesh& src, CityObjectIndex filter_id) {
+        Mesh filterByCityObjIndex(const Mesh& src, CityObjectIndex filter_id, const int uv4_atomic_index) {
             const auto& src_vertices = src.getVertices();
             const auto vertex_count = src_vertices.size();
             const auto& src_uv1 = src.getUV1();
@@ -168,7 +168,7 @@ namespace plateau::granularityConvert {
                     vert_id_transform.push_back((long)current_vert_id);
                     dst_vertices.push_back(src_vertices.at(i));
                     dst_uv1.push_back(src_uv1.at(i));
-                    dst_uv4.emplace_back(0, 0); // 最小地物単位にすると、CityObjectIndexはすべて(0, 0)になります。なぜなら、最小地物単位とはUV4によるメッシュ内区別が不要になるほど細かくノードを分割したものだからです。
+                    dst_uv4.push_back({0, (float)uv4_atomic_index});
                     ++current_vert_id;
                 }else{
                     vert_id_transform.push_back(-1);
@@ -256,81 +256,100 @@ namespace plateau::granularityConvert {
 
             // 幅優先探索の順番で変換します。
             while(!src_queue.empty()) {
-                const auto [src_parent_node, src_child_index] = src_queue.pop();
-                const auto [dst_parent_node, dst_child_index] = dst_queue.pop();
-                auto src_mesh_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getMesh();
-                if(src_mesh_tmp != nullptr) {
-                    const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+                NodeQueueOfIndexOfParent src_next_parent_nodes;
+                NodeQueueOfIndexOfParent dst_next_parent_nodes;
 
-                    // どのインデックス(uv4)が含まれるかを列挙します。
-                    const auto src_mesh = src_node->getMesh();
-                    std::set<CityObjectIndex> indices_in_mesh;
-                    std::set<int> primary_indices_in_mesh;
-                    for(const auto& uv4 : src_mesh->getUV4()) {
-                        auto id = CityObjectIndex::fromUV(uv4);
-                        indices_in_mesh.insert(id);
-                        primary_indices_in_mesh.insert(id.primary_index);
-                    }
-
-                    const auto& src_city_obj_list = src_mesh->getCityObjectList();
+                int new_node_count_of_dst_parent = 0;
+                while(!src_queue.empty()) {
+                    const auto [src_parent_node, src_child_index] = src_queue.pop();
+                    const auto [dst_parent_node, dst_child_index] = dst_queue.pop();
 
 
-                    // PrimaryIndexごとにノードを作ります。
-                    for(auto primary_id : primary_indices_in_mesh) {
-                        std::string primary_gml_id = "gml_id_not_found";
-                        src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
-                        // ここでノードを追加します。
-                        auto& primary_node = dst_parent_node == nullptr ?
-                                dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
-                                dst_parent_node->addChildNode(Node(primary_gml_id)); // ノードに追加
-                        primary_node.setIsPrimary(true);
+                    auto src_mesh_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src)->getMesh();
+                    if(src_mesh_tmp != nullptr) {
+                        const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
 
-                        auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1));
-                        if(primary_mesh.hasVertices()){
-                            primary_mesh.setCityObjectList({{{{0, 0}, primary_gml_id}}});
-                            primary_node.setMesh(std::make_unique<Mesh>(primary_mesh));
+                        // どのインデックス(uv4)が含まれるかを列挙します。
+                        const auto src_mesh = src_node->getMesh();
+                        std::set<CityObjectIndex> indices_in_mesh;
+                        std::set<int> primary_indices_in_mesh;
+                        for(const auto& uv4 : src_mesh->getUV4()) {
+                            auto id = CityObjectIndex::fromUV(uv4);
+                            indices_in_mesh.insert(id);
+                            primary_indices_in_mesh.insert(id.primary_index);
                         }
 
-                        // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
-                        for(const auto& id : indices_in_mesh) {
-                            if(id.primary_index != primary_id) continue;
-                            if(id.atomic_index == CityObjectIndex::invalidIndex()) continue;
-                            std::string atomic_gml_id = "gml_id_not_found";
-                            src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
-                            auto& atomic_node = primary_node.addChildNode(Node(atomic_gml_id));
+                        const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
-                            auto atomic_mesh = filterByCityObjIndex(*src_mesh, id);
-                            if(atomic_mesh.hasVertices()){
-                                atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
-                                atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
+                        // PrimaryIndexごとの処理
+                        for(auto primary_id : primary_indices_in_mesh) {
+                            bool is_parent_primary = dst_parent_node != nullptr && dst_parent_node->isPrimary();
+
+
+                            Node* primary_node;
+                            if(is_parent_primary) {
+                                primary_node = dst_parent_node;
+                            }else{
+                                // 親がPrimary Nodeでない場合は、Primary Nodeを作ります。
+                                std::string primary_gml_id = "gml_id_not_found";
+                                src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
+                                // ここでノードを追加します。
+                                primary_node = dst_parent_node == nullptr ?
+                                                     &dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
+                                                     &dst_parent_node->addChildNode(Node(primary_gml_id)); // ノードに追加
+                                new_node_count_of_dst_parent++;
+                                primary_node->setIsPrimary(true);
+                                auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1), -1);
+                                if(primary_mesh.hasVertices()){
+                                    primary_mesh.setCityObjectList({{{{0, -1}, primary_gml_id}}});
+                                    primary_node->setMesh(std::make_unique<Mesh>(primary_mesh));
+                                }
                             }
-                        }
-                    }
-
-                }
 
 
-//                if(dst_parent_node == nullptr) {
-//                    const auto src_node_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
-//                    dst_model.reserveRootNodes(dst_model.getRootNodeCount() + src_node_tmp->getChildCount());
-//                        dst_model.reserveRootNodes(999);
-//                }else{
-//                    const auto src_node_tmp = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
-//                    dst_parent_node->reserveChild(dst_parent_node->getChildCount() + src_node_tmp->getChildCount());
-//                    dst_parent_node->reserveChild(999);
-//                }
 
-                const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
-                const auto dst_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_node, dst_child_index, dst_model);
+
+                            // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
+                            for(const auto& id : indices_in_mesh) {
+                                if(id.primary_index != primary_id) continue;
+                                if(id.atomic_index == CityObjectIndex::invalidIndex()) continue;
+                                std::string atomic_gml_id = "gml_id_not_found";
+                                src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
+                                // ここでノードを追加します。
+                                auto& atomic_node = primary_node == nullptr ?
+                                        dst_model.addNode(Node(atomic_gml_id)) :
+                                        primary_node->addChildNode(Node(atomic_gml_id));
+
+                                auto atomic_mesh = filterByCityObjIndex(*src_mesh, id, 0);
+                                if(atomic_mesh.hasVertices()){
+                                    atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
+                                    atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
+                                }
+                            } // end for(atomic)
+                        } // end for(primary)
+
+                    } // end if(メッシュがあるとき)
+
+                    src_next_parent_nodes.push(src_parent_node, src_child_index);
+                    dst_next_parent_nodes.push(dst_parent_node, dst_child_index);
+
+                }// end while 2段目
 
                 // 子をキューに積みます。
-                for(int i=0; i<src_node->getChildCount(); i++) {
-                    auto& src_child = src_node->getChildAt(i);
-                    dst_node->addChildNode(Node(src_child.getName()));
-                    src_queue.push(src_node, i);
-                    dst_queue.push(dst_node, (int)dst_node->getChildCount() - 1);
+                while(!src_next_parent_nodes.empty()) {
+                    auto [src_parent_parent_node, src_child_index] = src_next_parent_nodes.pop();
+                    auto [dst_parent_parent_node, dst_child_index_old] = dst_next_parent_nodes.pop();
+                    auto dst_child_index = dst_child_index_old + new_node_count_of_dst_parent;
+                    auto src_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_parent_node, src_child_index, src);
+                    auto dst_parent_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_parent_node, dst_child_index, dst_model);
+                    for(int i=0; i<src_parent_node->getChildCount(); i++) {
+                        auto& src_child = src_parent_node->getChildAt(i);
+                        src_queue.push(src_parent_node, i);
+                        dst_parent_node->addChildNode(Node(src_child.getName()));
+                        dst_queue.push(dst_parent_node, (int)dst_parent_node->getChildCount() - 1);
+                    }
                 }
-            }
+            } // end while 1段目
 
             return dst_model;
         }
@@ -365,9 +384,16 @@ namespace plateau::granularityConvert {
 
                     // CityObjectListを更新します。
                     const auto& src_city_obj_list = src_node.getMesh()->getCityObjectList();
-                    // 入力は最小地物単位であるという前提なので、srcのCityObjectIndexは(0,0)です。
-                    std::string gml_id = "gml_id_not_found";
+
+                    // 入力メッシュのgml_idを取得します。
+                    // 入力は最小地物単位であるという前提なので、srcのCityObjectIndexは(0,0)か(0,-1)のどちらかです。
+                    const static std::string default_gml_id = "gml_id_not_found";
+                    std::string gml_id = default_gml_id;
                     src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, 0), gml_id);
+                    if(gml_id == default_gml_id) { // 見つからないとき
+                        src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, -1), gml_id);
+                    }
+
                     auto& dst_city_obj_list = dst_mesh.getCityObjectList();
                     CityObjectIndex dst_city_obj_index;
                     dst_city_obj_index = CityObjectIndex(primary_id, atomic_id);
