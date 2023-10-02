@@ -6,29 +6,6 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    /// ノードを幅優先探索で処理するためのノードキューです。
-    class NodeBFSQueue {
-        using NodeT = std::tuple<const Node*, Node*>; // 変換前ノードと、それに対応する変換後ノードのタプル
-    public:
-        void push(const Node* src_node, Node* dst_node) {
-            auto node = NodeT(src_node, dst_node);
-            queue.push(node);
-        };
-
-        NodeT pop() {
-            auto ret = queue.front();
-            queue.pop();
-            return ret;
-        };
-
-        bool empty() {
-            return queue.empty();
-        };
-
-    private:
-        std::queue<NodeT> queue;
-    };
-
 
     namespace {
 
@@ -259,11 +236,13 @@ namespace plateau::granularityConvert {
         }
 
         /// モデルを最小地物単位に変換します。引数の結合単位は問いません。
-        Model convertToAtomic(const Model& src) {
+        Model convertToAtomic(Model& src) {
             Model dst_model = Model();
-            auto queue = NodeBFSQueue();
 
-            // reserveを忘れると、vectorの再割り当てによってキューの参照が壊れる点に注意してください。ここ以下のノード追加する処理はすべてreserveを考慮する必要があります。
+            // 探索キューであり、変換元のノードを指すキューと、それに対応する変換後のノードを指すキューです。
+            auto src_queue = NodeQueueOfIndexOfParent();
+            auto dst_queue = NodeQueueOfIndexOfParent();
+
             dst_model.reserveRootNodes(src.getRootNodeCount());
 
             // ルートノードをdstに作って探索キューに入れます。
@@ -271,12 +250,16 @@ namespace plateau::granularityConvert {
                 auto& src_node = src.getRootNodeAt(i);
                 auto dst_node = Node(src_node.getName());
                 dst_model.addNode(std::move(dst_node));
-                queue.push(&src_node, &dst_model.getRootNodeAt(i));
+                src_queue.push(nullptr, i);
+                dst_queue.push(nullptr, i);
             }
 
             // 幅優先探索の順番で変換します。
-            while(!queue.empty()) {
-                auto [src_node, dst_node] = queue.pop();
+            while(!src_queue.empty()) {
+                const auto [src_parent_node, src_child_index] = src_queue.pop();
+                const auto [dst_parent_node, dst_child_index] = dst_queue.pop();
+                const auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_child_index, src);
+                const auto dst_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_node, dst_child_index, dst_model);
                 if(src_node->getMesh() != nullptr) {
 
                     // どのインデックス(uv4)が含まれるかを列挙します。
@@ -330,7 +313,8 @@ namespace plateau::granularityConvert {
                 for(int i=0; i<src_node->getChildCount(); i++) {
                     auto& src_child = src_node->getChildAt(i);
                     auto& dst_child = dst_node->addChildNode(Node(src_child.getName()));
-                    queue.push(&src_child, &dst_child);
+                    src_queue.push(src_node, i);
+                    dst_queue.push(dst_node, dst_node->getChildCount() - 1);
                 }
             }
 
@@ -385,29 +369,31 @@ namespace plateau::granularityConvert {
         }
 
         /// 最小地物単位のモデルを受け取り、それを地域単位に変換したモデルを返します。
-        Model convertFromAtomicToArea(const Model& src) {
+        Model convertFromAtomicToArea(Model& src) {
             auto dst_model = Model();
             const auto root_node_name = src.getRootNodeCount() == 1 ?
                     src.getRootNodeAt(0).getName() : "combined";
             auto dst_node_tmp = Node(root_node_name);
             dst_model.reserveRootNodes(src.getRootNodeCount());
-            dst_model.addNode(std::move(dst_node_tmp));
-            auto& dst_node = dst_model.getRootNodeAt(0);
+            auto& dst_node = dst_model.addNode(std::move(dst_node_tmp));
             dst_node.setIsPrimary(true);
             dst_node.setMesh(std::make_unique<Mesh>());
             auto& dst_mesh = *dst_node.getMesh();
 
-            auto queue = NodeBFSQueue();
+            // 探索用キュー
+            auto src_queue = NodeQueueOfIndexOfParent();
+            auto dst_queue = NodeQueueOfIndexOfParent();
+
             // ルートノードを探索キューに加えます。
             for(int i=0; i<src.getRootNodeCount(); i++) {
-                auto& src_root_node = src.getRootNodeAt(i);
-                queue.push(&src_root_node, &dst_node);
+                src_queue.push(nullptr, i);
             }
 
             // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
             long primary_id = 0;
-            while(!queue.empty()) {
-                const auto& src_node = std::get<0>(queue.pop());
+            while(!src_queue.empty()) {
+                const auto [src_parent_node, src_parent_index] = src_queue.pop();
+                const auto& src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_parent_index, src);
                 if(src_node->isPrimary()) {
                     // PrimaryなNodeが見つかったら、そのノードと子をマージします。
                     mergePrimaryNodeAndChildren(*src_node, dst_mesh, primary_id);
@@ -416,7 +402,7 @@ namespace plateau::granularityConvert {
                     // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
                     dst_node.reserveChild(src_node->getChildCount());
                     for(int i=0; i<src_node->getChildCount(); i++) {
-                        queue.push(&src_node->getChildAt(i), &dst_node);
+                        src_queue.push(src_node, i);
                     }
                 }
             }
@@ -424,20 +410,25 @@ namespace plateau::granularityConvert {
         }
 
         /// 最小地物単位のモデルを受け取り、それを主要地物単位に変換したモデルを返します。
-        Model convertFromAtomicToPrimary(const Model& src_model){
+        Model convertFromAtomicToPrimary(Model& src_model){
             auto dst_model = Model();
-            NodeBFSQueue queue;
+            NodeQueueOfIndexOfParent src_queue;
+            NodeQueueOfIndexOfParent dst_queue;
             dst_model.reserveRootNodes(src_model.getRootNodeCount());
             // ルートノードを探索キューに加えると同時に、dst_modelに同じノードを準備します。
             for(int i=0; i<src_model.getRootNodeCount(); i++) {
                 const auto& src_node = src_model.getRootNodeAt(i);
                 dst_model.addNode(Node(src_node.getName()));
                 auto& dst_node = dst_model.getRootNodeAt(i);
-                queue.push(&src_node, &dst_node);
+                src_queue.push(nullptr, i);
+                dst_queue.push(nullptr, i);
             }
             // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
-            while(!queue.empty()) {
-                const auto& [src_node, dst_node] = queue.pop();
+            while(!src_queue.empty()) {
+                const auto [src_parent_node, src_parent_index] = src_queue.pop();
+                const auto [dst_parent_node, dst_parent_index] = dst_queue.pop();
+                auto src_node = NodeQueueOfIndexOfParent::getNodeFromParent(src_parent_node, src_parent_index, src_model);
+                auto dst_node = NodeQueueOfIndexOfParent::getNodeFromParent(dst_parent_node, dst_parent_index, dst_model);
                 if(src_node->isPrimary()) {
                     // Primaryなら、src_nodeとその子を結合したメッシュをdst_nodeに持たせます。
                     auto dst_mesh = std::make_unique<Mesh>();
@@ -449,7 +440,8 @@ namespace plateau::granularityConvert {
                     for(int i=0; i<src_node->getChildCount(); i++) {
                         const auto& src_child = src_node->getChildAt(i);
                         auto& dst_child = dst_node->addChildNode(Node(src_child.getName()));
-                        queue.push(&src_child, &dst_child);
+                        src_queue.push(src_node, i);
+                        dst_queue.push(dst_node, dst_node->getChildCount() - 1);
                     }
                 }
             }
@@ -458,7 +450,7 @@ namespace plateau::granularityConvert {
 
     }
 
-    Model GranularityConverter::convert(const Model& src, GranularityConvertOption option) {
+    Model GranularityConverter::convert(Model& src, GranularityConvertOption option) {
         // 組み合わせの数を減らすため、まず最小地物に変換してから望みの粒度に変換します。
 
         // 例：入力のNode構成が次のようだったとして、以下にその変化を例示します。

@@ -13,6 +13,6 @@ namespace plateau::granularityConvert {
 
     class LIBPLATEAU_EXPORT GranularityConverter {
     public:
-         plateau::polygonMesh::Model convert(const plateau::polygonMesh::Model& src, GranularityConvertOption option);
+         plateau::polygonMesh::Model convert(plateau::polygonMesh::Model& src, GranularityConvertOption option);
     };
 }

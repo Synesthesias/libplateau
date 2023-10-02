@@ -7,7 +7,7 @@ using namespace libplateau;
 
 extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_granularity_converter_convert(
-            const Model* const src_model,
+            Model* const src_model,
             Model** out_model_ptr,
             const GranularityConvertOption option
             ){
