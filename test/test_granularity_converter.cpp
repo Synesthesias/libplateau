@@ -44,6 +44,18 @@ TEST_F(GranularityConverterTest, convertAtomicToAtomic) { // NOLINT
     createTestModelOfAtomic().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
+TEST_F(GranularityConverterTest, convertPrimaryToArea) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToPrimary) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToAtomic) { // NOLINT
+    createTestModelOfAtomic().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
 
 namespace {
     std::shared_ptr<Model> loadTestGML() {
@@ -243,6 +255,14 @@ ModelForTest GranularityConverterTest::createTestModelOfAtomic() {
     // 期待する変換結果は地域単位と同じです。
     auto atomic_expect = area_model.getExpects();
     return {std::move(atomic_model), atomic_expect};
+}
+
+ModelForTest GranularityConverterTest::createTestModelOfPrimary() {
+    auto area_model = createTestModelOfArea();
+    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto primary_model = GranularityConverter().convert(area_model.getModel(), option);
+    auto primary_expect = area_model.getExpects();
+    return {std::move(primary_model), primary_expect};
 }
 
 /// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
