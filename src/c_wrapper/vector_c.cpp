@@ -5,12 +5,14 @@
 #include <plateau/network/client.h>
 #include <plateau/dataset/gml_file.h>
 #include <plateau/polygon_mesh/city_object_list.h>
+#include <plateau/geometry/geo_coordinate.h>
 
 extern "C"{
     using namespace libplateau;
     using namespace plateau::dataset;
     using namespace plateau::network;
     using namespace plateau::polygonMesh;
+    using namespace plateau::geometry;
 
 /**
  * vector<任意の型> を P/Invoke で扱うための7つのメソッドを生成するマクロです。
@@ -75,5 +77,6 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
     PLATEAU_VECTOR(dataset_metadata, DatasetMetadata)
     PLATEAU_VECTOR(string, std::string)
     PLATEAU_VECTOR(city_object_index, CityObjectIndex)
+    PLATEAU_VECTOR(extent, Extent)
 
 }

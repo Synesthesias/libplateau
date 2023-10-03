@@ -14,6 +14,18 @@ namespace {
     using GridIDToObjectsMap = std::map<unsigned, std::list<const citygml::CityObject*>>;
     using GroupIDToObjectsMap = GridIDToObjectsMap;
 
+    bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
+        if (!options.exclude_city_object_outside_extent)
+            return false;
+
+        for (const auto& extent : extents) {
+            if (extent.contains(city_obj))
+                return false;
+        }
+
+        return true;
+    }
+
     /**
      * cityModelのEnvelope(範囲)を指定のグリッド数(x,y)で分割したとき、
      * positionは何番目のグリッドに属するかを計算します。
@@ -45,18 +57,17 @@ namespace {
         return grid_id_to_objects_map;
     }
 
-
     /**
      * city_objects の各CityObjectが位置の上でどのグリッドに属するかを求め、gridIdToObjsMapに追加することでグリッド分けします。
      * また ImportID を割り振ります。
      * extentの範囲外のものは除外します（除外する設定の場合）。
      */
     GridIDToObjectsMap classifyCityObjectsToGrid(const citygml::ConstCityObjects& city_objects, const citygml::Envelope& city_envelope,
-                                           const MeshExtractOptions& options) {
+                                           const MeshExtractOptions& options, const std::vector<plateau::geometry::Extent>& extents) {
         auto grid_id_to_objects_map = initGridIDToObjectsMap(options.grid_count_of_side, options.grid_count_of_side);
         for (const auto co : city_objects) {
             // 範囲外、または位置不明ならスキップします（スキップする設定の場合）。
-            if (options.exclude_city_object_outside_extent && !options.extent.contains(*co))
+            if (shouldSkipCityObj(*co, options, extents))
                 continue;
 
             const int grid_id = getGridId(city_envelope, PolygonMeshUtils::cityObjPos(*co), options.grid_count_of_side, options.grid_count_of_side);
@@ -71,12 +82,12 @@ namespace plateau::polygonMesh {
 
     GridMergeResult
         AreaMeshFactory::gridMerge(const CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
-                              const geometry::GeoReference& geo_reference) {
+                              const geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
         // city_model に含まれる 主要地物 をグリッドに分類します。
         const auto& all_primary_city_objects =
             city_model.getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
         const auto& city_envelope = city_model.getEnvelope();
-        auto grid_id_to_primary_objects_map = classifyCityObjectsToGrid(all_primary_city_objects, city_envelope, options);
+        auto grid_id_to_primary_objects_map = classifyCityObjectsToGrid(all_primary_city_objects, city_envelope, options, extents);
         
         // グリッドをさらに分割してグループにします。
         // グループの分割基準:
@@ -119,7 +130,7 @@ namespace plateau::polygonMesh {
         // グループごとのループ
         for (const auto& [group_id, primary_objects] : group_id_to_primary_objects_map) {
             // 1グループのメッシュ生成
-            MeshFactory mesh_factory(nullptr, options, geo_reference);
+            MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
 
             // グループ内の各主要地物のループ
             for (const auto& primary_object : primary_objects) {
