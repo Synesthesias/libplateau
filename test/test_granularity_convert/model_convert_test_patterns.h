@@ -55,10 +55,13 @@ public:
  * 変換前のテストモデルと、それが変換後どうあるべきか（粒度別）を保持します。
  * また実際に変換し、両者を比較します。
  */
-class ModelForTest {
+class ModelConvertTestPatterns {
 public:
+
+    /// 変換先の粒度と、変換後に期待する値のmapです。
     using TGranularityToExpect = std::map<plateau::polygonMesh::MeshGranularity, ModelExpect>;
-    ModelForTest(plateau::polygonMesh::Model&& src_model, TGranularityToExpect& convert_expects) :
+
+    ModelConvertTestPatterns(plateau::polygonMesh::Model&& src_model, TGranularityToExpect& convert_expects) :
             src_model_(std::move(src_model)),
             convert_expects_(convert_expects) {};
     void test(plateau::polygonMesh::MeshGranularity granularity);
@@ -67,4 +70,17 @@ public:
 private:
     plateau::polygonMesh::Model src_model_;
     TGranularityToExpect convert_expects_;
+};
+
+class ModelConvertTestPatternsFactory {
+public:
+    ModelConvertTestPatterns createTestModelOfArea();
+
+    /// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
+    ModelConvertTestPatterns createTestModelOfArea_OnlyRoot();
+    ModelConvertTestPatterns createTestModelOfPrimary();
+    ModelConvertTestPatterns createTestModelOfAtomic();
+private:
+    std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea();
+    ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea();
 };

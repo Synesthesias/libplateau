@@ -47,9 +47,9 @@ add_executable(plateau_test
     "test_map_attacher.cpp"
     "test_texture_image_base.cpp"
     "test_map_zoom_level_searcher.cpp"
-    "test_granularity_converter.cpp"
-    "test_granularity_converter_model_for_test.cpp"
         )
+
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test_granularity_convert")
 
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
