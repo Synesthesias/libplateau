@@ -312,10 +312,10 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_
                     NodeExpect("lod_node", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect("primary-0", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect("primary-1", false, 0, {{none_coi}}, {}, {}),
-                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
-                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
-                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)}),
-                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_4",nullptr)})
+                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_0",nullptr)}),
+                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
+                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
+                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)})
             });
 
     // 主要地物の場合
@@ -325,13 +325,13 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_
                     NodeExpect("lod_node", false, 0, {{}}, {}, {}),
                     NodeExpect("primary-0", true, 4*2, {{{0,0}, {0,1}}}, {{{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
                                {
-                                SubMesh(0,5,"dummy_tex_path_1", nullptr),
-                                SubMesh(6,11,"dummy_tex_path_2",nullptr)
+                                SubMesh(0,5,"dummy_tex_path_0", nullptr),
+                                SubMesh(6,11,"dummy_tex_path_1",nullptr)
                                }),
                     NodeExpect("primary-1", true, 4*2, {{{0,0}, {0,1}}}, {{{ {{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}}},
                                {
-                                SubMesh(0,5,"dummy_tex_path_3", nullptr),
-                                SubMesh(6,11,"dummy_tex_path_4",nullptr)}
+                                SubMesh(0,5,"dummy_tex_path_2", nullptr),
+                                SubMesh(6,11,"dummy_tex_path_3",nullptr)}
                     )
             });
 
@@ -352,10 +352,10 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_
                                         {{1, 1}, "atomic-1-1"}
                                 }},
                                {
-                                       SubMesh(0, 5, "dummy_tex_path_1", nullptr),
-                                       SubMesh(6, 11, "dummy_tex_path_2", nullptr),
-                                       SubMesh(12, 17, "dummy_tex_path_3", nullptr),
-                                       SubMesh(18, 23, "dummy_tex_path_4", nullptr)
+                                       SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                                       SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                                       SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                                       SubMesh(18, 23, "dummy_tex_path_3", nullptr)
                                }
                     )}
     );
