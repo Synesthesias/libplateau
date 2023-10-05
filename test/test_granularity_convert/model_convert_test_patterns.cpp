@@ -338,7 +338,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_
     // 地域単位の場合
     auto area_expect = ModelExpect(
             std::vector<NodeExpect>{
-                    NodeExpect("gml_node", true, 4 * 6,
+                    NodeExpect("gml_node", true, 4 * 4,
                                {{
                                         {0, 0},
                                         {0, 1},
