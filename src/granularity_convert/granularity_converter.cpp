@@ -9,6 +9,7 @@ namespace plateau::granularityConvert {
 
     namespace {
 
+        /// ルートノードから何番目の子をたどっていけばノードに行き着くかをvector<int>で表現したノードパスです。
         class NodePath {
         public:
             NodePath(std::vector<int> positions) : positions_(std::move(positions)) {};
@@ -33,12 +34,11 @@ namespace plateau::granularityConvert {
                 return new_pos;
             }
 
-            void addChildNode(Node&& node, Model* model) const {
+            Node& addChildNode(Node&& node, Model* model) const {
                 if (positions_.empty()) {
-                    model->addNode(std::move(node));
-                    return;
+                    return model->addNode(std::move(node));
                 }
-                toNode(model)->addChildNode(std::move(node));
+                return toNode(model)->addChildNode(std::move(node));
             }
 
             // パス中にプライマリノードがあればそれを返し、なければnullptrを返します。
@@ -214,11 +214,21 @@ namespace plateau::granularityConvert {
 
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
+                    auto dst_parent_node = node_path.parent().toNode(&dst_model);
+                    if(dst_parent_node != nullptr) {
+                        bool is_parent_primary =
+                                src_city_obj_list.getAllPrimaryIndices().empty() &&
+                                (!src_city_obj_list.getAllKeys()->empty()) &&
+                                node_path.parent().toNode(&dst_model)->getMesh() == nullptr;
+                        dst_parent_node->setIsPrimary(is_parent_primary | dst_parent_node->isPrimary());
+                    }
+
+
                     // PrimaryIndexごとの処理
                     for (auto primary_id: primary_indices_in_mesh) {
                         Node* primary_node = node_path.parent().searchLastPrimaryNodeInPath(&dst_model);
                         if (primary_node == nullptr) {
-                            // 親がPrimary Nodeでない場合は、Primary Nodeを作ります。
+                            // 親にPrimary Nodeがない場合は、Primary Nodeを作ります。
                             std::string primary_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
                             // ここでノードを追加します。
@@ -238,6 +248,7 @@ namespace plateau::granularityConvert {
                         for (const auto& id: indices_in_mesh) {
                             if (id.primary_index != primary_id) continue;
                             if (id.atomic_index == CityObjectIndex::invalidIndex()) continue;
+
                             std::string atomic_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                             // ここでノードを追加します。
@@ -253,8 +264,9 @@ namespace plateau::granularityConvert {
                     // end if(メッシュがあるとき)
                 } else { // メッシュがないとき
                     // メッシュのないノードをdstに追加します
-                    auto src_node_name = node_path.toNode(&src)->getName();
-                    node_path.parent().addChildNode(Node(src_node_name), &dst_model);
+                    auto src_node = node_path.toNode(&src);
+                    auto& dst_node = node_path.parent().addChildNode(Node(src_node->getName()), &dst_model);
+                    dst_node.setIsPrimary(src_node->isPrimary());
                 }
             }
             return dst_model;

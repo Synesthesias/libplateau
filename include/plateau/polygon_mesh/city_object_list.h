@@ -100,6 +100,7 @@ namespace plateau::polygonMesh {
         void getAllKeys(std::vector<CityObjectIndex>& keys) const;
 
         std::shared_ptr<std::vector<CityObjectIndex>> getAllKeys() const;
+        std::vector<CityObjectIndex> getAllPrimaryIndices() const;
 
         CityObjectIndex getCityObjectIndex(const std::string& gml_id) const;
 
