@@ -244,13 +244,13 @@ namespace plateau::granularityConvert {
                         auto dst_parent_node = node_path.parent().toNode(&dst_model);
                         if(dst_parent_node != nullptr && primary_node_path.empty()) {
                             bool has_only_atomic_mesh = src_city_obj_list.getAllPrimaryIndices().empty() &&
-                                                        (!src_city_obj_list.getAllKeys()->empty());
+                                                        (!src_city_obj_list.getAllAtomicIndices().empty());
                             bool is_special_case =
                                     has_only_atomic_mesh &&
-                                    node_path.parent().toNode(&dst_model)->getMesh() == nullptr;
+                                    node_path.parent().parent().toNode(&dst_model)->getMesh() == nullptr;
 
                             bool is_special_case_a = is_special_case && (src_city_obj_list.getAllAtomicIndices().size() == 1);
-                            bool is_special_case_b = is_special_case && (src_city_obj_list.getAllAtomicIndices().size() > 1);
+                            bool is_special_case_b = is_special_case && (src_city_obj_list.getAllAtomicIndices().size() >= 1);
                             if(is_special_case_a) {
                                 dst_parent_node->setIsPrimary(true);
                                 primary_node_path = node_path.parent();
