@@ -85,7 +85,7 @@ void ModelConvertTestPatterns::test(MeshGranularity granularity) {
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea() {
-    auto mesh = createTestMeshOfArea();
+    auto mesh = createTestMeshOfArea(test_indices_primary_and_atomic);
 
     auto model = Model();
     auto& gml_node = model.addNode(Node("gml_node"));
@@ -98,7 +98,8 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea(
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_OnlyRoot() {
-    auto mesh = createTestMeshOfArea();
+
+    auto mesh = createTestMeshOfArea(test_indices_primary_and_atomic);
 
     // このメソッドに登場するsrc_modelは、すべて変換前のモデルです。
     // 変換後のモデルをデバッガで確認したい場合は、ModelForTest::testメソッド内にブレークポイントを貼ってください。
@@ -132,6 +133,14 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfPrima
     return {std::move(primary_model), primary_expect};
 }
 
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfPrimary_OnlyAtomicMesh() {
+    auto area_model = createTestModelOfArea_OnlyAtomicMesh();
+    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto primary_model = GranularityConverter().convert(area_model.getModel(), option);
+    auto primary_expect = area_model.getExpects();
+    return {std::move(primary_model), primary_expect};
+}
+
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfAtomic() {
     // テスト用モデルを手打ちコードで作るのは非常に手間なので、
     // 地域単位から最小地物単位への変換がうまくいっていることを前提に、変換したものをテストモデルとします。
@@ -145,7 +154,16 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfAtomi
     return {std::move(atomic_model), atomic_expect};
 }
 
-std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea() {
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfAtomic_OnlyAtomicMesh() {
+    auto area_model = createTestModelOfArea_OnlyAtomicMesh();
+    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto atomic_model = GranularityConverter().convert(area_model.getModel(), option);
+    // 期待する変換結果は地域単位と同じです。
+    auto atomic_expect = area_model.getExpects();
+    return {std::move(atomic_model), atomic_expect};
+}
+
+std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea(std::vector<CityObjectIndex> city_object_indices) {
     TVec3d base_pos = {0, 0, 0};
     unsigned int base_id = 0;
     std::vector<TVec3d> vertices;
@@ -153,11 +171,6 @@ std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea() {
     std::vector<TVec2f> uv1;
     std::vector<TVec2f> uv4;
     std::vector<SubMesh> sub_meshes;
-
-    const std::vector<CityObjectIndex> city_object_indices = {
-            {0, -1}, {0,0}, {0,1},
-            {1, 0}, {1, 1}, {1, -1}
-    };
 
     // 四角ポリゴンを複数作ります。
     for(int i=0; i < city_object_indices.size(); i++) {
@@ -280,4 +293,77 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
             {MeshGranularity::PerCityModelArea, area_expect}
     };
     return convert_expects;
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_OnlyAtomicMesh() {
+    auto mesh = createTestMeshOfArea(test_indices_only_atomic);
+    auto model = Model();
+    auto& gml_node = model.addNode(Node("gml_node"));
+    auto& lod_node = gml_node.addChildNode(Node("lod_node"));
+    auto& mesh_node = lod_node.addChildNode(Node("mesh_node"));
+    mesh_node.setMesh(std::move(mesh));
+
+    const CityObjectIndex none_coi = {-999, -999};
+
+    // 最小地物単位の場合
+    auto atomic_expect = ModelExpect(
+            std::vector<NodeExpect>{
+                    NodeExpect("gml_node", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("primary-0", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("primary-1", false, 0, {{none_coi}}, {}, {}),
+                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
+                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
+                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)}),
+                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_4",nullptr)})
+            });
+
+    // 主要地物の場合
+    auto primary_expect = ModelExpect(
+            std::vector<NodeExpect>{
+                    NodeExpect("gml_node", false, 0, {{}}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {{}}, {}, {}),
+                    NodeExpect("primary-0", true, 4*2, {{{0,0}, {0,1}}}, {{{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
+                               {
+                                SubMesh(0,5,"dummy_tex_path_1", nullptr),
+                                SubMesh(6,11,"dummy_tex_path_2",nullptr)
+                               }),
+                    NodeExpect("primary-1", true, 4*2, {{{0,0}, {0,1}}}, {{{ {{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}}},
+                               {
+                                SubMesh(0,5,"dummy_tex_path_3", nullptr),
+                                SubMesh(6,11,"dummy_tex_path_4",nullptr)}
+                    )
+            });
+
+    // 地域単位の場合
+    auto area_expect = ModelExpect(
+            std::vector<NodeExpect>{
+                    NodeExpect("gml_node", true, 4 * 6,
+                               {{
+                                        {0, 0},
+                                        {0, 1},
+                                        {1, 0},
+                                        {1, 1}
+                                }},
+                               {{
+                                        {{0, 0}, "atomic-0-0"},
+                                        {{0, 1}, "atomic-0-1"},
+                                        {{1, 0}, "atomic-1-0"},
+                                        {{1, 1}, "atomic-1-1"}
+                                }},
+                               {
+                                       SubMesh(0, 5, "dummy_tex_path_1", nullptr),
+                                       SubMesh(6, 11, "dummy_tex_path_2", nullptr),
+                                       SubMesh(12, 17, "dummy_tex_path_3", nullptr),
+                                       SubMesh(18, 23, "dummy_tex_path_4", nullptr)
+                               }
+                    )}
+    );
+
+    auto convert_expects = ModelConvertTestPatterns::TGranularityToExpect{
+            {MeshGranularity::PerAtomicFeatureObject, atomic_expect},
+            {MeshGranularity::PerPrimaryFeatureObject, primary_expect},
+            {MeshGranularity::PerCityModelArea, area_expect}
+    };
+    return {std::move(model), convert_expects};
 }

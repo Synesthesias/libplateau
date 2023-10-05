@@ -56,6 +56,41 @@ TEST_F(GranularityConverterTest, convertPrimaryToAtomic) { // NOLINT
     ModelConvertTestPatternsFactory().createTestModelOfPrimary().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
+TEST_F(GranularityConverterTest, convertAreaToAtomic_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToPrimary_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_OnlyAtomicMesh().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToArea_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_OnlyAtomicMesh().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToArea_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_OnlyAtomicMesh().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToPrimary_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_OnlyAtomicMesh().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToAtomic_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToArea_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_OnlyAtomicMesh().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToPrimary_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_OnlyAtomicMesh().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToAtomic_OnlyAtomic) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
+}
 
 namespace {
     std::shared_ptr<Model> loadTestGML() {

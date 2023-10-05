@@ -74,13 +74,27 @@ private:
 
 class ModelConvertTestPatternsFactory {
 public:
+    /// gml_node <- lod_node <- mesh_node
     ModelConvertTestPatterns createTestModelOfArea();
 
     /// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
     ModelConvertTestPatterns createTestModelOfArea_OnlyRoot();
     ModelConvertTestPatterns createTestModelOfPrimary();
     ModelConvertTestPatterns createTestModelOfAtomic();
+
+    /// テスト用モデルで、主要地物のメッシュがないバージョンです。
+    ModelConvertTestPatterns createTestModelOfArea_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestModelOfAtomic_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestModelOfPrimary_OnlyAtomicMesh();
 private:
-    std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea();
+    std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea(std::vector<plateau::polygonMesh::CityObjectIndex> city_object_indices);
     ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea();
+    const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_primary_and_atomic = {
+            {0, -1}, {0,0}, {0,1},
+            {1, 0}, {1, 1}, {1, -1}
+    };
+    const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_only_atomic = {
+            {0, 0}, {0, 1},
+            {1, 0}, {1, 1}
+    };
 };
