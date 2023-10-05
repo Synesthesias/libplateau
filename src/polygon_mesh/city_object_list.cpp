@@ -57,6 +57,16 @@ namespace plateau::polygonMesh {
         return ret;
     }
 
+    std::vector<CityObjectIndex> CityObjectList::getAllAtomicIndices() const {
+        auto ret = std::vector<CityObjectIndex>();
+        for(const auto& [index, _] : city_object_index_to_gml_id_) {
+            if(index.atomic_index != CityObjectIndex::invalidIndex()) {
+                ret.push_back(index);
+            }
+        }
+        return ret;
+    }
+
     CityObjectIndex CityObjectList::getCityObjectIndex(const std::string& gml_id) const {
         for (const auto& [key, value] : city_object_index_to_gml_id_) {
             if (value == gml_id)

@@ -34,6 +34,16 @@ namespace plateau::granularityConvert {
                 return new_pos;
             }
 
+            NodePath next() const {
+                auto ret = NodePath(positions_);
+                ret.positions_.at(ret.positions_.size() - 1) = ret.positions_.at(ret.positions_.size() - 1) + 1;
+                return ret;
+            }
+
+            bool empty() const {
+                return positions_.empty();
+            }
+
             Node& addChildNode(Node&& node, Model* model) const {
                 if (positions_.empty()) {
                     return model->addNode(std::move(node));
@@ -41,18 +51,22 @@ namespace plateau::granularityConvert {
                 return toNode(model)->addChildNode(std::move(node));
             }
 
-            // パス中にプライマリノードがあればそれを返し、なければnullptrを返します。
+            // パス中にプライマリノードがあればそのパスを返し、なければ空のNodePathを返します。
             // パス中に複数ある場合は、最後のものを返します。
-            Node* searchLastPrimaryNodeInPath(Model* model) {
-                if(positions_.empty()) return nullptr;
+            NodePath searchLastPrimaryNodeInPath(Model* model) {
+                int found_path_pos = -1;
+                if(positions_.empty()) return NodePath({});
+                if(model->getRootNodeCount() >= positions_.at(0)) return NodePath({});
                 auto node = &model->getRootNodeAt(positions_.at(0));
-                Node* primary = nullptr;
-                if(node->isPrimary()) primary = node;
+                if(node->isPrimary()) found_path_pos = 0;
                 for(int i=1; i<positions_.size(); i++) {
+                    if(positions_.at(i) >= node->getChildCount()) break;
                     node = &node->getChildAt(positions_.at(i));
-                    if(node->isPrimary()) primary = node;
+                    if(node->isPrimary()) found_path_pos = i;
                 }
-                return primary;
+                if(found_path_pos < 0) return NodePath({});
+                auto ret_path = NodePath(std::vector<int>(positions_.begin(), positions_.begin() + found_path_pos + 1));
+                return ret_path;
             }
 
         private:
@@ -214,33 +228,54 @@ namespace plateau::granularityConvert {
 
                     const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
-                    auto dst_parent_node = node_path.parent().toNode(&dst_model);
-                    if(dst_parent_node != nullptr) {
-                        bool is_parent_primary =
-                                src_city_obj_list.getAllPrimaryIndices().empty() &&
-                                (!src_city_obj_list.getAllKeys()->empty()) &&
-                                node_path.parent().toNode(&dst_model)->getMesh() == nullptr;
-                        dst_parent_node->setIsPrimary(is_parent_primary | dst_parent_node->isPrimary());
-                    }
+
 
 
                     // PrimaryIndexごとの処理
                     for (auto primary_id: primary_indices_in_mesh) {
-                        Node* primary_node = node_path.parent().searchLastPrimaryNodeInPath(&dst_model);
-                        if (primary_node == nullptr) {
+                        NodePath primary_node_path = node_path.parent().searchLastPrimaryNodeInPath(&dst_model);
+                        // 特別ケースA:
+                        // 入力が最小地物単位で、Primary（メッシュなし）<- Atomic（メッシュあり）の構成で、現在がatomicのケース。
+                        // 自身のメッシュが最小地物のみで、親にメッシュがないとき、親を主要地物とみなします。
+                        // 特別ケースB:
+                        // 入力が主要地物単位で、LOD（メッシュなし） <- Primary(Atomicメッシュのみ)の構成で、現在がPrimaryのケース。
+                        // 特別ケースAとBを本質的に区別する方法が見当たらないので、メッシュ中のatomicが1つならA, 2つ以上ならBという仮説で実装します。
+                        // 自身を主要地物とみなします。
+                        auto dst_parent_node = node_path.parent().toNode(&dst_model);
+                        if(dst_parent_node != nullptr && primary_node_path.empty()) {
+                            bool has_only_atomic_mesh = src_city_obj_list.getAllPrimaryIndices().empty() &&
+                                                        (!src_city_obj_list.getAllKeys()->empty());
+                            bool is_special_case =
+                                    has_only_atomic_mesh &&
+                                    node_path.parent().toNode(&dst_model)->getMesh() == nullptr;
+
+                            bool is_special_case_a = is_special_case && (src_city_obj_list.getAllAtomicIndices().size() == 1);
+                            bool is_special_case_b = is_special_case && (src_city_obj_list.getAllAtomicIndices().size() > 1);
+                            if(is_special_case_a) {
+                                dst_parent_node->setIsPrimary(true);
+                                primary_node_path = node_path.parent();
+                            }else if(is_special_case_b) {
+                                auto& primary = node_path.parent().toNode(&dst_model)->addChildNode(Node(src_node->getName()));
+                                primary.setIsPrimary(true);
+                                primary_node_path = node_path;
+                            }
+                        }
+
+                        Node* new_primary_node = primary_node_path.toNode(&dst_model);
+                        if (primary_node_path.empty() || primary_node_path.toNode(&src) == node_path.toNode(&src)) {
                             // 親にPrimary Nodeがない場合は、Primary Nodeを作ります。
                             std::string primary_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
                             // ここでノードを追加します。
                             auto dst_parent = node_path.parent().toNode(&dst_model);
-                            primary_node = dst_parent == nullptr ?
+                            new_primary_node = dst_parent == nullptr ?
                                            &dst_model.addNode(Node(primary_gml_id)) : // ルートに追加
                                            &dst_parent->addChildNode(Node(primary_gml_id)); // ノードに追加
-                            primary_node->setIsPrimary(true);
+                            new_primary_node->setIsPrimary(true);
                             auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1), -1);
                             if (primary_mesh.hasVertices()) {
                                 primary_mesh.setCityObjectList({{{{0, -1}, primary_gml_id}}});
-                                primary_node->setMesh(std::make_unique<Mesh>(primary_mesh));
+                                new_primary_node->setMesh(std::make_unique<Mesh>(primary_mesh));
                             }
                         }
 
@@ -252,7 +287,7 @@ namespace plateau::granularityConvert {
                             std::string atomic_gml_id = "gml_id_not_found";
                             src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                             // ここでノードを追加します。
-                            auto& atomic_node = primary_node->addChildNode(Node(atomic_gml_id));
+                            auto& atomic_node = new_primary_node->addChildNode(Node(atomic_gml_id));
 
                             auto atomic_mesh = filterByCityObjIndex(*src_mesh, id, 0);
                             if (atomic_mesh.hasVertices()) {

@@ -101,6 +101,7 @@ namespace plateau::polygonMesh {
 
         std::shared_ptr<std::vector<CityObjectIndex>> getAllKeys() const;
         std::vector<CityObjectIndex> getAllPrimaryIndices() const;
+        std::vector<CityObjectIndex> getAllAtomicIndices() const;
 
         CityObjectIndex getCityObjectIndex(const std::string& gml_id) const;
 
