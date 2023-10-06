@@ -141,7 +141,6 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfPrima
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_WithoutCityObjList() {
     auto area_patterns = createTestModelOfArea();
-    auto expect = createExpectsForTestMeshArea();
     auto& model = area_patterns.getModel();
 
     // 幅優先探索で全MeshのCityObjectListを消します。
@@ -160,6 +159,19 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestModelOfArea_
             queue.push(node_path.plus(i));
         }
     }
+
+    auto expect = createExpectsForTestMeshArea();
+
+    auto& expect_atomic = expect.at(MeshGranularity::PerAtomicFeatureObject);
+    expect_atomic.setExpectNodeNameRange("mesh_node", 2, 7);
+    expect_atomic.setExpectGmlIdRange("gml_id_not_found", 2, 7);
+
+    auto& expect_primary = expect.at(MeshGranularity::PerPrimaryFeatureObject);
+    expect_primary.setExpectNodeNameRange("mesh_node", 2, 3);
+    expect_primary.setExpectGmlIdRange("gml_id_not_found", 2, 3);
+
+    auto& expect_area = expect.at(MeshGranularity::PerCityModelArea);
+    expect_area.setExpectGmlIdRange("gml_id_not_found", 0, 0);
 
     return {std::move(model), expect};
 }

@@ -45,6 +45,20 @@ public:
         auto begin = expect_nodes_.begin();
         expect_nodes_.erase(begin+start, begin+last);
     }
+
+    void setExpectNodeNameRange(std::string node_name, size_t begin_index, size_t last_index) {
+        for(size_t i=begin_index; i<=last_index; i++) {
+            expect_nodes_.at(i).expect_node_name_ = node_name;
+        }
+    }
+
+    void setExpectGmlIdRange(std::string next_gml_id, size_t begin_index, size_t last_index) {
+        for(size_t i=begin_index; i<=last_index; i++) {
+            for(auto& [city_obj_index, gml_id] : expect_nodes_.at(i).expect_city_obj_list_ ) {
+                gml_id = next_gml_id;
+            }
+        }
+    }
     
 private:
     std::vector<NodeExpect> expect_nodes_;
