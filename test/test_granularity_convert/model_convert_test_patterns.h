@@ -74,27 +74,58 @@ private:
 
 class ModelConvertTestPatternsFactory {
 public:
+    /// テスト用モデル（地域単位）です。次のような構成です。
     /// gml_node <- lod_node <- mesh_node
     ModelConvertTestPatterns createTestModelOfArea();
 
-    /// 地域単位のテスト用モデルのうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
+    /// テスト用モデル（地域単位）のうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
     ModelConvertTestPatterns createTestModelOfArea_OnlyRoot();
+    /// テスト（主要地物）
     ModelConvertTestPatterns createTestModelOfPrimary();
+    /// テスト（最小地物）
     ModelConvertTestPatterns createTestModelOfAtomic();
 
-    /// テスト用モデルで、主要地物のメッシュがないバージョンです。
+    /// テスト用モデル（地域単位）で、主要地物のメッシュがないバージョンです。
     ModelConvertTestPatterns createTestModelOfArea_OnlyAtomicMesh();
+    /// テスト（主要地物）
     ModelConvertTestPatterns createTestModelOfAtomic_OnlyAtomicMesh();
+    /// テスト（最小地物）
     ModelConvertTestPatterns createTestModelOfPrimary_OnlyAtomicMesh();
+
+    /// テスト用モデル（地域単位）で、CityObjectIndexがないバージョンです。
+    ModelConvertTestPatterns createTestModelOfArea_WithoutCityObjList();
+    ModelConvertTestPatterns createTestModelOfPrimary_WithoutCityObjList();
+    ModelConvertTestPatterns createTestModelOfAtomic_WithoutCityObjList();
+
 private:
-    std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea(std::vector<plateau::polygonMesh::CityObjectIndex> city_object_indices);
+    std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea(std::vector<plateau::polygonMesh::CityObjectIndex> city_object_indices, plateau::polygonMesh::CityObjectList city_obj_list);
     ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea();
+
     const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_primary_and_atomic = {
             {0, -1}, {0,0}, {0,1},
             {1, 0}, {1, 1}, {1, -1}
     };
+
+    const plateau::polygonMesh::CityObjectList test_city_obj_list_primary_and_atomic = {
+            {
+                {{0, -1}, "primary-0"},
+                {{0, 0}, "atomic-0-0"},
+                {{0,1}, "atomic-0-1"},
+                {{1,-1}, "primary-1"},
+                {{1,0}, "atomic-1-0"},
+                {{1,1}, "atomic-1-1"}
+    }};
     const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_only_atomic = {
             {0, 0}, {0, 1},
             {1, 0}, {1, 1}
+    };
+
+    const plateau::polygonMesh::CityObjectList test_city_obj_list_indices_only_atomic = {
+            {
+                    {{0,0}, "atomic-0-0"},
+                    {{0,1}, "atomic-0-1"},
+                    {{1,0}, "atomic-1-0"},
+                    {{1,1}, "atomic-1-1"}
+            }
     };
 };

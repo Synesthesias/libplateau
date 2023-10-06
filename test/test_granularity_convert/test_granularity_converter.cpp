@@ -92,6 +92,44 @@ TEST_F(GranularityConverterTest, convertPrimaryToAtomic_OnlyAtomic) { // NOLINT
     ModelConvertTestPatternsFactory().createTestModelOfPrimary_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
+TEST_F(GranularityConverterTest, convertAreaToArea_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_WithoutCityObjList().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToPrimary_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToAtomic_WithoutcityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfArea_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToArea_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_WithoutCityObjList().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToPrimary_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertPrimaryToAtomic_WithoutcityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfPrimary_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToArea_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_WithoutCityObjList().test(MeshGranularity::PerCityModelArea);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToPrimary_WithoutCityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAtomicToAtomic_WithoutcityObjList) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestModelOfAtomic_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+
+
 namespace {
     std::shared_ptr<Model> loadTestGML() {
         auto parser_params = citygml::ParserParams();

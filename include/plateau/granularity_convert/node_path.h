@@ -1,6 +1,7 @@
 #pragma once
 
 #include <plateau/polygon_mesh/model.h>
+#include <libplateau_api.h>
 
 namespace plateau::granularityConvert {
 
@@ -9,7 +10,7 @@ namespace plateau::granularityConvert {
     /// 用途の例はノードの幅優先探索のキューです。
     /// キューの型をNode*にすると、子ノードを追加したときにvectorの再割り当てでポインタが外れる問題があります。
     /// この形式なら再割り当ては問題になりません。
-    class NodePath {
+    class LIBPLATEAU_EXPORT NodePath {
     public:
         NodePath(std::vector<int> positions);
 
