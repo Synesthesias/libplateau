@@ -9,9 +9,8 @@ namespace plateau::granularityConvert {
         auto dst_model = Model();
         const auto root_node_name = src->getRootNodeCount() == 1 ?
                                     src->getRootNodeAt(0).getName() : "combined";
-        auto dst_node_tmp = Node(root_node_name);
         dst_model.reserveRootNodes(src->getRootNodeCount());
-        auto& dst_node = dst_model.addNode(std::move(dst_node_tmp));
+        auto& dst_node = dst_model.addNode(Node(root_node_name));
         dst_node.setIsPrimary(true);
         dst_node.setMesh(std::make_unique<Mesh>());
         auto& dst_mesh = *dst_node.getMesh();

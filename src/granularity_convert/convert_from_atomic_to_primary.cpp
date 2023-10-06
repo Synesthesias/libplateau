@@ -13,7 +13,6 @@ namespace plateau::granularityConvert {
         for (int i = 0; i < src->getRootNodeCount(); i++) {
             const auto& src_node = src->getRootNodeAt(i);
             dst_model.addNode(Node(src_node.getName()));
-            auto& dst_node = dst_model.getRootNodeAt(i);
             queue.push(NodePath({i}));
         }
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
@@ -31,7 +30,7 @@ namespace plateau::granularityConvert {
                 // Primaryでないなら、子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
                 for (int i = 0; i < src_node->getChildCount(); i++) {
                     const auto& src_child = src_node->getChildAt(i);
-                    auto& dst_child = dst_node->addChildNode(Node(src_child.getName()));
+                    dst_node->addChildNode(Node(src_child.getName()));
                     queue.push(node_path.plus(i));
                 }
             }

@@ -38,8 +38,6 @@ void NodeExpect::checkNode(const plateau::polygonMesh::Node* node) const {
 /// 引数で与えられたModelの各Nodeを幅優先探索の順番で調べ、引数の各vector.at(index)と一致するかどうか調べます。
 void checkModelBFS(const Model& model, const ModelExpect& expect) {
 
-    auto expect_size = expect.nodeCount();
-
     std::queue<const plateau::polygonMesh::Node*> queue;
 
     for(int i=0; i<model.getRootNodeCount(); i++){

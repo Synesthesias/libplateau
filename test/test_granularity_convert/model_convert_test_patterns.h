@@ -34,7 +34,6 @@ public:
     ModelExpect(std::vector<NodeExpect>  expect_nodes) :
         expect_nodes_(std::move(expect_nodes))
     {
-
     };
 
     NodeExpect& at(size_t i) {return expect_nodes_.at(i);};
@@ -46,7 +45,8 @@ public:
         auto begin = expect_nodes_.begin();
         expect_nodes_.erase(begin+start, begin+last);
     }
-
+    
+private:
     std::vector<NodeExpect> expect_nodes_;
 };
 

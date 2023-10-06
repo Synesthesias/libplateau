@@ -4,7 +4,7 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    void MergePrimaryNodeAndChildren::merge(const Node& src_node_arg, Mesh& dst_mesh, int primary_id) {
+    void MergePrimaryNodeAndChildren::merge(const Node& src_node_arg, Mesh& dst_mesh, const int primary_id) const{
         std::queue<const Node*> queue;
         queue.push(&src_node_arg);
         long next_atomic_id = 0;
@@ -25,7 +25,7 @@ namespace plateau::granularityConvert {
                     atomic_id = next_atomic_id;
                     next_atomic_id++;
                 }
-                auto uv4 = CityObjectIndex(primary_id, atomic_id).toUV();
+                const auto uv4 = CityObjectIndex(primary_id, atomic_id).toUV();
                 auto uv4s = std::vector<TVec2f>(src_mesh_copy.getUV4().size(), uv4);
                 src_mesh_copy.setUV4(std::move(uv4s));
                 // マージします。

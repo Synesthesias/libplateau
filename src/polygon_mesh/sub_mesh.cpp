@@ -38,10 +38,10 @@ namespace plateau::polygonMesh {
         texture_path_ = std::move(file_path);
     }    
 
-    void SubMesh::setStartIndex(int start_index) {
+    void SubMesh::setStartIndex(size_t start_index) {
         start_index_ = start_index;
     }
-    void SubMesh::setEndIndex(int end_index) {
+    void SubMesh::setEndIndex(size_t end_index) {
         end_index_ = end_index;
     }
 

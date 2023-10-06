@@ -117,10 +117,3 @@ TEST_F(GranularityConverterTest, CWrapperWorks) { // NOLINT
     plateau_granularity_converter_convert(
             src_model.get(), &out_model_ptr, convert_option);
 }
-
-TEST_F(GranularityConverterTest, RootNodeAreaToAtomic) { // NOLINT
-//    auto src_model = createTestModelInRoot();
-//    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
-//    auto dst_model = GranularityConverter().convert(src_model, option);
-    // TODO ここでチェック
-}

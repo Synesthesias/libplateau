@@ -79,14 +79,14 @@ namespace plateau::granularityConvert {
                 src_end--;
                 if (src_end < src_start) break; // src_startからsrc_endまでの範囲がすべて削除されていたケース
             }
-            if (src_end < src_start) break;
+            if (src_end < src_start) continue;
 
             // 新しいSubMeshです。
             auto dst_start = indices_id_transform.at(src_start);
             auto dst_end = indices_id_transform.at(src_end);
             auto dst_sub_mesh = src_sub_mesh;
-            dst_sub_mesh.setStartIndex((int) dst_start);
-            dst_sub_mesh.setEndIndex((int) dst_end);
+            dst_sub_mesh.setStartIndex(dst_start);
+            dst_sub_mesh.setEndIndex(dst_end);
             dst_sub_meshes.push_back(dst_sub_mesh);
         }
 
@@ -140,9 +140,6 @@ namespace plateau::granularityConvert {
 
                 const auto& src_city_obj_list = src_mesh->getCityObjectList();
 
-
-
-
                 // PrimaryIndexごとの処理
                 for (auto primary_id: primary_indices_in_mesh) {
                     NodePath primary_node_path = node_path.parent().searchLastPrimaryNodeInPath(&dst_model);
@@ -175,7 +172,7 @@ namespace plateau::granularityConvert {
                             primary_node_path = node_path.parent().plus(
                                     node_path.parent().toNode(&dst_model)->getChildCount() - 1);
                         }
-                    }
+                    } // 特別ケース ここまで
 
                     Node* new_primary_node = primary_node_path.toNode(&dst_model);
                     if (primary_node_path.empty() || primary_node_path == node_path) {
@@ -183,7 +180,7 @@ namespace plateau::granularityConvert {
                         const static std::string default_gml_id = "gml_id_not_found";
                         std::string primary_gml_id = default_gml_id;
                         src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
-                        std::string primary_node_name = primary_gml_id == default_gml_id ?
+                        const std::string primary_node_name = primary_gml_id == default_gml_id ?
                                                         node_path.toNode(src)->getName() : primary_gml_id;
                         // ここでノードを追加します。
                         auto dst_parent = node_path.parent().toNode(&dst_model);
@@ -218,7 +215,7 @@ namespace plateau::granularityConvert {
                 // end if(メッシュがあるとき)
             } else { // メッシュがないとき
                 // メッシュのないノードをdstに追加します
-                auto src_node = node_path.toNode(src);
+                const auto src_node = node_path.toNode(src);
                 auto& dst_node = node_path.parent().addChildNode(Node(src_node->getName()), &dst_model);
                 dst_node.setIsPrimary(src_node->isPrimary());
             }
