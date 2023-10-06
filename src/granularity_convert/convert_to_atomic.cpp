@@ -99,7 +99,7 @@ namespace plateau::granularityConvert {
         return ret;
     }
 
-    Model ConvertToAtomic::convert(Model* src) {
+    Model ConvertToAtomic::convert(Model* src) const {
         Model dst_model = Model();
 
         // 探索キュー
@@ -223,6 +223,8 @@ namespace plateau::granularityConvert {
                 dst_node.setIsPrimary(src_node->isPrimary());
             }
         }
+
+        dst_model.eraseEmptyNodes();
         return dst_model;
     }
 }

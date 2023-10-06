@@ -8,28 +8,33 @@ namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
 
-    Model GranularityConverter::convert(Model& src, GranularityConvertOption option) {
+    Model GranularityConverter::convert(Model& src, GranularityConvertOption option) const {
         // 組み合わせの数を減らすため、まず最小地物に変換してから望みの粒度に変換します。
+        auto to_atomic = std::make_shared<ConvertToAtomic>();
+        auto converters = std::vector<std::shared_ptr<IModelConverter>>{to_atomic};
 
-        // 例：入力のNode構成が次のようだったとして、以下にその変化を例示します。
-        // 入力： gml_node <- lod_node <- group_node
-
-        auto atomic = ConvertToAtomic().convert(&src);
-
-        // 例：上の行の実行後、次のようなNode構成になります。
-        // gml_node <- lod_node <- primary_node <- atomic_node
-
-        atomic.eraseEmptyNodes();
-
-        switch (option.granularity_) {
+        switch(option.granularity_) {
             case MeshGranularity::PerAtomicFeatureObject:
-                return atomic;
-            case MeshGranularity::PerPrimaryFeatureObject:
-                return ConvertFromAtomicToPrimary().convert(&atomic);
-            case MeshGranularity::PerCityModelArea:
-                return ConvertFromAtomicToArea().convert(&atomic);
-            default:
-                throw std::runtime_error("unknown argument");
+                break;
+            case MeshGranularity::PerPrimaryFeatureObject: {
+                auto to_primary = std::make_shared<ConvertFromAtomicToPrimary>();
+                converters.push_back(to_primary);
+                break;
+            }
+            case MeshGranularity::PerCityModelArea: {
+                auto to_area = std::make_shared<ConvertFromAtomicToArea>();
+                converters.push_back(to_area);
+                break;
+            }
         }
+
+        // convertersを順番に実行します。
+        auto* next_src = &src;
+        auto next_dst = Model();
+        for(const auto& converter : converters) {
+            next_dst = converter->convert(next_src);
+            next_src = &next_dst;
+        }
+        return next_dst;
     }
 }

@@ -5,7 +5,7 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    Model ConvertFromAtomicToPrimary::convert(Model* src) {
+    Model ConvertFromAtomicToPrimary::convert(Model* src) const {
         auto dst_model = Model();
         auto queue = NodeQueue();
         dst_model.reserveRootNodes(src->getRootNodeCount());
