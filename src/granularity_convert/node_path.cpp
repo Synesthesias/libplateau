@@ -19,6 +19,7 @@ namespace plateau::granularityConvert {
     }
 
     NodePath NodePath::parent() const {
+        if(positions_.size() <= 1) NodePath({});
         auto new_pos = std::vector(positions_.begin(), positions_.end() - 1);
         return {new_pos};
     }

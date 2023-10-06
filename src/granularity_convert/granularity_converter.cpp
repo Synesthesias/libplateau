@@ -32,6 +32,7 @@ namespace plateau::granularityConvert {
         auto* next_src = &src;
         auto next_dst = Model();
         for(const auto& converter : converters) {
+            // ここで変換
             next_dst = converter->convert(next_src);
             next_src = &next_dst;
         }
