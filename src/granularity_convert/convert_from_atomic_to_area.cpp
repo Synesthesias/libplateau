@@ -5,7 +5,7 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    Model ConvertFromAtomicToArea::convert(Model* src) const {
+    Model ConvertFromAtomicToArea::convert(const Model* src) const {
         auto dst_model = Model();
         const auto root_node_name = src->getRootNodeCount() == 1 ?
                                     src->getRootNodeAt(0).getName() : "combined";

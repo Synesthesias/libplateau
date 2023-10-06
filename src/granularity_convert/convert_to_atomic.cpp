@@ -99,7 +99,7 @@ namespace plateau::granularityConvert {
         return ret;
     }
 
-    Model ConvertToAtomic::convert(Model* src) const {
+    Model ConvertToAtomic::convert(const Model* src) const {
         Model dst_model = Model();
 
         // 探索キュー

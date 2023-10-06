@@ -5,7 +5,7 @@ namespace plateau::granularityConvert {
 
     NodePath::NodePath(std::vector<int> positions) : positions_(std::move(positions)) {};
 
-    plateau::polygonMesh::Node* NodePath::toNode(plateau::polygonMesh::Model* model) const {
+    const plateau::polygonMesh::Node* NodePath::toNode(const plateau::polygonMesh::Model* model) const {
         if (positions_.empty()) return nullptr;
         auto node = &model->getRootNodeAt(positions_.at(0));
         for (int i = 1; i < positions_.size(); i++) {
@@ -13,6 +13,10 @@ namespace plateau::granularityConvert {
         }
         return node;
     };
+
+    plateau::polygonMesh::Node* NodePath::toNode(plateau::polygonMesh::Model* model) {
+        return const_cast<Node*>(std::as_const(*this).toNode(model));
+    }
 
     NodePath NodePath::parent() const {
         auto new_pos = std::vector(positions_.begin(), positions_.end() - 1);
@@ -29,7 +33,7 @@ namespace plateau::granularityConvert {
         return positions_.empty();
     }
 
-    Node& NodePath::addChildNode(Node&& node, Model* model) const {
+    Node& NodePath::addChildNode(Node&& node, Model* model) {
         if (positions_.empty()) {
             return model->addNode(std::move(node));
         }

@@ -14,7 +14,8 @@ namespace plateau::granularityConvert {
         NodePath(std::vector<int> positions);
 
         /// ノードパスを辿ってノードを返します。
-        plateau::polygonMesh::Node* toNode(plateau::polygonMesh::Model* model) const;
+        const plateau::polygonMesh::Node* toNode(const plateau::polygonMesh::Model* model) const;
+        plateau::polygonMesh::Node* toNode(plateau::polygonMesh::Model* model);
 
         /// ノードパスの最後の数値を除外したノードパスを作って返します。
         NodePath parent() const;
@@ -27,7 +28,7 @@ namespace plateau::granularityConvert {
 
         /// ノードパスが指すノードに子ノードを追加して、その子ノードを返します。
         plateau::polygonMesh::Node&
-        addChildNode(plateau::polygonMesh::Node&& node, plateau::polygonMesh::Model* model) const;
+        addChildNode(plateau::polygonMesh::Node&& node, plateau::polygonMesh::Model* model);
 
         /// パス中にプライマリノードがあればそのパスを返し、なければ空のNodePathを返します。
         /// パス中に複数ある場合は、最後のものを返します。

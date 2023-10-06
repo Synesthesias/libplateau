@@ -6,6 +6,6 @@ namespace plateau::granularityConvert {
     public:
 
         /// 最小地物単位のモデルを受け取り、それを主要地物単位に変換したモデルを返します。
-        plateau::polygonMesh::Model convert(plateau::polygonMesh::Model* src) const override;
+        plateau::polygonMesh::Model convert(const plateau::polygonMesh::Model* src) const override;
     };
 }

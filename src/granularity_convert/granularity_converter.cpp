@@ -8,7 +8,7 @@ namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
 
-    Model GranularityConverter::convert(Model& src, GranularityConvertOption option) const {
+    Model GranularityConverter::convert(const Model& src, GranularityConvertOption option) const {
         // 組み合わせの数を減らすため、まず最小地物に変換してから望みの粒度に変換します。
         auto to_atomic = std::make_shared<ConvertToAtomic>();
         auto converters = std::vector<std::shared_ptr<IModelConverter>>{to_atomic};

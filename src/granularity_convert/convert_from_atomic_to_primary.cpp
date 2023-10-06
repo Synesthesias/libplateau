@@ -5,7 +5,7 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    Model ConvertFromAtomicToPrimary::convert(Model* src) const {
+    Model ConvertFromAtomicToPrimary::convert(const Model* src) const {
         auto dst_model = Model();
         auto queue = NodeQueue();
         dst_model.reserveRootNodes(src->getRootNodeCount());
@@ -18,7 +18,7 @@ namespace plateau::granularityConvert {
         }
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
         while (!queue.empty()) {
-            const auto node_path = queue.pop();
+            auto node_path = queue.pop();
             auto src_node = node_path.toNode(src);
             auto dst_node = node_path.toNode(&dst_model);
             if (src_node->isPrimary()) {

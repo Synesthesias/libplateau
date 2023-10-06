@@ -4,7 +4,7 @@
 namespace plateau::granularityConvert {
     class IModelConverter {
     public:
-        virtual plateau::polygonMesh::Model convert(plateau::polygonMesh::Model* src) const = 0;
+        virtual plateau::polygonMesh::Model convert(const plateau::polygonMesh::Model* src) const = 0;
         virtual ~IModelConverter() = default;
     };
 }

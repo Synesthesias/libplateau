@@ -17,6 +17,6 @@ namespace plateau::granularityConvert {
     class LIBPLATEAU_EXPORT GranularityConverter {
     public:
          /// Modelの粒度を変換したものを作って返します。
-         plateau::polygonMesh::Model convert(plateau::polygonMesh::Model& src, GranularityConvertOption option) const;
+         plateau::polygonMesh::Model convert(const plateau::polygonMesh::Model& src, GranularityConvertOption option) const;
     };
 }
