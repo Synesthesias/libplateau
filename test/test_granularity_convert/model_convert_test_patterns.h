@@ -90,26 +90,26 @@ class ModelConvertTestPatternsFactory {
 public:
     /// テスト用モデル（地域単位）です。次のような構成です。
     /// gml_node <- lod_node <- mesh_node
-    ModelConvertTestPatterns createTestModelOfArea();
+    ModelConvertTestPatterns createTestPatternsOfArea();
 
     /// テスト用モデル（地域単位）のうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
-    ModelConvertTestPatterns createTestModelOfArea_OnlyRoot();
+    ModelConvertTestPatterns createTestPatternsArea_OnlyRoot();
     /// テスト（主要地物）
-    ModelConvertTestPatterns createTestModelOfPrimary();
+    ModelConvertTestPatterns createTestPatternsOfPrimary();
     /// テスト（最小地物）
-    ModelConvertTestPatterns createTestModelOfAtomic();
+    ModelConvertTestPatterns createTestPatternsOfAtomic();
 
     /// テスト用モデル（地域単位）で、主要地物のメッシュがないバージョンです。
-    ModelConvertTestPatterns createTestModelOfArea_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestPatternsOfArea_OnlyAtomicMesh();
     /// テスト（主要地物）
-    ModelConvertTestPatterns createTestModelOfAtomic_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyAtomicMesh();
     /// テスト（最小地物）
-    ModelConvertTestPatterns createTestModelOfPrimary_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestPatternsOfPrimary_OnlyAtomicMesh();
 
     /// テスト用モデル（地域単位）で、CityObjectIndexがないバージョンです。
-    ModelConvertTestPatterns createTestModelOfArea_WithoutCityObjList();
-    ModelConvertTestPatterns createTestModelOfPrimary_WithoutCityObjList();
-    ModelConvertTestPatterns createTestModelOfAtomic_WithoutCityObjList();
+    ModelConvertTestPatterns createTestPatternsOfArea_WithoutCityObjList();
+    ModelConvertTestPatterns createTestPatternsOfPrimary_WithoutCityObjList();
+    ModelConvertTestPatterns createTestPatternsOfAtomic_WithoutCityObjList();
 
 private:
     std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea(std::vector<plateau::polygonMesh::CityObjectIndex> city_object_indices, plateau::polygonMesh::CityObjectList city_obj_list);
