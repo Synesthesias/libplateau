@@ -92,12 +92,15 @@ public:
     /// gml_node <- lod_node <- mesh_node
     ModelConvertTestPatterns createTestPatternsOfArea();
 
-    /// テスト用モデル（地域単位）のうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
-    ModelConvertTestPatterns createTestPatternsArea_OnlyRoot();
     /// テスト（主要地物）
     ModelConvertTestPatterns createTestPatternsOfPrimary();
     /// テスト（最小地物）
     ModelConvertTestPatterns createTestPatternsOfAtomic();
+
+    /// テスト用モデル（地域単位）のうち、gmlノードとlodノードをなくして、ルートノードに直接メッシュがあるパターンをテストします。
+    ModelConvertTestPatterns createTestPatternsOfArea_OnlyRoot();
+    ModelConvertTestPatterns createTestPatternsOfPrimary_OnlyRoot();
+    ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyRoot();
 
     /// テスト用モデル（地域単位）で、主要地物のメッシュがないバージョンです。
     ModelConvertTestPatterns createTestPatternsOfArea_OnlyAtomicMesh();

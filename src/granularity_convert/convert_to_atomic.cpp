@@ -241,7 +241,9 @@ namespace plateau::granularityConvert {
                         auto atomic_mesh = filterByCityObjIndex(*src_mesh, id, 0);
                         if (atomic_mesh.hasVertices()) {
                             // ここでノードを追加します。
-                            auto& atomic_node = new_primary_node->addChildNode(Node(node_name));
+                            auto& atomic_node = new_primary_node == nullptr ?
+                                    dst_model.addNode(Node(node_name)) :
+                                    new_primary_node->addChildNode(Node(node_name));
                             atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
                             atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                         }

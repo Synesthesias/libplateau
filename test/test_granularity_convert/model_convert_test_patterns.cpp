@@ -95,7 +95,15 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     return ret;
 }
 
-ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsArea_OnlyRoot() {
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary() {
+    auto area_patterns = createTestPatternsOfArea();
+    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
+    auto primary_expect = area_patterns.getExpects();
+    return {std::move(primary_model), primary_expect};
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfArea_OnlyRoot() {
 
     auto mesh = createTestMeshOfArea(test_indices_primary_and_atomic, test_city_obj_list_primary_and_atomic);
 
@@ -123,12 +131,20 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsArea
     return ret;
 }
 
-ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary() {
-    auto area_patterns = createTestPatternsOfArea();
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyRoot() {
+    auto area_patterns = createTestPatternsOfArea_OnlyRoot();
     auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
     return {std::move(primary_model), primary_expect};
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyRoot() {
+    auto area_patterns = createTestPatternsOfArea_OnlyRoot();
+    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
+    auto atomic_expects = area_patterns.getExpects();
+    return {std::move(atomic_model), atomic_expects};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh() {
