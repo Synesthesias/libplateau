@@ -29,37 +29,44 @@ namespace plateau::granularityConvert {
                 dst_node->setMesh(std::move(dst_mesh));
             } else {
                 dst_node->reserveChild(dst_node->getChildCount() + src_node->getChildCount());
-                // Primaryでないなら、子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
-                for (int i = 0; i < src_node->getChildCount(); i++) {
-                    const auto& src_child = src_node->getChildAt(i);
-                    dst_node->addChildNode(Node(src_child.getName()));
-                    queue.push(node_path.plus(i));
+                // Primaryに行き着く前にメッシュが見つかった場合、未マージとして保持しておきます。
+                // 入力のメッシュがすべて最小地物である場合にありえます。
+                if (src_node->getMesh() != nullptr) {
+                    unmerged_atomics.push_back(node_path);
+                } else {
+                    for (int i = 0; i < src_node->getChildCount(); i++) {
 
-                    // Primaryに行き着く前にメッシュが見つかった場合、未マージとして保持しておきます。
-                    // 入力のメッシュがすべて最小地物である場合にありえます。
-                    if(src_node->getMesh() != nullptr) {
-                            unmerged_atomics.push_back(node_path);
+                        // 子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
+                        const auto& src_child = src_node->getChildAt(i);
+                        dst_node->addChildNode(Node(src_child.getName()));
+                        queue.push(node_path.plus(i));
                     }
                 }
             }
         }
 
         // FIXME 未マージのものは、とりあえずまとめてルートノード1つにしておきますがもっと適切な方法があるかも……
-//        auto combined_mesh = std::make_unique<Mesh>();
-//        for(const auto& unmerged_path : unmerged_atomics) {
-//            auto src_mesh = unmerged_path.toNode(src)->getMesh();
+        auto combined_mesh = std::make_unique<Mesh>();
+        int atomic_id = 0;
+        for(const auto& unmerged_path : unmerged_atomics) {
+            auto src_mesh = unmerged_path.toNode(src)->getMesh();
+//            auto src_node = unmerged_path.toNode(src);
+//            MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *combined_mesh, 0);
+            MergePrimaryNodeAndChildren().merge(*src_mesh, *combined_mesh, CityObjectIndex(0, atomic_id));
+            atomic_id++;
 //            combined_mesh->merge(*src_mesh, false, true);
 //            auto& src_city_obj_list = src_mesh->getCityObjectList();
 //            for(auto& [city_obj_index, gml_id] : src_city_obj_list) {
 //                combined_mesh->getCityObjectList().add(city_obj_index, gml_id);
 //            }
-//        }
-//        if(combined_mesh->hasVertices()) {
-//            auto combined_node = Node("combined");
-//            combined_node.setMesh(std::move(combined_mesh));
-//            dst_model.addNode(std::move(combined_node));
-//        }
+        }
+        if(combined_mesh->hasVertices()) {
+            auto combined_node = Node("combined");
+            combined_node.setMesh(std::move(combined_mesh));
+            dst_model.addNode(std::move(combined_node));
+        }
 
+        dst_model.eraseEmptyNodes();
         return dst_model;
     }
 }
