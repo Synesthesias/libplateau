@@ -191,9 +191,10 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh_Root() {
     auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
+    auto atomic_expect = createTestPatternsOfAtomic_OnlyAtomicMesh_Root();
     auto options = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), options);
-    return {std::move(primary_model), area_patterns.getExpects()};
+    return {std::move(primary_model), atomic_expect.getExpects()};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyAtomicMesh_Root() {
