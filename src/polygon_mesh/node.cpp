@@ -11,8 +11,8 @@ namespace plateau::polygonMesh {
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
-        name_(std::move(name)),
-        mesh_(std::move(mesh)) {
+        Node(name) {
+        mesh_ = std::move(mesh);
     }
 
     Node& Node::addChildNode(Node&& node) {

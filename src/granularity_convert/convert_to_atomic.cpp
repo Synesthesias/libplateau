@@ -181,7 +181,7 @@ namespace plateau::granularityConvert {
                         bool has_only_0_minus1_mesh = indices_in_mesh.sizeOfPrimary() == 1 &&
                                                     indices_in_mesh.sizeOfAtomic() == 0;
                         bool has_only_0_over_minus1_mesh = indices_in_mesh.sizeOfPrimary() == 0 &&
-                                                           indices_in_mesh.sizeOfAtomic() == 0;
+                                                           indices_in_mesh.sizeOfAtomic() > 0;
 
                         auto* parent = node_path.parent().parent().toNode(&dst_model);
                         bool parent_has_no_mesh =
@@ -206,24 +206,24 @@ namespace plateau::granularityConvert {
                     Node* new_primary_node = primary_node_path.toNode(&dst_model);
                     bool primary_node_created = false;
                     if (primary_node_path.empty() || primary_node_path == node_path) {
-                        // 親にPrimary Nodeがない場合は、Primary Nodeを作ります。
-                        const static std::string default_gml_id = "gml_id_not_found";
-                        std::string primary_gml_id = default_gml_id;
-                        src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
-                        const std::string primary_node_name = primary_gml_id == default_gml_id ?
-                                                        node_path.toNode(src)->getName() : primary_gml_id;
-                        // ここでノードを追加します。
-                        auto dst_parent = node_path.parent().toNode(&dst_model);
-                        new_primary_node = dst_parent == nullptr ?
-                                           &dst_model.addNode(Node(primary_node_name)) : // ルートに追加
-                                           &dst_parent->addChildNode(Node(primary_node_name)); // ノードに追加
-                        new_primary_node->setIsPrimary(true);
+                        // 親にPrimary Nodeがなく、メッシュがある場合は、Primary Nodeを作ります。
                         auto primary_mesh = filterByCityObjIndex(*src_mesh, CityObjectIndex(primary_id, -1), -1);
                         if (primary_mesh.hasVertices()) {
+                            const static std::string default_gml_id = "gml_id_not_found";
+                            std::string primary_gml_id = default_gml_id;
+                            src_city_obj_list.tryGetPrimaryGmlID(primary_id, primary_gml_id);
+                            const std::string primary_node_name = primary_gml_id == default_gml_id ?
+                                                                  node_path.toNode(src)->getName() : primary_gml_id;
+                            // ここでノードを追加します。
+                            auto dst_parent = node_path.parent().toNode(&dst_model);
+                            new_primary_node = dst_parent == nullptr ?
+                                               &dst_model.addNode(Node(primary_node_name)) : // ルートに追加
+                                               &dst_parent->addChildNode(Node(primary_node_name)); // ノードに追加
+                            new_primary_node->setIsPrimary(true);
                             primary_mesh.setCityObjectList({{{{0, -1}, primary_gml_id}}});
                             new_primary_node->setMesh(std::make_unique<Mesh>(primary_mesh));
+                            primary_node_created = true;
                         }
-                        primary_node_created = true;
                     }
 
                     // PrimaryIndex相当のノードの子に、AtomicIndex相当のノードを作ります。
@@ -237,11 +237,11 @@ namespace plateau::granularityConvert {
                         std::string atomic_gml_id = default_gml_id;
                         src_city_obj_list.tryGetAtomicGmlID(id, atomic_gml_id);
                         std::string node_name = atomic_gml_id == default_gml_id ? src_node->getName() : atomic_gml_id;
-                        // ここでノードを追加します。
-                        auto& atomic_node = new_primary_node->addChildNode(Node(node_name));
 
                         auto atomic_mesh = filterByCityObjIndex(*src_mesh, id, CityObjectIndex::invalidIndex());
                         if (atomic_mesh.hasVertices()) {
+                            // ここでノードを追加します。
+                            auto& atomic_node = new_primary_node->addChildNode(Node(node_name));
                             atomic_mesh.setCityObjectList({{{{0, -1}, atomic_gml_id}}});
                             atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                         }
