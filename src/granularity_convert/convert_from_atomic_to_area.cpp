@@ -25,12 +25,13 @@ namespace plateau::granularityConvert {
 
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
         long primary_id = 0;
+        std::vector<NodePath> unmerged_nodes;
         while (!queue.empty()) {
             const auto node_path = queue.pop();
             const auto& src_node = node_path.toNode(src);
             if (src_node->isPrimary()) {
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
-                MergePrimaryNodeAndChildren().merge(*src_node, dst_mesh, primary_id);
+                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id);
                 primary_id++;
             } else {
                 // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
@@ -38,7 +39,19 @@ namespace plateau::granularityConvert {
                 for (int i = 0; i < src_node->getChildCount(); i++) {
                     queue.push(node_path.plus(i));
                 }
+                // Primaryが不明なAtomic
+                if(src_node->getMesh() != nullptr) {
+                    unmerged_nodes.push_back(node_path);
+                }
             }
+        }
+
+        // Primaryが不明なAtomicをマージします。
+        int atomic_id = 0;
+        for(const auto& unmerged_node : unmerged_nodes) {
+            const auto mesh = unmerged_node.toNode(src)->getMesh();
+            MergePrimaryNodeAndChildren().merge(*mesh, dst_mesh, CityObjectIndex(primary_id, atomic_id));
+            atomic_id++;
         }
         return dst_model;
     }

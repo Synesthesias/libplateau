@@ -113,6 +113,7 @@ namespace plateau::polygonMesh {
         bool operator==(const CityObjectList& other) const;
         decltype(TIdMap().begin()) begin() {return city_object_index_to_gml_id_.begin();};
         decltype(TIdMap().end()) end(){return city_object_index_to_gml_id_.end();};
+        TIdMap& getIdMap() { return city_object_index_to_gml_id_; };
 
 
     private:

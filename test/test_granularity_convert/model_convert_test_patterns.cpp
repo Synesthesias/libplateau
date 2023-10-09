@@ -120,6 +120,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     auto& expects_area = expects.at(MeshGranularity::PerCityModelArea);
     expects_area.at(0).expect_node_name_ = "combined";
 
+
     auto& expects_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
     expects_atomic.eraseRange(0,2);
 
@@ -165,9 +166,25 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     auto& expect_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
-    expect_atomic.eraseRange(0, 2);
-    expect_primary.eraseRange(0, 2);
+    expect_atomic.eraseRange(0, 4);
+    expect_primary.eraseRange(0, 4);
     expect_area.at(0).expect_node_name_ = "combined";
+
+    for(int i=0; i<expect_area.nodeCount(); i++) {
+        int atomic_id = 0;
+        CityObjectList expect_area_city_obj_list;
+        std::set<CityObjectIndex> expect_area_city_obj_id_set;
+
+        auto id_map = expect_area.at(i).expect_city_obj_list_.getIdMap();
+        for(auto& [_, gml_id] : id_map) {
+            auto city_obj_id = CityObjectIndex(0, atomic_id++);
+            expect_area_city_obj_list.add(city_obj_id, gml_id);
+            expect_area_city_obj_id_set.insert(city_obj_id);
+        }
+        expect_area.at(i).expect_city_obj_list_ = expect_area_city_obj_list;
+        expect_area.at(i).expect_city_obj_id_set_ = expect_area_city_obj_id_set;
+    }
+
     return {std::move(model), expects};
 }
 
