@@ -155,6 +155,36 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
     return {std::move(primary_model), primary_expect};
 }
 
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfArea_OnlyAtomicMesh_Root() {
+    auto mesh = createTestMeshOfArea(test_indices_only_atomic, test_city_obj_list_indices_only_atomic);
+    auto model = Model();
+    auto& node = model.addNode(Node("root_node"));
+    node.setMesh(std::move(mesh));
+
+    auto expects = createTestPatternsOfArea_OnlyAtomicMesh().getExpects();
+    auto& expect_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
+    expect_atomic.eraseRange(0, 2);
+    expect_primary.eraseRange(0, 2);
+    expect_area.at(0).expect_node_name_ = "combined";
+    return {std::move(model), expects};
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh_Root() {
+    auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
+    auto options = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto primary_model = GranularityConverter().convert(area_patterns.getModel(), options);
+    return {std::move(primary_model), area_patterns.getExpects()};
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyAtomicMesh_Root() {
+    auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
+    auto options = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
+    return {std::move(atomic_model), area_patterns.getExpects()};
+}
+
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfArea_WithoutCityObjList() {
     auto area_patterns = createTestPatternsOfArea();
     auto& model = area_patterns.getModel();

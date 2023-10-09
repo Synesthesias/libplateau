@@ -109,6 +109,12 @@ public:
     /// テスト（最小地物）
     ModelConvertTestPatterns createTestPatternsOfPrimary_OnlyAtomicMesh();
 
+    ModelConvertTestPatterns createTestPatternsOfArea_OnlyAtomicMesh_Root();
+    /// テスト（主要地物）
+    ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyAtomicMesh_Root();
+    /// テスト（最小地物）
+    ModelConvertTestPatterns createTestPatternsOfPrimary_OnlyAtomicMesh_Root();
+
     /// テスト用モデル（地域単位）で、CityObjectIndexがないバージョンです。
     ModelConvertTestPatterns createTestPatternsOfArea_WithoutCityObjList();
     ModelConvertTestPatterns createTestPatternsOfPrimary_WithoutCityObjList();
