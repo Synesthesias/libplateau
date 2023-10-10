@@ -110,6 +110,9 @@ if(COMPILER_SUPPORTS_PIC AND (BUILD_LIB_TYPE STREQUAL "dynamic"))
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 endif()
 
+if(UNIX AND NOT(APPLE))
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive") # libpngのビルドをLinuxで通すために必要です
+endif()
 
 # ソースファイルの文字コードはデフォルトでは、 Windows日本語版のMSVC だと Shift_JIS、それ以外だと UTF-8 です。
 # 今回は文字コードを統一したいので UTF-8 にします。
@@ -258,6 +261,7 @@ if (NOT(IOS OR ANDROID))
           CACHE STRING "Enable ARM NEON optimizations: on|off; on is default" FORCE)
   set(PNG_ARM_NEON_OPT "0"
      CACHE STRING "Enable ARM NEON optimizations")
+  set(PNG_STATIC "defined" CACHE STRING "" FORCE)
   add_subdirectory("3rdparty/libpng")
   set(PNG_INCLUDE_DIRS
     "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
