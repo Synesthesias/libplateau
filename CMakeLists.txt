@@ -258,6 +258,7 @@ if (NOT(IOS OR ANDROID))
           CACHE STRING "Enable ARM NEON optimizations: on|off; on is default" FORCE)
   set(PNG_ARM_NEON_OPT "0"
      CACHE STRING "Enable ARM NEON optimizations")
+  set(PNG_STATIC "defined" CACHE STRING "" FORCE)
   add_subdirectory("3rdparty/libpng")
   set(PNG_INCLUDE_DIRS
     "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
