@@ -34,10 +34,10 @@ extern "C"{
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract_in_extents(
             const CityModelHandle* const city_model_handle,
             const MeshExtractOptions options,
-            const std::vector<plateau::geometry::Extent> extents,
+            const std::vector<plateau::geometry::Extent>* extents,
             Model* const out_model) {
         API_TRY{
-            MeshExtractor::extractInExtents(*out_model, city_model_handle->getCityModel(), options, extents);
+            MeshExtractor::extractInExtents(*out_model, city_model_handle->getCityModel(), options, *extents);
             return APIResult::Success;
         }
         API_CATCH;

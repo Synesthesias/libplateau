@@ -29,11 +29,20 @@ namespace PLATEAU.PolygonMesh
     }
 
 
-    public class CityObjectList : PInvokeDisposable
+    /// <summary>
+    /// <see cref="CityObjectIndex"/>とGML IDを対応付けるネイティブなmapです。
+    /// 注意:
+    /// Meshと紐付けられたCityObjectListはMeshの削除時に一緒に削除されるので、Disposeを呼んではいけません。
+    /// したがって勝手に削除される<see cref="PInvokeDisposable"/>は実装しません。
+    /// どことも紐付けられないCityObjectListに限って、手動でDisposeを呼んでください。
+    /// </summary>
+    public class CityObjectList : IDisposable
     {
+        public IntPtr Handle { get; }
 
-        internal CityObjectList(IntPtr handle) : base(handle)
+        internal CityObjectList(IntPtr handle)
         {
+            Handle = handle;
         }
 
         public static CityObjectList Create()
@@ -85,7 +94,7 @@ namespace PLATEAU.PolygonMesh
             DLLUtil.CheckDllError(result);
         }
         
-        protected override void DisposeNative()
+        public void Dispose()
         {
             var result = NativeMethods.plateau_delete_city_object_list(Handle);
             DLLUtil.CheckDllError(result);

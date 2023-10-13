@@ -13,7 +13,7 @@ namespace PLATEAU.Test.PolygonMesh
             cityObjList.Add(new CityObjectIndex(0,0), "test-gml-id");
             bool found = cityObjList.TryGetAtomicID(new CityObjectIndex(0, 0), out var gmlID);
             Assert.AreEqual("test-gml-id", gmlID);
-            Assert.IsTrue(true);
+            Assert.IsTrue(found);
         }
 
         [TestMethod]
