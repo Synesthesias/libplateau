@@ -12,6 +12,12 @@ namespace PLATEAU.PolygonMesh
         public int PrimaryIndex;
         public int AtomicIndex;
 
+        public CityObjectIndex(int primaryIndex, int atomicIndex)
+        {
+            this.PrimaryIndex = primaryIndex;
+            this.AtomicIndex = atomicIndex;
+        }
+
         public static CityObjectIndex FromUV(PlateauVector2f uv)
         {
             return new CityObjectIndex
@@ -23,13 +29,18 @@ namespace PLATEAU.PolygonMesh
     }
 
 
-    public class CityObjectList
+    public class CityObjectList : PInvokeDisposable
     {
-        public IntPtr Handle { get; }
 
-        internal CityObjectList(IntPtr handle)
+        internal CityObjectList(IntPtr handle) : base(handle)
         {
-            Handle = handle;
+        }
+
+        public static CityObjectList Create()
+        {
+            var result = NativeMethods.plateau_create_city_object_list(out var outPtr);
+            DLLUtil.CheckDllError(result);
+            return new CityObjectList(outPtr);
         }
 
         public CityObjectIndex[] GetAllKeys()
@@ -56,6 +67,30 @@ namespace PLATEAU.PolygonMesh
                 : DLLUtil.ReadUtf8Str(strPtr, strLength);
         }
 
+        public bool TryGetAtomicID(CityObjectIndex index, out string outGmlID)
+        {
+            outGmlID = "";
+            var result =
+                NativeMethods.plateau_city_object_list_try_get_gml_id(Handle, index, out var outGmlIDStrPtr,
+                    out int outStrLength);
+            if (result == APIResult.ErrorValueNotFound) return false;
+            DLLUtil.CheckDllError(result);
+            outGmlID = DLLUtil.ReadUtf8Str(outGmlIDStrPtr, outStrLength);
+            return true;
+        }
+
+        public void Add(CityObjectIndex cityObjIndex, string gmlID)
+        {
+            var result = NativeMethods.plateau_city_object_list_add(Handle, cityObjIndex, gmlID);
+            DLLUtil.CheckDllError(result);
+        }
+        
+        protected override void DisposeNative()
+        {
+            var result = NativeMethods.plateau_delete_city_object_list(Handle);
+            DLLUtil.CheckDllError(result);
+        }
+
         /// <summary>
         /// gml:idに対応する<see cref="CityObjectIndex"/>を取得します。
         /// 存在しない場合は(-1, -1)を返します。
@@ -69,6 +104,11 @@ namespace PLATEAU.PolygonMesh
 
         private static class NativeMethods
         {
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_create_city_object_list(
+                [Out] out IntPtr outCityObjListPtr
+                );
+            
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_delete_city_object_list(
                 [In] IntPtr handle);
@@ -97,6 +137,21 @@ namespace PLATEAU.PolygonMesh
             internal static extern APIResult plateau_city_object_list_get_all_keys(
                 [In] IntPtr handle,
                 [In, Out] IntPtr keys);
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_city_object_list_add(
+                [In] IntPtr cityObjListPtr,
+                [In] CityObjectIndex cityObjIndex,
+                [In] string gmlID
+            );
+
+            [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
+            internal static extern APIResult plateau_city_object_list_try_get_gml_id(
+                [In] IntPtr cityObjListPtr,
+                [In] CityObjectIndex cityObjIndex,
+                [Out] out IntPtr outGmlIDStrPtr,
+                [Out] out int strLength
+            );
         }
     }
 }

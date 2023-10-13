@@ -86,6 +86,22 @@ namespace PLATEAU.Test.GeometryModel
         }
 
         [TestMethod]
+        public void SetAndGetCityObjectList()
+        {
+            var mesh = CreateSimpleMesh();
+            using (var cityObjListToAdd = CityObjectList.Create())
+            {
+                cityObjListToAdd.Add(new CityObjectIndex(0,0), "gml-id");
+                mesh.CityObjectList = cityObjListToAdd;
+            }
+
+            var cityObjList = mesh.CityObjectList;
+            bool found = cityObjList.TryGetAtomicID(new CityObjectIndex(0, 0), out var gmlID);
+            Assert.IsTrue(found);
+            Assert.AreEqual("gml-id", gmlID);
+        }
+
+        [TestMethod]
         public void AddSubMesh()
         {
             var mesh = CreateSimpleMesh();

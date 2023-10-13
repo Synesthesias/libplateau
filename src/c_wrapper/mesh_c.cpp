@@ -94,9 +94,21 @@ extern "C" {
                  CityObjectList,
                  &handle->getCityObjectList())
 
-        /**
-         * UVを取得するマクロです。
-         */
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_set_city_object_list(
+            Mesh* const mesh,
+            const CityObjectList* const city_obj_list
+    ) {
+        API_TRY {
+            mesh->setCityObjectList(*city_obj_list);
+            return APIResult::Success;
+        }
+        API_CATCH
+        return APIResult::ErrorUnknown;
+    }
+
+/**
+ * UVを取得するマクロです。
+ */
 #define PLATEAU_MESH_GET_UV(UV_INDEX)\
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_uv ## UV_INDEX  ( \
             const Mesh* const mesh, \
