@@ -113,9 +113,16 @@ namespace plateau::dataset {
 
         // 検索用に、引数の mesh_codes を文字列のセットにします。
         auto mesh_codes_str_set = std::set<std::string>();
-        for (const auto& mesh_code : mesh_codes) {
-            mesh_codes_str_set.insert(mesh_code.get());
+        for (auto mesh_code : mesh_codes) {
+            // 各地域メッシュについて上位の地域メッシュも含め登録する。
+            // 重複する地域メッシュはinsert関数で弾かれる。
+            for (; mesh_code.getLevel() >= 2; mesh_code = mesh_code.upper()) {
+                if (!mesh_code.isValid())
+                    break;
+                mesh_codes_str_set.insert(mesh_code.get());
+            }
         }
+
         // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
         for (const auto& [sub_folder, files] : dataset_files_) {
             for (const auto& file : files) {

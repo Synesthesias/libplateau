@@ -108,6 +108,7 @@ namespace plateau::polygonMesh {
             const Geometry& geom, std::list<const citygml::Polygon*>& polygons,
             const unsigned lod, long long& out_vertices_count) {
 
+            // 子のジオメトリのポリゴンをすべて取得
             const unsigned int child_count = geom.getGeometriesCount();
             for (unsigned int i = 0; i < child_count; i++) {
                 findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count);
@@ -126,24 +127,31 @@ namespace plateau::polygonMesh {
         void findAllPolygonsInGeometry(
             const Geometry& geom, std::list<const citygml::Polygon*>& polygons,
             const unsigned lod, long long& out_vertices_count,
-            const Extent& extent) {
+            const std::vector<plateau::geometry::Extent> extents) {
 
+            // 子のジオメトリのポリゴンをすべて取得
             const unsigned int child_count = geom.getGeometriesCount();
             for (unsigned int i = 0; i < child_count; i++) {
-                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count);
+                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count, extents);
             }
 
             if (geom.getLOD() != lod) return;
 
+            // 1つでも頂点が範囲内にあるかどうかを探索
             const unsigned int polygon_count = geom.getPolygonsCount();
             for (unsigned int i = 0; i < polygon_count; i++) {
                 const auto& polygon = geom.getPolygon(i);
                 bool is_in_extent = false;
+                // TODO: 計算コストが頂点数と範囲数に比例するため高速化
                 for (const auto& vertex : polygon->getVertices()) {
-                    if (extent.contains(vertex)) {
-                        is_in_extent = true;
-                        break;
+                    for (const auto& extent : extents) {
+                        if (extent.contains(vertex)) {
+                            is_in_extent = true;
+                            break;
+                        }
                     }
+                    if (is_in_extent)
+                        break;
                 }
 
                 if (!is_in_extent)
@@ -171,10 +179,12 @@ namespace plateau::polygonMesh {
     MeshFactory::MeshFactory(
         std::unique_ptr<Mesh>&& target,
         const MeshExtractOptions& mesh_extract_options,
+        const std::vector<plateau::geometry::Extent>& extents,
         const geometry::GeoReference& geo_reference)
 
         : options_(mesh_extract_options)
-        , geo_reference_(geo_reference) {
+        , geo_reference_(geo_reference)
+        , extents_(extents) {
 
         if (target == nullptr)
             mesh_ = std::make_unique<Mesh>();
@@ -224,11 +234,7 @@ namespace plateau::polygonMesh {
         long long vertex_count = 0;
         std::list<const Polygon*> polygons;
 
-        const auto extent = options_.exclude_polygons_outside_extent
-            ? options_.extent
-            : Extent::all();
-
-        findAllPolygons(city_object, lod, polygons, vertex_count, extent);
+        findAllPolygons(city_object, lod, polygons, vertex_count);
         mesh_->reserve(vertex_count);
         for (const auto polygon : polygons) {
             addPolygon(*polygon, gml_path);
@@ -273,13 +279,9 @@ namespace plateau::polygonMesh {
         last_atomic_index_cache_ = city_object_index;
         last_parent_gml_id_cache_ = parent_city_object.getId();
 
-        const auto extent = options_.exclude_polygons_outside_extent
-            ? options_.extent
-            : Extent::all();
-
         long long vertex_count = 0;
         std::list<const Polygon*> polygons;
-        findAllPolygons(city_object, lod, polygons, vertex_count, extent);
+        findAllPolygons(city_object, lod, polygons, vertex_count);
         mesh_->reserve(vertex_count);
         for (const auto polygon : polygons) {
             addPolygon(*polygon, gml_path);
@@ -305,13 +307,9 @@ namespace plateau::polygonMesh {
         for (const auto city_object : city_objects) {
             auto gml_id = city_object->getId();
 
-            const auto extent = options_.exclude_polygons_outside_extent
-                ? options_.extent
-                : Extent::all();
-
             long long vertex_count = 0;
             std::list<const Polygon*> polygons;
-            findAllPolygons(*city_object, lod, polygons, vertex_count, extent);
+            findAllPolygons(*city_object, lod, polygons, vertex_count);
             mesh_->reserve(vertex_count);
             for (const auto polygon : polygons) {
                 addPolygon(*polygon, gml_path);
@@ -331,15 +329,19 @@ namespace plateau::polygonMesh {
 
     void MeshFactory::findAllPolygons(
         const CityObject& city_obj, const unsigned lod,
-        std::list<const Polygon*>& out_polygons, long long& out_vertices_count,
-        const Extent& extent) {
+        std::list<const Polygon*>& out_polygons, long long& out_vertices_count) {
 
         const auto geometry_count = city_obj.getGeometriesCount();
         out_vertices_count = 0;
+
+        std::vector<Extent> extents = { Extent::all() };
+        if (options_.exclude_polygons_outside_extent)
+            extents = extents_;
+
         for (unsigned i = 0; i < geometry_count; i++) {
             findAllPolygonsInGeometry(
                 city_obj.getGeometry(i), out_polygons, lod,
-                out_vertices_count, extent);
+                out_vertices_count, extents);
         }
     }
 

@@ -20,8 +20,18 @@ namespace plateau::polygonMesh {
             const auto vertices_count = vertices.size();
             auto uv = std::vector<TVec2f>();
             uv.reserve(vertices_count);
-            const auto min = geo_ref.convertAxisToENU(bounding_box_min_arg);
-            const auto max = geo_ref.convertAxisToENU(bounding_box_max_arg);
+            auto min = geo_ref.convertAxisToENU(bounding_box_min_arg);
+            auto max = geo_ref.convertAxisToENU(bounding_box_max_arg);
+
+            // 座標変換後に大小関係逆転することがあるため修正
+            const auto tmp = min;
+            min.x = std::min(tmp.x, max.x);
+            min.y = std::min(tmp.y, max.y);
+            min.z = std::min(tmp.z, max.z);
+            max.x = std::max(tmp.x, max.x);
+            max.y = std::max(tmp.y, max.y);
+            max.z = std::max(tmp.z, max.z);
+
             const auto diff = max - min;
             const auto size2d = TVec2d(diff.x, diff.y);
 //            const auto size_longer = std::max(size2d.x, size2d.y); // 縦と横のうち長い方の長さを採用します。非正方形の地形でテクスチャが引き伸ばされることを防ぎます。
@@ -38,8 +48,18 @@ namespace plateau::polygonMesh {
         }
 
         Extent getExtent(const TVec3d min, const TVec3d max, const GeoReference& geo_reference) { // NOLINT(performance-unnecessary-value-param)
-            const auto geo_min = geo_reference.unproject(min);
-            const auto geo_max = geo_reference.unproject(max);
+            auto geo_min = geo_reference.unproject(min);
+            auto geo_max = geo_reference.unproject(max);
+
+            // 座標変換後に大小関係逆転することがあるため修正
+            const auto tmp = geo_min;
+            geo_min.latitude = std::min(tmp.latitude, geo_max.latitude);
+            geo_min.longitude = std::min(tmp.longitude, geo_max.longitude);
+            geo_min.height = std::min(tmp.height, geo_max.height);
+            geo_max.latitude = std::max(tmp.latitude, geo_max.latitude);
+            geo_max.longitude = std::max(tmp.longitude, geo_max.longitude);
+            geo_max.height = std::max(tmp.height, geo_max.height);
+
             return {
                 {geo_min.latitude, geo_min.longitude, -99999},
                 { geo_max.latitude, geo_max.longitude, 99999}

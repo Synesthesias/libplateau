@@ -3,6 +3,7 @@ if(IOS OR ANDROID)
     target_sources(plateau PRIVATE
         "texture_packer_dummy.cpp"
         "texture_image_base_dummy.cpp"
+        "map_zoom_level_searcher.cpp"
     )
 else()
     target_sources(plateau PRIVATE

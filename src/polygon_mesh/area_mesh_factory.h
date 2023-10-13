@@ -23,6 +23,6 @@ namespace plateau::polygonMesh {
          */
         static GridMergeResult
         gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
-                  const plateau::geometry::GeoReference& geo_reference);
+                  const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
     };
 }
