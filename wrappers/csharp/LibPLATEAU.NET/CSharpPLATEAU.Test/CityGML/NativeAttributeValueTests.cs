@@ -5,17 +5,17 @@ using PLATEAU.CityGML;
 namespace PLATEAU.Test.CityGML
 {
     [TestClass]
-    public class AttributeValueTests
+    public class NativeAttributeValueTests
     {
         private static CityModel cityModel;
-        private static AttributesMap attrMap;
+        private static NativeAttributesMap attrMap;
         
         [ClassInitialize]
         public static void ClassInitialize(TestContext _)
         {
             cityModel = TestUtil.LoadTestGMLFile(TestUtil.GmlFileCase.Simple);
             var cityObject = cityModel.RootCityObjects[0];
-            attrMap = cityObject.AttributesMap;
+            attrMap = cityObject.NativeAttributesMap;
         }
 
         [ClassCleanup]
