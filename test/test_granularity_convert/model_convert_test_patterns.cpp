@@ -169,7 +169,12 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
     expect_atomic.eraseRange(0, 4);
+    expect_atomic.at(0).expect_city_obj_list_ = {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-0"}}};
+    expect_atomic.at(1).expect_city_obj_list_ = {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-1"}}};
+    expect_atomic.at(2).expect_city_obj_list_ = {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-0"}}};
+    expect_atomic.at(3).expect_city_obj_list_ = {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-1"}}};
     expect_primary.eraseRange(0, 2);
+    expect_primary.at(0).expect_city_obj_list_ = {{{{0,-1}, "gml_id_not_found"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}};
     expect_area.at(0).expect_node_name_ = "combined";
 
     for(int i=0; i<expect_area.nodeCount(); i++) {
@@ -471,19 +476,19 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                     NodeExpect(/*"primary-1"*/"mesh_node", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect("atomic-0-0", true, 4,
                                {{{0, 0}}},
-                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-0"}}},
+                               {{{{0, -1}, "mesh_node"}, {{0, 0}, "atomic-0-0"}}},
                                {SubMesh(0, 5, "dummy_tex_path_0", nullptr)}),
                     NodeExpect("atomic-0-1", true, 4,
                                {{{0, 0}}},
-                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-1"}}},
+                               {{{{0, -1}, "mesh_node"}, {{0, 0}, "atomic-0-1"}}},
                                {SubMesh(0, 5, "dummy_tex_path_1", nullptr)}),
                     NodeExpect("atomic-1-0", true, 4,
                                {{{0, 0}}},
-                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-0"}}},
+                               {{{{0, -1}, "mesh_node"}, {{0, 0}, "atomic-1-0"}}},
                                {SubMesh(0, 5, "dummy_tex_path_2", nullptr)}),
                     NodeExpect("atomic-1-1", true, 4,
                                {{{0, 0}}},
-                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-1"}}},
+                               {{{{0, -1}, "mesh_node"}, {{0, 0}, "atomic-1-1"}}},
                                {SubMesh(0, 5, "dummy_tex_path_3", nullptr)})
             });
 
@@ -493,13 +498,13 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                     NodeExpect("gml_node", false, 0, {{}}, {}, {}),
                     NodeExpect("lod_node", false, 0, {{}}, {}, {}),
                     NodeExpect(/*"primary-0"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}},
-                                              {{{{0,-1}, "gml_id_not_found"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
+                                              {{{{0,-1}, "mesh_node"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
                                {
                                 SubMesh(0,5,"dummy_tex_path_0", nullptr),
                                 SubMesh(6,11,"dummy_tex_path_1",nullptr)
                                }),
                     NodeExpect(/*"primary-1"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}},
-                                              {{{ {0,-1}, "gml_id_not_found"},{{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}},
+                                              {{{ {0,-1}, "mesh_node"},{{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}},
                                {
                                 SubMesh(0,5,"dummy_tex_path_2", nullptr),
                                 SubMesh(6,11,"dummy_tex_path_3",nullptr)}
@@ -517,8 +522,8 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                                         {1, 1}
                                 }},
                                {{
-                                        {{0, -1}, "gml_id_not_found"},
-                                        {{1, -1}, "gml_id_not_found"},
+                                        {{0, -1}, "mesh_node"},
+                                        {{1, -1}, "mesh_node"},
                                         {{0, 0}, "atomic-0-0"},
                                         {{0, 1}, "atomic-0-1"},
                                         {{1, 0}, "atomic-1-0"},

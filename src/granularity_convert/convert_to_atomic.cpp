@@ -249,6 +249,12 @@ namespace plateau::granularityConvert {
                             // 親となる主要地物のGML IDを記録します。実際は最小地物のみのMeshであっても、対応する主要地物を記憶しておきます。
                             std::string primary_gml_id = default_gml_id;
                             src_city_obj_list.tryGetPrimaryGmlID(id.primary_index, primary_gml_id);
+                            if(primary_gml_id == default_gml_id){
+                                auto primary_node = primary_node_path.toNode(&dst_model);
+                                if(primary_node != nullptr){
+                                    primary_gml_id = primary_node->getName();
+                                }
+                            }
                             const auto primary_id_of_parent_of_atomic = CityObjectIndex(0, CityObjectIndex::invalidIndex());
                             atomic_mesh.getCityObjectList().add(primary_id_of_parent_of_atomic, primary_gml_id);
 
