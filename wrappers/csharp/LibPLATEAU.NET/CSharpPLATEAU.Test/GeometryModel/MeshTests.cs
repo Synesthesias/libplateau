@@ -99,6 +99,7 @@ namespace PLATEAU.Test.GeometryModel
             bool found = cityObjList.TryGetAtomicID(new CityObjectIndex(0, 0), out var gmlID);
             Assert.IsTrue(found);
             Assert.AreEqual("gml-id", gmlID);
+            Assert.AreEqual(1, cityObjList.Length);
         }
 
         [TestMethod]

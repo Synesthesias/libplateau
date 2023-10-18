@@ -40,6 +40,13 @@ extern "C" {
                    return APIResult::Success,
                    ,const char* const gml_id)
 
+    DLL_VALUE_FUNC(plateau_city_object_list_get_size,
+                   CityObjectList,
+                   int,
+                   handle->size())
+
+
+
 /// 関数 plateau_city_object_list_get_atomic_id と似ていますが、
 /// こちらはCityObjectIndexに対応する値がない場合にAPIResult::ErrorValueNotFoundを返します。
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_city_object_list_try_get_gml_id(
