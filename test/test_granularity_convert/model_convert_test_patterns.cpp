@@ -175,16 +175,24 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     for(int i=0; i<expect_area.nodeCount(); i++) {
         int atomic_id = 0;
         CityObjectList expect_area_city_obj_list;
-        std::set<CityObjectIndex> expect_area_city_obj_id_set;
+//        std::set<CityObjectIndex> expect_area_city_obj_id_set;
 
-        auto id_map = expect_area.at(i).expect_city_obj_list_.getIdMap();
-        for(auto& [_, gml_id] : id_map) {
-            auto city_obj_id = CityObjectIndex(0, atomic_id++);
-            expect_area_city_obj_list.add(city_obj_id, gml_id);
-            expect_area_city_obj_id_set.insert(city_obj_id);
-        }
-        expect_area.at(i).expect_city_obj_list_ = expect_area_city_obj_list;
-        expect_area.at(i).expect_city_obj_id_set_ = expect_area_city_obj_id_set;
+//        auto id_map = expect_area.at(i).expect_city_obj_list_.getIdMap();
+//        for(auto& [_, gml_id] : id_map) {
+//            auto city_obj_id = CityObjectIndex(0, atomic_id++);
+//            expect_area_city_obj_list.add(city_obj_id, gml_id);
+//            expect_area_city_obj_id_set.insert(city_obj_id);
+//        }
+
+        expect_area.at(i).expect_city_obj_list_ =
+                {{{{0, -1}, "gml_id_not_found"},
+                  {{0, 0}, "atomic-0-0"},
+                  {{0, 1}, "atomic-0-1"},
+                  {{0, 2}, "atomic-1-0"},
+                  {{0, 3}, "atomic-1-1"}
+                 }};
+//        expect_area.at(i).expect_city_obj_list_ = expect_area_city_obj_list;
+        expect_area.at(i).expect_city_obj_id_set_ = {{0,0}, {0,1}, {0,2}, {0,3}};
     }
 
     return {std::move(model), expects};
@@ -209,8 +217,12 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
                                                           {0, 1},
                                                           {0, 2},
                                                           {0, 3}},
-                                                         {{{{0, 0}, "atomic-0-0"}, {{0, 1}, "atomic-0-1"},
-                                                           {{0, 2}, "atomic-1-0"}, {{0, 3}, "atomic-1-1"}}},
+                                                         {{
+                                                                  {{0, -1}, "gml_id_not_found"},
+                                                             {{0, 0}, "atomic-0-0"},
+                                                             {{0, 1}, "atomic-0-1"},
+                                                           {{0, 2}, "atomic-1-0"},
+                                                           {{0, 3}, "atomic-1-1"}}},
                                                          {
                                                                  SubMesh(0, 5, "dummy_tex_path_0", nullptr),
                                                                  SubMesh(6, 11, "dummy_tex_path_1", nullptr),
@@ -480,12 +492,14 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
             std::vector<NodeExpect>{
                     NodeExpect("gml_node", false, 0, {{}}, {}, {}),
                     NodeExpect("lod_node", false, 0, {{}}, {}, {}),
-                    NodeExpect(/*"primary-0"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}}, {{{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
+                    NodeExpect(/*"primary-0"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}},
+                                              {{{{0,-1}, "gml_id_not_found"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}},
                                {
                                 SubMesh(0,5,"dummy_tex_path_0", nullptr),
                                 SubMesh(6,11,"dummy_tex_path_1",nullptr)
                                }),
-                    NodeExpect(/*"primary-1"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}}, {{{ {{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}}},
+                    NodeExpect(/*"primary-1"*/"mesh_node", true, 4*2, {{{0,0}, {0,1}}},
+                                              {{{ {0,-1}, "gml_id_not_found"},{{0,0}, "atomic-1-0"}, {{0,1},"atomic-1-1"}}},
                                {
                                 SubMesh(0,5,"dummy_tex_path_2", nullptr),
                                 SubMesh(6,11,"dummy_tex_path_3",nullptr)}
@@ -503,6 +517,8 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                                         {1, 1}
                                 }},
                                {{
+                                        {{0, -1}, "gml_id_not_found"},
+                                        {{1, -1}, "gml_id_not_found"},
                                         {{0, 0}, "atomic-0-0"},
                                         {{0, 1}, "atomic-0-1"},
                                         {{1, 0}, "atomic-1-0"},

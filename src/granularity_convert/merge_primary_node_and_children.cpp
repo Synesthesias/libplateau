@@ -45,16 +45,23 @@ namespace plateau::granularityConvert {
         // CityObjectListを更新します。
         const auto& src_city_obj_list = src_mesh.getCityObjectList();
 
-        // 入力メッシュのgml_idを取得します。
-        // 入力は最小地物単位であるという前提なので、srcのCityObjectIndexは(0,0)か(0,-1)のどちらかです。
+        // 入力メッシュのgml_idを取得し、CityObjectListに追加します。
+        // 入力は最小地物単位であるという前提なので、srcのGML IDを取得できるCityObjectIndexは(0,0)です。
+        auto& dst_city_obj_list = dst_mesh.getCityObjectList();
         const static std::string default_gml_id = "gml_id_not_found";
-        std::string gml_id = default_gml_id;
-        src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, 0), gml_id);
-        if (gml_id == default_gml_id) { // (0,0)でないなら(0,-1)のはず
-            src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, -1), gml_id);
+        std::string atomic_gml_id = default_gml_id;
+        if(src_city_obj_list.tryGetAtomicGmlID(CityObjectIndex(0, 0), atomic_gml_id)){
+            dst_city_obj_list.add(id, atomic_gml_id);
         }
 
-        auto& dst_city_obj_list = dst_mesh.getCityObjectList();
-        dst_city_obj_list.add(id, gml_id);
+
+        // srcのCityObjectListのうち、主要地物のものを加えます。
+        auto primary_gml_id = default_gml_id;
+        if(src_city_obj_list.tryGetPrimaryGmlID(0, primary_gml_id)) {
+            const auto dst_primary_index = CityObjectIndex(id.primary_index, CityObjectIndex::invalidIndex());
+            if(!dst_city_obj_list.containsCityObjectIndex(dst_primary_index)) {
+                dst_city_obj_list.add(dst_primary_index, primary_gml_id);
+            }
+        }
     }
 }
