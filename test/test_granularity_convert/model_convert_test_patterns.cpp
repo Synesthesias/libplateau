@@ -20,6 +20,7 @@ void NodeExpect::checkNode(const plateau::polygonMesh::Node* node) const {
             const auto city_obj_id = CityObjectIndex::fromUV(mesh->getUV4().at(i));
             obj_indices_in_mesh.insert(city_obj_id);
         }
+        std::cout << node->getName() << std::endl;
         EXPECT_EQ(obj_indices_in_mesh, expect_city_obj_id_set_);
         EXPECT_EQ(mesh->getCityObjectList(), expect_city_obj_list_);
 
@@ -357,12 +358,30 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
             std::vector<NodeExpect>{
                     NodeExpect("gml_node", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect("lod_node", false, 0, {{none_coi}}, {}, {}),
-                    NodeExpect("primary-0", true, 4, {{{0, -1}}}, {{{{0,-1}, "primary-0"}}}, {SubMesh(0,5,"dummy_tex_path_0",nullptr)}),
-                    NodeExpect("primary-1", true, 4, {{{0, -1}}}, {{{{0,-1}, "primary-1"}}}, {SubMesh(0,5,"dummy_tex_path_5",nullptr)}),
-                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
-                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
-                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)}),
-                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_4",nullptr)})
+                    NodeExpect("primary-0", true, 4,
+                               {{{0, -1}}},
+                               {{{{0, -1}, "primary-0"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_0", nullptr)}),
+                    NodeExpect("primary-1", true, 4,
+                               {{{0, -1}}},
+                               {{{{0, -1}, "primary-1"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_5", nullptr)}),
+                    NodeExpect("atomic-0-0", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_1", nullptr)}),
+                    NodeExpect("atomic-0-1", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_2", nullptr)}),
+                    NodeExpect("atomic-1-0", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_3", nullptr)}),
+                    NodeExpect("atomic-1-1", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_4", nullptr)})
             });
 
     // 主要地物の場合
@@ -438,10 +457,22 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                     NodeExpect("lod_node", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect(/*"primary-0"*/"mesh_node", false, 0, {{none_coi}}, {}, {}),
                     NodeExpect(/*"primary-1"*/"mesh_node", false, 0, {{none_coi}}, {}, {}),
-                    NodeExpect("atomic-0-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-0"}}}, {SubMesh(0,5,"dummy_tex_path_0",nullptr)}),
-                    NodeExpect("atomic-0-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-0-1"}}}, {SubMesh(0,5,"dummy_tex_path_1",nullptr)}),
-                    NodeExpect("atomic-1-0", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-0"}}}, {SubMesh(0,5,"dummy_tex_path_2",nullptr)}),
-                    NodeExpect("atomic-1-1", true, 4, {{{0, 0}}}, {{{{0,0}, "atomic-1-1"}}}, {SubMesh(0,5,"dummy_tex_path_3",nullptr)})
+                    NodeExpect("atomic-0-0", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-0"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_0", nullptr)}),
+                    NodeExpect("atomic-0-1", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-0-1"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_1", nullptr)}),
+                    NodeExpect("atomic-1-0", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-0"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_2", nullptr)}),
+                    NodeExpect("atomic-1-1", true, 4,
+                               {{{0, 0}}},
+                               {{{{0, -1}, "gml_id_not_found"}, {{0, 0}, "atomic-1-1"}}},
+                               {SubMesh(0, 5, "dummy_tex_path_3", nullptr)})
             });
 
     // 主要地物の場合
