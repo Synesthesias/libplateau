@@ -152,7 +152,7 @@ namespace plateau::granularityConvert {
             }
 
             auto src_mesh_tmp = node_path.toNode(src)->getMesh();
-            if (src_mesh_tmp != nullptr) {
+            if (src_mesh_tmp != nullptr && src_mesh_tmp->hasVertices()) {
                 const auto src_node = node_path.toNode(src);
 
                 // どのインデックス(uv4)が含まれるかを列挙します。
@@ -185,7 +185,7 @@ namespace plateau::granularityConvert {
 
                         auto* parent = node_path.parent().parent().toNode(&dst_model);
                         bool parent_has_no_mesh =
-                                parent == nullptr || parent->getMesh() == nullptr;
+                                parent == nullptr || parent->getMesh() == nullptr || (!parent->getMesh()->hasVertices());
 
                         bool is_special_case_a =
                                 parent_has_no_mesh && has_only_0_0_mesh;
@@ -239,7 +239,7 @@ namespace plateau::granularityConvert {
                         std::string node_name = atomic_gml_id == default_gml_id ? src_node->getName() : atomic_gml_id;
 
                         auto atomic_mesh = filterByCityObjIndex(*src_mesh, id, 0);
-                        if (atomic_mesh.hasVertices()) {
+                        if (atomic_mesh.hasVertices() || atomic_mesh.getCityObjectList().size() > 0) {
                             // ここでノードを追加します。
                             auto& atomic_node = new_primary_node == nullptr ?
                                     dst_model.addNode(Node(node_name)) :
@@ -250,15 +250,29 @@ namespace plateau::granularityConvert {
                             std::string primary_gml_id = default_gml_id;
                             src_city_obj_list.tryGetPrimaryGmlID(id.primary_index, primary_gml_id);
                             if(primary_gml_id == default_gml_id){
+//                                auto primary_node = primary_node_path.toNode(&dst_model);
+//                                if(primary_node != nullptr){
+//                                    primary_gml_id = primary_node->getName();
+//                                }
+                            }else{
+                                // 最小地物を見て、はじめて親の主要地物のGML IDが判別できるケースがあります。
                                 auto primary_node = primary_node_path.toNode(&dst_model);
-                                if(primary_node != nullptr){
-                                    primary_gml_id = primary_node->getName();
+                                if(primary_node != nullptr) {
+                                    primary_node->setName(primary_gml_id);
+                                    auto mesh = primary_node->getMesh();
+                                    if(mesh == nullptr) {
+                                        auto mesh_tmp = std::make_unique<Mesh>();
+                                        primary_node->setMesh(std::move(mesh_tmp));
+                                        mesh = primary_node->getMesh();
+                                    }
+                                    auto& primary_city_obj_list = mesh->getCityObjectList();
+                                    if(!primary_city_obj_list.containsCityObjectIndex(CityObjectIndex(0, -1))) {
+                                        primary_city_obj_list.add(CityObjectIndex(0,-1), primary_gml_id);
+                                    }
                                 }
                             }
                             const auto primary_id_of_parent_of_atomic = CityObjectIndex(0, CityObjectIndex::invalidIndex());
                             atomic_mesh.getCityObjectList().add(primary_id_of_parent_of_atomic, primary_gml_id);
-
-
 
                             atomic_node.setMesh(std::make_unique<Mesh>(atomic_mesh));
                         }

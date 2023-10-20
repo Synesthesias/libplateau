@@ -25,7 +25,7 @@ namespace plateau::granularityConvert {
             if (src_node->isPrimary()) {
                 // Primaryなら、src_nodeとその子を結合したメッシュをdst_nodeに持たせます。
                 auto dst_mesh = std::make_unique<Mesh>();
-                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, 0);
+                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, 0, 0);
                 dst_node->setMesh(std::move(dst_mesh));
             } else {
                 dst_node->reserveChild(dst_node->getChildCount() + src_node->getChildCount());

@@ -97,4 +97,17 @@ namespace plateau::polygonMesh {
         }
         return true;
     }
+
+    bool CityObjectList::containsPrimaryGmlId(const std::string& primary_gml_id) const{
+        const auto primaries = getAllPrimaryIndices();
+        bool contains_primary = false;
+        for(auto primary_index : primaries) {
+            auto& gml_id = getPrimaryGmlID(primary_index.primary_index);
+            if(gml_id == primary_gml_id){
+                contains_primary = true;
+                break;
+            }
+        }
+        return contains_primary;
+    }
 }

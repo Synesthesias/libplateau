@@ -145,6 +145,8 @@ private:
 
     const plateau::polygonMesh::CityObjectList test_city_obj_list_indices_only_atomic = {
             {
+                    {{0,-1}, "primary-0"},
+                    {{1,-1}, "primary-1"},
                     {{0,0}, "atomic-0-0"},
                     {{0,1}, "atomic-0-1"},
                     {{1,0}, "atomic-1-0"},

@@ -4,21 +4,22 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    void MergePrimaryNodeAndChildren::mergeWithChildren(const plateau::polygonMesh::Node& src_node_arg, plateau::polygonMesh::Mesh& dst_mesh, int primary_id) const{
+    void MergePrimaryNodeAndChildren::mergeWithChildren(const plateau::polygonMesh::Node& src_node_arg, plateau::polygonMesh::Mesh& dst_mesh, int primary_id, int atomic_id_offset) const{
         std::queue<const Node*> queue;
         queue.push(&src_node_arg);
-        long next_atomic_id = 0;
+        long next_atomic_id = atomic_id_offset;
 
         while (!queue.empty()) {
             const auto& src_node = *queue.front();
             queue.pop();
 
             // メッシュをマージします。
-            if (src_node.getMesh() != nullptr) {
+            if (src_node.getMesh() != nullptr && src_node.getMesh()->hasVertices()) {
                 // UV4
                 int atomic_id;
                 if (src_node.isPrimary()) {
                     atomic_id = -1;
+                    next_atomic_id = 0;
                 } else {
                     atomic_id = next_atomic_id;
                     next_atomic_id++;
@@ -58,8 +59,11 @@ namespace plateau::granularityConvert {
         // srcのCityObjectListのうち、主要地物のものを加えます。
         auto primary_gml_id = default_gml_id;
         if(src_city_obj_list.tryGetPrimaryGmlID(0, primary_gml_id)) {
+            // 重複チェックしてから主要地物をCityObjectListに加えます。
             const auto dst_primary_index = CityObjectIndex(id.primary_index, CityObjectIndex::invalidIndex());
-            if(!dst_city_obj_list.containsCityObjectIndex(dst_primary_index)) {
+            bool contains_primary = dst_city_obj_list.containsPrimaryGmlId(primary_gml_id);
+
+            if(!contains_primary) {
                 dst_city_obj_list.add(dst_primary_index, primary_gml_id);
             }
         }

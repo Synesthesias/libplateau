@@ -26,13 +26,27 @@ namespace plateau::granularityConvert {
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
         long primary_id = 0;
         std::vector<NodePath> unmerged_nodes;
+        int atomic_id_offset = 0;
         while (!queue.empty()) {
             const auto node_path = queue.pop();
             const auto& src_node = node_path.toNode(src);
-            if (src_node->isPrimary()) {
+
+            bool src_contains_primary = src_node->isPrimary();
+            auto src_mesh = src_node->getMesh();
+            if(src_mesh != nullptr) {
+                auto& src_city_obj_list = src_mesh->getCityObjectList();
+                src_contains_primary |= !src_city_obj_list.getAllPrimaryIndices().empty();
+            }
+
+            if (src_contains_primary) {
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
-                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id);
-                primary_id++;
+                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id, atomic_id_offset);
+                if(src_node->isPrimary()) {
+                    primary_id++;
+                    atomic_id_offset = 0;
+                }else{
+                    atomic_id_offset++;
+                }
             } else {
                 // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
                 dst_node.reserveChild(src_node->getChildCount());
@@ -46,13 +60,23 @@ namespace plateau::granularityConvert {
             }
         }
 
-        // Primaryが不明なAtomicをマージします。
-        int atomic_id = 0;
-        for(const auto& unmerged_node : unmerged_nodes) {
-            const auto mesh = unmerged_node.toNode(src)->getMesh();
-            MergePrimaryNodeAndChildren().merge(*mesh, dst_mesh, CityObjectIndex(primary_id, atomic_id));
-            atomic_id++;
-        }
+        // Primary Nodeが不明なAtomicをマージします。
+//        int atomic_id = 0;
+//        for(const auto& unmerged_node : unmerged_nodes) {
+//            const auto src_mesh = unmerged_node.toNode(src)->getMesh();
+//            MergePrimaryNodeAndChildren().merge(*src_mesh, dst_mesh, CityObjectIndex(primary_id, atomic_id));
+//            auto& dst_city_obj_list = dst_mesh.getCityObjectList();
+//            // 主要地物のGML IDを追加
+//            if(!dst_city_obj_list.containsCityObjectIndex(CityObjectIndex(primary_id, -1))){
+//                auto& src_city_obj_list = src_mesh->getCityObjectList();
+//                auto primaries = src_city_obj_list.getAllPrimaryIndices();
+//                for(auto& primary : primaries) {
+//                    auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primary.primary_index);
+//                    dst_city_obj_list.add(primary, primary_gml_id);
+//                }
+//            }
+//            atomic_id++;
+//        }
         return dst_model;
     }
 }

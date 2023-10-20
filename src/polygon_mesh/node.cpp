@@ -32,6 +32,10 @@ namespace plateau::polygonMesh {
         return name_;
     }
 
+    void Node::setName(const std::string& name) {
+        name_ = name;
+    }
+
     Mesh* Node::getMesh() const {
         return mesh_.get();
     }
