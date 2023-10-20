@@ -16,6 +16,7 @@ namespace plateau::granularityConvert {
             queue.push(NodePath({i}));
         }
 
+        int gml_id_not_found_count = 0;
         std::string last_primary_gml_id = "dummy__";
         std::vector<NodePath> unmerged_atomics = {};
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
@@ -32,7 +33,11 @@ namespace plateau::granularityConvert {
                 auto& city_obj_list = mesh->getCityObjectList();
                 auto primaries = city_obj_list.getAllPrimaryIndices();
                 if(!primaries.empty()) {
-                    auto& primary_gml_id = city_obj_list.getPrimaryGmlID(primaries.at(0).primary_index);
+                    auto primary_gml_id = city_obj_list.getPrimaryGmlID(primaries.at(0).primary_index);
+                    if(primary_gml_id == "gml_id_not_found") {// TODO マジックナンバー
+                        primary_gml_id += "_" + std::to_string(gml_id_not_found_count);
+                        gml_id_not_found_count++;
+                    }
                     if(primary_gml_id != last_primary_gml_id) {
                         is_primary_changed = true;
                         last_primary_gml_id = primary_gml_id;
