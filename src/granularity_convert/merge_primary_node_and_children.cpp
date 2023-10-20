@@ -4,7 +4,8 @@
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
-    void MergePrimaryNodeAndChildren::mergeWithChildren(const plateau::polygonMesh::Node& src_node_arg, plateau::polygonMesh::Mesh& dst_mesh, int primary_id, int atomic_id_offset) const{
+    void MergePrimaryNodeAndChildren::mergeWithChildren(const plateau::polygonMesh::Node& src_node_arg,
+                                                        plateau::polygonMesh::Mesh& dst_mesh, int primary_id, int atomic_id_offset) const{
         std::queue<const Node*> queue;
         queue.push(&src_node_arg);
         long next_atomic_id = atomic_id_offset;
@@ -15,6 +16,7 @@ namespace plateau::granularityConvert {
 
             // メッシュをマージします。
             if (src_node.getMesh() != nullptr && src_node.getMesh()->hasVertices()) {
+                int next_primary_id = primary_id;
                 // UV4
                 int atomic_id;
                 if (src_node.isPrimary()) {
@@ -24,7 +26,8 @@ namespace plateau::granularityConvert {
                     atomic_id = next_atomic_id;
                     next_atomic_id++;
                 }
-                merge(*src_node.getMesh(), dst_mesh, CityObjectIndex(primary_id, atomic_id));
+
+                merge(*src_node.getMesh(), dst_mesh, CityObjectIndex(next_primary_id, atomic_id));
             }
 
             // 子ノードをキューに入れます。

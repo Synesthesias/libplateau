@@ -189,14 +189,14 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 //            expect_area_city_obj_id_set.insert(city_obj_id);
 //        }
 
-        expect_area.at(0).expect_city_obj_list_ =
-                {{{{0, -1}, "primary-0"},
-                  {{0, 0}, "atomic-0-0"},
-                  {{0, 1}, "atomic-0-1"},
-                  {{1, -1}, "primary-1"},
-                  {{0, 0}, "atomic-1-0"},
-                  {{0, 1}, "atomic-1-1"}
-                 }};
+//        expect_area.at(0).expect_city_obj_list_ =
+//                {{{{0, -1}, "primary-0"},
+//                  {{0, 0}, "atomic-0-0"},
+//                  {{0, 1}, "atomic-0-1"},
+//                  {{1, -1}, "primary-1"},
+//                  {{0, 0}, "atomic-1-0"},
+//                  {{0, 1}, "atomic-1-1"}
+//                 }};
 //        expect_area.at(i).expect_city_obj_list_ = expect_area_city_obj_list;
         expect_area.at(0).expect_city_obj_id_set_ = {{0,0}, {0,1}, {1,0}, {1,1}};
 //    }

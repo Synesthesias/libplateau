@@ -24,8 +24,9 @@ namespace plateau::granularityConvert {
         }
 
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
-        long primary_id = 0;
+        long primary_id = -1;
         std::vector<NodePath> unmerged_nodes;
+        std::string last_primary_gml_id = "dummy__";
         int atomic_id_offset = 0;
         while (!queue.empty()) {
             const auto node_path = queue.pop();
@@ -39,14 +40,30 @@ namespace plateau::granularityConvert {
             }
 
             if (src_contains_primary) {
+
+                bool should_increment_primary_id = false;
+                if(src_node->getMesh() != nullptr) {
+                    auto& src_city_obj_list = src_node->getMesh()->getCityObjectList();
+                    auto primaries = src_city_obj_list.getAllPrimaryIndices();
+                    if(primaries.size() > 0) {
+                        auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primaries.at(0).primary_index);
+                        if(primary_gml_id != last_primary_gml_id){
+                            should_increment_primary_id = true;
+                            atomic_id_offset = 0;
+                            last_primary_gml_id = primary_gml_id;
+                        }else{
+                            atomic_id_offset++;
+                        }
+                    }
+                }
+                if(src_node->isPrimary()) {
+                    should_increment_primary_id = true;
+                }
+                if(should_increment_primary_id) primary_id++;
+
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
                 MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id, atomic_id_offset);
-                if(src_node->isPrimary()) {
-                    primary_id++;
-                    atomic_id_offset = 0;
-                }else{
-                    atomic_id_offset++;
-                }
+
             } else {
                 // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
                 dst_node.reserveChild(src_node->getChildCount());
