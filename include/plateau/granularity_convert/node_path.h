@@ -24,6 +24,9 @@ namespace plateau::granularityConvert {
         /// ノードパスの末尾に数値を追加したものを作って返します。
         NodePath plus(int next_index) const;
 
+        /// ノードパスの最後の数値を1減らしたノードパスを作って返します。
+        NodePath decrement() const;
+
         /// パスが空ならtrueを返します。
         bool empty() const;
 

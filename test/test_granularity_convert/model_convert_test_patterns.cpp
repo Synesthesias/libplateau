@@ -217,26 +217,27 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto options = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
     auto expects = area_patterns.getExpects();
-    auto expect_primary = ModelExpect({
-                                              NodeExpect("combined", true, 4 * 4,
-                                                         {{0, 0},
-                                                          {0, 1},
-                                                          {0, 2},
-                                                          {0, 3}},
-                                                         {{
-                                                                  {{0, -1}, "primary-0"}, // TODO なんか違和感
-                                                             {{0, 0}, "atomic-0-0"},
-                                                             {{0, 1}, "atomic-0-1"},
-                                                           {{0, 2}, "atomic-1-0"},
-                                                           {{0, 3}, "atomic-1-1"}}},
-                                                         {
-                                                                 SubMesh(0, 5, "dummy_tex_path_0", nullptr),
-                                                                 SubMesh(6, 11, "dummy_tex_path_1", nullptr),
-                                                                 SubMesh(12, 17, "dummy_tex_path_2", nullptr),
-                                                                 SubMesh(18, 23, "dummy_tex_path_3", nullptr)
-                                                         })
-                                      });
-    expects.at(MeshGranularity::PerPrimaryFeatureObject) = expect_primary;
+    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+//    auto expect_primary = ModelExpect({
+//                                              NodeExpect("combined", true, 4 * 4,
+//                                                         {{0, 0},
+//                                                          {0, 1},
+//                                                          {0, 2},
+//                                                          {0, 3}},
+//                                                         {{
+//                                                                  {{0, -1}, "primary-0"}, // TODO なんか違和感
+//                                                             {{0, 0}, "atomic-0-0"},
+//                                                             {{0, 1}, "atomic-0-1"},
+//                                                           {{0, 2}, "atomic-1-0"},
+//                                                           {{0, 3}, "atomic-1-1"}}},
+//                                                         {
+//                                                                 SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+//                                                                 SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+//                                                                 SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+//                                                                 SubMesh(18, 23, "dummy_tex_path_3", nullptr)
+//                                                         })
+//                                      });
+//    expects.at(MeshGranularity::PerPrimaryFeatureObject) = expect_primary;
     return {std::move(atomic_model), expects};
 }
 

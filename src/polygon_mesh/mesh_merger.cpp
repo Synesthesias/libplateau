@@ -35,7 +35,8 @@ namespace plateau::polygonMesh {
 
             const auto& other_sub_meshes = other_mesh.getSubMeshes();
             size_t offset = prev_indices_count;
-            for (const auto& other_sub_mesh : other_sub_meshes) {
+            for(int i=0; i<other_sub_meshes.size(); i++){
+                const auto& other_sub_mesh = other_sub_meshes.at(i);
                 const auto& texture_path = other_sub_mesh.getTexturePath();
                 auto material = other_sub_mesh.getMaterial();
                 size_t start_index = other_sub_mesh.getStartIndex() + offset;

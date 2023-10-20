@@ -30,6 +30,12 @@ namespace plateau::granularityConvert {
         return new_pos;
     }
 
+    NodePath NodePath::decrement() const {
+        auto new_pos = std::vector(positions_);
+        new_pos.at(new_pos.size()-1)--;
+        return new_pos;
+    }
+
     bool NodePath::empty() const {
         return positions_.empty();
     }

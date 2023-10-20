@@ -16,17 +16,56 @@ namespace plateau::granularityConvert {
             queue.push(NodePath({i}));
         }
 
+        std::string last_primary_gml_id = "dummy__";
         std::vector<NodePath> unmerged_atomics = {};
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードの子を含めて結合します。そのprimary_idは0とします。
         while (!queue.empty()) {
             auto node_path = queue.pop();
             auto src_node = node_path.toNode(src);
             auto dst_node = node_path.toNode(&dst_model);
-            if (src_node->isPrimary()) {
+
+            // TODO このへんの処理は ConvertFromAtomicToAreaと似ているのでまとめられるかも
+            bool should_merge_to_last_node = false;
+            bool is_primary_changed = src_node->isPrimary();
+            if(src_node->getMesh() != nullptr) {
+                auto mesh = src_node->getMesh();
+                auto& city_obj_list = mesh->getCityObjectList();
+                auto primaries = city_obj_list.getAllPrimaryIndices();
+                if(!primaries.empty()) {
+                    auto& primary_gml_id = city_obj_list.getPrimaryGmlID(primaries.at(0).primary_index);
+                    if(primary_gml_id != last_primary_gml_id) {
+                        is_primary_changed = true;
+                        last_primary_gml_id = primary_gml_id;
+                        dst_node->setName(primary_gml_id);
+                    }else{
+                        should_merge_to_last_node = true;
+                    }
+                }
+            }
+
+            if (should_merge_to_last_node){
+                auto prev_dst_node = node_path.decrement().toNode(&dst_model);
+                auto dst_mesh = prev_dst_node->getMesh();
+                if(dst_mesh != nullptr) {
+                    auto merged_mesh = std::make_unique<Mesh>();
+                    MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *merged_mesh, 0, 0);
+                    auto& dst_city_obj_list = dst_mesh->getCityObjectList();
+                    int max_atomic_id = 0;
+                    for(auto& [id, _] :dst_city_obj_list.getIdMap()){
+                        max_atomic_id = std::max(id.atomic_index, max_atomic_id);
+                    }
+                    MergePrimaryNodeAndChildren().merge(*merged_mesh, *dst_mesh, CityObjectIndex(0, max_atomic_id+1));
+//                    dst_mesh->merge(*dst_mesh, false, true);
+                    auto& src_city_obj_list = merged_mesh->getCityObjectList();
+
+                }
+            }
+            else if (is_primary_changed) {
                 // Primaryなら、src_nodeとその子を結合したメッシュをdst_nodeに持たせます。
-                auto dst_mesh = std::make_unique<Mesh>();
-                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, 0, 0);
-                dst_node->setMesh(std::move(dst_mesh));
+                auto merged_mesh = std::make_unique<Mesh>();
+                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *merged_mesh, 0, 0);
+                dst_node->setMesh(std::move(merged_mesh));
+
             } else {
                 dst_node->reserveChild(dst_node->getChildCount() + src_node->getChildCount());
                 // Primaryに行き着く前にメッシュが見つかった場合、未マージとして保持しておきます。
