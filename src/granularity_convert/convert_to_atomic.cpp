@@ -11,10 +11,6 @@ namespace plateau::granularityConvert {
 
         // 探索キュー
         auto queue = NodeQueue();
-
-        dst_model.reserveRootNodes(src->getRootNodeCount());
-
-        // ルートノードを探索キューに入れます。
         queue.pushRoot(src);
 
         // 幅優先探索の順番で変換します。
@@ -119,13 +115,7 @@ namespace plateau::granularityConvert {
                             atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
                             // 親となる主要地物のGML IDを記録します。実際は最小地物のみのMeshであっても、対応する主要地物を記憶しておきます。
                             std::string primary_gml_id = default_gml_id;
-                            src_city_obj_list.tryGetPrimaryGmlID(id.primary_index, primary_gml_id);
-                            if(primary_gml_id == default_gml_id){
-//                                auto primary_node = primary_node_path.toNode(&dst_model);
-//                                if(primary_node != nullptr){
-//                                    primary_gml_id = primary_node->getName();
-//                                }
-                            }else{
+                            if(src_city_obj_list.tryGetPrimaryGmlID(id.primary_index, primary_gml_id) ){
                                 // 最小地物を見て、はじめて親の主要地物のGML IDが判別できるケースがあります。
                                 auto primary_node = primary_node_path.toNode(&dst_model);
                                 if(primary_node != nullptr) {
