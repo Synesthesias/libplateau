@@ -15,21 +15,12 @@ namespace plateau::granularityConvert {
         dst_model.reserveRootNodes(src->getRootNodeCount());
 
         // ルートノードを探索キューに入れます。
-        for (int i = 0; i < src->getRootNodeCount(); i++) {
-            queue.push(NodePath({i}));
-        }
+        queue.pushRoot(src);
 
         // 幅優先探索の順番で変換します。
         while (!queue.empty()) {
             auto node_path = queue.pop();
-
-            // 子をキューに追加
-            {
-                auto src_node = node_path.toNode(src);
-                for (int i = 0; i < src_node->getChildCount(); i++) {
-                    queue.push(node_path.plus(i));
-                }
-            }
+            queue.pushChildren(node_path, src);
 
             auto src_mesh_tmp = node_path.toNode(src)->getMesh();
             if (src_mesh_tmp != nullptr && src_mesh_tmp->hasVertices()) {

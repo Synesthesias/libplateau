@@ -10,10 +10,10 @@ namespace plateau::granularityConvert {
         auto queue = NodeQueue();
         dst_model.reserveRootNodes(src->getRootNodeCount());
         // ルートノードを探索キューに加えると同時に、dst_modelに同じノードを準備します。
+        queue.pushRoot(src);
         for (int i = 0; i < src->getRootNodeCount(); i++) {
             const auto& src_node = src->getRootNodeAt(i);
             dst_model.addNode(Node(src_node.getName()));
-            queue.push(NodePath({i}));
         }
 
         int gml_id_not_found_count = 0;
@@ -94,15 +94,8 @@ namespace plateau::granularityConvert {
         int atomic_id = 0;
         for(const auto& unmerged_path : unmerged_atomics) {
             auto src_mesh = unmerged_path.toNode(src)->getMesh();
-//            auto src_node = unmerged_path.toNode(src);
-//            MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *combined_mesh, 0);
             MergePrimaryNodeAndChildren().merge(*src_mesh, *combined_mesh, CityObjectIndex(0, atomic_id));
             atomic_id++;
-//            combined_mesh->merge(*src_mesh, false, true);
-//            auto& src_city_obj_list = src_mesh->getCityObjectList();
-//            for(auto& [city_obj_index, gml_id] : src_city_obj_list) {
-//                combined_mesh->getCityObjectList().add(city_obj_index, gml_id);
-//            }
         }
         if(combined_mesh->hasVertices()) {
             auto combined_node = Node("combined");

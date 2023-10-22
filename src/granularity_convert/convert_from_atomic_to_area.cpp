@@ -17,11 +17,7 @@ namespace plateau::granularityConvert {
 
         // 探索用キュー
         auto queue = NodeQueue();
-
-        // ルートノードを探索キューに加えます。
-        for (int i = 0; i < src->getRootNodeCount(); i++) {
-            queue.push(NodePath({i}));
-        }
+        queue.pushRoot(src);
 
         // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
         long primary_id = -1;
