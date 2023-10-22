@@ -44,6 +44,10 @@ namespace plateau::polygonMesh {
         mesh_ = std::move(mesh);
     }
 
+    bool Node::hasVertices() const {
+        return mesh_ != nullptr && mesh_->hasVertices();
+    }
+
     size_t Node::getChildCount() const {
         return child_nodes_.size();
     }
