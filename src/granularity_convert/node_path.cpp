@@ -40,14 +40,17 @@ namespace plateau::granularityConvert {
         return positions_.empty();
     }
 
-    Node& NodePath::addChildNode(Node&& node, Model* model) {
+    NodePath NodePath::addChildNode(Node&& node, Model* model) {
         if (positions_.empty()) {
-            return model->addNode(std::move(node));
+            model->addNode(std::move(node));
+            return NodePath({(int)model->getRootNodeCount() - 1});
         }
-        return toNode(model)->addChildNode(std::move(node));
+        auto* parent = toNode(model);
+        parent->addChildNode(std::move(node));
+        return plus((int)parent->getChildCount() - 1);
     }
 
-    NodePath NodePath::searchLastPrimaryNodeInPath(Model* model) {
+    NodePath NodePath::searchLastPrimaryNodeInPath(const Model* model) const {
         int found_path_pos = -1;
         if (positions_.empty()) return NodePath({});
         if (model->getRootNodeCount() >= positions_.at(0)) return NodePath({});

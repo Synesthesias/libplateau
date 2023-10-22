@@ -289,6 +289,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
     auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
+
     auto& primary_to_primary = primary_expect.at(MeshGranularity::PerPrimaryFeatureObject);
     primary_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
     primary_to_primary.at(3).expect_node_name_ = "gml_id_not_found_1";
@@ -299,8 +300,8 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
     auto& primary_to_atomic = primary_expect.at(MeshGranularity::PerAtomicFeatureObject);
 //    primary_to_atomic.at(0).expect_node_name_ = "gml_id_not_found_0";
 //    primary_to_atomic.at(1).expect_node_name_ = "gml_id_not_found_1";
-    primary_to_atomic.at(2).expect_node_name_ = "gml_id_not_found_0";
-    primary_to_atomic.at(3).expect_node_name_ = "gml_id_not_found_1";
+    primary_to_atomic.at(2).expect_node_name_ = "gml_id_not_found";
+    primary_to_atomic.at(3).expect_node_name_ = "gml_id_not_found";
     primary_to_atomic.at(4).expect_node_name_ = "gml_id_not_found_0";
     primary_to_atomic.at(5).expect_node_name_ = "gml_id_not_found_0";
     primary_to_atomic.at(6).expect_node_name_ = "gml_id_not_found_1";
