@@ -50,6 +50,15 @@ namespace plateau::granularityConvert {
         return plus((int)parent->getChildCount() - 1);
     }
 
+    void NodePath::addNodeFromSrc(const plateau::polygonMesh::Model& src, plateau::polygonMesh::Model& dst) {
+        const auto src_node = toNode(&src);
+        auto dst_node = parent().addChildNode(Node(src_node->getName()), &dst).toNode(
+                &dst);
+        dst_node->setIsPrimary(src_node->isPrimary());
+    }
+
+    /// 親のうち、isPrimary()==true であるノードパスを返します。
+    /// 複数ある場合、もっとも階層上子であるものを返します。
     NodePath NodePath::searchLastPrimaryNodeInPath(const Model* model) const {
         int found_path_pos = -1;
         if (positions_.empty()) return NodePath({});

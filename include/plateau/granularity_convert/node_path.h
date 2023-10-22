@@ -33,6 +33,9 @@ namespace plateau::granularityConvert {
         /// ノードパスが指すノードに子ノードを追加ます。そのノードパスを返します。
         NodePath addChildNode(plateau::polygonMesh::Node&& node, plateau::polygonMesh::Model* model);
 
+        /// dstに子ノードを追加します。その名前とisPrimaryは、srcのノードパスからコピーしたものになります。
+        void addNodeFromSrc(const plateau::polygonMesh::Model& src, plateau::polygonMesh::Model& dst);
+
         /// パス中にプライマリノードがあればそのパスを返し、なければ空のNodePathを返します。
         /// パス中に複数ある場合は、最後のものを返します。
         NodePath searchLastPrimaryNodeInPath(const plateau::polygonMesh::Model* model) const;

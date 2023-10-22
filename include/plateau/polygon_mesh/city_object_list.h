@@ -97,6 +97,15 @@ namespace plateau::polygonMesh {
             return indices_.size() - sizeOfPrimary();
         }
 
+        /// セットに含まれるPrimaryIndexを列挙します。
+        std::set<int> listPrimaryIndices() const {
+            std::set<int> primaries;
+            for(auto& index : indices_) {
+                primaries.insert(index.primary_index);
+            }
+            return primaries;
+        }
+
         const std::set<CityObjectIndex>& get() const {
             return indices_;
         }

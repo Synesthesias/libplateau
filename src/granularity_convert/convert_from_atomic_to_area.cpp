@@ -30,7 +30,7 @@ namespace plateau::granularityConvert {
 
             bool src_contains_primary = src_node->isPrimary();
             auto src_mesh = src_node->getMesh();
-            if(src_mesh != nullptr) {
+            if (src_mesh != nullptr) {
                 auto& src_city_obj_list = src_mesh->getCityObjectList();
                 src_contains_primary |= !src_city_obj_list.getAllPrimaryIndices().empty();
             }
@@ -38,24 +38,24 @@ namespace plateau::granularityConvert {
             if (src_contains_primary) {
 
                 bool should_increment_primary_id = false;
-                if(src_node->getMesh() != nullptr) {
+                if (src_node->getMesh() != nullptr) {
                     auto& src_city_obj_list = src_node->getMesh()->getCityObjectList();
                     auto primaries = src_city_obj_list.getAllPrimaryIndices();
-                    if(primaries.size() > 0) {
+                    if (!primaries.empty()) {
                         auto& primary_gml_id = src_city_obj_list.getPrimaryGmlID(primaries.at(0).primary_index);
-                        if(primary_gml_id != last_primary_gml_id){
+                        if (primary_gml_id != last_primary_gml_id) {
                             should_increment_primary_id = true;
                             atomic_id_offset = 0;
                             last_primary_gml_id = primary_gml_id;
-                        }else{
+                        } else {
                             atomic_id_offset++;
                         }
                     }
                 }
-                if(src_node->isPrimary()) {
+                if (src_node->isPrimary()) {
                     should_increment_primary_id = true;
                 }
-                if(should_increment_primary_id) primary_id++;
+                if (should_increment_primary_id) primary_id++;
 
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
                 MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id, atomic_id_offset);
@@ -67,7 +67,7 @@ namespace plateau::granularityConvert {
                     queue.push(node_path.plus(i));
                 }
                 // Primaryが不明なAtomic
-                if(src_node->getMesh() != nullptr) {
+                if (src_node->getMesh() != nullptr) {
                     unmerged_nodes.push_back(node_path);
                 }
             }
