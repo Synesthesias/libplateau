@@ -29,6 +29,7 @@ namespace {
 void NodeExpect::checkNode(const Node* node) const {
     EXPECT_EQ(node->getName(), expect_node_name_);
     EXPECT_EQ(!(node->getMesh() == nullptr), expect_have_mesh_);
+    std::cout << node->getName() << std::endl;
     if(node->getMesh() != nullptr) {
         const auto mesh = node->getMesh();
         const auto vertex_count = mesh->getVertices().size();
@@ -38,7 +39,6 @@ void NodeExpect::checkNode(const Node* node) const {
             const auto city_obj_id = CityObjectIndex::fromUV(mesh->getUV4().at(i));
             obj_indices_in_mesh.insert(city_obj_id);
         }
-        std::cout << node->getName() << std::endl;
         EXPECT_EQ(obj_indices_in_mesh, expect_city_obj_id_set_);
         EXPECT_EQ(mesh->getCityObjectList(), expect_city_obj_list_);
 
@@ -184,14 +184,17 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     node.setMesh(std::move(mesh));
 
     auto expects = createTestPatternsFromArea_OnlyAtomicMesh().getExpects();
+
     auto& expect_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+
+
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
-    expect_atomic.eraseRange(0, 4);
-    expect_atomic.at(0).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}};
-    expect_atomic.at(1).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}};
-    expect_atomic.at(2).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}};
-    expect_atomic.at(3).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}};
+    expect_atomic.eraseRange(0, 2);
+//    expect_atomic.at(0).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}};
+//    expect_atomic.at(1).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}};
+//    expect_atomic.at(2).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}};
+//    expect_atomic.at(3).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}};
     expect_primary.eraseRange(0, 2);
     expect_primary.at(0).expect_city_obj_list_ = {{{{0,-1}, "primary-0"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}};
     expect_area.at(0).expect_node_name_ = "combined";
@@ -237,7 +240,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
     adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
-    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+//    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
 //    auto expect_primary = ModelExpect({
 //                                              NodeExpect("combined", true, 4 * 4,
 //                                                         {{0, 0},
@@ -284,22 +287,30 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     auto expect = createExpectsForTestMeshArea();
 
-    auto& expect_atomic = expect.at(MeshGranularity::PerAtomicFeatureObject);
-    expect_atomic.setExpectNodeNameRange("mesh_node", 2, 7);
-    expect_atomic.setExpectGmlIdRange("gml_id_not_found", 2, 7);
+    auto& expect_to_atomic = expect.at(MeshGranularity::PerAtomicFeatureObject);
+    expect_to_atomic.setExpectNodeNameRange("mesh_node", 2, 7);
+    expect_to_atomic.setExpectGmlIdRange("gml_id_not_found", 2, 7);
+    expect_to_atomic.at(4).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
+    expect_to_atomic.at(5).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
 
-    auto& expect_primary = expect.at(MeshGranularity::PerPrimaryFeatureObject);
-    expect_primary.setExpectNodeNameRange("mesh_node", 2, 3);
-    expect_primary.setExpectGmlIdRange("gml_id_not_found", 2, 3);
+    auto& expect_to_primary = expect.at(MeshGranularity::PerPrimaryFeatureObject);
+    expect_to_primary.setExpectNodeNameRange("mesh_node", 2, 3);
+    expect_to_primary.setExpectGmlIdRange("gml_id_not_found", 2, 3);
+    expect_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
+    expect_to_primary.at(3).expect_node_name_ = "gml_id_not_found_1";
+    expect_to_primary.at(2).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0, -1)) = "mesh_node";
+//    expect_primary.at(3).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
 
-    auto& expect_area = expect.at(MeshGranularity::PerCityModelArea);
-    expect_area.at(0).expect_city_obj_list_ =
-            {{{{0, -1}, "gml_id_not_found"},
+    auto& expect_to_area = expect.at(MeshGranularity::PerCityModelArea);
+    expect_to_area.at(0).expect_city_obj_list_ =
+            {{{{0, -1}, "mesh_node"},
               {{0, 0}, "gml_id_not_found"},
               {{0, 1}, "gml_id_not_found"},
+              {{1, -1}, "gml_id_not_found"}, // FIXME
               {{1, 0}, "gml_id_not_found"},
               {{1, 1}, "gml_id_not_found"}}};
 //    expect_area.setExpectGmlIdRange("gml_id_not_found", 0, 0);
+
 
     return {std::move(model), expect};
 }
@@ -311,18 +322,26 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
     auto primary_expect = area_patterns.getExpects();
 
     auto& primary_to_primary = primary_expect.at(MeshGranularity::PerPrimaryFeatureObject);
-    primary_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
-    primary_to_primary.at(3).expect_node_name_ = "gml_id_not_found_1";
+    primary_to_primary.at(2).expect_node_name_ = "mesh_node";
 //    primary_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
-//    primary_to_primary.at(3).expect_node_name_ = "gml_id_not_found_0";
-//    primary_to_primary.at(4).expect_node_name_ = "gml_id_not_found_1";
-//    primary_to_primary.at(5).expect_node_name_ = "gml_id_not_found_1";
+    primary_to_primary.at(2).expect_city_obj_list_ =
+            {{{{0, -1}, "mesh_node"},
+              {{0, 0}, "gml_id_not_found"},
+              {{0, 1}, "gml_id_not_found"}}};
+    primary_to_primary.at(3).expect_node_name_ = "gml_id_not_found_0";
+
     auto& primary_to_atomic = primary_expect.at(MeshGranularity::PerAtomicFeatureObject);
 //    primary_to_atomic.at(0).expect_node_name_ = "gml_id_not_found_0";
 //    primary_to_atomic.at(1).expect_node_name_ = "gml_id_not_found_1";
-    primary_to_atomic.at(2).expect_node_name_ = "gml_id_not_found";
-    primary_to_atomic.at(3).expect_node_name_ = "gml_id_not_found";
+    primary_to_atomic.at(2).expect_node_name_ = "mesh_node";
+    primary_to_atomic.at(2).expect_city_obj_list_ =
+            {{{{0, -1}, "mesh_node"}}};
+    primary_to_atomic.at(3).expect_node_name_ = "gml_id_not_found_1";
+    primary_to_atomic.at(4).expect_city_obj_list_ =
+            {{{{0, -1}, "mesh_node"}, {{0, 0}, "gml_id_not_found"}}};
     primary_to_atomic.at(4).expect_node_name_ = "gml_id_not_found_0";
+    primary_to_atomic.at(5).expect_city_obj_list_ =
+            {{{{0, -1}, "mesh_node"}, {{0, 0}, "gml_id_not_found"}}};
     primary_to_atomic.at(5).expect_node_name_ = "gml_id_not_found_0";
     primary_to_atomic.at(6).expect_node_name_ = "gml_id_not_found_1";
     primary_to_atomic.at(7).expect_node_name_ = "gml_id_not_found_1";

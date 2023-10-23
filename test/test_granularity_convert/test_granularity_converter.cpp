@@ -122,7 +122,7 @@ TEST_F(GranularityConverterTest, convertAreaToArea_WithoutCityObjList) { // NOLI
 }
 
 TEST_F(GranularityConverterTest, convertAreaToPrimary_WithoutCityObjList) { // NOLINT
-    ModelConvertTestPatternsFactory().createTestPatternsOfArea_WithoutCityObjList().test(MeshGranularity::PerAtomicFeatureObject);
+    ModelConvertTestPatternsFactory().createTestPatternsOfArea_WithoutCityObjList().test(MeshGranularity::PerPrimaryFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertAreaToAtomic_WithoutcityObjList) { // NOLINT
