@@ -3,6 +3,8 @@
 #include <plateau/granularity_convert/filter_by_city_obj_index.h>
 #include <set>
 
+#include "plateau/polygon_mesh/model.h"
+
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
 
