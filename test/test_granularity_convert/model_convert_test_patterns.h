@@ -103,7 +103,7 @@ public:
     ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyRoot();
 
     /// テスト用モデル（地域単位）で、主要地物のメッシュがないバージョンです。
-    ModelConvertTestPatterns createTestPatternsOfArea_OnlyAtomicMesh();
+    ModelConvertTestPatterns createTestPatternsFromArea_OnlyAtomicMesh();
     /// テスト（主要地物）
     ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyAtomicMesh();
     /// テスト（最小地物）
@@ -122,6 +122,12 @@ public:
 
 private:
     std::unique_ptr<plateau::polygonMesh::Mesh> createTestMeshOfArea(std::vector<plateau::polygonMesh::CityObjectIndex> city_object_indices, plateau::polygonMesh::CityObjectList city_obj_list);
+
+    /// 最小地物単位の入力をテストするとき、そのテストデータは地域から最小に変換したものが利用されます。
+    /// しかし、地域から変換したものとゲームエンジンからの実際の入力には差異があります。
+    /// その差異を補正してテストデータを実際のゲームエンジンからの入力に近づけることを目的とします。
+    void adjustForTestModelForAtomic(plateau::polygonMesh::Model& model);
+
     ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea();
 
     const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_primary_and_atomic = {

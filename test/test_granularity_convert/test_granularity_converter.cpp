@@ -82,15 +82,15 @@ TEST_F(GranularityConverterTest, convertPrimaryToAtomic) { // NOLINT
 }
 
 TEST_F(GranularityConverterTest, convertAreaToAtomic_OnlyAtomic) { // NOLINT
-    ModelConvertTestPatternsFactory().createTestPatternsOfArea_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
+    ModelConvertTestPatternsFactory().createTestPatternsFromArea_OnlyAtomicMesh().test(MeshGranularity::PerAtomicFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertAreaToPrimary_OnlyAtomic) { // NOLINT
-    ModelConvertTestPatternsFactory().createTestPatternsOfArea_OnlyAtomicMesh().test(MeshGranularity::PerPrimaryFeatureObject);
+    ModelConvertTestPatternsFactory().createTestPatternsFromArea_OnlyAtomicMesh().test(MeshGranularity::PerPrimaryFeatureObject);
 }
 
 TEST_F(GranularityConverterTest, convertAreaToArea_OnlyAtomic) { // NOLINT
-    ModelConvertTestPatternsFactory().createTestPatternsOfArea_OnlyAtomicMesh().test(MeshGranularity::PerCityModelArea);
+    ModelConvertTestPatternsFactory().createTestPatternsFromArea_OnlyAtomicMesh().test(MeshGranularity::PerCityModelArea);
 }
 
 TEST_F(GranularityConverterTest, convertAtomicToArea_OnlyAtomic) { // NOLINT

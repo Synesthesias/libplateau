@@ -8,7 +8,25 @@
 using namespace plateau::polygonMesh;
 using namespace plateau::granularityConvert;
 
-void NodeExpect::checkNode(const plateau::polygonMesh::Node* node) const {
+namespace {
+    /// MeshのCityObjectListについて、AtomicとPrimaryの両方のIDがある場合、Primaryのみを除きます。
+    /// こうすることで、ゲームエンジンから送られる情報とテストデータを合わせます。
+    void removePrimaryFromCityObjectListWithAtomic(Mesh& mesh) {
+        auto& list = mesh.getCityObjectList();
+        auto primary_size = list.getAllPrimaryIndices().size();
+        auto atomic_size = list.size() - primary_size;
+        if(primary_size == 0 || atomic_size ==0) return;
+
+        CityObjectList next_list;
+        for(const auto& [index, gml_id] : list) {
+            if(index.atomic_index == CityObjectIndex::invalidIndex()) continue;
+            next_list.add(index, gml_id);
+        }
+        mesh.setCityObjectList(next_list);
+    }
+}
+
+void NodeExpect::checkNode(const Node* node) const {
     EXPECT_EQ(node->getName(), expect_node_name_);
     EXPECT_EQ(!(node->getMesh() == nullptr), expect_have_mesh_);
     if(node->getMesh() != nullptr) {
@@ -145,13 +163,14 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto area_patterns = createTestPatternsOfArea_OnlyRoot();
     auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
+    adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     return {std::move(atomic_model), expects};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh() {
-    auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh();
+    auto area_patterns = createTestPatternsFromArea_OnlyAtomicMesh();
     auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
@@ -164,7 +183,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     auto& node = model.addNode(Node("root_node"));
     node.setMesh(std::move(mesh));
 
-    auto expects = createTestPatternsOfArea_OnlyAtomicMesh().getExpects();
+    auto expects = createTestPatternsFromArea_OnlyAtomicMesh().getExpects();
     auto& expect_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
     auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
@@ -216,6 +235,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
     auto options = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
+    adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
     auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
 //    auto expect_primary = ModelExpect({
@@ -312,9 +332,10 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_WithoutCityObjList() {
-    auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh();
+    auto area_patterns = createTestPatternsFromArea_OnlyAtomicMesh();
     auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
+    adjustForTestModelForAtomic(atomic_model);
     auto atomic_expect = area_patterns.getExpects();
     return {std::move(atomic_model), atomic_expect};
 }
@@ -327,21 +348,24 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto area_patterns = createTestPatternsOfArea();
     auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
+    adjustForTestModelForAtomic(atomic_model);
     // 期待する変換結果は地域単位と同じです。
     auto atomic_expect = area_patterns.getExpects();
     return {std::move(atomic_model), atomic_expect};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyAtomicMesh() {
-    auto area_model = createTestPatternsOfArea_OnlyAtomicMesh();
+    auto area_model = createTestPatternsFromArea_OnlyAtomicMesh();
     auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_model.getModel(), option);
+    adjustForTestModelForAtomic(atomic_model);
     // 期待する変換結果は地域単位と同じです。
     auto atomic_expect = area_model.getExpects();
     return {std::move(atomic_model), atomic_expect};
 }
 
-std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea(std::vector<CityObjectIndex> city_object_indices, CityObjectList city_obj_list) {
+std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea(
+        std::vector<CityObjectIndex> city_object_indices, CityObjectList city_obj_list) {
     TVec3d base_pos = {0, 0, 0};
     unsigned int base_id = 0;
     std::vector<TVec3d> vertices;
@@ -390,6 +414,21 @@ std::unique_ptr<Mesh> ModelConvertTestPatternsFactory::createTestMeshOfArea(std:
 
     mesh->setCityObjectList(city_obj_list);
     return mesh;
+}
+
+void ModelConvertTestPatternsFactory::adjustForTestModelForAtomic(plateau::polygonMesh::Model& model) {
+    NodeQueue queue;
+    queue.pushRoot(&model);
+    while(!queue.empty()) {
+        auto node_path = queue.pop();
+        auto node = node_path.toNode(&model);
+        node->setIsPrimary(false);
+        auto mesh = node->getMesh();
+        if(mesh != nullptr) {
+            removePrimaryFromCityObjectListWithAtomic(*mesh);
+        }
+        queue.pushChildren(node_path, &model);
+    }
 }
 
 ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::createExpectsForTestMeshArea() {
@@ -484,7 +523,7 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
     return convert_expects;
 }
 
-ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfArea_OnlyAtomicMesh() {
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsFromArea_OnlyAtomicMesh() {
     auto mesh = createTestMeshOfArea(test_indices_only_atomic, test_city_obj_list_indices_only_atomic);
     auto model = Model();
     auto& gml_node = model.addNode(Node("gml_node"));
