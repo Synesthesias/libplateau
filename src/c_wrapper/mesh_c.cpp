@@ -17,6 +17,8 @@ extern "C" {
             const int indices_count,
             TVec2f* uv_1_array,
             const int uv_1_count,
+            TVec2f* uv_4_array,
+            const int uv_4_count,
             SubMesh** sub_mesh_pointers_array,
             const int sub_mesh_count
         ) {
@@ -24,6 +26,7 @@ extern "C" {
                 auto vertices = std::vector<TVec3d>(vertices_array, vertices_array + vertices_count);
                 auto indices = std::vector<unsigned>(indices_array, indices_array + indices_count);
                 auto uv_1 = std::vector<TVec2f>(uv_1_array, uv_1_array + uv_1_count);
+                auto uv_4 = std::vector<TVec2f>(uv_4_array, uv_4_array + uv_4_count);
 
                 auto sub_meshes = std::vector<SubMesh>();
                 for (int i = 0; i < sub_mesh_count; i++) {
@@ -31,7 +34,7 @@ extern "C" {
                     sub_meshes.push_back(*sub_mesh_ptr);
                 }
                 
-            *out_ptr = new Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(sub_meshes), CityObjectList());
+            *out_ptr = new Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(uv_4), std::move(sub_meshes), CityObjectList());
             return libplateau::APIResult::Success;
         }API_CATCH
             return libplateau::APIResult::ErrorUnknown;
@@ -91,9 +94,21 @@ extern "C" {
                  CityObjectList,
                  &handle->getCityObjectList())
 
-        /**
-         * UVを取得するマクロです。
-         */
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_set_city_object_list(
+            Mesh* const mesh,
+            const CityObjectList* const city_obj_list
+    ) {
+        API_TRY {
+            mesh->setCityObjectList(*city_obj_list);
+            return APIResult::Success;
+        }
+        API_CATCH
+        return APIResult::ErrorUnknown;
+    }
+
+/**
+ * UVを取得するマクロです。
+ */
 #define PLATEAU_MESH_GET_UV(UV_INDEX)\
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_get_uv ## UV_INDEX  ( \
             const Mesh* const mesh, \

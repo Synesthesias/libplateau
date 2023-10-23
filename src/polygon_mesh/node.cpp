@@ -6,16 +6,22 @@ namespace plateau::polygonMesh {
 
     Node::Node(std::string name) :
         name_(std::move(name)),
-        mesh_(nullptr) {
+        mesh_(nullptr),
+        is_primary_(false){
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
-        name_(std::move(name)),
-        mesh_(std::move(mesh)) {
+        Node(name) {
+        mesh_ = std::move(mesh);
     }
 
-    void Node::addChildNode(Node&& node) {
+    Node& Node::addChildNode(Node&& node) {
         child_nodes_.push_back(std::forward<Node>(node));
+        return child_nodes_.at(child_nodes_.size()-1);
+    }
+
+    void Node::setChildNodes(std::vector<Node>&& child_nodes) {
+        child_nodes_ = std::move(child_nodes);
     }
 
     Node& Node::addEmptyChildNode(const std::string& name) {
@@ -26,12 +32,20 @@ namespace plateau::polygonMesh {
         return name_;
     }
 
+    void Node::setName(const std::string& name) {
+        name_ = name;
+    }
+
     Mesh* Node::getMesh() const {
         return mesh_.get();
     }
 
     void Node::setMesh(std::unique_ptr<Mesh>&& mesh) {
         mesh_ = std::move(mesh);
+    }
+
+    bool Node::hasVertices() const {
+        return mesh_ != nullptr && mesh_->hasVertices();
     }
 
     size_t Node::getChildCount() const {
@@ -77,5 +91,17 @@ namespace plateau::polygonMesh {
         for (const auto& child : child_nodes_) {
             child.debugString(ss, indent + 1);
         }
+    }
+
+    void Node::setIsPrimary(bool is_primary) {
+        is_primary_ = is_primary;
+    }
+
+    bool Node::isPrimary() const {
+        return is_primary_;
+    }
+
+    void Node::reserveChild(size_t reserve_count) {
+        child_nodes_.reserve(reserve_count);
     }
 }

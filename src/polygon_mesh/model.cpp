@@ -12,8 +12,9 @@ namespace plateau::polygonMesh {
         return std::make_shared<Model>();
     }
 
-    void Model::addNode(Node&& node) {
+    Node& Model::addNode(Node&& node) {
         root_nodes_.push_back(std::move(node));
+        return root_nodes_.at(root_nodes_.size()-1);
     }
 
     Node& Model::addEmptyNode(const std::string& name) {
@@ -71,5 +72,9 @@ namespace plateau::polygonMesh {
             getAllMeshesRecursive(meshes, node);
         }
         return meshes;
+    }
+
+    void Model::reserveRootNodes(size_t reserve_count) {
+        root_nodes_.reserve(reserve_count);
     }
 }

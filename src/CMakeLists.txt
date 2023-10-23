@@ -52,6 +52,7 @@ add_subdirectory(c_wrapper)
 add_subdirectory(dataset)
 add_subdirectory(network)
 add_subdirectory(texture)
+add_subdirectory(granularity_convert)
 
 # libファイルを1つに結合します。
 if(BUILD_LIB_TYPE STREQUAL "static")

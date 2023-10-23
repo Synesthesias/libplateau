@@ -1,4 +1,5 @@
 #include <plateau/polygon_mesh/mesh.h>
+#include <plateau/polygon_mesh/mesh_merger.h>
 
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
@@ -11,11 +12,12 @@ namespace plateau::polygonMesh {
         , uv4_(UV()) {
     }
 
-    Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1,
+    Mesh::Mesh(std::vector<TVec3d>&& vertices, std::vector<unsigned>&& indices, UV&& uv_1, UV&& uv_4,
                std::vector<SubMesh>&& sub_meshes, CityObjectList&& city_object_list)
         : vertices_(std::move(vertices))
         , indices_(std::move(indices))
         , uv1_(std::move(uv_1))
+        , uv4_(std::move(uv_4))
         , sub_meshes_(std::move(sub_meshes))
         , city_object_list_(std::move(city_object_list)) {
     }
@@ -113,6 +115,10 @@ namespace plateau::polygonMesh {
         uv1_ = std::move(uv);
     }
 
+    void Mesh::setUV4(UV&& uv4) {
+        uv4_ = std::move(uv4);
+    }
+
     void Mesh::addUV1(const std::vector<TVec2f>& other_uv_1, unsigned long long other_vertices_size) {
         // UV1を追加します。
         for (const auto& vec : other_uv_1) {
@@ -204,9 +210,25 @@ namespace plateau::polygonMesh {
         return {min, max};
     }
 
+    bool Mesh::hasVertices() const {
+        return !vertices_.empty();
+    }
+
+    void Mesh::merge(const Mesh& other_mesh, const bool invert_mesh_front_back, const bool include_textures) {
+        MeshMerger::mergeMesh(*this, other_mesh, invert_mesh_front_back, include_textures);
+    }
+
 
 
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;
+    }
+
+    CityObjectList& Mesh::getCityObjectList() {
+        return city_object_list_;
+    }
+
+    void Mesh::setCityObjectList(const CityObjectList& city_obj_list) {
+        city_object_list_ = city_obj_list;
     }
 }

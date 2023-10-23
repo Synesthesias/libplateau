@@ -7,10 +7,10 @@ using PLATEAU.CityGML;
 namespace PLATEAU.Test.CityGML
 {
     [TestClass]
-    public class AttributesMapTests
+    public class NativeAttributesMapTests
     {
         private static CityModel cityModel;
-        private static AttributesMap attrMap;
+        private static NativeAttributesMap attrMap;
         
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -19,7 +19,7 @@ namespace PLATEAU.Test.CityGML
             var cityObject = cityModel.RootCityObjects
                 .SelectMany(co => co.CityObjectDescendantsDFS)
                 .First(co => co.ID == "BLD_ae7f1207-dd09-45bc-8881-40533f3700bb");
-            attrMap = cityObject.AttributesMap;
+            attrMap = cityObject.NativeAttributesMap;
         }
 
         [ClassCleanup]
@@ -63,7 +63,7 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void TryGetValue_When_NotFound_Returns_False_And_Value_Null()
         {
-            bool result = attrMap.TryGetValue("DummyNotFound", out AttributeValue value);
+            bool result = attrMap.TryGetValue("DummyNotFound", out NativeAttributeValue value);
             Assert.AreEqual(false, result);
             Assert.IsNull(value);
             
@@ -74,7 +74,7 @@ namespace PLATEAU.Test.CityGML
         {
             const string key = "建物ID";
             const string valueInGmlFile = "13111-bldg-98";
-            bool result = attrMap.TryGetValue(key, out AttributeValue value);
+            bool result = attrMap.TryGetValue(key, out NativeAttributeValue value);
             Assert.AreEqual(true, result);
             Assert.IsNotNull(value);
             string actualStr = value.AsString;

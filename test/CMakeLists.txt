@@ -49,6 +49,8 @@ add_executable(plateau_test
     "test_map_zoom_level_searcher.cpp"
         )
 
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test_granularity_convert")
+
 target_link_libraries(plateau_test gtest gtest_main plateau citygml)
 
 # Visual Studio 以外向けに出力先を設定します。

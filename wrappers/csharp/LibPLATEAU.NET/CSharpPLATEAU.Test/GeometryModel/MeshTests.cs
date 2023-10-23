@@ -86,6 +86,23 @@ namespace PLATEAU.Test.GeometryModel
         }
 
         [TestMethod]
+        public void SetAndGetCityObjectList()
+        {
+            var mesh = CreateSimpleMesh();
+            using (var cityObjListToAdd = CityObjectList.Create())
+            {
+                cityObjListToAdd.Add(new CityObjectIndex(0,0), "gml-id");
+                mesh.CityObjectList = cityObjListToAdd;
+            }
+
+            var cityObjList = mesh.CityObjectList;
+            bool found = cityObjList.TryGetAtomicID(new CityObjectIndex(0, 0), out var gmlID);
+            Assert.IsTrue(found);
+            Assert.AreEqual("gml-id", gmlID);
+            Assert.AreEqual(1, cityObjList.Length);
+        }
+
+        [TestMethod]
         public void AddSubMesh()
         {
             var mesh = CreateSimpleMesh();
@@ -96,13 +113,13 @@ namespace PLATEAU.Test.GeometryModel
 
         private static Mesh CreateSimpleMesh()
         {
-            SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var subMeshes);
-            var mesh = Mesh.Create(vertices, indices, uv1, subMeshes);
+            SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var uv4, out var subMeshes);
+            var mesh = Mesh.Create(vertices, indices, uv1, uv4, subMeshes);
             return mesh;
         }
 
         private static void SimpleMeshInfo(out PlateauVector3d[] vertices, out uint[] indices,
-            out PlateauVector2f[] uv1, out SubMesh[] subMeshes)
+            out PlateauVector2f[] uv1, out PlateauVector2f[] uv4, out SubMesh[] subMeshes)
         {
             vertices = new[]
             {
@@ -119,6 +136,13 @@ namespace PLATEAU.Test.GeometryModel
                 new PlateauVector2f(1.1f, 1.2f),
                 new PlateauVector2f(2.1f, 2.2f),
                 new PlateauVector2f(3.1f, 3.2f)
+            };
+            uv4 = new[]
+            {
+                new PlateauVector2f(0, 0),
+                new PlateauVector2f(0, 0),
+                new PlateauVector2f(0, 0),
+                new PlateauVector2f(0, 0)
             };
             subMeshes = new[]
             {
