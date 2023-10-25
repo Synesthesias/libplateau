@@ -1,5 +1,5 @@
 #include <plateau/granularity_convert/convert_from_atomic_to_area.h>
-#include <plateau/granularity_convert/node_queue.h>
+#include <plateau/granularity_convert/node_stack.h>
 #include <plateau/granularity_convert/merge_primary_node_and_children.h>
 
 namespace plateau::granularityConvert {
@@ -7,29 +7,29 @@ namespace plateau::granularityConvert {
 
     Model ConvertFromAtomicToArea::convert(const Model* src) const {
         auto dst_model = Model();
-        const auto root_node_name = src->getRootNodeCount() == 1 ?
-                                    src->getRootNodeAt(0).getName() : "combined";
-        dst_model.reserveRootNodes(src->getRootNodeCount());
-        auto& dst_node = dst_model.addNode(Node(root_node_name));
-        dst_node.setIsPrimary(true);
-        dst_node.setMesh(std::make_unique<Mesh>());
-        auto& dst_mesh = *dst_node.getMesh();
 
-        // 探索用キュー
-        auto queue = NodeQueue();
-        queue.pushRoot(src);
+        if (src->getRootNodeCount() == 0)
+            return dst_model;
 
-        // 幅優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
+        // 深さ優先探索でPrimaryなNodeを探し、Primaryが見つかるたびにそのノードを子を含めて結合し、primary_idをインクリメントします。
         long primary_id = -1;
-        std::vector<NodePath> unmerged_nodes;
         std::string last_primary_gml_id = "dummy__";
         int atomic_id_offset = 0;
-        while (!queue.empty()) {
-            const auto node_path = queue.pop();
+
+        Mesh* dst_mesh = nullptr;
+        Node* dst_node = nullptr;
+        // 探索用スタック
+        auto stack = NodeStack();
+        stack.pushRoot(src);
+        int primary_loop_count = -1;
+
+        // 深さ優先探索でsrcを走査
+        while (!stack.empty()) {
+            const auto node_path = stack.pop();
             const auto& src_node = node_path.toNode(src);
 
             bool src_contains_primary = src_node->isPrimary();
-            auto src_mesh = src_node->getMesh();
+            const auto src_mesh = src_node->getMesh();
             if (src_mesh != nullptr) {
                 auto& src_city_obj_list = src_mesh->getCityObjectList();
                 src_contains_primary |= !src_city_obj_list.getAllPrimaryIndices().empty();
@@ -37,6 +37,7 @@ namespace plateau::granularityConvert {
 
             if (src_contains_primary) {
 
+                primary_loop_count++;
                 bool should_increment_primary_id = false;
                 if (src_node->getMesh() != nullptr) {
                     auto& src_city_obj_list = src_node->getMesh()->getCityObjectList();
@@ -58,17 +59,63 @@ namespace plateau::granularityConvert {
                 if (should_increment_primary_id) primary_id++;
 
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
-                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, dst_mesh, primary_id, atomic_id_offset);
+
+                if (dst_mesh == nullptr) { // ループ中、最初にPrimaryであるとき
+                    // 最初にdst_meshとdst_nodeを作ります。
+
+                    // 親までのtree構造はsrcとdstで同じはずなのでsrcのpathを利用して親を取得
+                    const auto parent = node_path.parent().toNode(&dst_model);
+
+                    if (parent == nullptr) {
+                        dst_node = &dst_model.addEmptyNode(src_node->getName());
+                    } else {
+                        dst_node = &parent->addEmptyChildNode(src_node->getName());
+                    }
+                    dst_node->setMesh(std::make_unique<Mesh>());
+                    dst_mesh = dst_node->getMesh();
+                }
+                MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, primary_id, atomic_id_offset);
+
+                // dst_nodeの名前は、マージ対象のPrimaryが1つの場合はsrc_nodeと同じ名前にすれば良いですが、
+                // 2つ以上の場合はそれではそぐわないのでcombinedという名前にします。
+                if(primary_loop_count >= 1) {
+                    dst_node->setName("combined");
+                }
 
             } else {
-                // PrimaryなNodeでなければ、Primaryに行き着くまで探索を続けます。
-                dst_node.reserveChild(src_node->getChildCount());
-                for (int i = 0; i < src_node->getChildCount(); i++) {
-                    queue.push(node_path.plus(i));
+                // PrimaryなNodeでなければ空のNodeを作成
+
+                // 親までのtree構造はsrcとdstで同じはずなのでsrcのpathを利用して親を取得
+                const auto parent = node_path.parent().toNode(&dst_model);
+
+                Node* dst_node;
+                if (parent == nullptr) {
+                    dst_node = &dst_model.addEmptyNode(src_node->getName());
+                } else {
+                    dst_node = &parent->addEmptyChildNode(src_node->getName());
                 }
+
+                // 格納先が変わるのでPrimary ID, dst_meshはリセット
+                primary_id = -1;
+                dst_mesh = nullptr;
+
                 // Primaryが不明なAtomic
                 if (src_node->getMesh() != nullptr) {
-                    unmerged_nodes.push_back(node_path);
+                    // とりあえず詰め込む
+                    // TODO: 分離して保持？
+                    dst_node->setMesh(std::make_unique<Mesh>());
+                    dst_node->getMesh()->merge(*src_node->getMesh(), false, true);
+                }
+
+                // 子がなければ終了(本来ならあるはず)
+                if (src_node->getChildCount() == 0) {
+                    continue;
+                }
+
+                // Primaryに行き着くまで探索を続けます。
+                // index 0から処理したいため逆順にpush
+                for (int i = src_node->getChildCount() - 1; i >= 0; i--) {
+                    stack.push(node_path.plus(i));
                 }
             }
         }
