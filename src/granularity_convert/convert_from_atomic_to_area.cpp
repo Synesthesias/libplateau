@@ -17,12 +17,15 @@ namespace plateau::granularityConvert {
         int atomic_id_offset = 0;
 
         Mesh* dst_mesh = nullptr;
+        Node* dst_node = nullptr;
         // 探索用スタック
         auto stack = NodeStack();
-        stack.push(NodePath({ 0 }));
+        stack.pushRoot(src);
+        int loop_count = -1;
 
         // 深さ優先探索でsrcを走査
         while (!stack.empty()) {
+            loop_count++;
             const auto node_path = stack.pop();
             const auto& src_node = node_path.toNode(src);
 
@@ -56,20 +59,28 @@ namespace plateau::granularityConvert {
                 if (should_increment_primary_id) primary_id++;
 
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
-                if (dst_mesh == nullptr) {
+
+                if (dst_mesh == nullptr) { // ループの初回の場合
+                    // 最初にdst_meshとdst_nodeを作ります。
+
                     // 親までのtree構造はsrcとdstで同じはずなのでsrcのpathを利用して親を取得
                     const auto parent = node_path.parent().toNode(&dst_model);
 
-                    Node* dst_node;
                     if (parent == nullptr) {
-                        dst_node = &dst_model.addEmptyNode("combined");
+                        dst_node = &dst_model.addEmptyNode(src_node->getName());
                     } else {
-                        dst_node = &parent->addEmptyChildNode("combined");
+                        dst_node = &parent->addEmptyChildNode(src_node->getName());
                     }
                     dst_node->setMesh(std::make_unique<Mesh>());
                     dst_mesh = dst_node->getMesh();
                 }
                 MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, primary_id, atomic_id_offset);
+
+                // dst_nodeの名前は、マージ対象が1つの場合はsrc_nodeと同じ名前にすれば良いですが、
+                // 2つ以上の場合はそれではそぐわないのでcombinedという名前にします。
+                if(loop_count == 2) {
+                    dst_node->setName("combined");
+                }
 
             } else {
                 // PrimaryなNodeでなければ空のNodeを作成
