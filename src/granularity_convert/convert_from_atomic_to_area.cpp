@@ -78,7 +78,7 @@ namespace plateau::granularityConvert {
 
                 // dst_nodeの名前は、マージ対象のPrimaryが1つの場合はsrc_nodeと同じ名前にすれば良いですが、
                 // 2つ以上の場合はそれではそぐわないのでcombinedという名前にします。
-                if(primary_loop_count == 1) { // ループ中のPrimaryが2回目のとき
+                if(primary_loop_count >= 1) {
                     dst_node->setName("combined");
                 }
 
