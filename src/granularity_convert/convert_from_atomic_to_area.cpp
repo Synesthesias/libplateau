@@ -21,11 +21,10 @@ namespace plateau::granularityConvert {
         // 探索用スタック
         auto stack = NodeStack();
         stack.pushRoot(src);
-        int loop_count = -1;
+        int primary_loop_count = -1;
 
         // 深さ優先探索でsrcを走査
         while (!stack.empty()) {
-            loop_count++;
             const auto node_path = stack.pop();
             const auto& src_node = node_path.toNode(src);
 
@@ -38,6 +37,7 @@ namespace plateau::granularityConvert {
 
             if (src_contains_primary) {
 
+                primary_loop_count++;
                 bool should_increment_primary_id = false;
                 if (src_node->getMesh() != nullptr) {
                     auto& src_city_obj_list = src_node->getMesh()->getCityObjectList();
@@ -60,7 +60,7 @@ namespace plateau::granularityConvert {
 
                 // PrimaryなNodeが見つかったら、そのノードと子をマージします。
 
-                if (dst_mesh == nullptr) { // ループの初回の場合
+                if (dst_mesh == nullptr) { // ループ中、最初にPrimaryであるとき
                     // 最初にdst_meshとdst_nodeを作ります。
 
                     // 親までのtree構造はsrcとdstで同じはずなのでsrcのpathを利用して親を取得
@@ -76,9 +76,9 @@ namespace plateau::granularityConvert {
                 }
                 MergePrimaryNodeAndChildren().mergeWithChildren(*src_node, *dst_mesh, primary_id, atomic_id_offset);
 
-                // dst_nodeの名前は、マージ対象が1つの場合はsrc_nodeと同じ名前にすれば良いですが、
+                // dst_nodeの名前は、マージ対象のPrimaryが1つの場合はsrc_nodeと同じ名前にすれば良いですが、
                 // 2つ以上の場合はそれではそぐわないのでcombinedという名前にします。
-                if(loop_count == 2) {
+                if(primary_loop_count == 1) { // ループ中のPrimaryが2回目のとき
                     dst_node->setName("combined");
                 }
 

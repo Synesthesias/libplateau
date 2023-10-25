@@ -136,15 +136,32 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     // テストの期待値からgmlノードとlodノードの分を除いて、ルートノードを追加します。
     auto expects = createExpectsForTestMeshArea();
 
-    auto& expects_area = expects.at(MeshGranularity::PerCityModelArea);
-    expects_area.at(0).expect_node_name_ = "combined";
+    auto& expects_to_area = expects.at(MeshGranularity::PerCityModelArea);
+    expects_to_area.eraseRange(0, 2);
+    expects_to_area.at(0).expect_node_name_ = "combined";
+    expects_to_area.at(0).expect_city_obj_list_ =
+            {{{{0, -1}, "primary-1"},
+              {{0, 0}, "atomic-1-0"},
+              {{0, 1}, "atomic-1-1"},
+              {{1, -1}, "primary-0"},
+              {{1, 0}, "atomic-0-0"},
+              {{1, 1}, "atomic-0-1"}}};
+    expects_to_area.at(0).expect_sub_meshes_ =
+            {
+                    SubMesh(0, 5, "dummy_tex_path_5", nullptr),
+                    SubMesh(6, 11, "dummy_tex_path_3", nullptr),
+                    SubMesh(12, 17, "dummy_tex_path_4", nullptr),
+                    SubMesh(18, 23, "dummy_tex_path_0", nullptr),
+                    SubMesh(24, 29, "dummy_tex_path_1", nullptr),
+                    SubMesh(30, 35, "dummy_tex_path_2", nullptr)
+            };
 
 
-    auto& expects_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
-    expects_atomic.eraseRange(0,2);
+    auto& expects_to_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    expects_to_atomic.eraseRange(0, 2);
 
-    auto& expects_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
-    expects_primary.eraseRange(0, 2);
+    auto& expects_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    expects_to_primary.eraseRange(0, 2);
 
     auto ret = ModelConvertTestPatterns(std::move(src_model), expects);
 
@@ -185,43 +202,36 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     auto expects = createTestPatternsFromArea_OnlyAtomicMesh().getExpects();
 
-    auto& expect_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& expect_to_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    expect_to_atomic.eraseRange(0, 2);
 
+    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    expect_to_primary.eraseRange(0, 2);
+    expect_to_primary.at(0).expect_city_obj_list_ = {
+            {{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}, {{0, 1}, "atomic-0-1"}}};
 
-    auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
-    auto& expect_area = expects.at(MeshGranularity::PerCityModelArea);
-    expect_atomic.eraseRange(0, 2);
-//    expect_atomic.at(0).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}};
-//    expect_atomic.at(1).expect_city_obj_list_ = {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}};
-//    expect_atomic.at(2).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}};
-//    expect_atomic.at(3).expect_city_obj_list_ = {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}};
-    expect_primary.eraseRange(0, 2);
-    expect_primary.at(0).expect_city_obj_list_ = {{{{0,-1}, "primary-0"},{{0,0}, "atomic-0-0"}, {{0,1},"atomic-0-1"}}};
-    expect_area.at(0).expect_node_name_ = "combined";
-
-//    for(int i=0; i<expect_area.nodeCount(); i++) {
-        int atomic_id = 0;
-        CityObjectList expect_area_city_obj_list;
-//        std::set<CityObjectIndex> expect_area_city_obj_id_set;
-
-//        auto id_map = expect_area.at(i).expect_city_obj_list_.getIdMap();
-//        for(auto& [_, gml_id] : id_map) {
-//            auto city_obj_id = CityObjectIndex(0, atomic_id++);
-//            expect_area_city_obj_list.add(city_obj_id, gml_id);
-//            expect_area_city_obj_id_set.insert(city_obj_id);
-//        }
-
-//        expect_area.at(0).expect_city_obj_list_ =
-//                {{{{0, -1}, "primary-0"},
-//                  {{0, 0}, "atomic-0-0"},
-//                  {{0, 1}, "atomic-0-1"},
-//                  {{1, -1}, "primary-1"},
-//                  {{0, 0}, "atomic-1-0"},
-//                  {{0, 1}, "atomic-1-1"}
-//                 }};
-//        expect_area.at(i).expect_city_obj_list_ = expect_area_city_obj_list;
-        expect_area.at(0).expect_city_obj_id_set_ = {{0,0}, {0,1}, {1,0}, {1,1}};
-//    }
+    auto& expect_to_area = expects.at(MeshGranularity::PerCityModelArea);
+    expect_to_area.eraseRange(0, 2);
+    expect_to_area.at(0).expect_node_name_ = "combined";
+//    CityObjectList expect_area_city_obj_list;
+    expect_to_area.at(0).expect_city_obj_id_set_ = {{0, 0},
+                                                    {0, 1},
+                                                    {1, 0},
+                                                    {1, 1}};
+    expect_to_area.at(0).expect_city_obj_list_ =
+            {{{{0, -1}, "primary-1"},
+              {{0, 0}, "atomic-1-0"},
+              {{0, 1}, "atomic-1-1"},
+              {{1, -1}, "primary-0"},
+              {{1, 0}, "atomic-0-0"},
+              {{1, 1}, "atomic-0-1"}}};
+    expect_to_area.at(0).expect_sub_meshes_ =
+            {
+                    SubMesh(0, 5, "dummy_tex_path_2", nullptr),
+                    SubMesh(6, 11, "dummy_tex_path_3", nullptr),
+                    SubMesh(12, 17, "dummy_tex_path_0", nullptr),
+                    SubMesh(18, 23, "dummy_tex_path_1", nullptr)
+            };
 
     return {std::move(model), expects};
 }
@@ -240,27 +250,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
     adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
-//    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
-//    auto expect_primary = ModelExpect({
-//                                              NodeExpect("combined", true, 4 * 4,
-//                                                         {{0, 0},
-//                                                          {0, 1},
-//                                                          {0, 2},
-//                                                          {0, 3}},
-//                                                         {{
-//                                                                  {{0, -1}, "primary-0"}, // TODO なんか違和感
-//                                                             {{0, 0}, "atomic-0-0"},
-//                                                             {{0, 1}, "atomic-0-1"},
-//                                                           {{0, 2}, "atomic-1-0"},
-//                                                           {{0, 3}, "atomic-1-1"}}},
-//                                                         {
-//                                                                 SubMesh(0, 5, "dummy_tex_path_0", nullptr),
-//                                                                 SubMesh(6, 11, "dummy_tex_path_1", nullptr),
-//                                                                 SubMesh(12, 17, "dummy_tex_path_2", nullptr),
-//                                                                 SubMesh(18, 23, "dummy_tex_path_3", nullptr)
-//                                                         })
-//                                      });
-//    expects.at(MeshGranularity::PerPrimaryFeatureObject) = expect_primary;
+
     return {std::move(atomic_model), expects};
 }
 
@@ -299,10 +289,9 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     expect_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
     expect_to_primary.at(3).expect_node_name_ = "gml_id_not_found_1";
     expect_to_primary.at(2).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0, -1)) = "mesh_node";
-//    expect_primary.at(3).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
 
     auto& expect_to_area = expect.at(MeshGranularity::PerCityModelArea);
-    expect_to_area.at(0).expect_city_obj_list_ =
+    expect_to_area.at(2).expect_city_obj_list_ =
             {{{{0, -1}, "mesh_node"},
               {{0, 0}, "gml_id_not_found"},
               {{0, 1}, "gml_id_not_found"},
@@ -506,7 +495,9 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
     // 地域単位の場合
     auto area_expect = ModelExpect(
             std::vector<NodeExpect>{
-                    NodeExpect("gml_node", true, 4 * 6,
+                    NodeExpect("gml_node", false, 0, {}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {}, {}, {}),
+                    NodeExpect("combined", true, 4 * 6,
                                {{
                                         {0, -1},
                                         {0, 0},
@@ -601,7 +592,9 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsFrom
     // 地域単位の場合
     auto area_expect = ModelExpect(
             std::vector<NodeExpect>{
-                    NodeExpect("gml_node", true, 4 * 4,
+                    NodeExpect("gml_node", false, 0, {}, {}, {}),
+                    NodeExpect("lod_node", false, 0, {}, {}, {}),
+                    NodeExpect("combined", true, 4 * 4,
                                {{
                                         {0, 0},
                                         {0, 1},
