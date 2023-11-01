@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <plateau/dataset/lod_searcher.h>
 #include <fstream>
+#include "plateau/dataset/city_model_package.h"
 
 namespace plateau::dataset {
     class LodSearcherTest : public ::testing::Test {
@@ -13,7 +14,7 @@ namespace plateau::dataset {
         int getMaxLod(const std::string& content) {
             auto string_buf = std::stringbuf(content);
             auto istream = std::istream(&string_buf);
-            return LodSearcher::searchLodsInIstream(istream).getMax();
+            return LodSearcher::searchMaxLodInIstream(istream, CityModelPackageInfo::getPredefined(PredefinedCityModelPackage::Building).maxLOD());
         }
     }
 

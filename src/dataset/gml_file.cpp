@@ -80,8 +80,8 @@ namespace plateau::dataset {
         if (isMaxLodCalculated())
             return max_lod_;
 
-        auto lods = LodSearcher::searchLodsInFile(fs::u8path(path_));
-        max_lod_ = lods.getMax();
+        int specification_max_lod = CityModelPackageInfo::getPredefined(getPackage()).maxLOD();
+        max_lod_ = LodSearcher::searchMaxLodInFile(fs::u8path(path_), specification_max_lod);
         if (max_lod_ < 0) max_lod_ = 0; // MaxLodが取得できなかった場合のフェイルセーフです。
         return max_lod_;
     }
