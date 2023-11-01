@@ -183,7 +183,173 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
     auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+
     return {std::move(atomic_model), expects};
+}
+
+ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfArea_MultipleGMLs() {
+    auto model = Model();
+    auto& gml1 = model.addNode(Node("gml1"));
+    auto& lod1 = gml1.addChildNode(Node("lod1"));
+    auto mesh1 = createTestMeshOfArea(test_indices_primary_and_atomic, test_city_obj_list_primary_and_atomic);
+    auto& mesh1_node = lod1.addChildNode(Node("mesh1"));
+    auto& gml2 = model.addNode(Node("gml2"));
+    auto& lod2 = gml2.addChildNode(Node("lod2"));
+    auto& mesh2_node = lod2.addChildNode(Node("mesh2"));
+    auto mesh2 = createTestMeshOfArea(test_indices_primary_and_atomic, test_city_obj_list_primary_and_atomic);
+    mesh1_node.setMesh(std::move(mesh1));
+    mesh2_node.setMesh(std::move(mesh2));
+
+    auto atomic_expect = ModelExpect(std::vector<NodeExpect>{
+        NodeExpect("gml1", false, 0, {}, {}, {}),
+        NodeExpect("gml2", false, 0, {}, {}, {}),
+        NodeExpect("lod1", false, 0, {}, {}, {}),
+        NodeExpect("lod2", false, 0, {}, {}, {}),
+        NodeExpect("primary-0", true, 4,
+                   {{{0, -1}}},
+                   {{{{0, -1}, "primary-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_0", nullptr)}),
+        NodeExpect("primary-1", true, 4,
+                   {{{0, -1}}},
+                   {{{{0, -1}, "primary-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_5", nullptr)}),
+        NodeExpect("primary-0", true, 4,
+                   {{{0, -1}}},
+                   {{{{0, -1}, "primary-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_0", nullptr)}),
+        NodeExpect("primary-1", true, 4,
+                   {{{0, -1}}},
+                   {{{{0, -1}, "primary-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_5", nullptr)}),
+        NodeExpect("atomic-0-0", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_1", nullptr)}),
+        NodeExpect("atomic-0-1", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_2", nullptr)}),
+        NodeExpect("atomic-1-0", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_3", nullptr)}),
+        NodeExpect("atomic-1-1", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_4", nullptr)}),
+        NodeExpect("atomic-0-0", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_1", nullptr)}),
+        NodeExpect("atomic-0-1", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_2", nullptr)}),
+        NodeExpect("atomic-1-0", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_3", nullptr)}),
+        NodeExpect("atomic-1-1", true, 4,
+                   {{{0, 0}}},
+                   {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-1"}}},
+                   {SubMesh(0, 5, "dummy_tex_path_4", nullptr)})
+    });
+
+    auto primary_expect = ModelExpect(std::vector<NodeExpect>{
+            NodeExpect("gml1", false, 0, {}, {}, {}),
+            NodeExpect("gml2", false, 0, {}, {}, {}),
+            NodeExpect("lod1", false, 0, {}, {}, {}),
+            NodeExpect("lod2", false, 0, {}, {}, {}),
+            NodeExpect("primary-0", true, 4 * 3, {{{0, -1}, {0, 0}, {0, 1}}},
+                       {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}, {{0, 1}, "atomic-0-1"}}},
+                       {SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                        SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                        SubMesh(12, 17, "dummy_tex_path_2", nullptr)
+                       }),
+            NodeExpect("primary-1", true, 4 * 3, {{{0, -1}, {0, 0}, {0, 1}}},
+                       {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}, {{0, 1}, "atomic-1-1"}}},
+                       {SubMesh(0, 5, "dummy_tex_path_5", nullptr),
+                        SubMesh(6, 11, "dummy_tex_path_3", nullptr),
+                        SubMesh(12, 17, "dummy_tex_path_4", nullptr)}),
+            // 2つ目
+            NodeExpect("primary-0", true, 4 * 3, {{{0, -1}, {0, 0}, {0, 1}}},
+                       {{{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}, {{0, 1}, "atomic-0-1"}}},
+                       {SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                        SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                        SubMesh(12, 17, "dummy_tex_path_2", nullptr)
+                       }),
+            NodeExpect("primary-1", true, 4 * 3, {{{0, -1}, {0, 0}, {0, 1}}},
+                       {{{{0, -1}, "primary-1"}, {{0, 0}, "atomic-1-0"}, {{0, 1}, "atomic-1-1"}}},
+                       {SubMesh(0, 5, "dummy_tex_path_5", nullptr),
+                        SubMesh(6, 11, "dummy_tex_path_3", nullptr),
+                        SubMesh(12, 17, "dummy_tex_path_4", nullptr)})
+    });
+
+    auto area_expect = ModelExpect(std::vector<NodeExpect>{
+            NodeExpect("gml1", false, 0, {}, {}, {}),
+            NodeExpect("gml2", false, 0, {}, {}, {}),
+            NodeExpect("lod1", false, 0, {}, {}, {}),
+            NodeExpect("lod2", false, 0, {}, {}, {}),
+            NodeExpect("combined", true, 4 * 6,
+                       {{
+                                {0, -1},
+                                {0, 0},
+                                {0, 1},
+                                {1, -1},
+                                {1, 0},
+                                {1, 1}
+                        }},
+                       {{
+                                {{0, -1}, "primary-0"},
+                                {{0, 0}, "atomic-0-0"},
+                                {{0, 1}, "atomic-0-1"},
+                                {{1, -1}, "primary-1"},
+                                {{1, 0}, "atomic-1-0"},
+                                {{1, 1}, "atomic-1-1"}
+                        }},
+                       {
+                               SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                               SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                               SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                               SubMesh(18, 23, "dummy_tex_path_5", nullptr),
+                               SubMesh(24, 29, "dummy_tex_path_3", nullptr),
+                               SubMesh(30, 35, "dummy_tex_path_4", nullptr)
+                       }
+            ),
+            // 2つ目
+            NodeExpect("combined", true, 4 * 6,
+                       {{
+                                {0, -1},
+                                {0, 0},
+                                {0, 1},
+                                {1, -1},
+                                {1, 0},
+                                {1, 1}
+                        }},
+                       {{
+                                {{0, -1}, "primary-0"},
+                                {{0, 0}, "atomic-0-0"},
+                                {{0, 1}, "atomic-0-1"},
+                                {{1, -1}, "primary-1"},
+                                {{1, 0}, "atomic-1-0"},
+                                {{1, 1}, "atomic-1-1"}
+                        }},
+                       {
+                               SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                               SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                               SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                               SubMesh(18, 23, "dummy_tex_path_5", nullptr),
+                               SubMesh(24, 29, "dummy_tex_path_3", nullptr),
+                               SubMesh(30, 35, "dummy_tex_path_4", nullptr)
+                       })
+
+    });
+    ModelConvertTestPatterns::TGranularityToExpect expects = {
+            {MeshGranularity::PerAtomicFeatureObject, atomic_expect},
+            {MeshGranularity::PerPrimaryFeatureObject, primary_expect},
+            {MeshGranularity::PerCityModelArea, area_expect}
+    };
+    return {std::move(model), expects};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh() {
