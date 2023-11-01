@@ -56,6 +56,17 @@ TEST_F(GranularityConverterTest, convertAtomicToArea_OnlyRoot) { // NOLINT
     ModelConvertTestPatternsFactory().createTestPatternsOfAtomic_OnlyRoot().test(MeshGranularity::PerCityModelArea);
 }
 
+TEST_F(GranularityConverterTest, convertAreaToAtomic_MultipleGMLs) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestPatternsOfArea_MultipleGMLs().test(MeshGranularity::PerAtomicFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToPrimary_MultipleGMLs) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestPatternsOfArea_MultipleGMLs().test(MeshGranularity::PerPrimaryFeatureObject);
+}
+
+TEST_F(GranularityConverterTest, convertAreaToArea_MultipleGMLs) { // NOLINT
+    ModelConvertTestPatternsFactory().createTestPatternsOfArea_MultipleGMLs().test(MeshGranularity::PerCityModelArea);
+}
 
 TEST_F(GranularityConverterTest, convertAtomicToArea) { // NOLINT
     ModelConvertTestPatternsFactory().createTestPatternsOfAtomic().test(MeshGranularity::PerCityModelArea);

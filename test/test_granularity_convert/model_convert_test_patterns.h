@@ -102,6 +102,8 @@ public:
     ModelConvertTestPatterns createTestPatternsOfPrimary_OnlyRoot();
     ModelConvertTestPatterns createTestPatternsOfAtomic_OnlyRoot();
 
+    ModelConvertTestPatterns createTestPatternsOfArea_MultipleGMLs();
+
     /// テスト用モデル（地域単位）で、主要地物のメッシュがないバージョンです。
     ModelConvertTestPatterns createTestPatternsFromArea_OnlyAtomicMesh();
     /// テスト（主要地物）
