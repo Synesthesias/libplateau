@@ -140,20 +140,20 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     expects_to_area.eraseRange(0, 2);
     expects_to_area.at(0).expect_node_name_ = "combined";
     expects_to_area.at(0).expect_city_obj_list_ =
-            {{{{0, -1}, "primary-1"},
-              {{0, 0}, "atomic-1-0"},
-              {{0, 1}, "atomic-1-1"},
-              {{1, -1}, "primary-0"},
-              {{1, 0}, "atomic-0-0"},
-              {{1, 1}, "atomic-0-1"}}};
+            {{{{0, -1}, "primary-0"},
+              {{0, 0}, "atomic-0-0"},
+              {{0, 1}, "atomic-0-1"},
+              {{1, -1}, "primary-1"},
+              {{1, 0}, "atomic-1-0"},
+              {{1, 1}, "atomic-1-1"}}};
     expects_to_area.at(0).expect_sub_meshes_ =
             {
-                    SubMesh(0, 5, "dummy_tex_path_5", nullptr),
-                    SubMesh(6, 11, "dummy_tex_path_3", nullptr),
-                    SubMesh(12, 17, "dummy_tex_path_4", nullptr),
-                    SubMesh(18, 23, "dummy_tex_path_0", nullptr),
-                    SubMesh(24, 29, "dummy_tex_path_1", nullptr),
-                    SubMesh(30, 35, "dummy_tex_path_2", nullptr)
+                    SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                    SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                    SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                    SubMesh(18, 23, "dummy_tex_path_5", nullptr),
+                    SubMesh(24, 29, "dummy_tex_path_3", nullptr),
+                    SubMesh(30, 35, "dummy_tex_path_4", nullptr)
             };
 
 
@@ -385,18 +385,18 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                                                     {1, 0},
                                                     {1, 1}};
     expect_to_area.at(0).expect_city_obj_list_ =
-            {{{{0, -1}, "primary-1"},
-              {{0, 0}, "atomic-1-0"},
-              {{0, 1}, "atomic-1-1"},
-              {{1, -1}, "primary-0"},
-              {{1, 0}, "atomic-0-0"},
-              {{1, 1}, "atomic-0-1"}}};
+            {{{{0, -1}, "primary-0"},
+              {{0, 0}, "atomic-0-0"},
+              {{0, 1}, "atomic-0-1"},
+              {{1, -1}, "primary-1"},
+              {{1, 0}, "atomic-1-0"},
+              {{1, 1}, "atomic-1-1"}}};
     expect_to_area.at(0).expect_sub_meshes_ =
             {
-                    SubMesh(0, 5, "dummy_tex_path_2", nullptr),
-                    SubMesh(6, 11, "dummy_tex_path_3", nullptr),
-                    SubMesh(12, 17, "dummy_tex_path_0", nullptr),
-                    SubMesh(18, 23, "dummy_tex_path_1", nullptr)
+                    SubMesh(0, 5, "dummy_tex_path_0", nullptr),
+                    SubMesh(6, 11, "dummy_tex_path_1", nullptr),
+                    SubMesh(12, 17, "dummy_tex_path_2", nullptr),
+                    SubMesh(18, 23, "dummy_tex_path_3", nullptr)
             };
 
     return {std::move(model), expects};
