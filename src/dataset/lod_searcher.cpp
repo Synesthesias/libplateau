@@ -15,28 +15,29 @@ namespace {
         );
     }
 
-    void readCharAndSetLod(const char* found_ptr, const size_t lod_pattern_size, size_t offset, const char* const chunk_last, LodFlag& lod_flag){
+    int readCharToLod(const char* found_ptr, const size_t lod_pattern_size, size_t offset, const char* const chunk_last){
         // ":lod" の次の文字 + offset を指すポインタです。そこはLODの番号を指すことを期待します。
         auto lod_num_ptr = getCharPtr(found_ptr, lod_pattern_size, offset, chunk_last);
 
         // ":lod" の直後の数字を求めます。 数字は1桁であることが前提です。
         int lod_num = *lod_num_ptr - u8'0';
         if (0 <= lod_num && lod_num <= 9) {
-            lod_flag.setFlag(lod_num);
+            return lod_num;
         }
+        return -1;
     }
 
 }
 
-LodFlag LodSearcher::searchLodsInFile(const fs::path& file_path) {
+int LodSearcher::searchMaxLodInFile(const fs::path& file_path, int specification_max_lod) {
     auto ifs = std::ifstream(file_path);
     if (!ifs) {
         throw std::runtime_error("Failed to read file.");
     }
-    return searchLodsInIstream(ifs);
+    return searchMaxLodInIstream(ifs, specification_max_lod);
 }
 
-LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
+int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_lod) {
     // 注意:
     // この関数は実行速度にこだわる必要があるため、 std::string よりも原始的な C言語の機能を積極的に利用しています。
     // 用途はPLATEAUデータのインポートにおける範囲選択画面で、GMLファイルについて利用可能なLODを検索します。
@@ -54,7 +55,7 @@ LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
     constexpr int chunk_mem_size = chunk_read_size + 1; // null終端文字の分
     char chunk[chunk_mem_size];
     const char* const chunk_const = chunk;
-    auto lod_flag = LodFlag();
+    int found_max_lod = -1;
 
     do {
         ifs.read(chunk, chunk_read_size);
@@ -68,12 +69,15 @@ LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
 
         // ":lod" がヒットするたびに、その直後の数字をLODとみなして取得します。
         while (found_ptr) {
-            // ":lod"の直後が数字であれば、そのLODをセット
-            readCharAndSetLod(found_ptr, lod_pattern_size, 0, chunk_last, lod_flag);
-            // ":lod" の直後が ">" であれば、 ":lod>"の直後の数字のLODをセット (dem向け)
+            // ":lod"の直後が数字であれば、そのLODを利用
+            found_max_lod = std::max(readCharToLod(found_ptr, lod_pattern_size, 0, chunk_last), found_max_lod);
+            // ":lod" の直後が ">" であれば、 ":lod>"の直後の数字のLODを利用 (dem向け)
             if (*getCharPtr(found_ptr, lod_pattern_size, 0, chunk_last) == u8'>'){
-                readCharAndSetLod(found_ptr, lod_pattern_size, 1, chunk_last, lod_flag);
+                found_max_lod = std::max(readCharToLod(found_ptr, lod_pattern_size, 1, chunk_last), found_max_lod);
             }
+
+            // 最大LODが見つかった場合は探索を終了します。
+            if(found_max_lod >= specification_max_lod) return found_max_lod;
 
             // チャンク内の次の ":lod" を探します。
             auto next_pos = std::min(found_ptr + lod_pattern_size, chunk_last);
@@ -82,41 +86,5 @@ LodFlag LodSearcher::searchLodsInIstream(std::istream& ifs) {
     } while (!ifs.eof());
 
 
-    return lod_flag;
-}
-
-
-namespace {
-    void throwIfOutOfRange(unsigned digit) {
-        if (digit > LodFlag::max_lod_) {
-            throw std::range_error("argument digit is out of range.");
-        }
-    }
-}
-
-void LodFlag::setFlag(unsigned digit) {
-    throwIfOutOfRange(digit);
-    flags_ |= (1 << digit);
-}
-
-void LodFlag::unsetFlag(unsigned digit) {
-    throwIfOutOfRange(digit);
-    flags_ &= ~(1 << digit);
-}
-
-/// 存在するLODのフラグ列のうち、最大のLODを返します。
-/// LODが存在しない場合は -1 を返します。
-/// LOD i が存在する場合、LOD 0 ～ i-1 も存在することが前提です。
-int LodFlag::getMax() const {
-    auto flag = flags_;
-    int i = -1;
-    while(flag > 0){
-        ++i;
-        flag >>= 1;
-    }
-    return i;
-}
-
-unsigned LodFlag::getFlag() const {
-    return flags_;
+    return found_max_lod;
 }
