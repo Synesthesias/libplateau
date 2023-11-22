@@ -294,3 +294,15 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
   - [https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1](https://www.autodesk.com/developer-network/platform-technologies/fbx-sdk-2020-3-1)
   - 用途: fbx形式でのエクスポート
   - ライセンス: 独自
+- libjpeg-turbo
+  - [https://libjpeg-turbo.org/](https://libjpeg-turbo.org/)
+  - 用途: jpeg画像の編集
+  - ライセンス: 3条項BSDライセンスに近い
+- libpng
+  - [http://www.libpng.org/pub/png/libpng.html](http://www.libpng.org/pub/png/libpng.html) 
+  - 用途: png画像の編集
+  - ライセンス: zlib/libpngライセンス
+- libtiff
+  - [http://www.libtiff.org/](http://www.libtiff.org/)
+  - 用途: tiff画像の編集
+  - ライセンス: 3条項BSDライセンスに近い
