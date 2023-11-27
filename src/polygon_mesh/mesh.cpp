@@ -143,7 +143,7 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Mesh::addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index) {
+    void Mesh::addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index, int game_material_id) {
         // テクスチャが異なる場合は追加します。
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
@@ -168,7 +168,7 @@ namespace plateau::polygonMesh {
 
         if (is_different_tex) {
             // テクスチャが違うなら、サブメッシュを追加します。
-            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, material, sub_meshes_);
+            SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, material, game_material_id, sub_meshes_);
         } else {
             // テクスチャが同じなら、最後のサブメッシュの範囲を延長して新しい部分の終わりに合わせます。
             extendLastSubMesh(sub_mesh_end_index);

@@ -14,13 +14,21 @@ namespace plateau::polygonMesh {
      */
     class LIBPLATEAU_EXPORT SubMesh {
     public:
+        /**
+         * テクスチャパスとcitygml::MaterialからSubMeshを初期化します。
+         */
         SubMesh(size_t start_index, size_t end_index, const std::string& texture_path, std::shared_ptr<const citygml::Material> material);
+
+        /**
+         * GamemMaterialIDも含めてSubMeshを初期化します。
+         */
+         SubMesh(size_t start_index, size_t end_index, const std::string& texture_path, std::shared_ptr<const citygml::Material> material, int game_material_id);
 
         /**
          * 引数で与えられた SubMesh の vector に SubMesh を追加します。
          */
         static void addSubMesh(size_t start_index, size_t end_index,
-                               const std::string& texture_path, std::shared_ptr<const citygml::Material> material, std::vector<SubMesh>& vector);
+                               const std::string& texture_path, std::shared_ptr<const citygml::Material> material, int game_material_id, std::vector<SubMesh>& vector);
 
         size_t getStartIndex() const;
         size_t getEndIndex() const;
@@ -35,7 +43,7 @@ namespace plateau::polygonMesh {
         void setStartIndex(size_t start_index);
         void setEndIndex(size_t end_index);
         void setGameMaterialID(int id);
-        int getGameMaterialID();
+        int getGameMaterialID() const;
 
         bool operator==(const SubMesh& other) const;
 

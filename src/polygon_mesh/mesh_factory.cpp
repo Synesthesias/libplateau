@@ -101,7 +101,7 @@ namespace plateau::polygonMesh {
                     material = polygon.getMaterialFor(themes.at(0));
             }
 
-            out_mesh.addSubMesh(texture_path, material, 0, out_mesh.getIndices().size() - 1);
+            out_mesh.addSubMesh(texture_path, material, 0, out_mesh.getIndices().size() - 1, -1);
         }
 
         void findAllPolygonsInGeometry(
