@@ -148,25 +148,18 @@ namespace plateau::polygonMesh {
         // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
         //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
 
-        // 前と同じテクスチャかどうか判定します。
-        bool is_different_tex;
+        // 前と同じマテリアルかどうか判定します。
+        bool are_materials_same;
         if (sub_meshes_.empty()) {
-            is_different_tex = true;
+            are_materials_same = false;
         } else {
-            auto& last_texture_path = sub_meshes_.rbegin()->getTexturePath();
-            is_different_tex = texture_path != last_texture_path;
-
-            // 前と同じマテリアルかどうか判定します。
-            if (!is_different_tex) {
-                auto last_material = sub_meshes_.rbegin()->getMaterial();
-                if (material != nullptr && last_material != nullptr)
-                    is_different_tex = material->getId() != last_material->getId();
-                else if ((material == nullptr && last_material != nullptr) || (material != nullptr && last_material == nullptr))
-                    is_different_tex = true;
-            }
+            const auto& last_sub_mesh = sub_meshes_.rbegin();
+            are_materials_same =
+                    SubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, material, game_material_id)
+                    .isSameAs(*last_sub_mesh);
         }
 
-        if (is_different_tex) {
+        if (!are_materials_same) {
             // テクスチャが違うなら、サブメッシュを追加します。
             SubMesh::addSubMesh(sub_mesh_start_index, sub_mesh_end_index, texture_path, material, game_material_id, sub_meshes_);
         } else {

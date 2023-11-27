@@ -60,6 +60,22 @@ namespace plateau::polygonMesh {
         return game_material_id_;
     }
 
+    bool SubMesh::isSameAs(const SubMesh& other) const {
+        // ゲームマテリアルがあるなら、それ同士の比較
+        if(game_material_id_ >= 0 || other.game_material_id_ >= 0) {
+            return game_material_id_ == other.game_material_id_;
+        }
+        // materialがあるなら、それ同士の比較
+        if(material_ != nullptr && other.material_ != nullptr) {
+            return material_->getId() == other.material_->getId();
+        }
+        if(material_ == nullptr && other.material_ != nullptr || (material_ != nullptr && other.material_ == nullptr)) {
+            return false;
+        }
+        // 最後にテクスチャパスの比較
+        return texture_path_ == other.texture_path_;
+    }
+
     bool SubMesh::operator==(const SubMesh& other) const{
         bool ret = start_index_ == other.start_index_ &&
                    end_index_ == other.end_index_ &&

@@ -45,6 +45,8 @@ namespace plateau::polygonMesh {
         void setGameMaterialID(int id);
         int getGameMaterialID() const;
 
+        bool isSameAs(const SubMesh& other) const;
+
         bool operator==(const SubMesh& other) const;
 
         /// SubMesh の情報を stringstream に書き込みます。
