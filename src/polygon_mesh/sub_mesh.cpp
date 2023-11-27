@@ -9,7 +9,8 @@ namespace plateau::polygonMesh {
             start_index_(start_index),
             end_index_(end_index),
             texture_path_(texture_path) ,
-            material_(material) {}
+            material_(material),
+            game_material_id_(-1){}
 
 
     void
@@ -43,6 +44,14 @@ namespace plateau::polygonMesh {
     }
     void SubMesh::setEndIndex(size_t end_index) {
         end_index_ = end_index;
+    }
+
+    void SubMesh::setGameMaterialID(int id) {
+        game_material_id_ = id;
+    }
+
+    int SubMesh::getGameMaterialID() {
+        return game_material_id_;
     }
 
     bool SubMesh::operator==(const SubMesh& other) const{

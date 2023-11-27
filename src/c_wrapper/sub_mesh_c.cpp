@@ -24,6 +24,16 @@ extern "C"{
                 citygml::Material,
                 handle->getMaterial().get())
 
+    DLL_2_ARG_FUNC(plateau_sub_mesh_set_game_material_id,
+                   SubMesh* sub_mesh,
+                   int game_material_id,
+                   sub_mesh->setGameMaterialID(game_material_id))
+
+    DLL_VALUE_FUNC(plateau_sub_mesh_get_game_material_id,
+                   SubMesh,
+                   int,
+                   handle->getGameMaterialID())
+
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_sub_mesh(
             SubMesh** out_sub_mesh_ptr,
             const int start_index,
