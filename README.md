@@ -279,10 +279,12 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
 
 - openssl-cmake
   - [https://github.com/janbar/openssl-cmake](https://github.com/janbar/openssl-cmake)
+  - cpp-httplibの依存ライブラリ
   - ライセンス: dual-license (the OpenSSL license plus the SSLeay license)
 
 - zlib
   - [https://github.com/madler/zlib](https://github.com/madler/zlib)
+  - 用途: FBXSDKの依存ライブラリ
   - ライセンス: 独自(再配布可)
 
 - pybind11
