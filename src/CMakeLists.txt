@@ -36,6 +36,10 @@ else()
   set_target_properties(plateau PROPERTIES 
     FRAMEWORK TRUE
     MACOSX_FRAMEWORK_IDENTIFIER jp.synesthesias.libplateau
+    MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
+    MACOSX_BUNDLE_INFO_STRING "1.0"
+    MACOSX_BUNDLE_LONG_VERSION_STRING "1.0"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
   )
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}")
 endif()
@@ -121,10 +125,3 @@ if(BUILD_LIB_TYPE STREQUAL "static")
     endif()
   endif()
 endif()
-
-set_target_properties(plateau PROPERTIES
-        MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
-        MACOSX_BUNDLE_INFO_STRING "1.0"
-        MACOSX_BUNDLE_LONG_VERSION_STRING "1.0"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
-        )
