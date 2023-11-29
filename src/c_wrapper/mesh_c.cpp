@@ -83,7 +83,7 @@ extern "C" {
                 int sub_mesh_end_index
         ) {
         API_TRY{
-            mesh->addSubMesh(texture_path, nullptr, sub_mesh_start_index, sub_mesh_end_index);
+            mesh->addSubMesh(texture_path, nullptr, sub_mesh_start_index, sub_mesh_end_index, -1);
             return APIResult::Success;
         } API_CATCH
             return APIResult::ErrorUnknown;

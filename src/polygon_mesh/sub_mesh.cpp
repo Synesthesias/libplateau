@@ -9,13 +9,20 @@ namespace plateau::polygonMesh {
             start_index_(start_index),
             end_index_(end_index),
             texture_path_(texture_path) ,
-            material_(material) {}
+            material_(material),
+            game_material_id_(-1){}
+
+    SubMesh::SubMesh(size_t start_index, size_t end_index, const std::string& texture_path,
+                     std::shared_ptr<const citygml::Material> material, int game_material_id) :
+            SubMesh(start_index, end_index, texture_path, std::move(material)) {
+        game_material_id_ = game_material_id;
+    }
 
 
     void
-    SubMesh::addSubMesh(size_t start_index, size_t end_index, const std::string& texture_path, std::shared_ptr<const citygml::Material> material, std::vector<SubMesh>& vector) {
+    SubMesh::addSubMesh(size_t start_index, size_t end_index, const std::string& texture_path, std::shared_ptr<const citygml::Material> material, int game_material_id, std::vector<SubMesh>& vector) {
         if (end_index <= start_index) throw std::logic_error("addSubMesh : Index is invalid.");
-        vector.emplace_back(start_index, end_index, texture_path, material);
+        vector.emplace_back(start_index, end_index, texture_path, material, game_material_id);
     }
 
     size_t SubMesh::getStartIndex() const {
@@ -43,6 +50,30 @@ namespace plateau::polygonMesh {
     }
     void SubMesh::setEndIndex(size_t end_index) {
         end_index_ = end_index;
+    }
+
+    void SubMesh::setGameMaterialID(int id) {
+        game_material_id_ = id;
+    }
+
+    int SubMesh::getGameMaterialID() const {
+        return game_material_id_;
+    }
+
+    bool SubMesh::isSameAs(const SubMesh& other) const {
+        // ゲームマテリアルがあるなら、それ同士の比較
+        if(game_material_id_ >= 0 || other.game_material_id_ >= 0) {
+            return game_material_id_ == other.game_material_id_;
+        }
+        // materialがあるなら、それ同士の比較
+        if(material_ != nullptr && other.material_ != nullptr) {
+            return material_->getId() == other.material_->getId();
+        }
+        if(material_ == nullptr && other.material_ != nullptr || (material_ != nullptr && other.material_ == nullptr)) {
+            return false;
+        }
+        // 最後にテクスチャパスの比較
+        return texture_path_ == other.texture_path_;
     }
 
     bool SubMesh::operator==(const SubMesh& other) const{

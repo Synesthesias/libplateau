@@ -93,7 +93,7 @@ TEST_F(MeshMergerTest, mesh_add_sub_mesh) {
 
     auto mesh = Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(uv_4), std::move(sub_meshes), CityObjectList());
 
-    mesh.addSubMesh("test.png", nullptr, 3, 5);
+    mesh.addSubMesh("test.png", nullptr, 3, 5, -1);
 
     const auto sub_mesh = mesh.getSubMeshes().at(1);
     ASSERT_EQ("test.png", sub_mesh.getTexturePath());

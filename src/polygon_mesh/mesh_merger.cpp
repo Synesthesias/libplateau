@@ -44,7 +44,7 @@ namespace plateau::polygonMesh {
                 assert(start_index <= end_index);
                 assert(end_index < mesh.getIndices().size());
                 assert((end_index - start_index + 1) % 3 == 0);
-                mesh.addSubMesh(texture_path, material, start_index, end_index);
+                mesh.addSubMesh(texture_path, material, start_index, end_index, other_sub_mesh.getGameMaterialID());
             }
         }
 
