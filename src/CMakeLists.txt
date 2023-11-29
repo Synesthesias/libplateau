@@ -121,3 +121,10 @@ if(BUILD_LIB_TYPE STREQUAL "static")
     endif()
   endif()
 endif()
+
+set_target_properties(plateau PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
+        MACOSX_BUNDLE_INFO_STRING "1.0"
+        MACOSX_BUNDLE_LONG_VERSION_STRING "1.0"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
+        )
