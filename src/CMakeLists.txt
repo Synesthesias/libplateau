@@ -33,10 +33,16 @@ else()
     "ssl" 
     "c_wrapper"
   )
+
+  # UnityでiOS向けのビルドを通すため、info.plistというファイルにバイナリの情報が入るようにします。
+  # バージョンもUnityビルドに必要ですが、値は何でも良いのでずっと"1.0"のままで良さそうです。
   set_target_properties(plateau PROPERTIES 
     FRAMEWORK TRUE
     MACOSX_FRAMEWORK_IDENTIFIER jp.synesthesias.libplateau
+    MACOSX_FRAMEWORK_SHORT_VERSION_STRING "1.0"
+    MACOSX_FRAMEWORK_BUNDLE_VERSION "1.0"
   )
+
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}")
 endif()
 
