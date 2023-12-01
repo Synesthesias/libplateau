@@ -48,6 +48,7 @@ TEST_F(MapAttacherTest, AttachGeneratesImageFiles) { // NOLINT
         const auto path = (fs::path(test_dir) / expect_file).make_preferred();
         EXPECT_TRUE(fs::exists(path)) << path.u8string() << " exists";
     }
+    EXPECT_TRUE(fs::exists(fs::u8path(u8"../data/日本語パステスト/test_map_attacher/combined_map_mesh0_v0_p0.png")));
     EXPECT_EQ(success_count, 4);
     fs::remove_all(test_dir);
 }

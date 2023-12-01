@@ -114,9 +114,20 @@ namespace plateau::polygonMesh {
                     .parent_path()
                     .parent_path()
                     .parent_path();
-            std::string combined_file_name = "combined_map_for_mesh_" + std::to_string(i) + "_";
-            // TODO 下の ".png" の決め打ちはあまり良くない
-            const auto combined_image_path = fs::path(combined_tile_dir) / fs::u8path(combined_file_name + "0.png");
+
+            std::string combined_file_name;
+            fs::path combined_image_path;
+
+            // 同名のファイルがあったとき上書きしたくないので、同名でなくなるまでファイル名の番号を上げます
+            for(int attempt=0; attempt<999; attempt++){
+                // ファイル名は combined_map_mesh(mesh番号)_v(バージョン番号,基本は0だが同名のがすでにあれば増える)_p0 (pはpart、1枚にまとめるので基本0のはず)
+                combined_file_name = "combined_map_mesh" + std::to_string(i) + "_v" + std::to_string(attempt) + "_p";
+                // FIXME 下の ".png" の決め打ちはあまり良くない
+                combined_image_path = fs::path(combined_tile_dir) / fs::u8path(combined_file_name + "0.png");
+                if(!fs::exists(combined_image_path)){
+                    break;
+                }
+            }
             packer.setSaveFilePath(combined_tile_dir, combined_file_name);
             for (auto r = min_row; r <= max_row; r++) {
                 for (auto c = min_col; c <= max_col; c++) {
