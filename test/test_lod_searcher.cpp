@@ -2,8 +2,13 @@
 #include <plateau/dataset/lod_searcher.h>
 #include <fstream>
 #include "plateau/dataset/city_model_package.h"
+#include <filesystem>
+#include <chrono>
 
 namespace plateau::dataset {
+    namespace fs = std::filesystem;
+    namespace chrono = std::chrono;
+
     class LodSearcherTest : public ::testing::Test {
     protected:
         void SetUp() override {
@@ -37,5 +42,35 @@ namespace plateau::dataset {
     TEST_F(LodSearcherTest, MultipleLods) { // NOLINT
         ASSERT_EQ(getMaxLod(":lod2:lod3"), 3);
     }
+
+    TEST_F(LodSearcherTest, SearchInFile) { // NOLINT
+        const auto start_time = chrono::system_clock::now();
+        const int max_lod = LodSearcher::searchMaxLodInFile(fs::u8path(u8"../data/日本語パステスト/udx/bldg/52385618_bldg_6697_op.gml"), CityModelPackageInfo::getPredefined(PredefinedCityModelPackage::Building).maxLOD());
+        const auto end_time = chrono::system_clock::now();
+        ASSERT_EQ(max_lod, 3);
+        double elapsed = chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count();
+        std::cout << "time: " << elapsed << " ms" << std::endl;
+    }
+
+
+    /// 注意：下のコメントアウト部分は削除しないでください。
+
+    /// 今後、LODSearcher に変更を加えたとき、結果が変わらないかどうかを検証する手段として下のコードをコメントアウトして残しておきます。
+    /// 実行方法:
+    /// コメントアウトを外し、パスをテストしたいフォルダパスに変更してテスト実行します。
+    /// するとGMLファイル名とLODが出力されるので、変更前後でそのdiffをとって出力が同じであることを検証できます。
+//    TEST_F(LodSearcherTest, DisplayLodsRecursive) { // NOLINT
+//        // 下のパスを、ご自分のPCでテストしたいフォルダのパスに変更してください。
+//        const auto src_dir = fs::u8path(u8"F:\\Desktop\\plateauData\\15100_niigata-shi_2022_citygml_1_op\\udx");
+//
+//        std::cout << "==== LOD Search Result ====" << std::endl;
+//        for(const auto& entry : fs::recursive_directory_iterator(src_dir)  ) {
+//            if(entry.is_directory()) continue;
+//            if(entry.path().extension() != ".gml") continue;
+//            int lod = LodSearcher::searchMaxLodInFile(entry.path(), 999);
+//            std::cout << entry.path().filename() << ": " << lod << std::endl;
+//        }
+//        std::cout << "==== LOD Search End ====" << std::endl;
+//    }
 }
 

@@ -40,8 +40,6 @@ int LodSearcher::searchMaxLodInFile(const fs::path& file_path, int specification
 int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_lod) {
     // 注意:
     // この関数は実行速度にこだわる必要があるため、 std::string よりも原始的な C言語の機能を積極的に利用しています。
-    // 用途はPLATEAUデータのインポートにおける範囲選択画面で、GMLファイルについて利用可能なLODを検索します。
-    // 範囲選択画面では多くのGMLファイルを検索対象とするので、高速である必要があります。
 
     // 文字列検索で ":lod" にヒットした直後の数値をLODとします。
     const static auto lod_pattern = u8":lod";
@@ -56,6 +54,7 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
     char chunk[chunk_mem_size];
     const char* const chunk_const = chunk;
     int found_max_lod = -1;
+    long total_read_size = 0;
 
     do {
         ifs.read(chunk, chunk_read_size);
@@ -82,6 +81,12 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
             // チャンク内の次の ":lod" を探します。
             auto next_pos = std::min(found_ptr + lod_pattern_size, chunk_last);
             found_ptr = strstr(next_pos, lod_pattern);
+        }
+
+        // ここまで読めば十分という値に達したとき
+        total_read_size += read_size;
+        if(total_read_size > max_gml_read_size) {
+            break;
         }
     } while (!ifs.eof());
 
