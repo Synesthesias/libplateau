@@ -59,18 +59,18 @@ namespace plateau::dataset {
     /// 実行方法:
     /// コメントアウトを外し、パスをテストしたいフォルダパスに変更してテスト実行します。
     /// するとGMLファイル名とLODが出力されるので、変更前後でそのdiffをとって出力が同じであることを検証できます。
-//    TEST_F(LodSearcherTest, DisplayLodsRecursive) { // NOLINT
-//        // 下のパスを、ご自分のPCでテストしたいフォルダのパスに変更してください。
-//        const auto src_dir = fs::u8path(u8"F:\\Desktop\\plateauData\\15100_niigata-shi_2022_citygml_1_op\\udx");
-//
-//        std::cout << "==== LOD Search Result ====" << std::endl;
-//        for(const auto& entry : fs::recursive_directory_iterator(src_dir)  ) {
-//            if(entry.is_directory()) continue;
-//            if(entry.path().extension() != ".gml") continue;
-//            int lod = LodSearcher::searchMaxLodInFile(entry.path(), 999);
-//            std::cout << entry.path().filename() << ": " << lod << std::endl;
-//        }
-//        std::cout << "==== LOD Search End ====" << std::endl;
-//    }
+    TEST_F(LodSearcherTest, DisplayLodsRecursive) { // NOLINT
+        // 下のパスを、ご自分のPCでテストしたいフォルダのパスに変更してください。
+        const auto src_dir = fs::u8path(u8"F:\\Desktop\\plateauData\\15100_niigata-shi_2022_citygml_1_op\\udx");
+
+        std::cout << "==== LOD Search Result ====" << std::endl;
+        for(const auto& entry : fs::recursive_directory_iterator(src_dir)  ) {
+            if(entry.is_directory()) continue;
+            if(entry.path().extension() != ".gml") continue;
+            int lod = LodSearcher::searchMaxLodInFile(entry.path(), 999);
+            std::cout << entry.path().filename() << ": " << lod << std::endl;
+        }
+        std::cout << "==== LOD Search End ====" << std::endl;
+    }
 }
 
