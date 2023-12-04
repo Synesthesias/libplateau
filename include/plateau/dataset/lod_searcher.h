@@ -35,10 +35,8 @@ namespace plateau::dataset {
          * 制限が50MBであれば、2023年の東京、沼津、新潟の全データにおいて、全文を読むのと結果が変わらないことを検証済みです。
          * しかし、今後のあらゆるデータで大丈夫であるという保証はなく、今後に調整が必要になるかもしれません。
          */
-        static constexpr long max_gml_read_size_from_file_start = 50 /*メガバイト*/* 1000000;
+        static constexpr long max_gml_read_size = 50 /*メガバイト*/* 1000000;
         // サイズ制限を無くしたい場合は下のコメントアウトを外してください
 //        static constexpr long max_gml_read_size = LONG_MAX;
-
-        static constexpr long max_gml_read_size_from_first_lod_found = 5 /*メガバイト*/*1000000;
     };
 }
