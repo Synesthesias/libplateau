@@ -43,15 +43,6 @@ namespace plateau::dataset {
         ASSERT_EQ(getMaxLod(":lod2:lod3"), 3);
     }
 
-    TEST_F(LodSearcherTest, SearchInFile) { // NOLINT
-        const auto start_time = chrono::system_clock::now();
-        const int max_lod = LodSearcher::searchMaxLodInFile(fs::u8path(u8"../data/日本語パステスト/udx/bldg/52385618_bldg_6697_op.gml"), CityModelPackageInfo::getPredefined(PredefinedCityModelPackage::Building).maxLOD());
-        const auto end_time = chrono::system_clock::now();
-        ASSERT_EQ(max_lod, 3);
-        double elapsed = chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count();
-        std::cout << "time: " << elapsed << " ms" << std::endl;
-    }
-
 
     /// 注意：下のコメントアウト部分は削除しないでください。
 
