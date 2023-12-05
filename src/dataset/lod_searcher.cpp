@@ -54,7 +54,7 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
     char chunk[chunk_mem_size];
     const char* const chunk_const = chunk;
     int found_max_lod = -1;
-    long total_read_size = 0;
+    std::streamsize total_read_size_from_first_lod_found = 0;
 
     do {
         ifs.read(chunk, chunk_read_size);
@@ -83,9 +83,9 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
             found_ptr = strstr(next_pos, lod_pattern);
         }
 
-        // ここまで読めば十分という値に達したとき
-        total_read_size += read_size;
-        if(total_read_size > max_gml_read_size) {
+        // 最初のLODが見つかってからここまで読めば十分という値に達したとき
+        total_read_size_from_first_lod_found += (found_max_lod >= 0) ? read_size : 0;
+        if(total_read_size_from_first_lod_found > max_gml_read_size_from_first_lod_found) {
             break;
         }
     } while (!ifs.eof());
