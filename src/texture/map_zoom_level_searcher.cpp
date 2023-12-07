@@ -6,8 +6,7 @@
 
 namespace plateau::texture {
     MapZoomLevelSearchResult MapZoomLevelSearcher::search(const std::string& url_template, const geometry::GeoCoordinate geo_coord) {
-        constexpr int zoom_level_search_range_min = 1;
-        constexpr int zoom_level_search_range_max = 18;
+        // 考えうるズームレベルについて実際にアクセスしてみて、HTTPのステータスコードが200だったものを「利用可能なズームレベル」とみなします。
         int found_min = 9999;
         int found_max = -1;
         bool is_succeed = false;
