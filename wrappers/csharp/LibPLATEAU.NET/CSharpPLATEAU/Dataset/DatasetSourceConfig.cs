@@ -2,11 +2,18 @@
 
 namespace PLATEAU.Dataset
 {
+    /// <summary>
+    /// データセット設定のローカルとサーバーの違いを吸収するインターフェイスです。
+    /// </summary>
+    public interface IDatasetSourceConfig
+    {
+        
+    }
 
     /// <summary>
     /// ローカルインポートで利用する<see cref="DatasetSource"/>の設定です。
     /// </summary>
-    public class DatasetSourceConfigLocal
+    public class DatasetSourceConfigLocal : IDatasetSourceConfig
     {
         public string LocalSourcePath { get; set; }
 
@@ -21,7 +28,7 @@ namespace PLATEAU.Dataset
     /// <summary>
     /// サーバーインポートで利用する<see cref="DatasetSource"/>の設定です。
     /// </summary>
-    public class DatasetSourceConfigRemote
+    public class DatasetSourceConfigRemote : IDatasetSourceConfig
     {
         public string ServerDatasetID { get; set; }
         public string ServerUrl { get; set; }

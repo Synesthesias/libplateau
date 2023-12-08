@@ -11,23 +11,40 @@ namespace PLATEAU.Dataset
         private DatasetSource(IntPtr handle) : base(handle)
         {
         }
-        
 
         /// <summary>
-         /// ローカルPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
-         /// </summary>
-        public static DatasetSource CreateLocal(DatasetSourceConfigLocal conf)
-         {
-             var pathUtf8 = DLLUtil.StrToUtf8Bytes(conf.LocalSourcePath);
-             var result = NativeMethods.plateau_create_dataset_source_local(out var datasetSourcePtr, pathUtf8);
-             DLLUtil.CheckDllError(result);
-             return new DatasetSource(datasetSourcePtr);
-         }
+        /// <see cref="DatasetSource"/>を生成します。
+        /// ローカルかサーバーかは、引数の型によって判別します。
+        /// </summary>
+        public static DatasetSource Create(IDatasetSourceConfig conf)
+        {
+            switch (conf)
+            {
+                case DatasetSourceConfigLocal localConf:
+                    return CreateLocal(localConf);
+                case DatasetSourceConfigRemote remoteConf:
+                    return CreateServer(remoteConf);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(conf));
+            }
+        }
+
+
+        /// <summary>
+        /// ローカルPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
+        /// </summary>
+        private static DatasetSource CreateLocal(DatasetSourceConfigLocal conf)
+        {
+            var pathUtf8 = DLLUtil.StrToUtf8Bytes(conf.LocalSourcePath);
+            var result = NativeMethods.plateau_create_dataset_source_local(out var datasetSourcePtr, pathUtf8);
+            DLLUtil.CheckDllError(result);
+            return new DatasetSource(datasetSourcePtr);
+        }
 
          /// <summary>
          /// リモートPCのデータセットを指す <see cref="DatasetSource"/> を作ります。
          /// </summary>
-         public static DatasetSource CreateServer(DatasetSourceConfigRemote conf)
+         private static DatasetSource CreateServer(DatasetSourceConfigRemote conf)
          {
              Client client = Client.Create(conf.ServerUrl, conf.ServerToken);
              var result = NativeMethods.plateau_create_dataset_source_server(
