@@ -23,6 +23,7 @@ namespace plateau::granularityConvert {
             auto node_path = queue.pop();
             auto src_node = node_path.toNode(src);
             auto dst_node = node_path.toNode(&dst_model);
+            dst_node->setIsActive(src_node->isActive());
 
             // TODO このへんの処理は ConvertFromAtomicToAreaと似ているのでまとめられるかも
             bool should_merge_to_last_node = false;
@@ -79,7 +80,8 @@ namespace plateau::granularityConvert {
 
                         // 子をキューに加えて探索を続けます。同じ子をdst_nodeに加えます。
                         const auto& src_child = src_node->getChildAt(i);
-                        dst_node->addChildNode(Node(src_child.getName()));
+                        auto& dst_child_node = dst_node->addChildNode(Node(src_child.getName()));
+                        dst_child_node.setIsActive(src_node->isActive());
                         queue.push(node_path.plus(i));
                     }
                 }

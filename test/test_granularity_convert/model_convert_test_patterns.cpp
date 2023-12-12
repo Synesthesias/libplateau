@@ -596,7 +596,7 @@ void ModelConvertTestPatternsFactory::adjustForTestModelForAtomic(plateau::polyg
     while(!queue.empty()) {
         auto node_path = queue.pop();
         auto node = node_path.toNode(&model);
-        node->setIsPrimary(false);
+        node->setGranularityConvertInfo(false, true);
         auto mesh = node->getMesh();
         if(mesh != nullptr) {
             removePrimaryFromCityObjectListWithAtomic(*mesh);
