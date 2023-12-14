@@ -45,5 +45,14 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual("child", parent.GetChildAt(0).Name, "子が追加されます。");
             Assert.ThrowsException<Exception>(() => child.Name, "move後は利用不可になります。");
         }
+
+        [TestMethod]
+        public void IsActive_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(true, node.IsActive, "初期値はtrueです。");
+            node.IsActive = false;
+            Assert.AreEqual(false, node.IsActive, "isActiveはset可能です。");
+        }
     }
 }

@@ -7,7 +7,8 @@ namespace plateau::polygonMesh {
     Node::Node(std::string name) :
         name_(std::move(name)),
         mesh_(nullptr),
-        is_primary_(false){
+        is_primary_(false),
+        is_active_(true){
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
@@ -93,12 +94,21 @@ namespace plateau::polygonMesh {
         }
     }
 
-    void Node::setIsPrimary(bool is_primary) {
+    void Node::setGranularityConvertInfo(bool is_primary, bool is_active) {
         is_primary_ = is_primary;
+        is_active_ = is_active;
     }
 
     bool Node::isPrimary() const {
         return is_primary_;
+    }
+
+    void Node::setIsActive(bool is_active) {
+        is_active_ = is_active;
+    }
+
+    bool Node::isActive() const {
+        return is_active_;
     }
 
     void Node::reserveChild(size_t reserve_count) {

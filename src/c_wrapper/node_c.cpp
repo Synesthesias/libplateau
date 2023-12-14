@@ -25,6 +25,16 @@ extern "C" {
                    int,
                    handle->getChildCount())
 
+   DLL_VALUE_FUNC(plateau_node_get_is_active,
+                  Node,
+                  bool,
+                  handle->isActive())
+
+    DLL_2_ARG_FUNC(plateau_node_set_is_active,
+                   Node* const node,
+                   const bool is_active,
+                   node->setIsActive(is_active))
+
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_node_get_child_at_index,
                 Node,
                 Node,

@@ -27,6 +27,9 @@ namespace plateau::granularityConvert {
         while (!stack.empty()) {
             const auto node_path = stack.pop();
             const auto& src_node = node_path.toNode(src);
+            if(!src_node->isActive()){
+                continue;
+            }
 
             bool src_contains_primary = src_node->isPrimary();
             const auto src_mesh = src_node->getMesh();

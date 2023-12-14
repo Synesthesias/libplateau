@@ -37,13 +37,14 @@ namespace plateau::granularityConvert {
                         parent_has_no_mesh && has_only_0_0_mesh;
                 bool is_special_case_b = (!is_special_case_a) &&
                                          parent_has_no_mesh && has_only_0_over_minus1_mesh;
+                bool is_src_node_active = node_path.toNode(&src_model)->isActive();
                 if (is_special_case_a) {
-                    dst_parent_node->setIsPrimary(true);
+                    dst_parent_node->setGranularityConvertInfo(true, is_src_node_active);
                     primary_node_path = node_path.parent();
                 } else if (is_special_case_b) {
                     auto& primary = node_path.parent().toNode(&dst_model)->addChildNode(
                             Node(node_path.toNode(&src_model)->getName()));
-                    primary.setIsPrimary(true);
+                    primary.setGranularityConvertInfo(true, is_src_node_active);
                     primary_node_path = node_path.parent().plus(
                             node_path.parent().toNode(&dst_model)->getChildCount() - 1);
                 }
@@ -74,6 +75,7 @@ namespace plateau::granularityConvert {
                 if (atomic_mesh.hasVertices() || atomic_mesh.getCityObjectList().size() > 0) {
                     // ここでノードを追加します。
                     auto atomic_node_path = dst_primary_node_path.addChildNode(Node(node_name), &dst_model);
+                    atomic_node_path.toNode(&dst_model)->setGranularityConvertInfo(false, src_node->isActive());
 
                     // 最小地物のGML IDを記録します。
                     atomic_mesh.setCityObjectList({{{{0, 0}, atomic_gml_id}}});
@@ -130,7 +132,8 @@ namespace plateau::granularityConvert {
                                                   src_node_path.toNode(&src_model)->getName() : primary_gml_id;
             // ここでノードを追加します。
             src_primary_node_path = src_node_path.parent().addChildNode(Node(primary_node_name), &dst_model);
-            src_primary_node_path.toNode(&dst_model)->setIsPrimary(true);
+            auto dst_node = src_primary_node_path.toNode(&dst_model);
+            dst_node->setGranularityConvertInfo(true, src_node_path.toNode(&src_model)->isActive());
             primary_mesh.setCityObjectList({{{{0, -1}, primary_gml_id}}});
             src_primary_node_path.toNode(&dst_model)->setMesh(std::make_unique<Mesh>(primary_mesh));
             return src_primary_node_path;

@@ -19,7 +19,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetMeshCodesLocal()
         {
-            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var source = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             using var accessor = source.Accessor;
             Assert.IsTrue(accessor.MeshCodes.Length > 0, "メッシュコードが存在します。");
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
@@ -38,7 +38,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFilesLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var datasetSource = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
@@ -63,7 +63,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetPackagesLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var datasetSource = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
             var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road;
@@ -84,7 +84,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void CalcCenterLocal()
         {
-            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var source = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             TestCenterPoint(source);
         }
 
@@ -98,7 +98,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void MaxLodLocal()
         {
-            using var datasetSource = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var datasetSource = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             var accessor = datasetSource.Accessor;
             var meshCodes = accessor.MeshCodes;
             Assert.IsTrue(meshCodes.Length > 0, "メッシュコードが存在します。");
@@ -118,7 +118,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Local()
         {
-            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var source = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             var accessor = source.Accessor;
             string validMeshCode = "53392642";
             string invalidMeshCode = "99999999";
@@ -140,7 +140,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void GetGmlFiles()
         {
-            using var source = DatasetSource.CreateLocal(TestDataPathLocal);
+            using var source = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             var accessor = source.Accessor;
             using var gmlFiles = accessor.GetAllGmlFiles();
             Assert.IsTrue(gmlFiles.Length > 0);

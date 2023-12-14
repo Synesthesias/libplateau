@@ -56,7 +56,7 @@ namespace plateau::granularityConvert {
         const auto src_node = toNode(&src);
         auto dst_node = parent().addChildNode(Node(src_node->getName()), &dst).toNode(
                 &dst);
-        dst_node->setIsPrimary(src_node->isPrimary());
+        dst_node->setGranularityConvertInfo(src_node->isPrimary(), src_node->isActive());
     }
 
     /// 親のうち、isPrimary()==true であるノードパスを返します。
