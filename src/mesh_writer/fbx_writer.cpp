@@ -124,16 +124,40 @@ namespace plateau::meshWriter {
             LayerElementNormal->SetReferenceMode(FbxLayerElement::eDirect);
 
             // Create UV for Diffuse channel.
-            FbxLayerElementUV* UVDiffuseLayer = FbxLayerElementUV::Create(fbx_mesh, "DiffuseUV");
-            UVDiffuseLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
-            UVDiffuseLayer->SetReferenceMode(FbxLayerElement::eDirect);
-            Layer->SetUVs(UVDiffuseLayer, FbxLayerElement::eTextureDiffuse);
+//            FbxLayerElementUV* UVDiffuseLayer = FbxLayerElementUV::Create(fbx_mesh, "DiffuseUV");
+//            UVDiffuseLayer->SetMappingMode(FbxLayerElement::eByControlPoint);
+//            UVDiffuseLayer->SetReferenceMode(FbxLayerElement::eDirect);
+//            Layer->SetUVs(UVDiffuseLayer, FbxLayerElement::eTextureDiffuse);
+
+            std::vector<FbxGeometryElementUV*> UVs = {
+                    fbx_mesh->CreateElementUV("DiffuseUV"),
+                    fbx_mesh->CreateElementUV("UV2"),
+                    fbx_mesh->CreateElementUV("UV3"),
+                    fbx_mesh->CreateElementUV("UV4")
+            };
+            for(auto uv : UVs){
+                uv->SetMappingMode(FbxGeometryElement::eByControlPoint);
+                uv->SetReferenceMode(FbxGeometryElement::eDirect);
+            }
 
             for (unsigned VertexIdx = 0; VertexIdx < VertCount; ++VertexIdx) {
                 const auto& vertex = mesh.getVertices()[VertexIdx];
                 const auto& uv = mesh.getUV1()[VertexIdx];
                 ControlPoints[VertexIdx] = FbxVector4(vertex.x, vertex.y, vertex.z);
-                UVDiffuseLayer->GetDirectArray().Add(FbxVector2(uv.x, uv.y));
+                UVs.at(0)->GetDirectArray().Add(FbxVector2(uv.x, uv.y));
+                UVs.at(1)->GetDirectArray().Add(FbxVector2(0,0));
+                UVs.at(2)->GetDirectArray().Add(FbxVector2(0,0));
+
+                const auto& src_uv4 = mesh.getUV4();
+                if(VertexIdx < src_uv4.size()){
+                    auto& uv4 = src_uv4.at(VertexIdx);
+                    UVs.at(3)->GetDirectArray().Add(FbxVector2(uv4.x, uv4.y));
+                }
+
+            }
+
+            for(auto uv : UVs){
+                uv->GetIndexArray().SetCount(VertCount);
             }
 
             // Build list of Indices re-used multiple times to lookup Normals, UVs, other per face vertex information
