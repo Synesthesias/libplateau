@@ -53,4 +53,31 @@ extern "C" {
                    CoordinateSystem,
                    handle->getCoordinateSystem())
 
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_geo_reference_convert_axis_to_enu(
+                CoordinateSystem axis,
+                TVec3d vertex,
+                TVec3d* out
+        ) {
+        API_TRY{
+            *out = GeoReference::convertAxisToENU(axis, vertex);
+            return APIResult::Success;
+        } API_CATCH
+            return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_geo_reference_convert_axis_from_enu_to(
+            CoordinateSystem axis,
+            TVec3d vertex,
+            TVec3d* out
+    ) {
+        API_TRY{
+            *out = GeoReference::convertAxisFromENUTo(axis, vertex);
+            return APIResult::Success;
+        } API_CATCH
+            return APIResult::ErrorUnknown;
+    }
+
+
+
 }
