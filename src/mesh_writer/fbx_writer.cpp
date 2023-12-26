@@ -43,8 +43,35 @@ namespace plateau::meshWriter {
             ios->SetBoolProp(EXP_FBX_GOBO, true);
             ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
             ios->SetBoolProp(EXP_ASCIIFBX, options.file_format == FbxFileFormat::ASCII);
-
             const auto fbx_scene = FbxScene::Create(manager_, "");
+            FbxAxisSystem axis_system;
+            switch (options.coordinate_system) {
+            case geometry::CoordinateSystem::ENU:
+                axis_system = FbxAxisSystem(
+                    FbxAxisSystem::EUpVector::eZAxis,
+                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::eRightHanded);
+                break;
+            case geometry::CoordinateSystem::ESU:
+                axis_system = FbxAxisSystem(
+                    FbxAxisSystem::EUpVector::eZAxis,
+                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::eLeftHanded);
+                break;
+            case geometry::CoordinateSystem::WUN:
+                axis_system = FbxAxisSystem(
+                    FbxAxisSystem::EUpVector::eYAxis,
+                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::eRightHanded);
+                break;
+            case geometry::CoordinateSystem::EUN:
+                axis_system = FbxAxisSystem(
+                    FbxAxisSystem::EUpVector::eYAxis,
+                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::eLeftHanded);
+                break;
+            }
+            axis_system.ConvertScene(fbx_scene);
 
             // create scene info
             FbxDocumentInfo* SceneInfo = FbxDocumentInfo::Create(manager_, "SceneInfo");
@@ -66,7 +93,7 @@ namespace plateau::meshWriter {
 
             const auto exporter = FbxExporter::Create(manager_, "");
 
-            int FileFormat = 
+            int FileFormat =
                 options.file_format == FbxFileFormat::ASCII
                 ? manager_->GetIOPluginRegistry()->FindWriterIDByDescription("FBX ascii (*.fbx)")
                 : manager_->GetIOPluginRegistry()->GetNativeWriterFormat();
@@ -135,7 +162,7 @@ namespace plateau::meshWriter {
                     fbx_mesh->CreateElementUV("UV3"),
                     fbx_mesh->CreateElementUV("UV4")
             };
-            for(auto uv : UVs){
+            for (auto uv : UVs) {
                 uv->SetMappingMode(FbxGeometryElement::eByControlPoint);
                 uv->SetReferenceMode(FbxGeometryElement::eDirect);
             }
@@ -145,18 +172,18 @@ namespace plateau::meshWriter {
                 const auto& uv = mesh.getUV1()[VertexIdx];
                 ControlPoints[VertexIdx] = FbxVector4(vertex.x, vertex.y, vertex.z);
                 UVs.at(0)->GetDirectArray().Add(FbxVector2(uv.x, uv.y));
-                UVs.at(1)->GetDirectArray().Add(FbxVector2(0,0));
-                UVs.at(2)->GetDirectArray().Add(FbxVector2(0,0));
+                UVs.at(1)->GetDirectArray().Add(FbxVector2(0, 0));
+                UVs.at(2)->GetDirectArray().Add(FbxVector2(0, 0));
 
                 const auto& src_uv4 = mesh.getUV4();
-                if(VertexIdx < src_uv4.size()){
+                if (VertexIdx < src_uv4.size()) {
                     auto& uv4 = src_uv4.at(VertexIdx);
                     UVs.at(3)->GetDirectArray().Add(FbxVector2(uv4.x, uv4.y));
                 }
 
             }
 
-            for(auto uv : UVs){
+            for (auto uv : UVs) {
                 uv->GetIndexArray().SetCount(VertCount);
             }
 
