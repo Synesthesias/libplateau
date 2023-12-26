@@ -8,7 +8,7 @@
 #include <filesystem>
 
 #include "plateau/polygon_mesh/mesh_merger.h"
-
+#include "plateau/polygon_mesh/mesh_extractor.h"
 
 
 namespace plateau::polygonMesh {
@@ -305,6 +305,9 @@ namespace plateau::polygonMesh {
         }
 
         for (const auto city_object : city_objects) {
+            // スキップすべきタイプはスキップします。
+            if(MeshExtractor::isTypeToSkip(city_object->getType())) continue;
+
             auto gml_id = city_object->getId();
 
             long long vertex_count = 0;

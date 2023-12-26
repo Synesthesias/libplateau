@@ -134,6 +134,7 @@ namespace plateau::polygonMesh {
 
             // グループ内の各主要地物のループ
             for (const auto& primary_object : primary_objects) {
+                if(MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
                 if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
                     mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, city_model.getGmlPath());
                 }

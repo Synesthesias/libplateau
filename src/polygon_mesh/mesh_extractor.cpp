@@ -17,6 +17,11 @@ namespace {
     namespace fs = std::filesystem;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
+
+        // 範囲内であっても、COT_Roomは意図的に省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
+        if(city_obj.getType() == citygml::CityObject::CityObjectsType::COT_Room) return true;
+
+        // 範囲外を省く設定ならば省きます。
         if (!options.exclude_city_object_outside_extent)
             return false;
 
@@ -70,6 +75,7 @@ namespace {
                     // 範囲外ならスキップします。
                     if (shouldSkipCityObj(*primary_object, options, extents))
                         continue;
+                    if (MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
 
                     // 主要地物のメッシュを作ります。
                     MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
@@ -100,6 +106,7 @@ namespace {
                     // 範囲外ならスキップします。
                     if (shouldSkipCityObj(*primary_city_object, options, extents))
                         continue;
+                    if (MeshExtractor::isTypeToSkip(primary_city_object->getType())) continue;
 
                     // 主要地物のノードを作成します。
                     std::unique_ptr<Mesh> primary_mesh;
@@ -113,6 +120,7 @@ namespace {
                     // 最小地物ごとにノードを作成
                     auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_city_object);
                     for (auto atomic_object : atomic_objects) {
+                        if(MeshExtractor::isTypeToSkip(atomic_object->getType())) continue;
                         MeshFactory atomic_mesh_factory(nullptr, options, extents, geo_reference);
                         atomic_mesh_factory.addPolygonsInAtomicCityObject(
                             *primary_city_object, *atomic_object,
@@ -187,5 +195,10 @@ namespace plateau::polygonMesh {
         return !(lod >= 2 &&
                  (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
                  static_cast<citygml::CityObject::CityObjectsType>(0));
+    }
+
+    bool MeshExtractor::isTypeToSkip(citygml::CityObject::CityObjectsType type) {
+        // COT_Roomは省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
+        return type == citygml::CityObject::CityObjectsType::COT_Room;
     }
 }
