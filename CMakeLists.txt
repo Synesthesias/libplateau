@@ -270,6 +270,7 @@ if (NOT(IOS OR ANDROID))
   ## libtiff
   set(jpeg OFF CACHE BOOL "use libjpeg" FORCE)
   set(webp OFF CACHE BOOL "use libwebp (required for WEBP compression)" FORCE)
+  set(zstd OFF CACHE BOOL "" FORCE) # libtiffで余計な依存関係があるとUnrealのビルドで問題となるのでオフにできる機能をオフにします。
   add_subdirectory("3rdparty/libtiff")
   set(TIFF_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libtiff/libtiff")
 endif()
