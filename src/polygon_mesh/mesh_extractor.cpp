@@ -198,7 +198,11 @@ namespace plateau::polygonMesh {
     }
 
     bool MeshExtractor::isTypeToSkip(citygml::CityObject::CityObjectsType type) {
-        // COT_Roomは省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
-        return type == citygml::CityObject::CityObjectsType::COT_Room;
+
+        return
+            // COT_Roomは省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
+            type == citygml::CityObject::CityObjectsType::COT_Room ||
+            // COT_CityObjectGroupも省きます。なぜなら、LOD4の建物でbldg以下の建物パーツと重複するのをなくしたいからです。
+            type == citygml::CityObject::CityObjectsType::COT_CityObjectGroup;
     }
 }
