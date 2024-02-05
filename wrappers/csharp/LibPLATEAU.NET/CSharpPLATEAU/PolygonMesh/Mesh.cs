@@ -157,7 +157,7 @@ namespace PLATEAU.PolygonMesh
             return color;
         }
 
-        public void SetVertexColor(PlateauVector3d[] colorArray)
+        public void SetVertexColors(PlateauVector3d[] colorArray)
         {
             ThrowIfInvalid();
             var result = NativeMethods.plateau_mesh_set_vertex_colors(Handle, colorArray, colorArray.Length);

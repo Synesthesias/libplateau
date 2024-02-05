@@ -116,7 +116,7 @@ namespace PLATEAU.Test.GeometryModel
         {
             var mesh = CreateSimpleMesh();
             Assert.AreEqual(0, mesh.VertexColorCount, "初期化直後のVertexColorは空配列");
-            mesh.SetVertexColor(new PlateauVector3d[]{new PlateauVector3d(0.1, 0.2, 0.3), new PlateauVector3d(0.4, 0.5, 0.6)});
+            mesh.SetVertexColors(new PlateauVector3d[]{new PlateauVector3d(0.1, 0.2, 0.3), new PlateauVector3d(0.4, 0.5, 0.6)});
             Assert.AreEqual(2, mesh.VertexColorCount, "色設定後の要素数");
             var color0 = mesh.GetVertexColorAt(0);
             var color1 = mesh.GetVertexColorAt(1);
