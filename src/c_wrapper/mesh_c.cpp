@@ -89,6 +89,32 @@ extern "C" {
             return APIResult::ErrorUnknown;
     }
 
+
+    DLL_VALUE_FUNC(plateau_mesh_get_vertex_color_count,
+                   Mesh,
+                   int,
+                   handle->getVertexColors().size())
+
+    DLL_VALUE_FUNC_WITH_INDEX_CHECK(plateau_mesh_get_vertex_color_at_index,
+                                   Mesh,
+                                   TVec3d,
+                                   handle->getVertexColors().at(index),
+                                   index >= handle->getVertexColors().size())
+
+   LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_set_vertex_colors(
+           Mesh* mesh,
+           TVec3d* color_array,
+           int color_array_count
+           ) {
+        API_TRY {
+            auto colors = std::vector<TVec3d>(color_array, color_array + color_array_count);
+            mesh->setVertexColors(colors);
+            return APIResult::Success;
+        } API_CATCH
+            return APIResult::ErrorUnknown;
+    }
+
+
     DLL_PTR_FUNC(plateau_mesh_get_city_object_list,
                  Mesh,
                  CityObjectList,

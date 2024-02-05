@@ -19,7 +19,8 @@ namespace plateau::polygonMesh {
         , uv1_(std::move(uv_1))
         , uv4_(std::move(uv_4))
         , sub_meshes_(std::move(sub_meshes))
-        , city_object_list_(std::move(city_object_list)) {
+        , city_object_list_(std::move(city_object_list))
+        , vertex_colors_(){
     }
 
     std::vector<TVec3d>& Mesh::getVertices() {
@@ -52,6 +53,14 @@ namespace plateau::polygonMesh {
 
     std::vector<SubMesh>& Mesh::getSubMeshes() {
         return sub_meshes_;
+    }
+
+    const std::vector<TVec3d>& Mesh::getVertexColors() const {
+        return vertex_colors_;
+    }
+
+    void Mesh::setVertexColors(std::vector<TVec3d>& vertex_colors) {
+        vertex_colors_ = vertex_colors;
     }
 
     void Mesh::setSubMeshes(std::vector<SubMesh>& sub_mesh_list) {
