@@ -187,6 +187,15 @@ namespace plateau::meshWriter {
                 uv->GetIndexArray().SetCount(VertCount);
             }
 
+            // 頂点カラーをセットします。
+            auto dst_vertex_colors = fbx_mesh->CreateElementVertexColor();
+            dst_vertex_colors->SetMappingMode(FbxGeometryElement::eByControlPoint);
+            dst_vertex_colors->SetReferenceMode(FbxGeometryElement::eDirect);
+            auto src_vert_colors = mesh.getVertexColors();
+            for(auto src_color : src_vert_colors) {
+                dst_vertex_colors->GetDirectArray().Add(FbxVector4(src_color.r, src_color.g, src_color.b));
+            }
+
             // Build list of Indices re-used multiple times to lookup Normals, UVs, other per face vertex information
             const auto& indices = mesh.getIndices();
 
