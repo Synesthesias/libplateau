@@ -89,7 +89,7 @@ namespace plateau::meshWriter {
         void precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
         std::string writeMaterialReference(std::string texUrl, Microsoft::glTF::Document& document);
         void writeNode(Microsoft::glTF::Document& document);
-        void writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder);
+        void writeMesh(const std::string& accessorIdPositions, const std::string& accessorIdIndices, const std::string& accessorIdTexCoords, const std::string& accessorIdVertexColors, Microsoft::glTF::BufferBuilder& bufferBuilder);
 
         Microsoft::glTF::Scene scene_;
         Microsoft::glTF::Mesh mesh_;
@@ -210,6 +210,7 @@ namespace plateau::meshWriter {
             const auto& vertices = mesh->getVertices();
             const auto& all_indices = mesh->getIndices();
             const auto& uvs = mesh->getUV1();
+            const auto& vertex_colors = mesh->getVertexColors();
 
             const auto& sub_meshes = mesh->getSubMeshes();
             if (!sub_meshes.empty()) {
@@ -233,7 +234,7 @@ namespace plateau::meshWriter {
 
                 //uv
                 std::string accessorIdTexCoords = "";
-                if (0 < uvs.size()) {
+                if (!uvs.empty()) {
                     std::vector<float> texcoords;
                     for (const auto& uv : uvs) {
                         texcoords.push_back((float)uv.x);
@@ -241,6 +242,20 @@ namespace plateau::meshWriter {
                     }
                     bufferBuilder.AddBufferView(gltf::BufferViewTarget::ARRAY_BUFFER);
                     accessorIdTexCoords = bufferBuilder.AddAccessor(texcoords, { gltf::TYPE_VEC2, gltf::COMPONENT_FLOAT }).id;
+                }
+
+                // 頂点カラー
+                std::string accessorIdVertexColors = "";
+                if(!vertex_colors.empty()) {
+                    std::vector<float> colors;
+                    colors.reserve(vertex_colors.size() * 3);
+                    for(const auto col :vertex_colors) {
+                        colors.push_back((float)col.r);
+                        colors.push_back((float)col.g);
+                        colors.push_back((float)col.b);
+                    }
+                    bufferBuilder.AddBufferView(gltf::BufferViewTarget::ARRAY_BUFFER);
+                    accessorIdVertexColors = bufferBuilder.AddAccessor(colors, {gltf::TYPE_VEC3, gltf::COMPONENT_FLOAT}).id;
                 }
 
                 bufferBuilder.AddBufferView(gltf::BufferViewTarget::ELEMENT_ARRAY_BUFFER);
@@ -257,9 +272,9 @@ namespace plateau::meshWriter {
                     current_material_id_ = default_material_id_;
                     if (!texUrl.empty()) {
                         current_material_id_ = writeMaterialReference(texUrl, document);
-                        writeMesh(accessorIdPositions, accessorIdIndices, accessorIdTexCoords, bufferBuilder);
+                        writeMesh(accessorIdPositions, accessorIdIndices, accessorIdTexCoords, accessorIdVertexColors, bufferBuilder);
                     } else {
-                        writeMesh(accessorIdPositions, accessorIdIndices, "", bufferBuilder);
+                        writeMesh(accessorIdPositions, accessorIdIndices, "", accessorIdVertexColors, bufferBuilder);
                     }
                 }
                 writeNode(document);
@@ -271,12 +286,17 @@ namespace plateau::meshWriter {
         }
     }
 
-    void GltfWriter::Impl::writeMesh(std::string accessorIdPositions, std::string accessorIdIndices, std::string accessorIdTexCoords, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void GltfWriter::Impl::writeMesh(const std::string& accessorIdPositions, const std::string& accessorIdIndices, const std::string& accessorIdTexCoords, const std::string& accessorIdVertexColors, Microsoft::glTF::BufferBuilder& bufferBuilder) {
         gltf::MeshPrimitive meshPrimitive;
         meshPrimitive.materialId = current_material_id_;
         meshPrimitive.indicesAccessorId = accessorIdIndices;
         meshPrimitive.attributes[gltf::ACCESSOR_POSITION] = accessorIdPositions;
-        if (accessorIdTexCoords != "") meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
+        if (!accessorIdTexCoords.empty()) {
+            meshPrimitive.attributes[gltf::ACCESSOR_TEXCOORD_0] = accessorIdTexCoords;
+        }
+        if (!accessorIdVertexColors.empty()) {
+            meshPrimitive.attributes[gltf::ACCESSOR_COLOR_0] = accessorIdVertexColors;
+        }
 
         mesh_.primitives.push_back(meshPrimitive);
     }
