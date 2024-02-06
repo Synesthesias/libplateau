@@ -44,6 +44,8 @@ namespace plateau::polygonMesh {
         const UV& getUV4() const;
         const std::vector<SubMesh>& getSubMeshes() const;
         std::vector<SubMesh>& getSubMeshes();
+        const std::vector<TVec3d>& getVertexColors() const;
+        void setVertexColors(std::vector<TVec3d>& vertex_colors);
 
         void setSubMeshes(std::vector<SubMesh>& sub_mesh_list);
 
@@ -99,12 +101,25 @@ namespace plateau::polygonMesh {
 
     private:
         friend class MeshFactory;
+
+        /// 頂点座標のリストです。
         std::vector<TVec3d> vertices_;
+
+        /// 頂点番号をリスト上で並べて面を表現したものです。
         std::vector<unsigned> indices_;
+
+        /// (u,v)のリストです。
         UV uv1_;
+
+        /// 4番目のUVはCityObjectIndexを格納するために利用します。
         UV uv4_;
         std::vector<SubMesh> sub_meshes_;
         CityObjectList city_object_list_;
+
+        /// 頂点カラーです。
+        /// CityGMLには頂点カラーはないのでインポート時は使いませんが、
+        /// UnityでRenderingToolkitを利用すると頂点カラーを使うのでそれのエクスポート時に利用します。
+        std::vector<TVec3d> vertex_colors_;
     };
 }
 

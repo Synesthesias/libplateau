@@ -111,6 +111,23 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual("test.png", subMesh.TexturePath);
         }
 
+        [TestMethod]
+        public void VertexColorsCanBeSetAndGet()
+        {
+            var mesh = CreateSimpleMesh();
+            Assert.AreEqual(0, mesh.VertexColorCount, "初期化直後のVertexColorは空配列");
+            mesh.SetVertexColors(new PlateauVector3d[]{new PlateauVector3d(0.1, 0.2, 0.3), new PlateauVector3d(0.4, 0.5, 0.6)});
+            Assert.AreEqual(2, mesh.VertexColorCount, "色設定後の要素数");
+            var color0 = mesh.GetVertexColorAt(0);
+            var color1 = mesh.GetVertexColorAt(1);
+            Assert.AreEqual(0.1, color0.X);
+            Assert.AreEqual(0.2, color0.Y);
+            Assert.AreEqual(0.3, color0.Z);
+            Assert.AreEqual(0.4, color1.X);
+            Assert.AreEqual(0.5, color1.Y);
+            Assert.AreEqual(0.6, color1.Z);
+        }
+
         private static Mesh CreateSimpleMesh()
         {
             SimpleMeshInfo(out var vertices, out var indices, out var uv1, out var uv4, out var subMeshes);
