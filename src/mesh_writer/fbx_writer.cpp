@@ -193,8 +193,9 @@ namespace plateau::meshWriter {
             dst_vertex_colors->SetReferenceMode(FbxGeometryElement::eDirect);
             auto src_vert_colors = mesh.getVertexColors();
             for(auto src_color : src_vert_colors) {
-                dst_vertex_colors->GetDirectArray().Add(FbxVector4(src_color.r, src_color.g, src_color.b));
+                dst_vertex_colors->GetDirectArray().Add(FbxColor(src_color.r, src_color.g, src_color.b));
             }
+            Layer->SetVertexColors(dst_vertex_colors);
 
             // Build list of Indices re-used multiple times to lookup Normals, UVs, other per face vertex information
             const auto& indices = mesh.getIndices();
