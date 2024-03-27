@@ -8,7 +8,8 @@ namespace plateau::polygonMesh {
         name_(std::move(name)),
         mesh_(nullptr),
         is_primary_(false),
-        is_active_(true){
+        is_active_(true),
+        position_(TVec3d(0,0,0)){
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
@@ -43,6 +44,14 @@ namespace plateau::polygonMesh {
 
     void Node::setMesh(std::unique_ptr<Mesh>&& mesh) {
         mesh_ = std::move(mesh);
+    }
+
+    TVec3d Node::getPosition() const {
+        return position_;
+    }
+
+    void Node::setPosition(const TVec3d pos) {
+        position_ = pos;
     }
 
     bool Node::hasVertices() const {

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.Test.GeometryModel
@@ -53,6 +54,15 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual(true, node.IsActive, "初期値はtrueです。");
             node.IsActive = false;
             Assert.AreEqual(false, node.IsActive, "isActiveはset可能です。");
+        }
+
+        [TestMethod]
+        public void Position_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauVector3d(0,0,0), node.Position, "初期値は0,0,0");
+            node.Position = new PlateauVector3d(1.0, 2.0, 3.0);
+            Assert.AreEqual(new PlateauVector3d(1.0, 2.0, 3.0), node.Position, "Positionはset,get可能");
         }
     }
 }

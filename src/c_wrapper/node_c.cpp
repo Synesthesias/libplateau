@@ -35,6 +35,16 @@ extern "C" {
                    const bool is_active,
                    node->setIsActive(is_active))
 
+   DLL_VALUE_FUNC(plateau_node_get_position,
+                  Node,
+                  TVec3d,
+                  handle->getPosition())
+
+  DLL_2_ARG_FUNC(plateau_node_set_position,
+                 Node* const node,
+                 const TVec3d pos,
+                 node->setPosition(pos))
+
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_node_get_child_at_index,
                 Node,
                 Node,

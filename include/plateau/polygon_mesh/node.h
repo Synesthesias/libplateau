@@ -32,6 +32,8 @@ namespace plateau::polygonMesh {
         void setName(const std::string& name);
         Mesh* getMesh() const;
         void setMesh(std::unique_ptr<Mesh>&& mesh);
+        TVec3d getPosition() const;
+        void setPosition(const TVec3d pos);
 
         /// Meshが存在し、かつそのMeshに頂点が1つ以上あるときにtrueを返します。
         bool hasVertices() const;
@@ -67,6 +69,7 @@ namespace plateau::polygonMesh {
         std::vector<Node> child_nodes_;
         std::unique_ptr<Mesh> mesh_;
         bool is_primary_; // GranularityConverterでのみ利用します。
+        TVec3d position_;
 
         /**
          * ゲームエンジン上でNodeに相当するゲームオブジェクトがアクティブかどうかです。

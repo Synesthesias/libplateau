@@ -2,5 +2,17 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../../.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/cpp-httplib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/glTF-SDK/glTF-SDK" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/json" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/libcitygml" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/libpng" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/libtiff" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/libxml2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/openssl-cmake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/xerces-c" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/zlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../test/gtest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../python/pybind11" vcs="Git" />
   </component>
 </project>
