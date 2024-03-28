@@ -118,6 +118,10 @@ namespace plateau::meshWriter {
             const auto fbx_node = FbxNode::Create(fbx_scene, node.getName().c_str());
             parent_fbx_node->AddChild(fbx_node);
 
+            // ノード位置をローカル座標で指定
+            auto local_pos = node.getPosition();
+            fbx_node->LclTranslation.Set(FbxDouble3(local_pos.x, local_pos.y, local_pos.z));
+
             const auto mesh = node.getMesh();
             if (mesh != nullptr)
                 addMesh(*mesh, fbx_scene, fbx_node);
