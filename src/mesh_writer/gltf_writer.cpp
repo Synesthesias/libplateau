@@ -278,7 +278,7 @@ namespace plateau::meshWriter {
                     }
                 }
 
-                auto local_pos_plateau = node.getPosition();
+                auto local_pos_plateau = node.getLocalPosition();
                 auto local_pos_gltf = gltf::Vector3((float)local_pos_plateau.x, (float)local_pos_plateau.y, (float)local_pos_plateau.z);
                 writeNode(document, local_pos_gltf);
             }

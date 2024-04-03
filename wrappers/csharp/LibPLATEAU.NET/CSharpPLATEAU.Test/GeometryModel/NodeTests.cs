@@ -60,9 +60,18 @@ namespace PLATEAU.Test.GeometryModel
         public void Position_GetAndSet()
         {
             var node = Node.Create("testNode");
-            Assert.AreEqual(new PlateauVector3d(0,0,0), node.Position, "初期値は0,0,0");
-            node.Position = new PlateauVector3d(1.0, 2.0, 3.0);
-            Assert.AreEqual(new PlateauVector3d(1.0, 2.0, 3.0), node.Position, "Positionはset,get可能");
+            Assert.AreEqual(new PlateauVector3d(0,0,0), node.LocalPosition, "初期値は0,0,0");
+            node.LocalPosition = new PlateauVector3d(1.0, 2.0, 3.0);
+            Assert.AreEqual(new PlateauVector3d(1.0, 2.0, 3.0), node.LocalPosition, "Positionはset,get可能");
+        }
+        
+        [TestMethod]
+        public void Scale_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauVector3d(1,1,1), node.LocalScale, "初期値は1,1,1");
+            node.LocalScale = new PlateauVector3d(-1.0, 2.0, 3.0);
+            Assert.AreEqual(new PlateauVector3d(-1.0, 2.0, 3.0), node.LocalScale, "Scaleはset,get可能");
         }
     }
 }

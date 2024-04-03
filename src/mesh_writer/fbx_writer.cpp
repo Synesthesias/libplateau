@@ -119,7 +119,7 @@ namespace plateau::meshWriter {
             parent_fbx_node->AddChild(fbx_node);
 
             // ノード位置をローカル座標で指定
-            auto local_pos = node.getPosition();
+            auto local_pos = node.getLocalPosition();
             fbx_node->LclTranslation.Set(FbxDouble3(local_pos.x, local_pos.y, local_pos.z));
 
             const auto mesh = node.getMesh();
