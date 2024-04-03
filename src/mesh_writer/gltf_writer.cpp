@@ -88,7 +88,7 @@ namespace plateau::meshWriter {
 
         void precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
         std::string writeMaterialReference(std::string texUrl, Microsoft::glTF::Document& document);
-        void writeNode(Microsoft::glTF::Document& document, const gltf::Vector3& node_local_position);
+        void writeNode(Microsoft::glTF::Document& document, const gltf::Vector3& node_local_position, const gltf::Vector3& node_local_scale);
         void writeMesh(const std::string& accessorIdPositions, const std::string& accessorIdIndices, const std::string& accessorIdTexCoords, const std::string& accessorIdVertexColors, Microsoft::glTF::BufferBuilder& bufferBuilder);
 
         Microsoft::glTF::Scene scene_;
@@ -280,7 +280,9 @@ namespace plateau::meshWriter {
 
                 auto local_pos_plateau = node.getLocalPosition();
                 auto local_pos_gltf = gltf::Vector3((float)local_pos_plateau.x, (float)local_pos_plateau.y, (float)local_pos_plateau.z);
-                writeNode(document, local_pos_gltf);
+                auto local_scale_plateau = node.getLocalScale();
+                auto local_scale_gltf = gltf::Vector3((float)local_scale_plateau.x, (float)local_scale_plateau.y, (float)local_scale_plateau.z);
+                writeNode(document, local_pos_gltf, local_scale_gltf);
             }
         }
 
@@ -304,12 +306,13 @@ namespace plateau::meshWriter {
         mesh_.primitives.push_back(meshPrimitive);
     }
 
-    void GltfWriter::Impl::writeNode(gltf::Document& document, const gltf::Vector3& node_local_position) {
+    void GltfWriter::Impl::writeNode(gltf::Document& document, const gltf::Vector3& node_local_position, const gltf::Vector3& node_local_scale) {
         auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         gltf::Node node;
         node.meshId = meshId;
         node.name = node_name_;
         node.translation = node_local_position;
+        node.scale = node_local_scale;
         auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         scene_.nodes.push_back(nodeId);
         mesh_.primitives.clear();
