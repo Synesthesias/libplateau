@@ -1,0 +1,8 @@
+//
+// Created by Linoal on 2024/04/04.
+//
+
+#ifndef LIBPLATEAU_QUATERNION_H
+#define LIBPLATEAU_QUATERNION_H
+
+#endif //LIBPLATEAU_QUATERNION_H

@@ -73,5 +73,14 @@ namespace PLATEAU.Test.GeometryModel
             node.LocalScale = new PlateauVector3d(-1.0, 2.0, 3.0);
             Assert.AreEqual(new PlateauVector3d(-1.0, 2.0, 3.0), node.LocalScale, "Scaleはset,get可能");
         }
+        
+        [TestMethod]
+        public void Rotation_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauQuaternion(0,0,0,1), node.LocalRotation, "初期値は0,0,0,1");
+            node.LocalRotation = new PlateauQuaternion(1.0, 2.0, 3.0, 4.0);
+            Assert.AreEqual(new PlateauQuaternion(1.0, 2.0, 3.0, 4.0), node.LocalRotation, "Rotationはset,get可能");
+        }
     }
 }

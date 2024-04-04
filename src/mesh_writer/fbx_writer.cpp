@@ -126,6 +126,7 @@ namespace plateau::meshWriter {
             auto local_scale = node.getLocalScale();
             fbx_node->LclScaling.Set(FbxDouble3(local_scale.x, local_scale.y, local_scale.z));
 
+
             const auto mesh = node.getMesh();
             if (mesh != nullptr)
                 addMesh(*mesh, fbx_scene, fbx_node);
