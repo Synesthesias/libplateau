@@ -119,6 +119,12 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+
+## glmを導入します
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glm")
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL=1)
+
+
 if( NOT(IOS OR ANDROID) )
   ## ユニットテスト
   add_subdirectory("test")

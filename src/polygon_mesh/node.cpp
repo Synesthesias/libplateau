@@ -5,10 +5,12 @@
 namespace plateau::polygonMesh {
 
     Node::Node(std::string name) :
-        name_(std::move(name)),
-        mesh_(nullptr),
-        is_primary_(false),
-        is_active_(true){
+            name_(std::move(name)),
+            mesh_(nullptr),
+            is_primary_(false),
+            is_active_(true),
+            local_transform_(Transform())
+            {
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
@@ -43,6 +45,34 @@ namespace plateau::polygonMesh {
 
     void Node::setMesh(std::unique_ptr<Mesh>&& mesh) {
         mesh_ = std::move(mesh);
+    }
+
+    TVec3d Node::getLocalPosition() const {
+        return local_transform_.getLocalPosition();
+    }
+
+    void Node::setLocalPosition(const TVec3d pos) {
+        local_transform_.setLocalPosition(pos);
+    }
+
+    TVec3d Node::getLocalScale() const {
+        return local_transform_.getLocalScale();
+    }
+
+    void Node::setLocalScale(TVec3d scale) {
+        local_transform_.setLocalScale(scale);
+    }
+
+    Quaternion Node::getLocalRotation() const {
+        return local_transform_.getLocalRotation();
+    }
+
+    void Node::setLocalRotation(Quaternion rotation) {
+        local_transform_.setLocalRotation(rotation);
+    }
+
+    Transform Node::getLocalTransform() const {
+        return local_transform_;
     }
 
     bool Node::hasVertices() const {

@@ -14,6 +14,7 @@ namespace fs = std::filesystem;
 using namespace citygml;
 
 namespace {
+
     void startMeshGroup(std::ofstream& obj_ofs, const std::string& name) {
         obj_ofs << "g " << name << std::endl;
     }
@@ -107,7 +108,9 @@ namespace plateau::meshWriter {
                 .append(filename_without_ext + oss.str())
                 .u8string();
 
-            writeObj(file_path, root_node);
+            auto transform_stack = TransformStack();
+            transform_stack.push(polygonMesh::Transform(root_node.getLocalPosition(), root_node.getLocalScale(), root_node.getLocalRotation()));
+            writeObj(file_path, root_node, transform_stack);
 
             writeMtl(file_path);
         }
@@ -120,7 +123,8 @@ namespace plateau::meshWriter {
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Node& node) {
+    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Node& node,
+                             TransformStack& transform_stack) {
         auto ofs = std::ofstream(fs::u8path(obj_file_path));
         if (!ofs.is_open()) {
             throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path);
@@ -131,18 +135,20 @@ namespace plateau::meshWriter {
         const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
-        writeCityObjectRecursive(ofs, node);
+        writeCityObjectRecursive(ofs, node, transform_stack);
     }
 
-    void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
-        writeCityObject(ofs, node);
+    void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node, TransformStack& transform_stack) {
+        transform_stack.push(node.getLocalTransform());
+        writeCityObject(ofs, node, transform_stack);
 
         for (size_t i = 0; i < node.getChildCount(); i++) {
-            writeCityObjectRecursive(ofs, node.getChildAt(i));
+            writeCityObjectRecursive(ofs, node.getChildAt(i), transform_stack);
         }
+        transform_stack.pop();
     }
 
-    void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
+    void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node, TransformStack& transform_stack) {
 
         const auto& node_name = node.getName();
 
@@ -160,7 +166,7 @@ namespace plateau::meshWriter {
 
                 assert(all_indices.size() % 3 == 0);
 
-                writeVertices(ofs, vertices);
+                writeVertices(ofs, vertices, transform_stack);
 
                 if (!uvs.empty()) {
                     std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
@@ -192,9 +198,11 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
-        for (const auto& vertex : vertices) {
-            ofs << generateVertex(vertex);
+    void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices, TransformStack& transform_stack) {
+        auto combined_transform = transform_stack.CalcProduct();
+        for (const auto& src_vertex : vertices) {
+            auto transformed_vertex = combined_transform.apply(src_vertex);
+            ofs << generateVertex(transformed_vertex);
         }
     }
 

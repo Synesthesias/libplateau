@@ -35,6 +35,36 @@ extern "C" {
                    const bool is_active,
                    node->setIsActive(is_active))
 
+   DLL_VALUE_FUNC(plateau_node_get_local_position,
+                  Node,
+                  TVec3d,
+                  handle->getLocalPosition())
+
+  DLL_2_ARG_FUNC(plateau_node_set_local_position,
+                 Node* const node,
+                 const TVec3d pos,
+                 node->setLocalPosition(pos))
+
+    DLL_VALUE_FUNC(plateau_node_get_local_scale,
+                   Node,
+                   TVec3d,
+                   handle->getLocalScale())
+
+    DLL_2_ARG_FUNC(plateau_node_set_local_scale,
+                   Node* const node,
+                   const TVec3d scale,
+                   node->setLocalScale(scale))
+
+    DLL_VALUE_FUNC(plateau_node_get_local_rotation,
+                  Node,
+                  Quaternion,
+                  handle->getLocalRotation())
+
+    DLL_2_ARG_FUNC(plateau_node_set_local_rotation,
+                   Node* const node,
+                   const Quaternion rotation,
+                   node->setLocalRotation(rotation))
+
     DLL_PTR_FUNC_WITH_INDEX_CHECK(plateau_node_get_child_at_index,
                 Node,
                 Node,

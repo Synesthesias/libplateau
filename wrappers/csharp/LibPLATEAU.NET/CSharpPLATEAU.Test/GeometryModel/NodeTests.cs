@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
 
 namespace PLATEAU.Test.GeometryModel
@@ -53,6 +54,33 @@ namespace PLATEAU.Test.GeometryModel
             Assert.AreEqual(true, node.IsActive, "初期値はtrueです。");
             node.IsActive = false;
             Assert.AreEqual(false, node.IsActive, "isActiveはset可能です。");
+        }
+
+        [TestMethod]
+        public void Position_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauVector3d(0,0,0), node.LocalPosition, "初期値は0,0,0");
+            node.LocalPosition = new PlateauVector3d(1.0, 2.0, 3.0);
+            Assert.AreEqual(new PlateauVector3d(1.0, 2.0, 3.0), node.LocalPosition, "Positionはset,get可能");
+        }
+        
+        [TestMethod]
+        public void Scale_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauVector3d(1,1,1), node.LocalScale, "初期値は1,1,1");
+            node.LocalScale = new PlateauVector3d(-1.0, 2.0, 3.0);
+            Assert.AreEqual(new PlateauVector3d(-1.0, 2.0, 3.0), node.LocalScale, "Scaleはset,get可能");
+        }
+        
+        [TestMethod]
+        public void Rotation_GetAndSet()
+        {
+            var node = Node.Create("testNode");
+            Assert.AreEqual(new PlateauQuaternion(0,0,0,1), node.LocalRotation, "初期値は0,0,0,1");
+            node.LocalRotation = new PlateauQuaternion(1.0, 2.0, 3.0, 4.0);
+            Assert.AreEqual(new PlateauQuaternion(1.0, 2.0, 3.0, 4.0), node.LocalRotation, "Rotationはset,get可能");
         }
     }
 }
