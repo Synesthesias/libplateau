@@ -9,9 +9,8 @@ namespace plateau::polygonMesh {
             mesh_(nullptr),
             is_primary_(false),
             is_active_(true),
-            local_position_(TVec3d(0, 0, 0)),
-            local_scale_(TVec3d(1,1,1)),
-            local_rotation_(Quaternion()){
+            local_transform_(Transform())
+            {
     }
 
     Node::Node(std::string name, std::unique_ptr<Mesh>&& mesh) :
@@ -49,27 +48,27 @@ namespace plateau::polygonMesh {
     }
 
     TVec3d Node::getLocalPosition() const {
-        return local_position_;
+        return local_transform_.getLocalPosition();
     }
 
     void Node::setLocalPosition(const TVec3d pos) {
-        local_position_ = pos;
+        local_transform_.setLocalPosition(pos);
     }
 
     TVec3d Node::getLocalScale() const {
-        return local_scale_;
+        return local_transform_.getLocalScale();
     }
 
     void Node::setLocalScale(TVec3d scale) {
-        local_scale_ = scale;
+        local_transform_.setLocalScale(scale);
     }
 
     Quaternion Node::getLocalRotation() const {
-        return local_rotation_;
+        return local_transform_.getLocalRotation();
     }
 
     void Node::setLocalRotation(Quaternion rotation) {
-        local_rotation_ = rotation;
+        local_transform_.setLocalRotation(rotation);
     }
 
     bool Node::hasVertices() const {

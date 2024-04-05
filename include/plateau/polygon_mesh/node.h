@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include "mesh.h"
+#include "transform.h"
 
 namespace plateau::polygonMesh {
     /**
@@ -74,14 +75,8 @@ namespace plateau::polygonMesh {
         std::unique_ptr<Mesh> mesh_;
         bool is_primary_; // GranularityConverterでのみ利用します。
 
-        /// FBX,GLTFエクスポート時にローカルポジションとして利用されます。
-        TVec3d local_position_;
-
-        /// FBX,GLTFエクスポート時にローカルスケールとして利用されます。
-        TVec3d local_scale_;
-
-        /// FBX,GLTFエクスポート時にローカル回転として利用されます。
-        Quaternion local_rotation_;
+        /// FBX,GLTFエクスポート時にローカルなトランスフォームとして利用されます。
+        Transform local_transform_;
 
         /**
          * ゲームエンジン上でNodeに相当するゲームオブジェクトがアクティブかどうかです。

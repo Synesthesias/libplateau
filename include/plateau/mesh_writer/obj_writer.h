@@ -7,45 +7,31 @@
 #include <stack>
 
 #include <plateau/polygon_mesh/mesh_extractor.h>
+#include <plateau/polygon_mesh/transform.h>
 
 namespace plateau::meshWriter {
-
-    /// ゲームオブジェクトの位置
-    class Transform {
-    public:
-        Transform(const TVec3d& local_position) : local_position_(local_position) {}
-        TVec3d getLocalPosition() const { return local_position_; }
-    private:
-        TVec3d local_position_;
-    };
 
     /// ゲームオブジェクトの位置のスタックです。
     /// Nodeの親から子へと処理が進むたびpushし、子から親へ処理が戻るたびpopします。
     /// こうすることで、親から子まで累積的にTransformを適用することができます。
     class TransformStack {
     public:
-        void push(const Transform& transform) {
+        void push(const polygonMesh::Transform& transform) {
             stack_.push(transform);
-            sum_of_position = sum_of_position + transform.getLocalPosition();
         }
 
-        Transform pop() {
+        polygonMesh::Transform pop() {
             if (stack_.empty()) {
                 throw std::runtime_error("TransformStack is empty.");
             }
             auto transform = stack_.top();
             stack_.pop();
-            sum_of_position = sum_of_position - transform.getLocalPosition();
             return transform;
         }
 
-        TVec3d getSumOfPosition() const {
-            return sum_of_position;
-        }
 
     private:
-        std::stack<Transform> stack_;
-        TVec3d sum_of_position = TVec3d(0,0,0);
+        std::stack<polygonMesh::Transform> stack_;
     };
 
     /// ModelをもとにOBJファイルを書き出すクラスです。

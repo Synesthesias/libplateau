@@ -9,7 +9,6 @@
 #include <plateau/mesh_writer/obj_writer.h>
 #include <cassert>
 #include <fstream>
-#include <stack>
 
 namespace fs = std::filesystem;
 using namespace citygml;
