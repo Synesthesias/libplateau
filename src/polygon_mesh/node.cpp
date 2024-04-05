@@ -71,6 +71,10 @@ namespace plateau::polygonMesh {
         local_transform_.setLocalRotation(rotation);
     }
 
+    Transform Node::getLocalTransform() const {
+        return local_transform_;
+    }
+
     bool Node::hasVertices() const {
         return mesh_ != nullptr && mesh_->hasVertices();
     }

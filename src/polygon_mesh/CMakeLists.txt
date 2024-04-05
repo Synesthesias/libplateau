@@ -10,4 +10,5 @@ target_sources(plateau PRIVATE
         "mesh_merger.cpp"
 	    "city_object_list.cpp"
 		"map_attacher.cpp"
+		"transform.cpp"
 )

@@ -39,6 +39,7 @@ namespace plateau::polygonMesh {
         void setLocalScale(TVec3d scale);
         Quaternion getLocalRotation() const;
         void setLocalRotation(Quaternion rotation);
+        Transform getLocalTransform() const;
 
         /// Meshが存在し、かつそのMeshに頂点が1つ以上あるときにtrueを返します。
         bool hasVertices() const;

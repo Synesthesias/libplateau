@@ -1,3 +1,4 @@
+#pragma once
 #include <libplateau_api.h>
 
 namespace plateau::polygonMesh {

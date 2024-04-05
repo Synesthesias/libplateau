@@ -109,7 +109,7 @@ namespace plateau::meshWriter {
                 .u8string();
 
             auto transform_stack = TransformStack();
-            transform_stack.push(Transform(root_node.getLocalPosition()));
+            transform_stack.push(polygonMesh::Transform(root_node.getLocalPosition(), root_node.getLocalScale(), root_node.getLocalRotation()));
             writeObj(file_path, root_node, transform_stack);
 
             writeMtl(file_path);
@@ -139,7 +139,7 @@ namespace plateau::meshWriter {
     }
 
     void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node, TransformStack& transform_stack) {
-        transform_stack.push(Transform(node.getLocalPosition()));
+        transform_stack.push(node.getLocalTransform());
         writeCityObject(ofs, node, transform_stack);
 
         for (size_t i = 0; i < node.getChildCount(); i++) {
@@ -199,9 +199,10 @@ namespace plateau::meshWriter {
     }
 
     void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices, TransformStack& transform_stack) {
-        auto position_offset = transform_stack.getSumOfPosition();
-        for (const auto& vertex : vertices) {
-            ofs << generateVertex(vertex + position_offset);
+        auto combined_transform = transform_stack.CalcProduct();
+        for (const auto& src_vertex : vertices) {
+            auto transformed_vertex = combined_transform.apply(src_vertex);
+            ofs << generateVertex(transformed_vertex);
         }
     }
 
