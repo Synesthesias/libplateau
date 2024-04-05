@@ -109,7 +109,9 @@ namespace plateau::meshWriter {
                 .append(filename_without_ext + oss.str())
                 .u8string();
 
-            writeObj(file_path, root_node);
+            auto transform_stack = TransformStack();
+            transform_stack.push(Transform(root_node.getLocalPosition()));
+            writeObj(file_path, root_node, transform_stack);
 
             writeMtl(file_path);
         }
@@ -122,7 +124,8 @@ namespace plateau::meshWriter {
         return true;
     }
 
-    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Node& node) {
+    void ObjWriter::writeObj(const std::string& obj_file_path, const plateau::polygonMesh::Node& node,
+                             TransformStack& transform_stack) {
         auto ofs = std::ofstream(fs::u8path(obj_file_path));
         if (!ofs.is_open()) {
             throw std::runtime_error("Failed to open stream of obj path : " + obj_file_path);
@@ -133,7 +136,6 @@ namespace plateau::meshWriter {
         const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
-        auto transform_stack = TransformStack();
         writeCityObjectRecursive(ofs, node, transform_stack);
     }
 
