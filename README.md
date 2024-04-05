@@ -272,6 +272,11 @@ Windows, Mac, Linux でのテストと成果物のダウンロードができま
   - 用途: glTF形式でのエクスポート
   - ライセンス: MIT
 
+- glm
+  - [https://github.com/g-truc/glm](https://github.com/g-truc/glm)
+  - 用途: ノードのTransform計算
+  - ライセンス: The Happy Bunny License or MIT License
+
 - json
   - [https://github.com/nlohmann/json.git](https://github.com/nlohmann/json.git)
   - 用途: APIサーバーから受け取るjsonのパース
