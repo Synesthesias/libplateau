@@ -9,11 +9,13 @@
 #include <plateau/mesh_writer/obj_writer.h>
 #include <cassert>
 #include <fstream>
+#include <stack>
 
 namespace fs = std::filesystem;
 using namespace citygml;
 
 namespace {
+
     void startMeshGroup(std::ofstream& obj_ofs, const std::string& name) {
         obj_ofs << "g " << name << std::endl;
     }
@@ -131,18 +133,21 @@ namespace plateau::meshWriter {
         const auto mtl_file_name = fs::u8path(obj_file_path).filename().replace_extension(".mtl").string();
         ofs << "mtllib " << mtl_file_name << std::endl;
 
-        writeCityObjectRecursive(ofs, node);
+        auto transform_stack = TransformStack();
+        writeCityObjectRecursive(ofs, node, transform_stack);
     }
 
-    void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
-        writeCityObject(ofs, node);
+    void ObjWriter::writeCityObjectRecursive(std::ofstream& ofs, const plateau::polygonMesh::Node& node, TransformStack& transform_stack) {
+        transform_stack.push(Transform(node.getLocalPosition()));
+        writeCityObject(ofs, node, transform_stack);
 
         for (size_t i = 0; i < node.getChildCount(); i++) {
-            writeCityObjectRecursive(ofs, node.getChildAt(i));
+            writeCityObjectRecursive(ofs, node.getChildAt(i), transform_stack);
         }
+        transform_stack.pop();
     }
 
-    void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node) {
+    void ObjWriter::writeCityObject(std::ofstream& ofs, const plateau::polygonMesh::Node& node, TransformStack& transform_stack) {
 
         const auto& node_name = node.getName();
 
@@ -160,7 +165,7 @@ namespace plateau::meshWriter {
 
                 assert(all_indices.size() % 3 == 0);
 
-                writeVertices(ofs, vertices);
+                writeVertices(ofs, vertices, transform_stack);
 
                 if (!uvs.empty()) {
                     std::vector<TVec2f> texcoords; // TODO texcoords、使われていないのでは？
@@ -192,9 +197,10 @@ namespace plateau::meshWriter {
         }
     }
 
-    void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices) {
+    void ObjWriter::writeVertices(std::ofstream& ofs, const std::vector<TVec3d>& vertices, TransformStack& transform_stack) {
+        auto position_offset = transform_stack.getSumOfPosition();
         for (const auto& vertex : vertices) {
-            ofs << generateVertex(vertex);
+            ofs << generateVertex(vertex + position_offset);
         }
     }
 
