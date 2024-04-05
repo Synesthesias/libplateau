@@ -126,6 +126,14 @@ namespace plateau::meshWriter {
             auto local_scale = node.getLocalScale();
             fbx_node->LclScaling.Set(FbxDouble3(local_scale.x, local_scale.y, local_scale.z));
 
+            // ノードのローカル向きを指定
+            // 参考 : https://stackoverflow.com/questions/47753266/fbxsdk-using-quaternions-to-set-rotation-keys
+            auto local_rotation = node.getLocalRotation();
+            auto local_quaternion = FbxQuaternion(local_rotation.getX(), local_rotation.getY(), local_rotation.getZ(), local_rotation.getW());
+            FbxAMatrix rotation_matrix;
+            rotation_matrix.SetQ(local_quaternion);
+            auto rotation_euler = rotation_matrix.GetR();
+            fbx_node->LclRotation.Set(rotation_euler);
 
             const auto mesh = node.getMesh();
             if (mesh != nullptr)

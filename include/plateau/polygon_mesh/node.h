@@ -33,9 +33,11 @@ namespace plateau::polygonMesh {
         Mesh* getMesh() const;
         void setMesh(std::unique_ptr<Mesh>&& mesh);
         TVec3d getLocalPosition() const;
-        void setLocalPosition(const TVec3d pos);
+        void setLocalPosition(TVec3d pos);
         TVec3d getLocalScale() const;
-        void setLocalScale(const TVec3d scale);
+        void setLocalScale(TVec3d scale);
+        Quaternion getLocalRotation() const;
+        void setLocalRotation(Quaternion rotation);
 
         /// Meshが存在し、かつそのMeshに頂点が1つ以上あるときにtrueを返します。
         bool hasVertices() const;
@@ -77,6 +79,9 @@ namespace plateau::polygonMesh {
 
         /// FBX,GLTFエクスポート時にローカルスケールとして利用されます。
         TVec3d local_scale_;
+
+        /// FBX,GLTFエクスポート時にローカル回転として利用されます。
+        Quaternion local_rotation_;
 
         /**
          * ゲームエンジン上でNodeに相当するゲームオブジェクトがアクティブかどうかです。

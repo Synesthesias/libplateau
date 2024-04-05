@@ -5,6 +5,7 @@
 #include "mesh_extract_options.h"
 #include "citygml/cityobject.h"
 #include "plateau/polygon_mesh/city_object_list.h"
+#include "plateau/polygon_mesh/quaternion.h"
 #include <libplateau_api.h>
 #include <optional>
 
