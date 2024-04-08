@@ -279,16 +279,20 @@ namespace plateau::meshWriter {
                     }
                 }
 
-                auto local_pos_plateau = node.getLocalPosition();
-                auto local_pos_gltf = gltf::Vector3((float)local_pos_plateau.x, (float)local_pos_plateau.y, (float)local_pos_plateau.z);
-                auto local_scale_plateau = node.getLocalScale();
-                auto local_scale_gltf = gltf::Vector3((float)local_scale_plateau.x, (float)local_scale_plateau.y, (float)local_scale_plateau.z);
-                auto local_rotation_plateau = node.getLocalRotation();
-                auto local_rotation_gltf = gltf::Quaternion((float)local_rotation_plateau.getX(), (float)local_rotation_plateau.getY(), (float)local_rotation_plateau.getZ(), (float)local_rotation_plateau.getW());
-                writeNode(document, local_pos_gltf, local_scale_gltf, local_rotation_gltf);
-            }
-        }
 
+            }
+        } // end if (mesh != nullptr)
+
+        // ノードを追加します。
+        auto local_pos_plateau = node.getLocalPosition();
+        auto local_pos_gltf = gltf::Vector3((float)local_pos_plateau.x, (float)local_pos_plateau.y, (float)local_pos_plateau.z);
+        auto local_scale_plateau = node.getLocalScale();
+        auto local_scale_gltf = gltf::Vector3((float)local_scale_plateau.x, (float)local_scale_plateau.y, (float)local_scale_plateau.z);
+        auto local_rotation_plateau = node.getLocalRotation();
+        auto local_rotation_gltf = gltf::Quaternion((float)local_rotation_plateau.getX(), (float)local_rotation_plateau.getY(), (float)local_rotation_plateau.getZ(), (float)local_rotation_plateau.getW());
+        writeNode(document, local_pos_gltf, local_scale_gltf, local_rotation_gltf);
+
+        // 子ノードを再帰的に処理します。
         for (size_t i = 0; i < node.getChildCount(); i++) {
             precessNodeRecursive(node.getChildAt(i), document, bufferBuilder);
         }
@@ -311,16 +315,18 @@ namespace plateau::meshWriter {
 
     void GltfWriter::Impl::writeNode(gltf::Document& document, const gltf::Vector3& node_local_position,
                                      const gltf::Vector3& node_local_scale, const gltf::Quaternion& node_local_rotation) {
-        auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         gltf::Node node;
-        node.meshId = meshId;
+        if(!mesh_.primitives.empty()){
+            auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
+            node.meshId = meshId;
+            mesh_.primitives.clear();
+        }
         node.name = node_name_;
         node.translation = node_local_position;
         node.scale = node_local_scale;
         node.rotation = node_local_rotation;
         auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
         scene_.nodes.push_back(nodeId);
-        mesh_.primitives.clear();
     }
 
     std::string GltfWriter::Impl::writeMaterialReference(std::string texture_url, gltf::Document& document) {
