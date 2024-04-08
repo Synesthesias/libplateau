@@ -86,10 +86,14 @@ namespace plateau::meshWriter {
             material_ids_(), current_material_id_(), default_material_id_(""), required_materials_(), options_() {
         }
 
-        void precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder);
+        /// ノードを再帰的に処理します。ルートノードである場合は引数parent_node_idに空文字を指定してください。
+        void processNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document,
+                                  Microsoft::glTF::BufferBuilder& bufferBuilder, const std::string& parent_node_id);
         std::string writeMaterialReference(std::string texUrl, Microsoft::glTF::Document& document);
-        void writeNode(gltf::Document& document, const gltf::Vector3& node_local_position,
-                       const gltf::Vector3& node_local_scale, const gltf::Quaternion& node_local_rotation);
+
+        /// ノードを作り、作ったノードを返します。
+        std::string writeNode(gltf::Document& document, const gltf::Vector3& node_local_position,
+                                    const gltf::Vector3& node_local_scale, const gltf::Quaternion& node_local_rotation, const std::string& parent_node_id);
         void writeMesh(const std::string& accessorIdPositions, const std::string& accessorIdIndices, const std::string& accessorIdTexCoords, const std::string& accessorIdVertexColors, Microsoft::glTF::BufferBuilder& bufferBuilder);
 
         Microsoft::glTF::Scene scene_;
@@ -167,7 +171,7 @@ namespace plateau::meshWriter {
 
         for (int i = 0; i < model.getRootNodeCount(); i++) {
             auto& root_node = model.getRootNodeAt(i);
-            impl->precessNodeRecursive(root_node, document, bufferBuilder);
+            impl->processNodeRecursive(root_node, document, bufferBuilder, "");
         }
 
         document.SetDefaultScene(std::move(impl->scene_), gltf::AppendIdPolicy::GenerateOnEmpty);
@@ -202,7 +206,9 @@ namespace plateau::meshWriter {
         return true;
     }
 
-    void GltfWriter::Impl::precessNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document, Microsoft::glTF::BufferBuilder& bufferBuilder) {
+    void
+    GltfWriter::Impl::processNodeRecursive(const plateau::polygonMesh::Node& node, Microsoft::glTF::Document& document,
+                                           Microsoft::glTF::BufferBuilder& bufferBuilder, const std::string& parent_node_id) {
 
         node_name_ = node.getName();
 
@@ -290,11 +296,11 @@ namespace plateau::meshWriter {
         auto local_scale_gltf = gltf::Vector3((float)local_scale_plateau.x, (float)local_scale_plateau.y, (float)local_scale_plateau.z);
         auto local_rotation_plateau = node.getLocalRotation();
         auto local_rotation_gltf = gltf::Quaternion((float)local_rotation_plateau.getX(), (float)local_rotation_plateau.getY(), (float)local_rotation_plateau.getZ(), (float)local_rotation_plateau.getW());
-        writeNode(document, local_pos_gltf, local_scale_gltf, local_rotation_gltf);
+        const auto created_node_id = writeNode(document, local_pos_gltf, local_scale_gltf, local_rotation_gltf, parent_node_id);
 
         // 子ノードを再帰的に処理します。
         for (size_t i = 0; i < node.getChildCount(); i++) {
-            precessNodeRecursive(node.getChildAt(i), document, bufferBuilder);
+            processNodeRecursive(node.getChildAt(i), document, bufferBuilder, created_node_id);
         }
     }
 
@@ -313,8 +319,9 @@ namespace plateau::meshWriter {
         mesh_.primitives.push_back(meshPrimitive);
     }
 
-    void GltfWriter::Impl::writeNode(gltf::Document& document, const gltf::Vector3& node_local_position,
-                                     const gltf::Vector3& node_local_scale, const gltf::Quaternion& node_local_rotation) {
+    std::string GltfWriter::Impl::writeNode(gltf::Document& document, const gltf::Vector3& node_local_position,
+                                                  const gltf::Vector3& node_local_scale, const gltf::Quaternion& node_local_rotation,
+                                                  const std::string& parent_node_id) {
         gltf::Node node;
         if(!mesh_.primitives.empty()){
             auto meshId = document.meshes.Append(mesh_, gltf::AppendIdPolicy::GenerateOnEmpty).id;
@@ -326,7 +333,20 @@ namespace plateau::meshWriter {
         node.scale = node_local_scale;
         node.rotation = node_local_rotation;
         auto nodeId = document.nodes.Append(node, gltf::AppendIdPolicy::GenerateOnEmpty).id;
-        scene_.nodes.push_back(nodeId);
+
+
+        if (!parent_node_id.empty()) {
+            // 親子関係を設定します。
+            // 単にparent_node.childrenにノードを追加したいだけですが、
+            // ノードを取得しようとすると常にconstになるというgltf-sdkの仕様により、コピーしてからReplaceするという操作になっています。
+            gltf::Node replaced_parent = document.nodes.Get(parent_node_id);
+            replaced_parent.children.push_back(nodeId);
+            document.nodes.Replace(std::move(replaced_parent));
+        }else{
+            // ルートノードに追加
+            scene_.nodes.push_back(nodeId);
+        }
+        return nodeId;
     }
 
     std::string GltfWriter::Impl::writeMaterialReference(std::string texture_url, gltf::Document& document) {
