@@ -54,6 +54,7 @@ add_library(c_wrapper OBJECT
   "material_c.cpp"
   "map_zoom_level_searcher_c.cpp"
   "granularity_converter_c.cpp"
+  "heightmap_generator_c.cpp"
         )
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
