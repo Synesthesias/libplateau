@@ -1,133 +1,164 @@
 #include <plateau/texture/heightmap_generator.h>
+#include <plateau/geometry/geo_reference.h>
 #include <iostream>
 #include <fstream>
 #include "png.h"
 
 namespace plateau::texture {
 
+
+    struct HeightMapExtent {
+        TVec3d Max;
+        TVec3d Min;
+
+        void setVertice(TVec3d vertice) {
+            if (Max.x == 0) Max.x = vertice.x;
+            if (Min.x == 0) Min.x = vertice.x;
+            Max.x = std::max(Max.x, vertice.x);
+            Min.x = std::min(Min.x, vertice.x);
+
+            if (Max.y == 0) Max.y = vertice.y;
+            if (Min.y == 0) Min.y = vertice.y;
+            Max.y = std::max(Max.y, vertice.y);
+            Min.y = std::min(Min.y, vertice.y);
+
+            if (Max.z == 0) Max.z = vertice.z;
+            if (Min.z == 0) Min.z = vertice.z;
+            Max.z = std::max(Max.z, vertice.z);
+            Min.z = std::min(Min.z, vertice.z);
+        }
+
+        void convertCoordinateFrom(geometry::CoordinateSystem coordinate) {
+            Max = geometry::GeoReference::convertAxisToENU(coordinate, Max);
+            Min = geometry::GeoReference::convertAxisToENU(coordinate, Min);
+            normalizeDirection(coordinate);
+        }
+
+        void convertCoordinateTo(geometry::CoordinateSystem coordinate) {
+            Max = geometry::GeoReference::convertAxisFromENUTo(coordinate, Max);
+            Min = geometry::GeoReference::convertAxisFromENUTo(coordinate, Min); 
+            normalizeDirection(coordinate);
+        }
+
+        void normalizeDirection(geometry::CoordinateSystem coordinate) {
+            TVec3d newMin = Min;
+            TVec3d newMax = Max;    
+            if (coordinate == geometry::CoordinateSystem::EUN) { 
+                //Unity
+                newMin = TVec3d(Min.x, Min.y, Min.z);
+                newMax = TVec3d(Max.x, Max.y, Max.z);
+            } else if (coordinate == geometry::CoordinateSystem::ESU) {
+                //Unreal
+                newMin = TVec3d(Min.x, Max.y, Min.z);
+                newMax = TVec3d(Max.x, Min.y, Max.z);              
+            }
+            Min = newMin;
+            Max = newMax;
+        }
+    };
+
+    struct Triangle {
+
+        TVec3d V1;
+        TVec3d V2;
+        TVec3d V3;
+
+        int id;
+
+        // 2点間のベクトルを計算する関数
+        TVec3d vectorBetweenPoints(const TVec3d& p1, const TVec3d& p2) {
+            return { p2.x - p1.x, p2.y - p1.y, p2.z - p1.z };
+        }
+
+        // 2つのベクトルの外積を計算する関数
+        TVec3d crossProduct(const TVec3d& v1, const TVec3d& v2) {
+            return { v1.y * v2.z - v1.z * v2.y,
+                    v1.z * v2.x - v1.x * v2.z,
+                    v1.x * v2.y - v1.y * v2.x };
+        }
+
+        // 平面の方程式の係数を計算する関数
+        void planeEquationCoefficients(const TVec3d& p1, const TVec3d& p2, const TVec3d& p3, double& A, double& B, double& C, double& D) {
+            TVec3d vec1 = vectorBetweenPoints(p1, p2);
+            TVec3d vec2 = vectorBetweenPoints(p1, p3);
+            TVec3d normal = crossProduct(vec1, vec2);
+            A = normal.x;
+            B = normal.y;
+            C = normal.z;
+            D = -(A * p1.x + B * p1.y + C * p1.z);
+        }
+
+        // 指定された x, y 座標から z 座標を計算する関数
+        double getHeight(double x, double y) {
+            double A, B, C, D;
+            planeEquationCoefficients(V1, V2, V3, A, B, C, D);
+            return (-D - A * x - B * y) / C;
+        }
+
+        bool isInside(double x, double y) {
+            return isInside(TVec2d(V1.x, V1.y), TVec2d(V2.x, V2.y), TVec2d(V3.x, V3.y), TVec2d(x, y));
+        }
+
+        double crossProduct2D(const TVec2d& A, const TVec2d& B, const TVec2d& C) {
+            return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
+        }
+
+        // 点Pが三角形ABCの内側にあるかどうかを判定する関数
+        bool isInside(const TVec2d& A, const TVec2d& B, const TVec2d& C, const TVec2d& P) {
+            double crossABP = crossProduct2D(A, B, P);
+            double crossBCP = crossProduct2D(B, C, P);
+            double crossCAP = crossProduct2D(C, A, P);
+
+            // 点Pが３角形ABCの内側にあるかどうかを判定
+            if ((crossABP >= 0 && crossBCP >= 0 && crossCAP >= 0) ||
+                (crossABP <= 0 && crossBCP <= 0 && crossCAP <= 0)) {
+                return true;
+            }
+            return false;
+        }
+    };
+
+    // MeshからHeightMap画像となる16bitグレースケール配列を生成し、適用範囲となる位置を計算します
+    // ENUに変換してから処理を実行し、元のCoordinateに変換して値を返します
     std::vector<uint16_t> HeightmapGenerator::generateFromMesh(
-        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec3d& outMin, TVec3d& outMax) {
+        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, geometry::CoordinateSystem coordinate, TVec3d& outMin, TVec3d& outMax) {
 
         const auto& InVertices = InMesh.getVertices();
         const auto& InIndices = InMesh.getIndices();
 
-        double MaxX = 0, MinX = 0;
-        double MaxY = 0, MinY = 0;
-        double MaxZ = 0, MinZ = 0;
-
-        const auto FaceCount = InIndices.size() / 3;
-        for (const auto& Vertex : InVertices) {
-
-            if (MaxX == 0) MaxX = Vertex.x;
-            if (MinX == 0) MinX = Vertex.x;
-            MaxX = std::max(MaxX, Vertex.x);
-            MinX = std::min(MinX, Vertex.x);
-
-            if (MaxY == 0) MaxY = Vertex.y;
-            if (MinY == 0) MinY = Vertex.y;
-            MaxY = std::max(MaxY, Vertex.y);
-            MinY = std::min(MinY, Vertex.y);
-
-            if (MaxZ == 0) MaxZ = Vertex.z;
-            if (MinZ == 0) MinZ = Vertex.z;
-            MaxZ = std::max(MaxZ, Vertex.z);
-            MinZ = std::min(MinZ, Vertex.z);
-        }
-
-        //余白を追加
-        MaxX += 500;
-        MaxY += 500;
-
-        TVec3d ExtMax = TVec3d(MaxX, MaxY, MaxZ);
-        TVec3d ExtMin = TVec3d(MinX, MinY, MinZ);
-
-        struct Triangle {
-
-            TVec3d V1;
-            TVec3d V2;
-            TVec3d V3;
-
-            int id;
-
-            // 2点間のベクトルを計算する関数
-            TVec3d vectorBetweenPoints(const TVec3d& p1, const TVec3d& p2) {
-                return { p2.x - p1.x, p2.y - p1.y, p2.z - p1.z };
-            }
-
-            // 2つのベクトルの外積を計算する関数
-            TVec3d crossProduct(const TVec3d& v1, const TVec3d& v2) {
-                return { v1.y * v2.z - v1.z * v2.y,
-                        v1.z * v2.x - v1.x * v2.z,
-                        v1.x * v2.y - v1.y * v2.x };
-            }
-
-            // 平面の方程式の係数を計算する関数
-            void planeEquationCoefficients(const TVec3d& p1, const TVec3d& p2, const TVec3d& p3, double& A, double& B, double& C, double& D) {
-                TVec3d vec1 = vectorBetweenPoints(p1, p2);
-                TVec3d vec2 = vectorBetweenPoints(p1, p3);
-                TVec3d normal = crossProduct(vec1, vec2);
-                A = normal.x;
-                B = normal.y;
-                C = normal.z;
-                D = -(A * p1.x + B * p1.y + C * p1.z);
-            }
-
-            // 指定された x, y 座標から z 座標を計算する関数
-            double getHeight(double x, double y) {
-                double A, B, C, D;
-                planeEquationCoefficients(V1, V2, V3, A, B, C, D);
-                return (-D - A * x - B * y) / C;
-            }
-
-            bool isInside(double x, double y) {
-                return isInside(TVec2d(V1.x, V1.y), TVec2d(V2.x, V2.y), TVec2d(V3.x, V3.y), TVec2d(x, y));
-            }
-
-            double crossProduct2D(const TVec2d& A, const TVec2d& B, const TVec2d& C) {
-                return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
-            }
-
-            // 点Pが三角形ABCの内側にあるかどうかを判定する関数
-            bool isInside(const TVec2d& A, const TVec2d& B, const TVec2d& C, const TVec2d& P) {
-                double crossABP = crossProduct2D(A, B, P);
-                double crossBCP = crossProduct2D(B, C, P);
-                double crossCAP = crossProduct2D(C, A, P);
-
-                // 点Pが３角形ABCの内側にあるかどうかを判定
-                if ((crossABP >= 0 && crossBCP >= 0 && crossCAP >= 0) ||
-                    (crossABP <= 0 && crossBCP <= 0 && crossCAP <= 0)) {
-                    return true;
-                }
-                return false;
-            }
-        };
-
+        HeightMapExtent extent;
         std::vector<Triangle> triangles;
 
         for (size_t i = 0; i < InIndices.size(); i += 3) {
 
             Triangle tri;
-            tri.V1 = InVertices.at(InIndices[i]);
-            tri.V2 = InVertices.at(InIndices[i + 1]);
-            tri.V3 = InVertices.at(InIndices[i + 2]);
+            tri.V1 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i]));
+            tri.V2 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i + 1]));
+            tri.V3 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i + 2]));
+            extent.setVertice(tri.V1);
+            extent.setVertice(tri.V2);
+            extent.setVertice(tri.V3);
             triangles.push_back(tri);
         }
 
-        int TotalPixels = TextureWidth * TextureHeight;
-        int TextureDataSize = TotalPixels;
+        //余白を追加
+        extent.Max.x += margin.x;
+        extent.Max.y += margin.y;
+
+        int TextureDataSize = TextureWidth * TextureHeight;
 
         // Initialize Texture Data Array
         uint16_t* TextureData = new uint16_t[TextureDataSize];
 
         size_t index = 0;
-        for (int y = 0; y < TextureHeight; y++) {
+        for (int y = TextureHeight - 1; y >= 0; y--) {
             for (int x = 0; x < TextureWidth; x++) {
 
                 double xpercent = (double)x / (double)TextureWidth;
                 double ypercent = (double)y / (double)TextureHeight;
 
-                double PosX = getPositionFromPercent(xpercent, MinX, MaxX);
-                double PosY = getPositionFromPercent(ypercent, MinY, MaxY);
+                double PosX = getPositionFromPercent(xpercent, extent.Min.x, extent.Max.x);
+                double PosY = getPositionFromPercent(ypercent, extent.Min.y, extent.Max.y);
 
                 uint16_t GrayValue = 0;
                 double Height = 0;
@@ -136,31 +167,25 @@ namespace plateau::texture {
                 for (auto tri : triangles) {
                     if (tri.isInside(PosX, PosY)) {
                         Height = tri.getHeight(PosX, PosY);
-                        HeightPercent = getHeightToPercent(Height, MinZ, MaxZ);
+                        HeightPercent = getHeightToPercent(Height, extent.Min.z, extent.Max.z);
                         GrayValue = getPercentToGrayScale(HeightPercent);
                         break;
                     }
                 }
-                TextureData[index] = GrayValue;
+
+                if(index < TextureDataSize)
+                    TextureData[index] = GrayValue;
                 index++;
             }
         }
-        /*
-        FString SavePath = FPaths::ConvertRelativePathToFull(*(FPaths::ProjectContentDir() + FString("PLATEAU/"))) + FString("HeightMap.png");
-        UE_LOG(LogTemp, Error, TEXT("Save png %s"), *SavePath);
-        savePngFile(TCHAR_TO_ANSI(*SavePath), TextureWidth, TextureHeight, TextureData);
 
-        FString RawSavePath = FPaths::ConvertRelativePathToFull(*(FPaths::ProjectContentDir() + FString("PLATEAU/"))) + FString("HeightMap.raw");
-        UE_LOG(LogTemp, Error, TEXT("Save raw %s"), *RawSavePath);
-        saveRawFile(TCHAR_TO_ANSI(*RawSavePath), TextureWidth, TextureHeight, TextureData);
-        */
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
-        std::memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureWidth * TextureHeight);
+        std::memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
 
         delete[] TextureData;
-
-        outMin = ExtMin;
-        outMax = ExtMax;
+        extent.convertCoordinateTo(coordinate);
+        outMin = extent.Min;
+        outMax = extent.Max;
         return heightMapData;
     }
 
@@ -180,6 +205,11 @@ namespace plateau::texture {
         return static_cast<uint16_t>(static_cast<double>(size) * percent);
     }
 
+    TVec3d HeightmapGenerator::convertCoordinateFrom(geometry::CoordinateSystem coordinate, TVec3d vertice) {
+        return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
+    }
+
+    // 16bitグレースケールのpng画像を保存します
     void HeightmapGenerator::savePngFile(const char* filename, size_t width, size_t height, uint16_t* data) {
         FILE* fp = fopen(filename, "wb");
         if (!fp) {
@@ -233,7 +263,7 @@ namespace plateau::texture {
         fclose(fp);
     }
 
-    // PNG画像を読み込み、グレースケールの配列を取得する関数
+    // PNG画像を読み込み、グレースケールの配列を返します
     std::vector<uint16_t> HeightmapGenerator::readPngFile(const char* filename, size_t width, size_t height) {
         FILE* fp = fopen(filename, "rb");
         if (!fp) {
@@ -292,6 +322,7 @@ namespace plateau::texture {
         return grayscaleData;
     }
 
+    // 16bitグレースケールのpng画像を保存します   
     void HeightmapGenerator::saveRawFile(const char* filename, size_t width, size_t height, uint16_t* data) {
 
         std::ofstream outputFile(filename, std::ios::out | std::ios::binary);
@@ -310,6 +341,7 @@ namespace plateau::texture {
         outputFile.close();
     }
 
+    // Raw画像を読み込み、グレースケールの配列を返します
     std::vector<uint16_t> HeightmapGenerator::readRawFile(const char* filename, size_t width, size_t height) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) {

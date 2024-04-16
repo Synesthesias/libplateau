@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
-using UnityEngine;
 
 namespace PLATEAU.Texture
 {
     public class HeightmapGenerator
     {
-        public void GenerateFromMesh(PolygonMesh.Mesh InMesh, int TextureWidth, int TextureHeight, out PlateauVector3d Min, out PlateauVector3d Max, out UInt16[] HeightData )
+        public void GenerateFromMesh(PolygonMesh.Mesh InMesh, int TextureWidth, int TextureHeight, PlateauVector2d Margin, out PlateauVector3d Min, out PlateauVector3d Max, out UInt16[] HeightData )
         {
-            IntPtr HeightmapDataPtr;
-            int DataSize = 0;
             var apiResult =
-                NativeMethods.heightmap_generator_generate_from_mesh(InMesh.Handle, TextureWidth, TextureHeight, out Min, out Max , out HeightmapDataPtr, out DataSize);
+                NativeMethods.heightmap_generator_generate_from_mesh(InMesh.Handle, TextureWidth, TextureHeight, Margin, CoordinateSystem.EUN, 
+                out Min, out Max , out IntPtr HeightmapDataPtr, out int DataSize);
+            DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
             //byte[] outData = new byte[sizeof(UInt16) * DataSize];
@@ -28,19 +28,17 @@ namespace PLATEAU.Texture
                 HeightData[i] = BitConverter.ToUInt16(outData, byteIndex);
                 byteIndex += 2;
             }
-
-            DLLUtil.CheckDllError(apiResult);
         }
 
         static public float[,] ConvertTo2DFloatArray(UInt16[] HeightData, int TextureWidth, int TextureHeight)
         {
             float[,] TextureData = new float[TextureWidth, TextureHeight];
             int index = 0;
-            for (int y = 0; y < TextureHeight; y++)
+            for (int y = TextureHeight - 1; y >=0; y--)
             {
-                for (int x = 0; x < TextureHeight; x++)
+                for (int x = 0; x < TextureWidth; x++)
                 {
-                    TextureData[x, y] = (float)(HeightData[index] / 65535f);
+                    TextureData[y, x] = (float)(HeightData[index] / 65535f);
                     index++;
                 }
             }
@@ -65,18 +63,17 @@ namespace PLATEAU.Texture
   
             Marshal.Copy(outData, 0, HeightmapDataPtr ,sizeof(UInt16) * data.Length);
             var apiResult =
-                NativeMethods.heightmap_save_png_file(FileName, width, height, HeightmapDataPtr);
+                NativeMethods.heightmap_save_png_file(FileName, width, height, HeightmapDataPtr);         
 
             Marshal.FreeHGlobal(HeightmapDataPtr);
+            DLLUtil.CheckDllError(apiResult);
         }
 
         static public void ReadPngFile(string FileName, int width, int height, out UInt16[] data)
         {
-            IntPtr HeightmapDataPtr = IntPtr.Zero;
-
-            int DataSize = 0;
             var apiResult =
-                NativeMethods.heightmap_read_png_file(FileName, width, height, out HeightmapDataPtr, out DataSize);
+                NativeMethods.heightmap_read_png_file(FileName, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+            DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
 
@@ -110,15 +107,14 @@ namespace PLATEAU.Texture
                 NativeMethods.heightmap_save_raw_file(FileName, width, height, HeightmapDataPtr);
 
             Marshal.FreeHGlobal(HeightmapDataPtr);
+            DLLUtil.CheckDllError(apiResult);
         }
 
         static public void ReadRawFile(string FileName, int width, int height, out UInt16[] data)
         {
-            IntPtr HeightmapDataPtr = IntPtr.Zero;
-
-            int DataSize = 0;
             var apiResult =
-                NativeMethods.heightmap_read_raw_file(FileName, width, height, out HeightmapDataPtr, out DataSize);
+                NativeMethods.heightmap_read_raw_file(FileName, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
+            DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
 
@@ -138,6 +134,8 @@ namespace PLATEAU.Texture
                 [In] IntPtr srcMeshPtr,
                 [In] int TextureWidth,
                 [In] int TextureHeight,
+                [In] PlateauVector2d Margin,
+                [In] CoordinateSystem Coordinate,
                 out PlateauVector3d Min,
                 out PlateauVector3d Max,
                 out IntPtr HeightmapDataPtr,
@@ -149,6 +147,8 @@ namespace PLATEAU.Texture
             [In] IntPtr srcMeshPtr,
             [In] int TextureWidth,
             [In] int TextureHeight,
+            [In] PlateauVector2d Margin,
+            [In] CoordinateSystem Coordinate,
             out PlateauVector3d Min,
             out PlateauVector3d Max,
             out IntPtr HeightmapDataPtr,

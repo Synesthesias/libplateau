@@ -6,13 +6,16 @@ using namespace citygml;
 using namespace libplateau;
 using namespace plateau::polygonMesh;
 using namespace plateau::texture;
+using namespace plateau::geometry;
 
 extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh(
-                    Mesh src_mesh,
+                    Mesh* const src_mesh,
                     size_t TextureWidth,
                     size_t TextureHeight,
+                    TVec2d margin,
+                    CoordinateSystem coordinate,
                     TVec3d* outMin,
                     TVec3d* outMax,
                     const uint16_t** const out_heightmap_data,
@@ -20,7 +23,7 @@ extern "C" {
     ) {
         API_TRY{
             HeightmapGenerator generator;
-            auto vec = generator.generateFromMesh(src_mesh, TextureWidth, TextureHeight, *outMin, *outMax);
+            auto vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);
             *dataSize = vec.size();
             *out_heightmap_data = vec.data();
             return APIResult::Success;
@@ -28,9 +31,11 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh2(HeightmapGenerator* handle, Mesh src_mesh, size_t TextureWidth, size_t TextureHeight, TVec3d* outMin, TVec3d* outMax, const uint16_t** const out_heightmap_data, size_t* dataSize) {
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh2(HeightmapGenerator* handle, Mesh* const src_mesh, size_t TextureWidth, size_t TextureHeight, 
+        TVec2d margin, CoordinateSystem coordinate,
+        TVec3d* outMin, TVec3d* outMax, const uint16_t** const out_heightmap_data, size_t* dataSize) {
         API_TRY{
-            auto vec = handle->generateFromMesh(src_mesh, TextureWidth, TextureHeight, *outMin, *outMax);
+            auto vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);
             *dataSize = vec.size();
             *out_heightmap_data = vec.data();
             return APIResult::Success;
