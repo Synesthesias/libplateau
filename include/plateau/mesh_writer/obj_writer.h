@@ -8,6 +8,7 @@
 
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/polygon_mesh/transform.h>
+#include <../src/polygon_mesh/transform_impl.h>
 
 namespace plateau::meshWriter {
 
@@ -33,9 +34,9 @@ namespace plateau::meshWriter {
         polygonMesh::Transform CalcProduct() {
             auto current = glm::mat4(1.0f);
             for(int i=stack_.size() - 1; i>=0; i--) {
-                current = stack_.at(i).toGlmMatrix() * current;
+                current = stack_.at(i).impl_->toGlmMatrix() * current;
             }
-            return polygonMesh::Transform::fromGlmMatrix(current);
+            return polygonMesh::Transform::Impl::fromGlmMatrix(current);
         }
 
 
