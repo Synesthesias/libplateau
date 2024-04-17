@@ -15,7 +15,7 @@ namespace plateau::polygonMesh {
                     Quaternion()) {}
 
     Transform::Transform(const TVec3d& local_position, const TVec3d& local_scale, const Quaternion& local_rotation) :
-            impl_(std::make_unique<Impl>(local_position, local_scale, local_rotation)) {}
+            impl_(std::make_shared<Impl>(local_position, local_scale, local_rotation)) {}
 
     TVec3d Transform::getLocalPosition() const { return impl_->local_position_; }
     TVec3d Transform::getLocalScale() const {return impl_->local_scale_; }

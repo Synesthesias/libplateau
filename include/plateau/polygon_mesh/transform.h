@@ -2,6 +2,7 @@
 
 #include <libplateau_api.h>
 #include <citygml/vecs.hpp>
+#include <memory>
 
 namespace plateau::meshWriter {
     class TransformStack;
