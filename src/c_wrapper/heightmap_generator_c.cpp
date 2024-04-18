@@ -18,14 +18,14 @@ extern "C" {
                     CoordinateSystem coordinate,
                     TVec3d* outMin,
                     TVec3d* outMax,
-                    const uint16_t** const out_heightmap_data,
+                    const uint16_t** out_heightmap_data,
                     size_t* dataSize
     ) {
         API_TRY{
             HeightmapGenerator generator;
-            auto vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);
-            *dataSize = vec.size();
+            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);   
             *out_heightmap_data = vec.data();
+            *dataSize = vec.size();
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;
@@ -33,11 +33,11 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh2(HeightmapGenerator* handle, Mesh* const src_mesh, size_t TextureWidth, size_t TextureHeight, 
         TVec2d margin, CoordinateSystem coordinate,
-        TVec3d* outMin, TVec3d* outMax, const uint16_t** const out_heightmap_data, size_t* dataSize) {
+        TVec3d* outMin, TVec3d* outMax, const uint16_t** out_heightmap_data, size_t* dataSize) {
         API_TRY{
-            auto vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);
-            *dataSize = vec.size();
+            const auto& vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);         
             *out_heightmap_data = vec.data();
+            *dataSize = vec.size();
             return APIResult::Success;
         }
         API_CATCH;
@@ -55,12 +55,12 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_png_file(
-            const char* filename, size_t width, size_t height, const uint16_t** const out_heightmap_data, size_t* dataSize
+      const char* filename, size_t width, size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
     ) {
         API_TRY{
-            auto vec = HeightmapGenerator::readPngFile(filename, width, height);
-            *dataSize = vec.size();
+            const auto& vec = HeightmapGenerator::readPngFile(filename, width, height);       
             *out_heightmap_data = vec.data();
+            *dataSize = vec.size();
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;
@@ -77,16 +77,32 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_raw_file(
-        const char* filename, size_t width, size_t height, const uint16_t** const out_heightmap_data, size_t* dataSize
+        const char* filename, size_t width, size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
     ) {
         API_TRY{
-            auto vec = HeightmapGenerator::readRawFile(filename, width, height);
-            *dataSize = vec.size();
+            const auto& vec = HeightmapGenerator::readRawFile(filename, width, height);      
             *out_heightmap_data = vec.data();
+            *dataSize = vec.size();
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;
     }
 
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_debug(
+    int val , const char* filename, size_t width, size_t height, TVec2d inVec, size_t* dataSize, const uint16_t** out_data, TVec3d* outVec
+    ) {
+        API_TRY{
 
+            const auto& vec = HeightmapGenerator::readPngFile(filename, width, height);
+
+            std::vector<uint16_t> Data(width * height);
+            *out_data = vec.data();
+            *dataSize = HeightmapGenerator::debug();
+            *outVec = TVec3d(1,2,3);
+
+
+            return APIResult::Success;
+        } API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
 }

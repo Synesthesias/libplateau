@@ -6,6 +6,9 @@
 
 namespace plateau::texture {
 
+    size_t HeightmapGenerator::debug() {
+        return 255;
+    }
 
     struct HeightMapExtent {
         TVec3d Max;

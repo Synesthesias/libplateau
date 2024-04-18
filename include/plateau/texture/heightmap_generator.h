@@ -1,5 +1,6 @@
 #pragma once
 
+#include <libplateau_api.h>
 #include "plateau/polygon_mesh/mesh.h"
 
 namespace plateau::texture {
@@ -16,6 +17,8 @@ namespace plateau::texture {
         static std::vector<uint16_t> readPngFile(const char* filename, size_t width, size_t height);
         static void saveRawFile(const char* filename, size_t width, size_t height, uint16_t* data);
         static std::vector<uint16_t> readRawFile(const char* filename, size_t width, size_t height);
+
+        static size_t debug();
 
     private:
         double getPositionFromPercent(double percent, double min, double max);
