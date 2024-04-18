@@ -16,8 +16,6 @@ namespace PLATEAU.Texture
             DLLUtil.CheckDllError(apiResult);
 
             byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
-            //byte[] outData = new byte[sizeof(UInt16) * DataSize];
-            //Marshal.Copy(HeightmapDataPtr, outData, 0, sizeof(UInt16) * DataSize);
 
             HeightData = new UInt16[DataSize];
             int byteIndex = 0;
@@ -73,11 +71,7 @@ namespace PLATEAU.Texture
                 NativeMethods.heightmap_read_png_file(FileName, width, height, out IntPtr HeightmapDataPtr, out int DataSize);
             DLLUtil.CheckDllError(apiResult);
 
-            //byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
-            /* */
-            byte[] outData = new byte[sizeof(UInt16) * DataSize];
-            Marshal.Copy(HeightmapDataPtr, outData, 0, sizeof(UInt16) * DataSize);
-
+            byte[] outData = DLLUtil.PtrToBytes(HeightmapDataPtr, sizeof(UInt16) * DataSize);
 
             data = new UInt16[DataSize];
             
@@ -193,34 +187,6 @@ namespace PLATEAU.Texture
              out IntPtr OutData,
              out int DataSize
             );
-
-
-            //Debug
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult heightmap_debug(
-             [In] int val,
-             [In] string FileName,
-             [In] int Width,
-             [In] int Height,
-             [In] PlateauVector2d inVec,
-             out int DataSize,
-             out IntPtr OutData,
-             out PlateauVector3d outVec
-            );
-
-        }
-
-        //Debug
-        static public void Debug(int val, string fileName, int width, int height, PlateauVector2d inVec, out int DataSize ,out PlateauVector3d outVec)
-        {
-            var apiResult =
-                NativeMethods.heightmap_debug(val, fileName, width, height, inVec, out int _DataSize, out var data, out outVec);
-
-            DataSize = _DataSize;
-
-            byte[] outData = DLLUtil.PtrToBytes(data, sizeof(UInt16) * DataSize);
-
-            DLLUtil.CheckDllError(apiResult);
         }
     }
 

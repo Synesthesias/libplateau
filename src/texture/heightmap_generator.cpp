@@ -6,10 +6,6 @@
 
 namespace plateau::texture {
 
-    size_t HeightmapGenerator::debug() {
-        return 255;
-    }
-
     struct HeightMapExtent {
         TVec3d Max;
         TVec3d Min;
@@ -216,23 +212,20 @@ namespace plateau::texture {
     void HeightmapGenerator::savePngFile(const char* filename, size_t width, size_t height, uint16_t* data) {
         FILE* fp = fopen(filename, "wb");
         if (!fp) {
-            fprintf(stderr, "Error: Failed to open PNG file for writing\n");
-            exit(1);
+            throw std::runtime_error("Error: Failed to open PNG file for writing.");
         }
 
         png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png_ptr) {
             fclose(fp);
-            fprintf(stderr, "Error: png_create_write_struct failed\n");
-            exit(1);
+            throw std::runtime_error("Error: png_create_write_struct failed.");
         }
 
         png_infop info_ptr = png_create_info_struct(png_ptr);
         if (!info_ptr) {
             fclose(fp);
             png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-            fprintf(stderr, "Error: png_create_info_struct failed\n");
-            exit(1);
+            throw std::runtime_error("Error: png_create_info_struct failed.");
         }
         png_init_io(png_ptr, fp);
         png_set_IHDR(png_ptr, info_ptr, width, height,
@@ -245,8 +238,7 @@ namespace plateau::texture {
         if (!row) {
             fclose(fp);
             png_destroy_write_struct(&png_ptr, &info_ptr);
-            fprintf(stderr, "Error: Failed to allocate memory for PNG row\n");
-            exit(1);
+            throw std::runtime_error("Error: Failed to allocate memory for PNG row.");
         }
 
         int index = 0;
@@ -270,23 +262,20 @@ namespace plateau::texture {
     std::vector<uint16_t> HeightmapGenerator::readPngFile(const char* filename, size_t width, size_t height) {
         FILE* fp = fopen(filename, "rb");
         if (!fp) {
-            std::cerr << "Error: Unable to open file for reading.\n";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Error: Unable to open file for reading.");
         }
 
         png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png_ptr) {
             fclose(fp);
-            std::cerr << "Error: Failed to create PNG read struct.\n";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Error: Failed to create PNG read struct.");
         }
 
         png_infop info_ptr = png_create_info_struct(png_ptr);
         if (!info_ptr) {
             png_destroy_read_struct(&png_ptr, NULL, NULL);
             fclose(fp);
-            std::cerr << "Error: Failed to create PNG info struct.\n";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Error: Failed to create PNG info struct.");
         }
 
         png_init_io(png_ptr, fp);
@@ -299,8 +288,7 @@ namespace plateau::texture {
         int color_type = png_get_color_type(png_ptr, info_ptr);
 
         if (bit_depth != 16 || color_type != PNG_COLOR_TYPE_GRAY) {
-            std::cerr << "Error: Invalid PNG format. Expected 16-bit grayscale.\n";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Error: Invalid PNG format. Expected 16-bit grayscale.");
         }
 
         std::vector<uint16_t> grayscaleData(width * height);
@@ -331,7 +319,7 @@ namespace plateau::texture {
         std::ofstream outputFile(filename, std::ios::out | std::ios::binary);
 
         if (!outputFile) {
-            std::cerr << "Error: Unable to open file for writing.\n";
+            throw std::runtime_error("Error: Unable to open file for writing.");
             return;
         }
 
@@ -348,15 +336,12 @@ namespace plateau::texture {
     std::vector<uint16_t> HeightmapGenerator::readRawFile(const char* filename, size_t width, size_t height) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) {
-            std::cerr << "Error: Unable to open file for reading.\n";
-            exit(EXIT_FAILURE);
+            throw std::runtime_error("Error: Unable to open file for reading. ");
         }
 
         std::vector<uint16_t> grayscaleData(width * height);
-
         // データをバイナリとして読み込む
         file.read(reinterpret_cast<char*>(&grayscaleData[0]), width * height * sizeof(uint16_t));
-
         file.close();
 
         return grayscaleData;

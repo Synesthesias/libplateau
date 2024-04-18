@@ -55,7 +55,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_png_file(
-      const char* filename, size_t width, size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
+      const char* filename, const size_t width, const size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
     ) {
         API_TRY{
             const auto& vec = HeightmapGenerator::readPngFile(filename, width, height);       
@@ -83,24 +83,6 @@ extern "C" {
             const auto& vec = HeightmapGenerator::readRawFile(filename, width, height);      
             *out_heightmap_data = vec.data();
             *dataSize = vec.size();
-            return APIResult::Success;
-        } API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
-
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_debug(
-    int val , const char* filename, size_t width, size_t height, TVec2d inVec, size_t* dataSize, const uint16_t** out_data, TVec3d* outVec
-    ) {
-        API_TRY{
-
-            const auto& vec = HeightmapGenerator::readPngFile(filename, width, height);
-
-            std::vector<uint16_t> Data(width * height);
-            *out_data = vec.data();
-            *dataSize = HeightmapGenerator::debug();
-            *outVec = TVec3d(1,2,3);
-
-
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;
