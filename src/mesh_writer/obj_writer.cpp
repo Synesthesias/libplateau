@@ -7,6 +7,7 @@
 #include <citygml/citymodel.h>
 
 #include <plateau/mesh_writer/obj_writer.h>
+#include "../polygon_mesh/transform_stack.h"
 #include <cassert>
 #include <fstream>
 
