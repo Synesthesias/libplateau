@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "png.h"
+#include <filesystem>
 
 namespace plateau::texture {
 
@@ -209,8 +210,14 @@ namespace plateau::texture {
     }
 
     // 16bitグレースケールのpng画像を保存します
-    void HeightmapGenerator::savePngFile(const char* filename, size_t width, size_t height, uint16_t* data) {
-        FILE* fp = fopen(filename, "wb");
+    void HeightmapGenerator::savePngFile(const std::string& file_path, size_t width, size_t height, uint16_t* data) {
+
+#ifdef WIN32
+        const auto regular_name = std::filesystem::u8path(file_path).wstring();
+        FILE* fp = _wfopen(regular_name.c_str(), L"wb");
+#else
+        FILE* fp = fopen(file_path.c_str(), "wb");
+#endif       
         if (!fp) {
             throw std::runtime_error("Error: Failed to open PNG file for writing.");
         }
@@ -259,8 +266,14 @@ namespace plateau::texture {
     }
 
     // PNG画像を読み込み、グレースケールの配列を返します
-    std::vector<uint16_t> HeightmapGenerator::readPngFile(const char* filename, size_t width, size_t height) {
-        FILE* fp = fopen(filename, "rb");
+    std::vector<uint16_t> HeightmapGenerator::readPngFile(const std::string& file_path, size_t width, size_t height) {
+
+#ifdef WIN32
+        const auto regular_name = std::filesystem::u8path(file_path).wstring();
+        FILE* fp = _wfopen(regular_name.c_str(), L"rb");
+#else
+        FILE* fp = fopen(file_path.c_str(), "rb");
+#endif
         if (!fp) {
             throw std::runtime_error("Error: Unable to open file for reading.");
         }
@@ -314,9 +327,15 @@ namespace plateau::texture {
     }
 
     // 16bitグレースケールのpng画像を保存します   
-    void HeightmapGenerator::saveRawFile(const char* filename, size_t width, size_t height, uint16_t* data) {
+    void HeightmapGenerator::saveRawFile(const std::string& file_path, size_t width, size_t height, uint16_t* data) {
 
-        std::ofstream outputFile(filename, std::ios::out | std::ios::binary);
+#ifdef WIN32
+        const auto regular_name = std::filesystem::u8path(file_path).wstring();
+#else
+        const auto regular_name = std::filesystem::u8path(file_path).u8string();
+#endif
+
+        std::ofstream outputFile(regular_name, std::ios::out | std::ios::binary);
 
         if (!outputFile) {
             throw std::runtime_error("Error: Unable to open file for writing.");
@@ -333,8 +352,15 @@ namespace plateau::texture {
     }
 
     // Raw画像を読み込み、グレースケールの配列を返します
-    std::vector<uint16_t> HeightmapGenerator::readRawFile(const char* filename, size_t width, size_t height) {
-        std::ifstream file(filename, std::ios::binary);
+    std::vector<uint16_t> HeightmapGenerator::readRawFile(const std::string& file_path, size_t width, size_t height) {
+
+#ifdef WIN32
+        const auto regular_name = std::filesystem::u8path(file_path).wstring();
+#else
+        const auto regular_name = std::filesystem::u8path(file_path).u8string();
+#endif
+
+        std::ifstream file(regular_name, std::ios::binary);
         if (!file) {
             throw std::runtime_error("Error: Unable to open file for reading. ");
         }
@@ -346,7 +372,5 @@ namespace plateau::texture {
 
         return grayscaleData;
     }
-
-
 } // namespace jpeg
 

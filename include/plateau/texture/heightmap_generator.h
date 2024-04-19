@@ -13,10 +13,10 @@ namespace plateau::texture {
 
         std::vector<uint16_t> generateFromMesh(const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, geometry::CoordinateSystem coordinate, TVec3d& outMin, TVec3d& outMax);
 
-        static void savePngFile(const char* filename, size_t width, size_t height, uint16_t* data);
-        static std::vector<uint16_t> readPngFile(const char* filename, size_t width, size_t height);
-        static void saveRawFile(const char* filename, size_t width, size_t height, uint16_t* data);
-        static std::vector<uint16_t> readRawFile(const char* filename, size_t width, size_t height);
+        static void savePngFile(const std::string& file_path, size_t width, size_t height, uint16_t* data);
+        static void saveRawFile(const std::string& file_path, size_t width, size_t height, uint16_t* data);
+        static std::vector<uint16_t> readPngFile(const std::string& file_path, size_t width, size_t height);
+        static std::vector<uint16_t> readRawFile(const std::string& file_path, size_t width, size_t height);
 
     private:
         double getPositionFromPercent(double percent, double min, double max);
