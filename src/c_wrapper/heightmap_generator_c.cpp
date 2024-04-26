@@ -18,12 +18,14 @@ extern "C" {
             CoordinateSystem coordinate,
             TVec3d* outMin,
             TVec3d* outMax,
+            TVec2f* outUVMin,
+            TVec2f* outUVMax,
             const uint16_t** out_heightmap_data,
             size_t* dataSize
     ) {
         API_TRY{
             HeightmapGenerator generator;
-            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);   
+            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax, *outUVMin, *outUVMax);
             *out_heightmap_data = vec.data();
             *dataSize = vec.size();
             return APIResult::Success;
@@ -41,11 +43,13 @@ extern "C" {
             CoordinateSystem coordinate,
             TVec3d* outMin,
             TVec3d* outMax,
+            TVec2f* outUVMin,
+            TVec2f* outUVMax,
             const uint16_t** out_heightmap_data,
             size_t* dataSize
     ) {
         API_TRY{
-            const auto& vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax);         
+            const auto& vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax, *outUVMin, *outUVMax);
             *out_heightmap_data = vec.data();
             *dataSize = vec.size();
             return APIResult::Success;

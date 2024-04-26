@@ -121,7 +121,8 @@ namespace plateau::texture {
     // MeshからHeightMap画像となる16bitグレースケール配列を生成し、適用範囲となる位置を計算します
     // ENUに変換してから処理を実行し、元のCoordinateに変換して値を返します
     std::vector<uint16_t> HeightmapGenerator::generateFromMesh(
-        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, geometry::CoordinateSystem coordinate, TVec3d& outMin, TVec3d& outMax) {
+        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, 
+        geometry::CoordinateSystem coordinate, TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
 
         const auto& InVertices = InMesh.getVertices();
         const auto& InIndices = InMesh.getIndices();
@@ -186,6 +187,7 @@ namespace plateau::texture {
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
         outMax = extent.Max;
+        getUVExtent(InMesh.getUV1(), outUVMin, outUVMax);
         return heightMapData;
     }
 
@@ -207,6 +209,23 @@ namespace plateau::texture {
 
     TVec3d HeightmapGenerator::convertCoordinateFrom(geometry::CoordinateSystem coordinate, TVec3d vertice) {
         return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
+    }
+
+    void HeightmapGenerator::getUVExtent(plateau::polygonMesh::UV uvs, TVec2f& outMin, TVec2f& outMax) {
+        TVec2f Min, Max;
+        for (auto uv : uvs) {
+            if (Max.x == 0) Max.x = uv.x;
+            if (Min.x == 0) Min.x = uv.x;
+            Max.x = std::max(Max.x, uv.x);
+            Min.x = std::min(Min.x, uv.x);
+
+            if (Max.y == 0) Max.y = uv.y;
+            if (Min.y == 0) Min.y = uv.y;
+            Max.y = std::max(Max.y, uv.y);
+            Min.y = std::min(Min.y, uv.y);
+        }
+        outMin = Min;
+        outMax = Max;
     }
 
     // 16bitグレースケールのpng画像を保存します
@@ -372,5 +391,5 @@ namespace plateau::texture {
 
         return grayscaleData;
     }
-} // namespace jpeg
+} // namespace texture
 
