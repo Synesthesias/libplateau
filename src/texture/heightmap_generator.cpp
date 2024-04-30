@@ -28,6 +28,14 @@ namespace plateau::texture {
             Min.z = std::min(Min.z, vertice.z);
         }
 
+        double getXLength() {
+            return std::abs(Max.x - Min.x);
+        }
+
+        double getYLength() {
+            return std::abs(Max.y - Min.y);
+        }
+
         void convertCoordinateFrom(geometry::CoordinateSystem coordinate) {
             Max = geometry::GeoReference::convertAxisToENU(coordinate, Max);
             Min = geometry::GeoReference::convertAxisToENU(coordinate, Min);
@@ -142,6 +150,17 @@ namespace plateau::texture {
             triangles.push_back(tri);
         }
 
+        //UV
+        getUVExtent(InMesh.getUV1(), outUVMin, outUVMax);
+        //UVに余白を追加
+        if (margin.x != 0 || margin.y != 0) {
+            auto uvSize = TVec2f(outUVMax.x - outUVMin.x, outUVMax.y - outUVMin.y);
+            auto baseExtentSize = TVec2d(extent.getXLength() / uvSize.x, extent.getYLength() / uvSize.y);
+            auto marginPercent = TVec2f(margin.x / baseExtentSize.x, margin.y / baseExtentSize.y);
+            outUVMax.x += marginPercent.x;
+            outUVMax.y += marginPercent.y;
+        }
+
         //余白を追加
         extent.Max.x += margin.x;
         extent.Max.y += margin.y;
@@ -187,7 +206,6 @@ namespace plateau::texture {
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
         outMax = extent.Max;
-        getUVExtent(InMesh.getUV1(), outUVMin, outUVMax);
         return heightMapData;
     }
 
