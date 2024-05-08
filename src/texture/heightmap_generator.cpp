@@ -151,14 +151,19 @@ namespace plateau::texture {
         }
 
         //UV
-        getUVExtent(InMesh.getUV1(), outUVMin, outUVMax);
-        //UVに余白を追加
-        if (margin.x != 0 || margin.y != 0) {
-            auto uvSize = TVec2f(outUVMax.x - outUVMin.x, outUVMax.y - outUVMin.y);
-            auto baseExtentSize = TVec2d(extent.getXLength() / uvSize.x, extent.getYLength() / uvSize.y);
-            auto marginPercent = TVec2f(margin.x / baseExtentSize.x, margin.y / baseExtentSize.y);
-            outUVMax.x += marginPercent.x;
-            outUVMax.y += marginPercent.y;
+        if (!getUVExtent(InMesh.getUV1(), outUVMin, outUVMax)) {
+            //UV情報が取得できなかった場合 0,1に設定
+            outUVMin.x = outUVMin.y = 0.f;
+            outUVMax.x = outUVMax.y = 1.f;
+        } else {
+            //UV情報が取得できた場合、UVに余白を追加
+            if (margin.x != 0 || margin.y != 0) {
+                auto uvSize = TVec2f(outUVMax.x - outUVMin.x, outUVMax.y - outUVMin.y);
+                auto baseExtentSize = TVec2d(extent.getXLength() / uvSize.x, extent.getYLength() / uvSize.y);
+                auto marginPercent = TVec2f(margin.x / baseExtentSize.x, margin.y / baseExtentSize.y);
+                outUVMax.x += marginPercent.x;
+                outUVMax.y += marginPercent.y;
+            }
         }
 
         //余白を追加
@@ -229,7 +234,8 @@ namespace plateau::texture {
         return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
     }
 
-    void HeightmapGenerator::getUVExtent(plateau::polygonMesh::UV uvs, TVec2f& outMin, TVec2f& outMax) {
+    //UVの最大、最小値を取得します。値が取得できなかった場合はfalseを返します。
+    bool HeightmapGenerator::getUVExtent(plateau::polygonMesh::UV uvs, TVec2f& outMin, TVec2f& outMax) {
         TVec2f Min, Max;
         for (auto uv : uvs) {
             if (Max.x == 0) Max.x = uv.x;
@@ -244,6 +250,7 @@ namespace plateau::texture {
         }
         outMin = Min;
         outMax = Max;
+        return !(outMin.x == 0.f && outMin.y == 0.f && outMax.x == 0.f && outMax.y == 0.f);
     }
 
     // 16bitグレースケールのpng画像を保存します
