@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PLATEAU.Native;
-using PLATEAU.PolygonMesh;
 using PLATEAU.Texture;
-using System;
 
 namespace PLATEAU.Test.Texture
 {
