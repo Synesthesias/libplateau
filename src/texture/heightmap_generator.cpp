@@ -205,7 +205,7 @@ namespace plateau::texture {
         }
 
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
-        std::memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
+        memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
 
         delete[] TextureData;
         extent.convertCoordinateTo(coordinate);
