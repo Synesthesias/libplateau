@@ -4,6 +4,7 @@ if(IOS OR ANDROID)
         "texture_packer_dummy.cpp"
         "texture_image_base_dummy.cpp"
         "map_zoom_level_searcher.cpp"
+        "heightmap_generator.cpp"
     )
 else()
     target_sources(plateau PRIVATE
