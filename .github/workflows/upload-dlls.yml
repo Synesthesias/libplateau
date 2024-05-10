@@ -108,8 +108,8 @@ jobs:
           mkdir -p ~/a/plateau-plugins/static-libs/macos/arm64
           cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
           cp ~/a/libplateau-ubuntu-20.04/*.a ~/a/plateau-plugins/static-libs/linux
-          cp ~/a/libplateau-12-latest-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
-          cp ~/a/libplateau-12-latest-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
+          cp ~/a/libplateau-macos-12-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
+          cp ~/a/libplateau-macos-12-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
