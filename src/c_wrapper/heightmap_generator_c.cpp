@@ -34,30 +34,6 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh2(
-            HeightmapGenerator* handle, 
-            Mesh* const src_mesh,
-            size_t TextureWidth,
-            size_t TextureHeight,
-            TVec2d margin,
-            CoordinateSystem coordinate,
-            TVec3d* outMin,
-            TVec3d* outMax,
-            TVec2f* outUVMin,
-            TVec2f* outUVMax,
-            const uint16_t** out_heightmap_data,
-            size_t* dataSize
-    ) {
-        API_TRY{
-            const auto& vec = handle->generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax, *outUVMin, *outUVMax);
-            *out_heightmap_data = vec.data();
-            *dataSize = vec.size();
-            return APIResult::Success;
-        }
-        API_CATCH;
-        return APIResult::ErrorUnknown;
-    }
-
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_save_png_file(
             const char* filename, size_t width, size_t height, uint16_t* data
     ) {

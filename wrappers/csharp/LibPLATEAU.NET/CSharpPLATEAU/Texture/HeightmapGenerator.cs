@@ -145,22 +145,6 @@ namespace PLATEAU.Texture
             );
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult heightmap_generator_generate_from_mesh2(
-            [In] IntPtr srcMeshPtr,
-            [In] int TextureWidth,
-            [In] int TextureHeight,
-            [In] PlateauVector2d Margin,
-            [In] CoordinateSystem Coordinate,
-            out PlateauVector3d Min,
-            out PlateauVector3d Max,
-            out PlateauVector2f MinUV,
-            out PlateauVector2f MaxUV,
-            out IntPtr HeightmapDataPtr,
-            out int DataSize
-            );
-
-
-            [DllImport(DLLUtil.DllName)]
             internal static extern APIResult heightmap_save_png_file(
              [In] string FileName,
              [In] int Width,

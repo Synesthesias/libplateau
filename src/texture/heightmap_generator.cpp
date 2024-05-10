@@ -70,7 +70,6 @@ namespace plateau::texture {
         TVec3d V1;
         TVec3d V2;
         TVec3d V3;
-
         int id;
 
         // 2点間のベクトルを計算する関数
