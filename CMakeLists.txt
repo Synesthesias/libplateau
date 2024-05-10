@@ -268,7 +268,6 @@ if (NOT(IOS OR ANDROID))
   set(PNG_ARM_NEON_OPT "0"
      CACHE STRING "Enable ARM NEON optimizations")
   set(PNG_STATIC "defined" CACHE STRING "" FORCE)
-  add_subdirectory("3rdparty/libpng")
   set(PNG_INCLUDE_DIRS
     "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
     "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
@@ -280,6 +279,7 @@ if (NOT(IOS OR ANDROID))
   add_subdirectory("3rdparty/libtiff")
   set(TIFF_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libtiff/libtiff")
 endif()
+add_subdirectory("3rdparty/libpng")
 
 ####################################
 # libplateau 本体の Cmake ファイルです。
