@@ -22,7 +22,7 @@ jobs:
         os: [windows-2019, macos-12, ubuntu-20.04]
         arch: [x86_64]
         include:
-          - os: macos-latest
+          - os: macos-12
             arch: arm64
 
     steps:
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-12, ubuntu-latest]
         compile-sdk: [33]
         build-tools: [30.0.3]
         ndk-version: [23.1.7779620]
@@ -92,8 +92,8 @@ jobs:
           cp ~/a/libplateau-windows/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           cp ~/a/libplateau-windows/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
           cp ~/a/libplateau-ubuntu-20.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
-          cp ~/a/libplateau-macos-latest-x86_64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
-          cp ~/a/libplateau-macos-latest-arm64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
+          cp ~/a/libplateau-macos-12-x86_64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
+          cp ~/a/libplateau-macos-12-arm64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
           cp ~/a/libplateau-ios-dll/* ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
 
@@ -104,8 +104,8 @@ jobs:
           mkdir -p ~/a/plateau-plugins/static-libs/macos
           cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
           cp ~/a/libplateau-ubuntu-20.04/*.a ~/a/plateau-plugins/static-libs/linux
-          cp ~/a/libplateau-macos-latest-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
-          cp ~/a/libplateau-macos-latest-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
+          cp ~/a/libplateau-macos-12-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
+          cp ~/a/libplateau-macos-12-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
 
       - name: upload artifact
         uses: actions/upload-artifact@v3
