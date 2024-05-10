@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-latest, ubuntu-20.04]
+        os: [windows-2019, macos-12, ubuntu-20.04]
         arch: [x86_64]
         include:
           - os: macos-latest
