@@ -67,10 +67,10 @@ runs:
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
-        -D ANDROID_PLATFORM=android-23
+        -D ANDROID_PLATFORM=android-23 
         -D ANDROID_ABI=arm64-v8a 
-        -D CMAKE_MAKE_PROGRAM=ninja
-        -D CMAKE_BUILD_TYPE=Release
+        -D CMAKE_MAKE_PROGRAM=ninja 
+        -D CMAKE_BUILD_TYPE=Release 
         -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
       shell: ${{ inputs.shell_type }}
 
@@ -80,9 +80,9 @@ runs:
         cmake
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Ninja"
-        -D CMAKE_SYSTEM_NAME=iOS
-        -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0
+        -G "Ninja" 
+        -D CMAKE_SYSTEM_NAME=iOS 
+        -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 
         -D CMAKE_BUILD_TYPE=Release
       shell: ${{ inputs.shell_type }}
 
