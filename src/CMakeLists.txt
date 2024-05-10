@@ -44,6 +44,7 @@ else()
   )
 
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}")
+  target_include_directories(plateau PUBLIC "${PNG_INCLUDE_DIRS}")
 endif()
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
