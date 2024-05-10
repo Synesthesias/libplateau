@@ -268,10 +268,12 @@ endif()
 ## libjpeg-turbo
 set(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "123456789A" CACHE INTERNAL "") # 仮
 include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
-set_target_properties(libjpeg-turbo PROPERTIES
+if(IOS)
+set_target_properties(libjpeg-turbo md5cmp strtest wrjpgcom example-static tjbench-static djpeg-static cjpeg-static jpegtran-static PROPERTIES
         XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
         XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
 )
+endif()
 
 ## libpng
 set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
