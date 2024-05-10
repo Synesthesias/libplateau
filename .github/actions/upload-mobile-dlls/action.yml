@@ -58,7 +58,6 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Install ninja-build tool
-      if: runner.os == 'Linux'
       uses: seanmiddleditch/gha-setup-ninja@v3
 
     - name: Configure CMake for Android
@@ -81,7 +80,8 @@ runs:
         cmake
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Xcode" 
+        -G "Ninja"
+#       -G "Xcode"
         -D CMAKE_SYSTEM_NAME=iOS
         -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0
         -D CMAKE_BUILD_TYPE=Release
