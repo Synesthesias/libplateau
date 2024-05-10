@@ -267,10 +267,6 @@ endif()
 
 ## libjpeg-turbo
 include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
-set_target_properties(libjpeg-turbo PROPERTIES
-        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
-        XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
-)
 
 
 ## libpng
