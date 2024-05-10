@@ -267,8 +267,10 @@ endif()
 
 ## libjpeg-turbo
 include(3rdparty/libjpeg-turbo/libjpeg-turbo.cmake)
-set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED NO)
-set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED NO)
+set_target_properties(libjpeg-turbo PROPERTIES
+        XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO"
+        XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+)
 
 ## libpng
 set(PNG_SHARED OFF CACHE BOOL "Build shared lib")
