@@ -104,4 +104,4 @@ runs:
       with:
         name: libplateau-ios-dll
 #        path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
-        path: ${{github.workspace}}/out/build/*
+        path: ${{github.workspace}}/out/build/x64-Release/src/plateau.framework/*
