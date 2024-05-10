@@ -58,7 +58,6 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Install ninja-build tool
-      if: runner.os == 'Linux'
       uses: seanmiddleditch/gha-setup-ninja@v3
 
     - name: Configure CMake for Android
@@ -68,10 +67,10 @@ runs:
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
-        -D ANDROID_PLATFORM=android-23
+        -D ANDROID_PLATFORM=android-23 
         -D ANDROID_ABI=arm64-v8a 
-        -D CMAKE_MAKE_PROGRAM=ninja
-        -D CMAKE_BUILD_TYPE=Release
+        -D CMAKE_MAKE_PROGRAM=ninja 
+        -D CMAKE_BUILD_TYPE=Release 
         -D CMAKE_TOOLCHAIN_FILE=$PWD/ndk/${{ matrix.ndk-version }}/build/cmake/android.toolchain.cmake
       shell: ${{ inputs.shell_type }}
 
@@ -81,9 +80,10 @@ runs:
         cmake
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release 
-        -G "Xcode" 
-        -D CMAKE_SYSTEM_NAME=iOS
-        -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0
+        -G "Ninja" 
+        -D CMAKE_SYSTEM_NAME=iOS 
+        -D CMAKE_OSX_ARCHITECTURES="arm64" 
+        -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 
         -D CMAKE_BUILD_TYPE=Release
       shell: ${{ inputs.shell_type }}
 
@@ -103,4 +103,5 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: libplateau-ios-dll
-        path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
+#        path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
+        path: ${{github.workspace}}/out/build/x64-Release/src/plateau.framework/*
