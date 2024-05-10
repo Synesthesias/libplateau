@@ -32,6 +32,7 @@ else()
     "crypto" 
     "ssl" 
     "c_wrapper"
+    "png15_static"
   )
 
   # UnityでiOS向けのビルドを通すため、info.plistというファイルにバイナリの情報が入るようにします。
