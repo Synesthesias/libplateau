@@ -82,6 +82,7 @@ runs:
         -B ${{github.workspace}}/out/build/x64-Release 
         -G "Ninja" 
         -D CMAKE_SYSTEM_NAME=iOS 
+        -D CMAKE_OSX_ARCHITECTURES="arm64" 
         -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 
         -D CMAKE_BUILD_TYPE=Release
       shell: ${{ inputs.shell_type }}
