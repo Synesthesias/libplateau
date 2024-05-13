@@ -203,6 +203,9 @@ namespace plateau::texture {
             }
         }
 
+        //平滑化
+        applyConvolutionFilter(TextureData, TextureWidth, TextureHeight);
+
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
         memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
 
@@ -231,6 +234,26 @@ namespace plateau::texture {
 
     TVec3d HeightmapGenerator::convertCoordinateFrom(geometry::CoordinateSystem coordinate, TVec3d vertice) {
         return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
+    }
+
+    void HeightmapGenerator::applyConvolutionFilter(uint16_t* image, const size_t width, const size_t height) {
+        size_t imageSize = width * height;
+        uint16_t* tempImage = new uint16_t[imageSize];
+        memcpy(tempImage, image, sizeof(uint16_t) * imageSize);
+        for (size_t y = 1; y < height - 1; ++y) {
+            for (size_t x = 1; x < width - 1; ++x) {
+                // 3x3の領域のピクセル値の平均を計算
+                int sum = 0;
+                for (int dy = -1; dy <= 1; ++dy) {
+                    for (int dx = -1; dx <= 1; ++dx) {
+                        sum += image[(y + dy) * width + (x + dx)];
+                    }
+                }
+                tempImage[y * width + x] = sum / 9; 
+            }
+        }
+        memcpy(image, tempImage, sizeof(uint16_t) * imageSize);
+        delete[] tempImage;
     }
 
     //UVの最大、最小値を取得します。値が取得できなかった場合はfalseを返します。
