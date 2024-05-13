@@ -240,7 +240,8 @@ namespace plateau::texture {
         size_t imageSize = width * height;
         uint16_t* tempImage = new uint16_t[imageSize];
         memcpy(tempImage, image, sizeof(uint16_t) * imageSize);
-        for (size_t y = 1; y < height - 1; ++y) {
+        //エッジを除外して処理
+        for (size_t y = 1; y < height - 1; ++y) { 
             for (size_t x = 1; x < width - 1; ++x) {
                 // 3x3の領域のピクセル値の平均を計算
                 int sum = 0;
