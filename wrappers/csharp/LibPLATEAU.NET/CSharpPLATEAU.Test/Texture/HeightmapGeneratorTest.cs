@@ -64,8 +64,6 @@ namespace PLATEAU.Test.Texture
             Assert.IsTrue(Directory.Exists(ImageDirPath), "Directory Exists");
             Assert.IsTrue(File.Exists(filePath), "File Exists");
 
-            Console.WriteLine(filePath);
-
             //Read
             int TextureWidth = 513;
             int TextureHeight = 513;
