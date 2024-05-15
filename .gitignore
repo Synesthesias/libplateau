@@ -1,4 +1,4 @@
-﻿
+
 # fbx_sdk は再配布禁止のため、ご自分で用意していただく形になります。
 /3rdparty/fbx_sdk/
 
@@ -32,3 +32,4 @@ bin
 
 # Intermidiate build data
 3rdparty/*/*.tar.gz
+.editorconfig
