@@ -9,7 +9,7 @@ using namespace plateau::texture;
 using namespace plateau::geometry;
 
 extern "C" {
-    // ’ˆÓ : out_heightmap_data‚ÍƒRƒs[I—¹Œã‚Érelease_heightmap_data‚ğŒÄ‚ñ‚Åíœ‚·‚é•K—v‚ ‚è
+    // æ³¨æ„ : out_heightmap_dataã¯ã‚³ãƒ”ãƒ¼çµ‚äº†å¾Œã«release_heightmap_dataã‚’å‘¼ã‚“ã§å‰Šé™¤ã™ã‚‹å¿…è¦ã‚ã‚Š
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh(
             Mesh* const src_mesh,
             size_t TextureWidth,
@@ -46,7 +46,7 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    // ’ˆÓ : out_heightmap_data‚ÍƒRƒs[I—¹Œã‚Érelease_heightmap_data‚ğŒÄ‚ñ‚Åíœ‚·‚é•K—v‚ ‚è
+    // æ³¨æ„ : out_heightmap_dataã¯ã‚³ãƒ”ãƒ¼çµ‚äº†å¾Œã«release_heightmap_dataã‚’å‘¼ã‚“ã§å‰Šé™¤ã™ã‚‹å¿…è¦ã‚ã‚Š
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_png_file(
       const char* filename, const size_t width, const size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
     ) {
@@ -71,7 +71,7 @@ extern "C" {
         return APIResult::ErrorUnknown;
     }
 
-    // ’ˆÓ : out_heightmap_data‚ÍƒRƒs[I—¹Œã‚Érelease_heightmap_data‚ğŒÄ‚ñ‚Åíœ‚·‚é•K—v‚ ‚è
+    // æ³¨æ„ : out_heightmap_dataã¯ã‚³ãƒ”ãƒ¼çµ‚äº†å¾Œã«release_heightmap_dataã‚’å‘¼ã‚“ã§å‰Šé™¤ã™ã‚‹å¿…è¦ã‚ã‚Š
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_raw_file(
     const char* filename, size_t width, size_t height, const uint16_t** out_heightmap_data, size_t* dataSize
     ) {
@@ -86,7 +86,7 @@ extern "C" {
             return APIResult::ErrorUnknown;
     }
 
-    // heightmap_data”z—ñíœ
+    // heightmap_dataé…åˆ—å‰Šé™¤
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API  release_heightmap_data(uint16_t* heightmap_data) {
         API_TRY{
             delete[] heightmap_data;
