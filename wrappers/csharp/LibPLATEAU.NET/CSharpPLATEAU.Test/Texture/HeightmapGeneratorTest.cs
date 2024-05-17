@@ -24,7 +24,7 @@ namespace PLATEAU.Test.Texture
             Assert.AreEqual(1f, outData[1, 0]);
             Assert.AreEqual(0f, outData[1, 1]);
         }
-        /*
+        
         [TestMethod]
         public void TestGenerateFromMesh()
         {
@@ -114,6 +114,6 @@ namespace PLATEAU.Test.Texture
                 SubMesh.Create(0, 2, "testTexturePath.png")
             };
         }
-        */
+        
     }
 }
