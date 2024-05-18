@@ -21,5 +21,4 @@ endif()
 # モバイルと非モバイルで共通
 target_sources(plateau PRIVATE
         "map_zoom_level_searcher.cpp"
-        "heightmap_generator.cpp"
 )
