@@ -14,7 +14,7 @@ extern "C" {
             Mesh* const src_mesh,
             size_t TextureWidth,
             size_t TextureHeight,
-            TVec2d margin,
+            TVec3d margin,
             CoordinateSystem coordinate,
             TVec3d* outMin,
             TVec3d* outMax,
@@ -25,7 +25,7 @@ extern "C" {
     ) {
         API_TRY{
             HeightmapGenerator generator;
-            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, margin, coordinate, *outMin, *outMax, *outUVMin, *outUVMax);
+            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, TVec2d(margin.x, margin.y) , coordinate, *outMin, *outMax, *outUVMin, *outUVMax);
             uint16_t* heightmap_data = new uint16_t[vec.size()];
             memcpy(heightmap_data, vec.data(), sizeof(uint16_t) * vec.size());
             *out_heightmap_data = heightmap_data;
