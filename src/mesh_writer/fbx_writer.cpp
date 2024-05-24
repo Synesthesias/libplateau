@@ -227,7 +227,9 @@ namespace plateau::meshWriter {
                 FbxSurfaceMaterial* fbx_material;
                 const auto& texture_path = sub_mesh.getTexturePath();
                 if (texture_path.empty()) {
-                    FbxString default_material_name = "Default-Material";
+                    // ここでFBXのマテリアル名が同じになると、勝手に結合される可能性があります。
+                    // しかしテクスチャが空であっても、GameMaterialIDが違うケースでは違うマテリアルを割り当てたいはずなので、名前にIDを含めて結合されないようにします。
+                    FbxString default_material_name = ("Default-Material-" + std::to_string(sub_mesh.getGameMaterialID())).c_str();
                     fbx_material = fbx_scene->GetMaterial(default_material_name);
                     if (!fbx_material) {
                         fbx_material = FbxSurfacePhong::Create(fbx_scene, default_material_name.Buffer());
