@@ -58,7 +58,7 @@ add_library(c_wrapper OBJECT
 
 if(NOT(IOS OR ANDROID))
         # 非モバイル向け
-        add_library(c_wrapper OBJECT
+        target_sources(c_wrapper PRIVATE
                 "heightmap_generator_c.cpp"
         )
 endif()
