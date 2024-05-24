@@ -36,6 +36,20 @@ namespace plateau::texture {
             return std::abs(Max.y - Min.y);
         }
 
+        double getXpercent(double pos) {
+            double val = pos - Min.x;
+            return val / getXLength();
+        }
+
+        double getYpercent(double pos) {
+            double val = pos - Min.y;
+            return val / getYLength();
+        }
+
+        TVec2d getPercent(TVec2d pos) {
+            return TVec2d(getXpercent(pos.x), getYpercent(pos.y));
+        }
+
         void convertCoordinateFrom(geometry::CoordinateSystem coordinate) {
             Max = geometry::GeoReference::convertAxisToENU(coordinate, Max);
             Min = geometry::GeoReference::convertAxisToENU(coordinate, Min);
@@ -102,26 +116,91 @@ namespace plateau::texture {
             return (-D - A * x - B * y) / C;
         }
 
+        double getHeight(TVec2d vec) {
+            return getHeight(vec.x, vec.y);
+        }
+
         bool isInside(double x, double y) {
             return isInside(TVec2d(V1.x, V1.y), TVec2d(V2.x, V2.y), TVec2d(V3.x, V3.y), TVec2d(x, y));
+        }
+
+        bool isInside(TVec2d vec) {
+            return isInside(TVec2d(V1), TVec2d(V2), TVec2d(V3), vec);
         }
 
         double crossProduct2D(const TVec2d& A, const TVec2d& B, const TVec2d& C) {
             return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
         }
 
-        // 点Pが三角形ABCの内側にあるかどうかを判定する関数
+        // 点Pが三角形ABCの内側にあるか判定する関数
         bool isInside(const TVec2d& A, const TVec2d& B, const TVec2d& C, const TVec2d& P) {
             double crossABP = crossProduct2D(A, B, P);
             double crossBCP = crossProduct2D(B, C, P);
             double crossCAP = crossProduct2D(C, A, P);
 
-            // 点Pが３角形ABCの内側にあるかどうかを判定
+            // 点Pが３角形ABCの内側にあるか判定
             if ((crossABP >= 0 && crossBCP >= 0 && crossCAP >= 0) ||
                 (crossABP <= 0 && crossBCP <= 0 && crossCAP <= 0)) {
                 return true;
             }
             return false;
+        }
+
+        // 2つの線分が交差しているか判定する関数
+        bool segmentsIntersect(const TVec2d& p1, const TVec2d& p2, const TVec2d& p3, const TVec2d& p4) {
+            double cp1 = crossProduct2D(p1, p2, p3);
+            double cp2 = crossProduct2D(p1, p2, p4);
+            double cp3 = crossProduct2D(p3, p4, p1);
+            double cp4 = crossProduct2D(p3, p4, p2);
+
+            // 交差する条件：各線分の両側に、他方の両端点が存在する
+            return ((cp1 > 0 && cp2 < 0) || (cp1 < 0 && cp2 > 0)) && ((cp3 > 0 && cp4 < 0) || (cp3 < 0 && cp4 > 0));
+        }
+
+        // 2つの点の中点を計算する関数
+        TVec3d midpoint(const TVec3d& p1, const TVec3d& p2) {
+            TVec3d mid;
+            mid.x = (p1.x + p2.x) / 2.0;
+            mid.y = (p1.y + p2.y) / 2.0;
+            mid.z = (p1.z + p2.z) / 2.0;
+            return mid;
+        }
+
+        TVec3d getCenter() {
+            TVec3d mid1 = midpoint(V1, V2);
+            TVec3d mid2 = midpoint(V2, V3);
+            return midpoint(mid1, mid2);
+        }
+    };
+
+    struct Tile {
+        TVec2d Max;
+        TVec2d Min;
+        int ID;
+        std::vector<Triangle>* Triangles;
+
+        Tile(int id, TVec2d min, TVec2d max){
+            ID = id;
+            Min = min;
+            Max = max;
+            Triangles = new std::vector<Triangle>();
+        }
+
+        //配列破棄
+        void release() {
+            delete Triangles;
+        }
+
+        void getCornerPoints(TVec2d& p1, TVec2d& p2, TVec2d& p3, TVec2d& p4) {
+            p1 = Min;
+            p2 = TVec2d(Min.x, Max.y);
+            p3 = TVec2d(Max.x, Min.y);
+            p4 = Max;
+        }
+
+        // pointが範囲内にあるかどうかを判定する関数
+        bool isWithin(const TVec2d& point) {
+            return (point.x >= Min.x && point.x <= Max.x && point.y >= Min.y && point.y <= Max.y);
         }
     };
 
@@ -147,6 +226,76 @@ namespace plateau::texture {
             extent.setVertice(tri.V2);
             extent.setVertice(tri.V3);
             triangles.push_back(tri);
+        }
+
+        //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
+        std::vector<Tile> tiles;
+        size_t division = getTileDivision(triangles.size()); //縦横のグリッド分割数
+        double xTiles = TextureWidth / division;
+        double yTiles = TextureHeight / division;
+        size_t tileIndex = 0;
+        TVec2d prev(0, 0);
+
+        for (double y = yTiles; y <= TextureHeight; y += yTiles) {
+            for (double x = xTiles; x <= TextureWidth; x += xTiles) {
+
+                TVec2d min = prev;
+                TVec2d max(x, y);
+                Tile tile(tileIndex, min, max);
+                prev.x = x;
+                if (x + xTiles > TextureWidth) {
+                    tile.Max.x = TextureWidth;
+                    prev.x = 0;
+                }
+                if(y + yTiles > TextureHeight)
+                    tile.Max.y = TextureHeight;
+                tiles.push_back(tile);
+                
+                /**　タイル内に含まれるTriangleをセット 
+                * 四角タイル内に三角メッシュの頂点が含まれるか
+                * 三角メッシュ内に四角タイルの頂点が含まれるか
+                * 四角タイル、三角メッシュの各辺が交差するか
+                * の3点について検証します
+                */
+                for (auto tri : triangles) {
+                    //3次元座標をテクスチャ上の座標に変換して範囲内にあるかチェック
+                    TVec2d tmin(0, 0);
+                    TVec2d tmax(TextureWidth, TextureHeight);
+                    //Mesh頂点(Texture座標）
+                    const auto& v1 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V1)), tmin, tmax);
+                    const auto& v2 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V2)), tmin, tmax);
+                    const auto& v3 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V3)), tmin, tmax);
+                    if (tile.isWithin(v1) || tile.isWithin(v2) || tile.isWithin(v3)) {
+                        tile.Triangles->push_back(tri);
+                    }
+                    else {
+                        //Tile頂点(Texture座標）
+                        TVec2d r1, r2, r3, r4;
+                        tile.getCornerPoints(r1, r2, r3, r4);
+                        //テクスチャ上の座標を３次元座標に変換して範囲内にあるかチェック
+                        TVec2d emin(extent.Min);
+                        TVec2d emax(extent.Max);
+                        //Tile頂点(3次元座標）
+                        const auto& p1 = getPositionFromPercent(TVec2d(r1.x / (double)TextureWidth, r1.y / (double)TextureHeight), emin, emax);
+                        const auto& p2 = getPositionFromPercent(TVec2d(r2.x / (double)TextureWidth, r2.y / (double)TextureHeight), emin, emax);
+                        const auto& p3 = getPositionFromPercent(TVec2d(r3.x / (double)TextureWidth, r3.y / (double)TextureHeight), emin, emax);
+                        const auto& p4 = getPositionFromPercent(TVec2d(r4.x / (double)TextureWidth, r4.y / (double)TextureHeight), emin, emax);
+                        if (tri.isInside(p1) || tri.isInside(p2) || tri.isInside(p3) || tri.isInside(p4)) {
+                            tile.Triangles->push_back(tri);
+                        }
+                        else {
+                            // 3角形と4角形の各辺が交差しているかどうかを判定(Texture座標）
+                            if (tri.segmentsIntersect(v1, v2, r1, r2) || tri.segmentsIntersect(v1, v2, r2, r3) || tri.segmentsIntersect(v1, v2, r3, r4) ||
+                                tri.segmentsIntersect(v2, v3, r1, r2) || tri.segmentsIntersect(v2, v3, r2, r3) || tri.segmentsIntersect(v2, v3, r3, r4) ||
+                                tri.segmentsIntersect(v3, v1, r1, r2) || tri.segmentsIntersect(v3, v1, r2, r3) || tri.segmentsIntersect(v3, v1, r3, r4)) {
+                                tile.Triangles->push_back(tri);
+                            }
+                        }
+                    }
+                    tileIndex++;
+                }
+            }
+            prev.y = (y < TextureHeight) ? y : 0;
         }
 
         //UV
@@ -178,25 +327,27 @@ namespace plateau::texture {
         for (int y = TextureHeight - 1; y >= 0; y--) {
             for (int x = 0; x < TextureWidth; x++) {
 
-                double xpercent = (double)x / (double)TextureWidth;
-                double ypercent = (double)y / (double)TextureHeight;
-
-                double PosX = getPositionFromPercent(xpercent, extent.Min.x, extent.Max.x);
-                double PosY = getPositionFromPercent(ypercent, extent.Min.y, extent.Max.y);
+                const auto& percent = TVec2d((double)x / (double)TextureWidth, (double)y / (double)TextureHeight);
+                const auto& p = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
 
                 uint16_t GrayValue = 0;
                 double Height = 0;
                 double HeightPercent = 0;
-
-                for (auto tri : triangles) {
-                    if (tri.isInside(PosX, PosY)) {
-                        Height = tri.getHeight(PosX, PosY);
-                        HeightPercent = getHeightToPercent(Height, extent.Min.z, extent.Max.z);
-                        GrayValue = getPercentToGrayScale(HeightPercent);
-                        break;
+                bool ValueSet = false;
+                for (auto& tile : tiles) {
+                    if (tile.isWithin(TVec2d(x, y))) { 
+                        for (auto tri : *tile.Triangles) {
+                            if (tri.isInside(p)) {
+                                Height = tri.getHeight(p);
+                                HeightPercent = getHeightToPercent(Height, extent.Min.z, extent.Max.z);
+                                GrayValue = getPercentToGrayScale(HeightPercent);
+                                ValueSet = true;
+                                break;
+                            }
+                        }
+                        if(ValueSet) break;   
                     }
                 }
-
                 if(index < TextureDataSize)
                     TextureData[index] = GrayValue;
                 index++;
@@ -209,16 +360,34 @@ namespace plateau::texture {
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
         memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
 
-        delete[] TextureData;
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
         outMax = extent.Max;
+
+        for (auto tile : tiles)
+            tile.release();
+        delete[] TextureData;
         return heightMapData;
+    }
+
+    //Mesh数に応じてTile分割数を決めます
+    size_t HeightmapGenerator::getTileDivision(size_t triangleSize) {
+        if (triangleSize > 1000000)
+            return 18;
+        if (triangleSize > 100000)
+            return 16;
+        if (triangleSize > 10000)
+            return 12;
+        return 8;
     }
 
     double HeightmapGenerator::getPositionFromPercent(double percent, double min, double max) {
         double dist = abs(max - min);
         return min + (dist * percent);
+    }
+
+    TVec2d HeightmapGenerator::getPositionFromPercent(TVec2d percent, TVec2d min, TVec2d max) {
+        return TVec2d(getPositionFromPercent(percent.x, min.x, max.x), getPositionFromPercent(percent.y, min.y, max.y));
     }
 
     double HeightmapGenerator::getHeightToPercent(double height, double min, double max) {
