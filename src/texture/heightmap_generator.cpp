@@ -11,21 +11,21 @@ namespace plateau::texture {
         TVec3d Max;
         TVec3d Min;
 
-        void setVertice(TVec3d vertice) {
-            if (Max.x == 0) Max.x = vertice.x;
-            if (Min.x == 0) Min.x = vertice.x;
-            Max.x = std::max(Max.x, vertice.x);
-            Min.x = std::min(Min.x, vertice.x);
+        void setVertex(TVec3d vertex) {
+            if (Max.x == 0) Max.x = vertex.x;
+            if (Min.x == 0) Min.x = vertex.x;
+            Max.x = std::max(Max.x, vertex.x);
+            Min.x = std::min(Min.x, vertex.x);
 
-            if (Max.y == 0) Max.y = vertice.y;
-            if (Min.y == 0) Min.y = vertice.y;
-            Max.y = std::max(Max.y, vertice.y);
-            Min.y = std::min(Min.y, vertice.y);
+            if (Max.y == 0) Max.y = vertex.y;
+            if (Min.y == 0) Min.y = vertex.y;
+            Max.y = std::max(Max.y, vertex.y);
+            Min.y = std::min(Min.y, vertex.y);
 
-            if (Max.z == 0) Max.z = vertice.z;
-            if (Min.z == 0) Min.z = vertice.z;
-            Max.z = std::max(Max.z, vertice.z);
-            Min.z = std::min(Min.z, vertice.z);
+            if (Max.z == 0) Max.z = vertex.z;
+            if (Min.z == 0) Min.z = vertex.z;
+            Max.z = std::max(Max.z, vertex.z);
+            Min.z = std::min(Min.z, vertex.z);
         }
 
         double getXLength() {
@@ -222,9 +222,9 @@ namespace plateau::texture {
             tri.V1 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i]));
             tri.V2 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i + 1]));
             tri.V3 = convertCoordinateFrom(coordinate, InVertices.at(InIndices[i + 2]));
-            extent.setVertice(tri.V1);
-            extent.setVertice(tri.V2);
-            extent.setVertice(tri.V3);
+            extent.setVertex(tri.V1);
+            extent.setVertex(tri.V2);
+            extent.setVertex(tri.V3);
             triangles.push_back(tri);
         }
 
