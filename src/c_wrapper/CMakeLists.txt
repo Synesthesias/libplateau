@@ -54,8 +54,14 @@ add_library(c_wrapper OBJECT
   "material_c.cpp"
   "map_zoom_level_searcher_c.cpp"
   "granularity_converter_c.cpp"
-  "heightmap_generator_c.cpp"
         )
+
+if(NOT(IOS OR ANDROID))
+        # 非モバイル向け
+        target_sources(c_wrapper PRIVATE
+                "heightmap_generator_c.cpp"
+        )
+endif()
 
 #target_link_libraries(c_wrapper PRIVATE citygml)
 target_include_directories(c_wrapper PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}")
