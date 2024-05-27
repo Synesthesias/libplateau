@@ -15,6 +15,7 @@ else()
         "texture_atlas_canvas.cpp"
         "atlas_container.cpp"
         "map_zoom_level_searcher.cpp"
+	"heightmap_generator.cpp"
     )
 endif()
 
