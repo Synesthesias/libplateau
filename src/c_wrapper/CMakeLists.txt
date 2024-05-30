@@ -54,6 +54,7 @@ add_library(c_wrapper OBJECT
   "material_c.cpp"
   "map_zoom_level_searcher_c.cpp"
   "granularity_converter_c.cpp"
+  "height_map_aligner_c.cpp"
         )
 
 if(NOT(IOS OR ANDROID))
