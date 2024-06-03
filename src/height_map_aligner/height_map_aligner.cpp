@@ -1,7 +1,5 @@
 #include <plateau/height_map_alighner/height_map_aligner.h>
-#define _USE_MATH_DEFINES
-#include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
-#include <OpenMesh/Core/Mesh/Traits.hh>
+#include <plateau/height_map_alighner/open_mesh_converter.h>
 #include "OpenMesh/Tools/Subdivider/Uniform/LongestEdgeT.hh"
 
 using namespace plateau::polygonMesh;
@@ -9,33 +7,17 @@ using namespace OpenMesh;
 
 
 namespace plateau::heightMapAligner {
-    typedef TriMesh_ArrayKernelT<>  MeshType;
+
 
     namespace {
 
         void alignMesh(Mesh* mesh, const HeightMapFrame& map) {
-            auto& vertices = mesh->getVertices();
-            auto src_vert_count = vertices.size();
+
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
             // OpenMeshについてはこちらを参照してください: https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-6.1-Documentation/a00046.html
+            auto om_mesh = OpenMeshConverter().toOpenMesh(mesh);
 
-            // OpenMeshの頂点を追加します
-            MeshType om_mesh;
-            std::vector<MeshType::VertexHandle> v_handles(src_vert_count);
-            for(int i=0; i<src_vert_count; i++) {
-                v_handles.at(i) = om_mesh.add_vertex(MeshType::Point(vertices[i].x, vertices[i].y, vertices[i].z));
-            }
-
-            // OpenMeshの面を追加します
-            auto face_count = mesh->getIndices().size() / 3;
-            for(int fi = 0; fi < face_count; fi++) {
-                std::vector<MeshType::VertexHandle> face_vhandles(3);
-                for(int vi = 0; vi < 3; vi++) {
-                    face_vhandles.at(vi) = v_handles.at(mesh->getIndices().at(fi * 3 + vi));
-                }
-                om_mesh.add_face(face_vhandles);
-            }
 
             // OpenMeshでSubdivisionします
             auto divider = Subdivider::Uniform::LongestEdgeT<MeshType>();
@@ -46,30 +28,12 @@ namespace plateau::heightMapAligner {
 
 
             // OpenMeshからMeshに直します
-            auto next_vert_count = om_mesh.n_vertices();
-            vertices.clear();
-            vertices.reserve(next_vert_count);
-            for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
-                MeshType::Point point = om_mesh.point(*v_itr);
-                vertices.push_back(TVec3d(point[0], point[1], point[2]));
-            }
-            auto next_face_count = om_mesh.n_faces();
-            auto& indices = mesh->getIndices();
-            indices.clear();
-            indices.reserve(next_face_count * 3);
-            for(MeshType::FaceIter f_itr = om_mesh.faces_begin(); f_itr != om_mesh.faces_end(); ++f_itr) {
-                MeshType::FaceVertexIter fv_end = om_mesh.fv_end(*f_itr);
-                for(MeshType::FaceVertexIter fv_itr = om_mesh.fv_iter(*f_itr); fv_itr != fv_end; ++fv_itr) {
-                    int idx = fv_itr->idx();
-                    indices.push_back(idx);
-                }
-            }
-            int indices_count = indices.size();
-            mesh->extendLastSubMesh(indices_count-1);
+            OpenMeshConverter().toPlateauMesh(mesh, om_mesh);
 
+            auto& vertices = mesh->getVertices();
             // 高さをハイトマップに合わせます
             for(auto& vertex : vertices) {
-                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), 50 /* 気持ち高めで */);
+                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), 60 /* 気持ち高めで */);
             }
         }
 
