@@ -34,3 +34,6 @@
 [submodule "3rdparty/libtiff"]
 	path = 3rdparty/libtiff
 	url = https://github.com/libsdl-org/libtiff
+[submodule "3rdparty/openmesh"]
+	path = 3rdparty/openmesh
+	url = git@github.com:Lawrencemm/openmesh.git

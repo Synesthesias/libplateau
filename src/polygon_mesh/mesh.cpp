@@ -35,6 +35,10 @@ namespace plateau::polygonMesh {
         return indices_;
     }
 
+    std::vector<unsigned>& Mesh::getIndices() {
+        return indices_;
+    }
+
     const UV& Mesh::getUV1() const {
         return uv1_;
     }

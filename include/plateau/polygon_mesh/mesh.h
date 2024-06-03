@@ -40,6 +40,7 @@ namespace plateau::polygonMesh {
         const std::vector<TVec3d>& getVertices() const;
 
         const std::vector<unsigned>& getIndices() const;
+        std::vector<unsigned>& getIndices();
         const UV& getUV1() const;
         UV& getUV1();
         const UV& getUV4() const;
