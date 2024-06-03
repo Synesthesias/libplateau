@@ -40,9 +40,10 @@ namespace plateau::heightMapAligner {
             // OpenMeshでSubdivisionします
             auto divider = Subdivider::Uniform::LongestEdgeT<MeshType>();
             divider.attach(om_mesh);
-            divider.set_max_edge_length(5);
+            divider.set_max_edge_length(4); // ここでSubdivision後の最大エッジ長を指定します。
             divider(1); // 1回Subdivisionを実行
             divider.detach();
+
 
             // OpenMeshからMeshに直します
             auto next_vert_count = om_mesh.n_vertices();
@@ -67,9 +68,9 @@ namespace plateau::heightMapAligner {
             mesh->extendLastSubMesh(indices_count-1);
 
             // 高さをハイトマップに合わせます
-//            for(auto& vertex : vertices) {
-//                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z));
-//            }
+            for(auto& vertex : vertices) {
+                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), 50 /* 気持ち高めで */);
+            }
         }
 
         void alignNode(Node& node, const HeightMapFrame& map) {
@@ -94,7 +95,7 @@ namespace plateau::heightMapAligner {
         }
     }
 
-    float HeightMapFrame::posToHeight(TVec2d pos) const {
+    float HeightMapFrame::posToHeight(TVec2d pos, float offset_map) const {
         int map_x = (int)((pos.x - min_x) / (max_x - min_x) * map_width);
         int map_y = (int)((pos.y - min_y) / (max_y - min_y) * map_height);
         map_x = std::max(0, map_x);
@@ -102,6 +103,6 @@ namespace plateau::heightMapAligner {
         map_x = std::min(map_x, map_width - 1);
         map_y = std::min(map_y, map_height - 1);
         auto map_val = heightmap[map_y * map_width + map_x];
-        return min_height + (max_height - min_height) * (float)map_val / std::numeric_limits<decltype(map_val)>::max();
+        return min_height + (max_height - min_height) * (float)(map_val + offset_map) / std::numeric_limits<decltype(map_val)>::max();
     }
 }

@@ -21,7 +21,9 @@ namespace plateau::heightMapAligner {
         float min_height;
         float max_height;
 
-        float posToHeight(TVec2d pos) const;
+        /// 場所から、ハイトマップ上の高さを返します。
+        /// offset_mapは、ハイトマップの値でどれだけずらすかを指定します。
+        float posToHeight(TVec2d pos, float offset_map) const;
     };
 
     class LIBPLATEAU_EXPORT HeightMapAligner {
