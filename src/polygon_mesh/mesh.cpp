@@ -225,10 +225,19 @@ namespace plateau::polygonMesh {
     }
 
     void Mesh::combineSameSubMeshes() {
+        // SubMeshの集合を構築します。indexは無視して見た目のみチェックします。
         std::set<SubMesh, SubMeshCompareByAppearance> sm_set;
+        bool contains_duplicate = false;
         for(auto& sm : sub_meshes_) {
-            sm_set.insert(sm);
+            if(sm_set.find(sm) == sm_set.end()) {
+                sm_set.insert(sm);
+            }else{
+                contains_duplicate = true;
+            }
         }
+        // 重複SubMeshがなければ処理不要です。
+        if(!contains_duplicate) return;
+
         std::vector<unsigned int> next_indices;
         std::vector<SubMesh> next_sub_meshes;
         next_indices.reserve(indices_.size());
@@ -263,19 +272,5 @@ namespace plateau::polygonMesh {
 
     void Mesh::setCityObjectList(const CityObjectList& city_obj_list) {
         city_object_list_ = city_obj_list;
-    }
-
-    bool SubMeshCompareByAppearance::operator()(const plateau::polygonMesh::SubMesh& lhs,
-                                                const plateau::polygonMesh::SubMesh& rhs) const {
-        if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
-        auto& tex_path_l = lhs.getTexturePath();
-        auto& tex_path_r = rhs.getTexturePath();
-        if(tex_path_l != tex_path_r) {
-            return tex_path_l < tex_path_r;
-        }
-        if(lhs.getMaterial() == nullptr && rhs.getMaterial() == nullptr) return false;
-        if(lhs.getMaterial() == nullptr) return true;
-        if(rhs.getMaterial() == nullptr) return false;
-        return lhs.getMaterial()->getId() < rhs.getMaterial()->getId();
     }
 }

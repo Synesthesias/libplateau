@@ -91,6 +91,19 @@ namespace plateau::polygonMesh {
         return ret;
     }
 
+    bool SubMeshCompareByAppearance::operator()(const plateau::polygonMesh::SubMesh& lhs,
+                                                const plateau::polygonMesh::SubMesh& rhs) const {
+        if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
+        auto& tex_path_l = lhs.getTexturePath();
+        auto& tex_path_r = rhs.getTexturePath();
+        if(tex_path_l != tex_path_r) {
+            bool ret = tex_path_l < tex_path_r;
+            return ret;
+        }
+        bool ret = lhs.getMaterial().get() < rhs.getMaterial().get();
+        return ret;
+    }
+
 
 
     void SubMesh::debugString(std::stringstream& ss, int indent) const {
