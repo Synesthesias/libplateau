@@ -38,8 +38,8 @@ namespace plateau::heightMapAligner {
             if(submesh_id < submeshes.size()) {
                 auto& submesh = submeshes.at(submesh_id);
                 game_mat_id = submesh.getGameMaterialID();
-                if(face_id * 3 >= submesh.getEndIndex()) {
-                    ++submesh_id; // 次回のループで使うためにインクリメントします。
+                if(face_id * 3 + 2 >= submesh.getEndIndex()) {
+                    ++submesh_id; // 次回のループで使うサブメッシュを切り替えます
                 }
             }
             om_mesh.property(game_material_id_prop, *f_itr) = game_mat_id;

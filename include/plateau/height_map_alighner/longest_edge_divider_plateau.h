@@ -149,18 +149,19 @@ typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
 
                             // 分割前のGameMaterialIDを記録します
                             int game_mat_id = -1;
-                            auto halfedge = _m.halfedge_handle(a.first, 0);
-                            if(!_m.is_boundary(halfedge)) {
-                                auto face = _m.face_handle(halfedge);
-                                game_mat_id = _m.property(game_material_id_prop, face).value_or(-1);
+                            for(int i=0; i<2; i++) {
+                                auto halfedge = _m.halfedge_handle(a.first, i);
+                                if(!_m.is_boundary(halfedge)) {
+                                    auto face = _m.face_handle(halfedge);
+                                    game_mat_id = _m.property(game_material_id_prop, face).value_or(-1);
+                                    break;
+                                }
                             }
 
                             // ここで分割します
                             _m.split(a.first, newVertex);
 
-                            // 分割により増えた面について、GameMaterialIDを埋める。
-
-                            // 増えた面のGameObjIDを埋める
+                            // 分割により増えた面について、GameMaterialIDを埋めます。
                             for(int i = _m.n_faces() - 1; i >= 0; --i) {
                                 auto f_handle = _m.face_handle(i);
                                 auto prop = _m.property(game_material_id_prop, f_handle);
