@@ -1,6 +1,10 @@
 #include <plateau/height_map_alighner/open_mesh_converter.h>
+#include <plateau/height_map_alighner/longest_edge_divider_plateau.h>
 
 namespace plateau::heightMapAligner {
+
+    using namespace OpenMesh::Subdivider::Uniform;
+
     MeshType OpenMeshConverter::toOpenMesh(const plateau::polygonMesh::Mesh* mesh) {
 
         auto& vertices = mesh->getVertices();
@@ -13,7 +17,7 @@ namespace plateau::heightMapAligner {
             v_handles.at(i) = om_mesh.add_vertex(MeshType::Point(vertices[i].x, vertices[i].y, vertices[i].z));
         }
 
-        // OpenMeshの面を追加します
+        // OpenMeshの面を追加します。
         auto face_count = mesh->getIndices().size() / 3;
         for(int fi = 0; fi < face_count; fi++) {
             std::vector<MeshType::VertexHandle> face_vhandles(3);
@@ -22,10 +26,39 @@ namespace plateau::heightMapAligner {
             }
             om_mesh.add_face(face_vhandles);
         }
+
+        // GameMaterialIDをプロパティ格納します。
+        game_material_id_prop = GameMaterialIDPropT();
+        om_mesh.add_property(game_material_id_prop);
+        int face_id = 0;
+        int submesh_id = 0;
+        auto& submeshes = mesh->getSubMeshes();
+        for(MeshType::FaceIter f_itr = om_mesh.faces_begin(); f_itr != om_mesh.faces_end(); ++f_itr) {
+            int game_mat_id = -1;
+            if(submesh_id < submeshes.size()) {
+                auto& submesh = submeshes.at(submesh_id);
+                game_mat_id = submesh.getGameMaterialID();
+                if(face_id * 3 >= submesh.getEndIndex()) {
+                    ++submesh_id; // 次回のループで使うためにインクリメントします。
+                }
+            }
+            om_mesh.property(game_material_id_prop, *f_itr) = game_mat_id;
+            ++face_id;
+        }
         return om_mesh;
     }
 
+    void OpenMeshConverter::subdivide(plateau::heightMapAligner::MeshType& mesh) {
+
+        auto divider = LongestEdgeDividerPlateau<MeshType>(game_material_id_prop);
+        divider.attach(mesh);
+        divider.set_max_edge_length(4); // ここでSubdivision後の最大エッジ長を指定します。
+        divider(1); // 1回Subdivisionを実行
+        divider.detach();
+    }
+
     void OpenMeshConverter::toPlateauMesh(plateau::polygonMesh::Mesh* p_mesh, const MeshType& om_mesh) {
+        // 頂点
         auto& p_vertices = p_mesh->getVertices();
         auto next_vert_count = om_mesh.n_vertices();
         p_vertices.clear();
@@ -34,6 +67,8 @@ namespace plateau::heightMapAligner {
             MeshType::Point point = om_mesh.point(*v_itr);
             p_vertices.push_back(TVec3d(point[0], point[1], point[2]));
         }
+
+        // indices
         auto next_face_count = om_mesh.n_faces();
         auto& indices = p_mesh->getIndices();
         indices.clear();
@@ -45,7 +80,22 @@ namespace plateau::heightMapAligner {
                 indices.push_back(idx);
             }
         }
-        auto indices_count = indices.size();
-        p_mesh->extendLastSubMesh(indices_count-1);
+
+        // GameMaterialIDの設定
+        auto game_mat_id = om_mesh.property(game_material_id_prop, *om_mesh.faces_begin());
+        auto& submeshes = p_mesh->getSubMeshes();
+        submeshes.clear();
+        int face_id = 0;
+        int submesh_start = 0;
+        for(MeshType::FaceIter f_itr = om_mesh.faces_begin(); f_itr != om_mesh.faces_end(); ++f_itr) {
+            auto prop_game_mat = om_mesh.property(game_material_id_prop, *f_itr);
+            // ゲームマテリアルIDが変わったとき、または最後のときにSubMeshを追加します。
+            if((/*prop_game_mat.has_value() && */game_mat_id != prop_game_mat) || (f_itr+1) == om_mesh.faces_end()) {
+                submeshes.emplace_back(submesh_start, face_id * 3 - 1, "", nullptr, game_mat_id.has_value() ? game_mat_id.value() : -1);
+                game_mat_id = prop_game_mat;
+                submesh_start = face_id * 3;
+            }
+            ++face_id;
+        }
     }
 }

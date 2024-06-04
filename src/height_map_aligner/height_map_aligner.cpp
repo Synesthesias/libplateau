@@ -1,6 +1,5 @@
 #include <plateau/height_map_alighner/height_map_aligner.h>
 #include <plateau/height_map_alighner/open_mesh_converter.h>
-#include "OpenMesh/Tools/Subdivider/Uniform/LongestEdgeT.hh"
 
 using namespace plateau::polygonMesh;
 using namespace OpenMesh;
@@ -16,19 +15,15 @@ namespace plateau::heightMapAligner {
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
             // OpenMeshについてはこちらを参照してください: https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-6.1-Documentation/a00046.html
-            auto om_mesh = OpenMeshConverter().toOpenMesh(mesh);
-
+            auto converter = OpenMeshConverter();
+            auto om_mesh = converter.toOpenMesh(mesh);
 
             // OpenMeshでSubdivisionします
-            auto divider = Subdivider::Uniform::LongestEdgeT<MeshType>();
-            divider.attach(om_mesh);
-            divider.set_max_edge_length(4); // ここでSubdivision後の最大エッジ長を指定します。
-            divider(1); // 1回Subdivisionを実行
-            divider.detach();
+            converter.subdivide(om_mesh);
 
 
             // OpenMeshからMeshに直します
-            OpenMeshConverter().toPlateauMesh(mesh, om_mesh);
+            converter.toPlateauMesh(mesh, om_mesh);
 
             auto& vertices = mesh->getVertices();
             // 高さをハイトマップに合わせます
