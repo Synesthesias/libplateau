@@ -101,6 +101,10 @@ namespace plateau::polygonMesh {
 
         void merge(const Mesh& other_mesh, const bool invert_mesh_front_back, const bool include_textures);
 
+        /// 同じSubMeshが複数回登場する場合、例えばSubMeshの配列が A→B→A→B のようになっている場合に、
+        /// SubMeshを結合して A→B とすることで描画負荷を減らします。
+        void combineSameSubMeshes();
+
     private:
         friend class MeshFactory;
 

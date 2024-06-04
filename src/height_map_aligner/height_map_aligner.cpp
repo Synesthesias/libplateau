@@ -25,6 +25,8 @@ namespace plateau::heightMapAligner {
             // OpenMeshからMeshに直します
             converter.toPlateauMesh(mesh, om_mesh);
 
+            mesh->combineSameSubMeshes();
+
             auto& vertices = mesh->getVertices();
             // 高さをハイトマップに合わせます
             for(auto& vertex : vertices) {

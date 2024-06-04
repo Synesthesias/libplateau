@@ -224,7 +224,34 @@ namespace plateau::polygonMesh {
         MeshMerger::mergeMesh(*this, other_mesh, invert_mesh_front_back, include_textures);
     }
 
-
+    void Mesh::combineSameSubMeshes() {
+        std::set<SubMesh, SubMeshCompareByAppearance> sm_set;
+        for(auto& sm : sub_meshes_) {
+            sm_set.insert(sm);
+        }
+        std::vector<unsigned int> next_indices;
+        std::vector<SubMesh> next_sub_meshes;
+        next_indices.reserve(indices_.size());
+        next_sub_meshes.reserve(sm_set.size());
+        size_t sm_start_index = 0;
+        for(auto& unique_sm : sm_set) {
+            for(auto& sm : sub_meshes_) {
+                if(sm.isAppearanceEqual(unique_sm)) {
+                    for(auto i = sm.getStartIndex(); i <= sm.getEndIndex(); i++) {
+                        next_indices.push_back(indices_.at(i));
+                    }
+                }
+            }
+            auto next_sm = unique_sm;
+            next_sm.setStartIndex(sm_start_index);
+            auto last_index = next_indices.size() - 1;
+            next_sm.setEndIndex(last_index);
+            next_sub_meshes.push_back(next_sm);
+            sm_start_index = last_index + 1;
+        }
+        indices_ = std::move(next_indices);
+        sub_meshes_ = std::move(next_sub_meshes);
+    }
 
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;
@@ -236,5 +263,19 @@ namespace plateau::polygonMesh {
 
     void Mesh::setCityObjectList(const CityObjectList& city_obj_list) {
         city_object_list_ = city_obj_list;
+    }
+
+    bool SubMeshCompareByAppearance::operator()(const plateau::polygonMesh::SubMesh& lhs,
+                                                const plateau::polygonMesh::SubMesh& rhs) const {
+        if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
+        auto& tex_path_l = lhs.getTexturePath();
+        auto& tex_path_r = rhs.getTexturePath();
+        if(tex_path_l != tex_path_r) {
+            return tex_path_l < tex_path_r;
+        }
+        if(lhs.getMaterial() == nullptr && rhs.getMaterial() == nullptr) return false;
+        if(lhs.getMaterial() == nullptr) return true;
+        if(rhs.getMaterial() == nullptr) return false;
+        return lhs.getMaterial()->getId() < rhs.getMaterial()->getId();
     }
 }
