@@ -140,6 +140,9 @@ namespace plateau::granularityConvert {
 //            }
 //            atomic_id++;
 //        }
+        // 最適化
+        dst_model.optimizeMeshes();
+
         return dst_model;
     }
 }
