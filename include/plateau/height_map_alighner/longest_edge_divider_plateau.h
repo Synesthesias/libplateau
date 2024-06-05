@@ -1,18 +1,3 @@
-
-
-
-
-
-
-
-
-/// *****************************************************************************
-/// このコードはOpenMeshのLongestEdgeTをコピペして、PLATEAUのために一部改変したコードです。
-/// *****************************************************************************
-
-
-
-
 #pragma once
 
 #include <../3rdparty/openmesh/src/OpenMesh/Tools/Subdivider/Uniform/SubdividerT.hh>
@@ -38,20 +23,10 @@ namespace OpenMesh { // BEGIN_NS_OPENMESH
     namespace Subdivider { // BEGIN_NS_DECIMATER
         namespace Uniform { // BEGIN_NS_UNIFORM
 
-typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
+            /// PLATEAUデータを格納するためのOpenMeshのプロパティ型を定義します。
+            typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
+            typedef OpenMesh::VPropHandleT<std::optional<TVec2f>> UV4PropT;
 //== CLASS DEFINITION =========================================================
-
-//            template<typename MeshType, typename RealType = double>
-//            class CompareLengthFunction {
-//            public:
-//
-//                typedef std::pair<typename MeshType::EdgeHandle, RealType> queueElement;
-//
-//                bool operator()(const queueElement& t1, const queueElement& t2) // Returns true if t1 is smaller than t2
-//                {
-//                    return (t1.second < t2.second);
-//                }
-//            };
 
 
 /** %Uniform LongestEdgeT subdivision algorithm
@@ -61,6 +36,15 @@ typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
  * edge in the mesh.
  */
             template<typename MeshType, typename RealType = float>
+
+
+
+/// *****************************************************************************
+/// このコードはOpenMeshのLongestEdgeTをコピペして、PLATEAUのために一部改変したコードです。
+/// *****************************************************************************
+
+            /// OpenMeshのLongestEdgeTをコピーして、PLATEAU向けにカスタマイズしたSubdivision機能です。
+            /// 細分化にあたって、gameMaterialID等が保持されるようになっています。
             class LongestEdgeDividerPlateau : public SubdividerT<MeshType, RealType> {
             public:
 
@@ -75,13 +59,16 @@ typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
 
             private:
                 GameMaterialIDPropT game_material_id_prop;
+                UV4PropT uv4_prop;
             public:
 
 
-                explicit LongestEdgeDividerPlateau(GameMaterialIDPropT prop) : parent_t(), game_material_id_prop(prop) {}
+                LongestEdgeDividerPlateau(GameMaterialIDPropT game_mat_prop, UV4PropT uv4_prop) :
+                parent_t(), game_material_id_prop(game_mat_prop), uv4_prop(uv4_prop) {}
 
 
-                LongestEdgeDividerPlateau(mesh_t& _m, GameMaterialIDPropT prop) : parent_t(_m), game_material_id_prop(prop) {}
+                LongestEdgeDividerPlateau(mesh_t& _m, GameMaterialIDPropT game_mat_prop, UV4PropT uv4_prop) :
+                    parent_t(_m), game_material_id_prop(game_mat_prop), uv4_prop(uv4_prop) {}
 
 
                 ~LongestEdgeDividerPlateau() {}
@@ -158,6 +145,20 @@ typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
                                 }
                             }
 
+                            // 分割前のUV4を記録します
+                            std::optional<TVec2f> uv4;
+                            for(int i=0; i<2; i++) {
+                                auto halfedge = _m.halfedge_handle(a.first, i);
+                                auto vert = _m.from_vertex_handle(halfedge);
+                                auto val = _m.property(uv4_prop, vert);
+                                if(val.has_value()) {
+                                    uv4 = val;
+                                    break;
+                                }
+                            }
+                            if(!uv4.has_value()) uv4 = TVec2f(-999, -999);
+
+
                             // ここで分割します
                             _m.split(a.first, newVertex);
 
@@ -167,6 +168,14 @@ typedef OpenMesh::FPropHandleT<std::optional<int>> GameMaterialIDPropT;
                                 auto prop = _m.property(game_material_id_prop, f_handle);
                                 if (prop.has_value()) break;
                                 _m.property(game_material_id_prop, f_handle) = game_mat_id;
+                            }
+
+                            // 分割により増えた点について、UV4を埋めます。
+                            for(int i = _m.n_vertices() - 1; i >= 0; --i) {
+                                auto v_handle = _m.vertex_handle(i);
+                                auto prop = _m.property(uv4_prop, v_handle);
+                                if (prop.has_value()) break;
+                                _m.property(uv4_prop, v_handle) = uv4;
                             }
 
 

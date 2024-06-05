@@ -44,6 +44,7 @@ namespace plateau::polygonMesh {
         const UV& getUV1() const;
         UV& getUV1();
         const UV& getUV4() const;
+        UV& getUV4();
         const std::vector<SubMesh>& getSubMeshes() const;
         std::vector<SubMesh>& getSubMeshes();
         const std::vector<TVec3d>& getVertexColors() const;

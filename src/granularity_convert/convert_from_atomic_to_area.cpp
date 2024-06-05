@@ -82,7 +82,11 @@ namespace plateau::granularityConvert {
                 // dst_nodeの名前は、マージ対象のPrimaryが1つの場合はsrc_nodeと同じ名前にすれば良いですが、
                 // 2つ以上の場合はそれではそぐわないのでcombinedという名前にします。
                 if(primary_loop_count >= 1) {
-                    dst_node->setName("combined");
+                    auto name = dst_node->getName();
+                    auto search = std::string("_combined");
+                    if(name.rfind(search) != name.size() - search.size()) {
+                        dst_node->setName(name + "_combined");
+                    }
                 }
 
             } else {

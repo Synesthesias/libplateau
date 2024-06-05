@@ -51,6 +51,10 @@ namespace plateau::polygonMesh {
         return uv4_;
     }
 
+    UV& Mesh::getUV4() {
+        return uv4_;
+    }
+
     const std::vector<SubMesh>& Mesh::getSubMeshes() const {
         return sub_meshes_;
     }
@@ -158,8 +162,6 @@ namespace plateau::polygonMesh {
 
     void Mesh::addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index, int game_material_id) {
         // テクスチャが異なる場合は追加します。
-        // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
-        //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
 
         // 前と同じマテリアルかどうか判定します。
         bool are_materials_same;

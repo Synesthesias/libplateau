@@ -21,5 +21,6 @@ namespace plateau::heightMapAligner {
 
     private:
         OpenMesh::Subdivider::Uniform::GameMaterialIDPropT game_material_id_prop;
+        OpenMesh::Subdivider::Uniform::UV4PropT uv4_prop;
     };
 }

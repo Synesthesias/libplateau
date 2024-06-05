@@ -27,33 +27,44 @@ namespace plateau::heightMapAligner {
             om_mesh.add_face(face_vhandles);
         }
 
-        // GameMaterialIDをプロパティ格納します。
+        // GameMaterialIDをOpenMeshのプロパティ格納します。
         game_material_id_prop = GameMaterialIDPropT();
         om_mesh.add_property(game_material_id_prop);
         int face_id = 0;
-        int submesh_id = 0;
-        auto& submeshes = mesh->getSubMeshes();
+        int sub_mesh_id = 0;
+        auto& sub_meshes = mesh->getSubMeshes();
         for(MeshType::FaceIter f_itr = om_mesh.faces_begin(); f_itr != om_mesh.faces_end(); ++f_itr) {
             int game_mat_id = -1;
-            if(submesh_id < submeshes.size()) {
-                auto& submesh = submeshes.at(submesh_id);
-                game_mat_id = submesh.getGameMaterialID();
-                if(face_id * 3 + 2 >= submesh.getEndIndex()) {
-                    ++submesh_id; // 次回のループで使うサブメッシュを切り替えます
+            if(sub_mesh_id < sub_meshes.size()) {
+                auto& sub_mesh = sub_meshes.at(sub_mesh_id);
+                game_mat_id = sub_mesh.getGameMaterialID();
+                if(face_id * 3 + 2 >= sub_mesh.getEndIndex()) {
+                    ++sub_mesh_id; // 次回のループで使うサブメッシュを切り替えます
                 }
             }
             om_mesh.property(game_material_id_prop, *f_itr) = game_mat_id;
             ++face_id;
         }
+
+        // UV4をOpenMeshのプロパティに格納します。
+        uv4_prop = UV4PropT();
+        om_mesh.add_property(uv4_prop);
+        const auto& src_uv4 = mesh->getUV4();
+        int v_id = 0;
+        for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
+            om_mesh.property(uv4_prop, *v_itr) = src_uv4.at(v_id);
+            ++v_id;
+        }
+
         return om_mesh;
     }
 
     void OpenMeshConverter::subdivide(plateau::heightMapAligner::MeshType& mesh) {
 
-        auto divider = LongestEdgeDividerPlateau<MeshType>(game_material_id_prop);
+        auto divider = LongestEdgeDividerPlateau<MeshType>(game_material_id_prop, uv4_prop);
         divider.attach(mesh);
         divider.set_max_edge_length(4); // ここでSubdivision後の最大エッジ長を指定します。
-        divider(1); // 1回Subdivisionを実行
+        divider(1); // 1回Subdivisionを実行。PLATEAU向けにカスタマイズした処理を実行します。
         divider.detach();
     }
 
@@ -96,6 +107,16 @@ namespace plateau::heightMapAligner {
                 submesh_start = face_id * 3;
             }
             ++face_id;
+        }
+
+        // UV4の設定
+        auto& p_uv4 = p_mesh->getUV4();
+        p_uv4.clear();
+        p_uv4.reserve(next_vert_count);
+        for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
+            auto& uv4_opt = om_mesh.property(uv4_prop, *v_itr);
+            auto uv4 = uv4_opt.value_or(TVec2f(-999, -999));
+            p_uv4.push_back(uv4);
         }
     }
 }
