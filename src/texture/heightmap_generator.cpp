@@ -28,11 +28,11 @@ namespace plateau::texture {
             Min.z = std::min(Min.z, vertex.z);
         }
 
-        double getXLength() {
+        double getXLength() const {
             return std::abs(Max.x - Min.x);
         }
 
-        double getYLength() {
+        double getYLength() const {
             return std::abs(Max.y - Min.y);
         }
 
@@ -84,7 +84,6 @@ namespace plateau::texture {
         TVec3d V1;
         TVec3d V2;
         TVec3d V3;
-        int id;
 
         // 2点間のベクトルを計算する関数
         TVec3d vectorBetweenPoints(const TVec3d& p1, const TVec3d& p2) {
@@ -177,21 +176,16 @@ namespace plateau::texture {
         TVec2d Max;
         TVec2d Min;
         int ID;
-        std::vector<Triangle>* Triangles;
-        
+        std::shared_ptr<std::vector<Triangle>> Triangles;
+
         Tile(int id, TVec2d min, TVec2d max){
             ID = id;
             Min = min;
             Max = max;
-            Triangles = new std::vector<Triangle>();
+            Triangles = std::make_shared<std::vector<Triangle>>();
         }
 
-        //配列破棄
-        void release() {
-            delete Triangles;
-        }
-
-        void getCornerPoints(TVec2d& p1, TVec2d& p2, TVec2d& p3, TVec2d& p4) {
+        void getCornerPoints(TVec2d& p1, TVec2d& p2, TVec2d& p3, TVec2d& p4) const {
             p1 = Min;
             p2 = TVec2d(Min.x, Max.y);
             p3 = TVec2d(Max.x, Min.y);
@@ -199,11 +193,11 @@ namespace plateau::texture {
         }
 
         // pointが範囲内にあるかどうかを判定する関数
-        bool isWithin(const TVec2d& point) {
+        bool isWithin(const TVec2d& point) const {
             return (point.x >= Min.x && point.x <= Max.x && point.y >= Min.y && point.y <= Max.y);
         }
 
-        bool isAlmostWithin(const TVec2d& point, const double toleranceMargin) {
+        bool isAlmostWithin(const TVec2d& point, const double toleranceMargin) const {
             return (point.x >= Min.x - toleranceMargin && point.x <= Max.x + toleranceMargin && point.y >= Min.y - toleranceMargin && point.y <= Max.y + toleranceMargin);
         }
     };
@@ -300,7 +294,7 @@ namespace plateau::texture {
                     tile.getCornerPoints(r1, r2, r3, r4);
 
                     //Triangleをテクスチャ上の座標に変換してTile頂点がTriangle範囲内にあるかチェック
-                    Triangle TexTri{ TVec3d(v1.x,v1.y), TVec3d(v2.x,v2.y), TVec3d(v3.x, v3.y), 0 };
+                    Triangle TexTri{ TVec3d(v1.x,v1.y), TVec3d(v2.x,v2.y), TVec3d(v3.x, v3.y) };
                     if (TexTri.isInside(r1) || TexTri.isInside(r2) || TexTri.isInside(r3) || TexTri.isInside(r4)) {
                         tile.Triangles->push_back(tri);
                         continue;
@@ -321,7 +315,7 @@ namespace plateau::texture {
         int TextureDataSize = TextureWidth * TextureHeight;
 
         // Initialize Texture Data Array
-        uint16_t* TextureData = new uint16_t[TextureDataSize];
+        std::unique_ptr<uint16_t[]> TextureData = std::make_unique<uint16_t[]>(TextureDataSize);
 
         size_t index = 0;
         for (int y = TextureHeight - 1; y >= 0; y--) {
@@ -354,18 +348,15 @@ namespace plateau::texture {
         }
 
         //平滑化
-        applyConvolutionFilter(TextureData, TextureWidth, TextureHeight);
+        applyConvolutionFilter(TextureData.get(), TextureWidth, TextureHeight);
 
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
-        memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
+        memcpy(heightMapData.data(), TextureData.get(), sizeof(uint16_t) * TextureDataSize);
 
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
         outMax = extent.Max;
 
-        for (auto tile : tiles)
-            tile.release();
-        delete[] TextureData;
         return heightMapData;
     }
 
@@ -406,8 +397,8 @@ namespace plateau::texture {
 
     void HeightmapGenerator::applyConvolutionFilter(uint16_t* image, const size_t width, const size_t height) {
         size_t imageSize = width * height;
-        uint16_t* tempImage = new uint16_t[imageSize];
-        memcpy(tempImage, image, sizeof(uint16_t) * imageSize);
+        std::unique_ptr<uint16_t[]> tempImage = std::make_unique<uint16_t[]>(imageSize);
+        memcpy(tempImage.get(), image, sizeof(uint16_t) * imageSize);
         //エッジを除外して処理
         for (size_t y = 1; y < height - 1; ++y) { 
             for (size_t x = 1; x < width - 1; ++x) {
@@ -421,8 +412,7 @@ namespace plateau::texture {
                 tempImage[y * width + x] = sum / 9; 
             }
         }
-        memcpy(image, tempImage, sizeof(uint16_t) * imageSize);
-        delete[] tempImage;
+        memcpy(image, tempImage.get(), sizeof(uint16_t) * imageSize);
     }
 
     //UVの最大、最小値を取得します。値が取得できなかった場合はfalseを返します。
