@@ -28,11 +28,11 @@ namespace plateau::texture {
             Min.z = std::min(Min.z, vertex.z);
         }
 
-        double getXLength() {
+        double getXLength() const {
             return std::abs(Max.x - Min.x);
         }
 
-        double getYLength() {
+        double getYLength() const {
             return std::abs(Max.y - Min.y);
         }
 
@@ -84,7 +84,6 @@ namespace plateau::texture {
         TVec3d V1;
         TVec3d V2;
         TVec3d V3;
-        int id;
 
         // 2点間のベクトルを計算する関数
         TVec3d vectorBetweenPoints(const TVec3d& p1, const TVec3d& p2) {
@@ -177,21 +176,16 @@ namespace plateau::texture {
         TVec2d Max;
         TVec2d Min;
         int ID;
-        std::vector<Triangle>* Triangles;
+        std::shared_ptr<std::vector<Triangle>> Triangles;
 
         Tile(int id, TVec2d min, TVec2d max){
             ID = id;
             Min = min;
             Max = max;
-            Triangles = new std::vector<Triangle>();
+            Triangles = std::make_shared<std::vector<Triangle>>();
         }
 
-        //配列破棄
-        void release() {
-            delete Triangles;
-        }
-
-        void getCornerPoints(TVec2d& p1, TVec2d& p2, TVec2d& p3, TVec2d& p4) {
+        void getCornerPoints(TVec2d& p1, TVec2d& p2, TVec2d& p3, TVec2d& p4) const {
             p1 = Min;
             p2 = TVec2d(Min.x, Max.y);
             p3 = TVec2d(Max.x, Min.y);
@@ -199,8 +193,12 @@ namespace plateau::texture {
         }
 
         // pointが範囲内にあるかどうかを判定する関数
-        bool isWithin(const TVec2d& point) {
+        bool isWithin(const TVec2d& point) const {
             return (point.x >= Min.x && point.x <= Max.x && point.y >= Min.y && point.y <= Max.y);
+        }
+
+        bool isAlmostWithin(const TVec2d& point, const double toleranceMargin) const {
+            return (point.x >= Min.x - toleranceMargin && point.x <= Max.x + toleranceMargin && point.y >= Min.y - toleranceMargin && point.y <= Max.y + toleranceMargin);
         }
     };
 
@@ -215,7 +213,6 @@ namespace plateau::texture {
 
         HeightMapExtent extent;
         std::vector<Triangle> triangles;
-
         for (size_t i = 0; i < InIndices.size(); i += 3) {
 
             Triangle tri;
@@ -228,82 +225,13 @@ namespace plateau::texture {
             triangles.push_back(tri);
         }
 
-        //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
-        std::vector<Tile> tiles;
-        size_t division = getTileDivision(triangles.size()); //縦横のグリッド分割数
-        double xTiles = TextureWidth / division;
-        double yTiles = TextureHeight / division;
-        size_t tileIndex = 0;
-        TVec2d prev(0, 0);
-
-        for (double y = yTiles; y <= TextureHeight; y += yTiles) {
-            for (double x = xTiles; x <= TextureWidth; x += xTiles) {
-
-                TVec2d min = prev;
-                TVec2d max(x, y);
-                Tile tile(tileIndex, min, max);
-                prev.x = x;
-                if (x + xTiles > TextureWidth) {
-                    tile.Max.x = TextureWidth;
-                    prev.x = 0;
-                }
-                if(y + yTiles > TextureHeight)
-                    tile.Max.y = TextureHeight;
-                tiles.push_back(tile);
-                
-                /**　タイル内に含まれるTriangleをセット 
-                * 四角タイル内に三角メッシュの頂点が含まれるか
-                * 三角メッシュ内に四角タイルの頂点が含まれるか
-                * 四角タイル、三角メッシュの各辺が交差するか
-                * の3点について検証します
-                */
-                for (auto tri : triangles) {
-                    //3次元座標をテクスチャ上の座標に変換して範囲内にあるかチェック
-                    TVec2d tmin(0, 0);
-                    TVec2d tmax(TextureWidth, TextureHeight);
-                    //Mesh頂点(Texture座標）
-                    const auto& v1 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V1)), tmin, tmax);
-                    const auto& v2 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V2)), tmin, tmax);
-                    const auto& v3 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V3)), tmin, tmax);
-                    if (tile.isWithin(v1) || tile.isWithin(v2) || tile.isWithin(v3)) {
-                        tile.Triangles->push_back(tri);
-                    }
-                    else {
-                        //Tile頂点(Texture座標）
-                        TVec2d r1, r2, r3, r4;
-                        tile.getCornerPoints(r1, r2, r3, r4);
-                        //テクスチャ上の座標を３次元座標に変換して範囲内にあるかチェック
-                        TVec2d emin(extent.Min);
-                        TVec2d emax(extent.Max);
-                        //Tile頂点(3次元座標）
-                        const auto& p1 = getPositionFromPercent(TVec2d(r1.x / (double)TextureWidth, r1.y / (double)TextureHeight), emin, emax);
-                        const auto& p2 = getPositionFromPercent(TVec2d(r2.x / (double)TextureWidth, r2.y / (double)TextureHeight), emin, emax);
-                        const auto& p3 = getPositionFromPercent(TVec2d(r3.x / (double)TextureWidth, r3.y / (double)TextureHeight), emin, emax);
-                        const auto& p4 = getPositionFromPercent(TVec2d(r4.x / (double)TextureWidth, r4.y / (double)TextureHeight), emin, emax);
-                        if (tri.isInside(p1) || tri.isInside(p2) || tri.isInside(p3) || tri.isInside(p4)) {
-                            tile.Triangles->push_back(tri);
-                        }
-                        else {
-                            // 3角形と4角形の各辺が交差しているかどうかを判定(Texture座標）
-                            if (tri.segmentsIntersect(v1, v2, r1, r2) || tri.segmentsIntersect(v1, v2, r2, r3) || tri.segmentsIntersect(v1, v2, r3, r4) ||
-                                tri.segmentsIntersect(v2, v3, r1, r2) || tri.segmentsIntersect(v2, v3, r2, r3) || tri.segmentsIntersect(v2, v3, r3, r4) ||
-                                tri.segmentsIntersect(v3, v1, r1, r2) || tri.segmentsIntersect(v3, v1, r2, r3) || tri.segmentsIntersect(v3, v1, r3, r4)) {
-                                tile.Triangles->push_back(tri);
-                            }
-                        }
-                    }
-                    tileIndex++;
-                }
-            }
-            prev.y = (y < TextureHeight) ? y : 0;
-        }
-
         //UV
         if (!getUVExtent(InMesh.getUV1(), outUVMin, outUVMax)) {
             //UV情報が取得できなかった場合 0,1に設定
             outUVMin.x = outUVMin.y = 0.f;
             outUVMax.x = outUVMax.y = 1.f;
-        } else {
+        }
+        else {
             //UV情報が取得できた場合、UVに余白を追加
             if (margin.x != 0 || margin.y != 0) {
                 auto uvSize = TVec2f(outUVMax.x - outUVMin.x, outUVMax.y - outUVMin.y);
@@ -314,14 +242,80 @@ namespace plateau::texture {
             }
         }
 
-        //余白を追加
+        //Extentに余白を追加
         extent.Max.x += margin.x;
         extent.Max.y += margin.y;
+
+        //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
+        std::vector<Tile> tiles;
+        size_t division = getTileDivision(triangles.size()); //縦横のグリッド分割数
+        double xTiles = TextureWidth / division;
+        double yTiles = TextureHeight / division;
+        int tileIndex = 0;
+        TVec2d prev(0, 0);
+
+        for (double y = yTiles; y <= TextureHeight; y += yTiles) {
+            for (double x = xTiles; x <= TextureWidth; x += xTiles) {
+
+                TVec2d min = prev;
+                TVec2d max(x, y);
+                Tile tile(tileIndex++, min, max);
+                prev.x = x;
+                if (x + xTiles > TextureWidth) {
+                    tile.Max.x = TextureWidth;
+                    prev.x = 0;
+                }
+                if(y + yTiles > TextureHeight)
+                    tile.Max.y = TextureHeight;
+                tiles.push_back(tile);
+
+                /**　タイル内に含まれるTriangleをセット 
+                * 四角タイル内に三角メッシュの頂点が含まれるか
+                * 三角メッシュ内に四角タイルの頂点が含まれるか
+                * 四角タイル、三角メッシュの各辺が交差するか
+                * の3点について検証します
+                */
+                for (auto tri : triangles) {
+                    //3次元座標をテクスチャ上の座標に変換してTriangleがTile範囲内にあるかチェック   
+                    TVec2d tmin(0, 0);
+                    TVec2d tmax(TextureWidth, TextureHeight);
+                    //Triangle頂点(Texture座標）
+                    const auto& v1 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V1)), tmin, tmax);
+                    const auto& v2 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V2)), tmin, tmax);
+                    const auto& v3 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V3)), tmin, tmax);
+                    const double tolerance = xTiles / 2;
+                    if (tile.isWithin(v1) || tile.isWithin(v2) || tile.isWithin(v3)) {
+                        tile.Triangles->push_back(tri);
+                        continue;
+                    }
+
+                    //Tile頂点(Texture座標）
+                    TVec2d r1, r2, r3, r4;
+                    tile.getCornerPoints(r1, r2, r3, r4);
+
+                    //Triangleをテクスチャ上の座標に変換してTile頂点がTriangle範囲内にあるかチェック
+                    Triangle TexTri{ TVec3d(v1.x,v1.y), TVec3d(v2.x,v2.y), TVec3d(v3.x, v3.y) };
+                    if (TexTri.isInside(r1) || TexTri.isInside(r2) || TexTri.isInside(r3) || TexTri.isInside(r4)) {
+                        tile.Triangles->push_back(tri);
+                        continue;
+                    }
+
+                    // 3角形と4角形の各辺が交差しているかどうかを判定(Texture座標）
+                    if (tri.segmentsIntersect(v1, v2, r1, r2) || tri.segmentsIntersect(v1, v2, r2, r3) || tri.segmentsIntersect(v1, v2, r3, r4) ||
+                        tri.segmentsIntersect(v2, v3, r1, r2) || tri.segmentsIntersect(v2, v3, r2, r3) || tri.segmentsIntersect(v2, v3, r3, r4) ||
+                        tri.segmentsIntersect(v3, v1, r1, r2) || tri.segmentsIntersect(v3, v1, r2, r3) || tri.segmentsIntersect(v3, v1, r3, r4)) {
+                        tile.Triangles->push_back(tri);
+                        continue;
+                    }
+                }
+            }
+            prev.y = (y < TextureHeight) ? y : 0;
+        }
 
         int TextureDataSize = TextureWidth * TextureHeight;
 
         // Initialize Texture Data Array
-        uint16_t* TextureData = new uint16_t[TextureDataSize];
+        std::unique_ptr<uint16_t[]> TextureData = std::make_unique<uint16_t[]>(TextureDataSize);
 
         size_t index = 0;
         for (int y = TextureHeight - 1; y >= 0; y--) {
@@ -331,15 +325,13 @@ namespace plateau::texture {
                 const auto& p = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
 
                 uint16_t GrayValue = 0;
-                double Height = 0;
-                double HeightPercent = 0;
                 bool ValueSet = false;
                 for (auto& tile : tiles) {
                     if (tile.isWithin(TVec2d(x, y))) { 
                         for (auto tri : *tile.Triangles) {
                             if (tri.isInside(p)) {
-                                Height = tri.getHeight(p);
-                                HeightPercent = getHeightToPercent(Height, extent.Min.z, extent.Max.z);
+                                double Height = tri.getHeight(p);
+                                double HeightPercent = getHeightToPercent(Height, extent.Min.z, extent.Max.z);
                                 GrayValue = getPercentToGrayScale(HeightPercent);
                                 ValueSet = true;
                                 break;
@@ -347,6 +339,7 @@ namespace plateau::texture {
                         }
                         if(ValueSet) break;   
                     }
+                    
                 }
                 if(index < TextureDataSize)
                     TextureData[index] = GrayValue;
@@ -355,18 +348,15 @@ namespace plateau::texture {
         }
 
         //平滑化
-        applyConvolutionFilter(TextureData, TextureWidth, TextureHeight);
+        applyConvolutionFilter(TextureData.get(), TextureWidth, TextureHeight);
 
         std::vector<uint16_t> heightMapData(TextureWidth * TextureHeight);
-        memcpy(heightMapData.data(), TextureData, sizeof(uint16_t) * TextureDataSize);
+        memcpy(heightMapData.data(), TextureData.get(), sizeof(uint16_t) * TextureDataSize);
 
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
         outMax = extent.Max;
 
-        for (auto tile : tiles)
-            tile.release();
-        delete[] TextureData;
         return heightMapData;
     }
 
@@ -407,8 +397,8 @@ namespace plateau::texture {
 
     void HeightmapGenerator::applyConvolutionFilter(uint16_t* image, const size_t width, const size_t height) {
         size_t imageSize = width * height;
-        uint16_t* tempImage = new uint16_t[imageSize];
-        memcpy(tempImage, image, sizeof(uint16_t) * imageSize);
+        std::unique_ptr<uint16_t[]> tempImage = std::make_unique<uint16_t[]>(imageSize);
+        memcpy(tempImage.get(), image, sizeof(uint16_t) * imageSize);
         //エッジを除外して処理
         for (size_t y = 1; y < height - 1; ++y) { 
             for (size_t x = 1; x < width - 1; ++x) {
@@ -422,8 +412,7 @@ namespace plateau::texture {
                 tempImage[y * width + x] = sum / 9; 
             }
         }
-        memcpy(image, tempImage, sizeof(uint16_t) * imageSize);
-        delete[] tempImage;
+        memcpy(image, tempImage.get(), sizeof(uint16_t) * imageSize);
     }
 
     //UVの最大、最小値を取得します。値が取得できなかった場合はfalseを返します。
@@ -450,7 +439,8 @@ namespace plateau::texture {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
-        FILE* fp = _wfopen(regular_name.c_str(), L"wb");
+        FILE* fp;
+        _wfopen_s(&fp, regular_name.c_str(), L"wb");
 #else
         FILE* fp = fopen(file_path.c_str(), "wb");
 #endif       
@@ -506,7 +496,8 @@ namespace plateau::texture {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
-        FILE* fp = _wfopen(regular_name.c_str(), L"rb");
+        FILE* fp;
+        _wfopen_s(&fp, regular_name.c_str(), L"rb");
 #else
         FILE* fp = fopen(file_path.c_str(), "rb");
 #endif
