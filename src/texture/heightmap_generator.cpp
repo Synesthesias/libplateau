@@ -206,7 +206,7 @@ namespace plateau::texture {
     // ENUに変換してから処理を実行し、元のCoordinateに変換して値を返します
     std::vector<uint16_t> HeightmapGenerator::generateFromMesh(
         const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, 
-        geometry::CoordinateSystem coordinate, TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
+        geometry::CoordinateSystem coordinate, bool fillEdges, TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
 
         const auto& InVertices = InMesh.getVertices();
         const auto& InIndices = InMesh.getIndices();
@@ -316,6 +316,7 @@ namespace plateau::texture {
 
         // Initialize Texture Data Array
         std::unique_ptr<uint16_t[]> TextureData = std::make_unique<uint16_t[]>(TextureDataSize);
+        std::unique_ptr<bool[]> AlphaData = std::make_unique<bool[]>(TextureDataSize);
 
         size_t index = 0;
         for (int y = TextureHeight - 1; y >= 0; y--) {
@@ -341,11 +342,18 @@ namespace plateau::texture {
                     }
                     
                 }
-                if(index < TextureDataSize)
+                if (index < TextureDataSize) {
                     TextureData[index] = GrayValue;
+                    AlphaData[index] = ValueSet;
+                }
+                    
                 index++;
             }
         }
+        
+        //透明部分をエッジ色でFill
+        if(fillEdges)
+            fillTransparentEdges(TextureData.get(), AlphaData.get(), TextureWidth, TextureHeight);
 
         //平滑化
         applyConvolutionFilter(TextureData.get(), TextureWidth, TextureHeight);
@@ -395,26 +403,6 @@ namespace plateau::texture {
         return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
     }
 
-    void HeightmapGenerator::applyConvolutionFilter(uint16_t* image, const size_t width, const size_t height) {
-        size_t imageSize = width * height;
-        std::unique_ptr<uint16_t[]> tempImage = std::make_unique<uint16_t[]>(imageSize);
-        memcpy(tempImage.get(), image, sizeof(uint16_t) * imageSize);
-        //エッジを除外して処理
-        for (size_t y = 1; y < height - 1; ++y) { 
-            for (size_t x = 1; x < width - 1; ++x) {
-                // 3x3の領域のピクセル値の平均を計算
-                int sum = 0;
-                for (int dy = -1; dy <= 1; ++dy) {
-                    for (int dx = -1; dx <= 1; ++dx) {
-                        sum += image[(y + dy) * width + (x + dx)];
-                    }
-                }
-                tempImage[y * width + x] = sum / 9; 
-            }
-        }
-        memcpy(image, tempImage.get(), sizeof(uint16_t) * imageSize);
-    }
-
     //UVの最大、最小値を取得します。値が取得できなかった場合はfalseを返します。
     bool HeightmapGenerator::getUVExtent(plateau::polygonMesh::UV uvs, TVec2f& outMin, TVec2f& outMax) {
         TVec2f Min, Max;
@@ -432,6 +420,82 @@ namespace plateau::texture {
         outMin = Min;
         outMax = Max;
         return !(outMin.x == 0.f && outMin.y == 0.f && outMax.x == 0.f && outMax.y == 0.f);
+    }
+
+    void HeightmapGenerator::applyConvolutionFilter(uint16_t* image, const size_t width, const size_t height) {
+        size_t imageSize = width * height;
+        std::unique_ptr<uint16_t[]> tempImage = std::make_unique<uint16_t[]>(imageSize);
+        memcpy(tempImage.get(), image, sizeof(uint16_t) * imageSize);
+        //エッジを除外して処理
+        for (size_t y = 1; y < height - 1; ++y) {
+            for (size_t x = 1; x < width - 1; ++x) {
+                // 3x3の領域のピクセル値の平均を計算
+                int sum = 0;
+                for (int dy = -1; dy <= 1; ++dy) {
+                    for (int dx = -1; dx <= 1; ++dx) {
+                        sum += image[(y + dy) * width + (x + dx)];
+                    }
+                }
+                tempImage[y * width + x] = sum / 9;
+            }
+        }
+        memcpy(image, tempImage.get(), sizeof(uint16_t) * imageSize);
+    }
+
+    void HeightmapGenerator::fillTransparentEdges(uint16_t* image, const bool* alpha, const size_t width, const size_t height) {
+        struct Pixel {
+            int x, y;
+            uint16_t color;
+        };
+        std::vector<Pixel> edgePixels;
+
+        // エッジ検索
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (alpha[y * width + x]) {
+                    edgePixels.push_back({ x, y, image[y * width + x] });
+                    break;
+                }
+            }
+            for (int x = width - 1; x >= 0; --x) {
+                if (alpha[y * width + x]) {
+                    edgePixels.push_back({ x, y, image[y * width + x] });
+                    break;
+                }
+            }
+        }
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                if (alpha[y * width + x]) {
+                    edgePixels.push_back({ x, y, image[y * width + x] });
+                    break;
+                }
+            }
+            for (int y = height - 1; y >= 0; --y) {
+                if (alpha[y * width + x]) {
+                    edgePixels.push_back({ x, y, image[y * width + x] });
+                    break;
+                }
+            }
+        }
+
+        // アルファ部分を最も距離の近いエッジのピクセル色に
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (!alpha[y * width + x]) {
+                    double minDist = std::numeric_limits<double>::max();
+                    uint16_t nearestColor = 0;
+                    for (const auto& p : edgePixels) {
+                        double dist = std::sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y));
+                        if (dist < minDist) {
+                            minDist = dist;
+                            nearestColor = p.color;
+                        }
+                    }
+                    image[y * width + x] = nearestColor;
+                }
+            }
+        }
     }
 
     // 16bitグレースケールのpng画像を保存します
