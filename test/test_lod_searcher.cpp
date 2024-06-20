@@ -52,7 +52,7 @@ namespace plateau::dataset {
     /// するとGMLファイル名とLODが出力されるので、変更前後でそのdiffをとって出力が同じであることを検証できます。
 //    TEST_F(LodSearcherTest, DisplayLodsRecursive) { // NOLINT
 //        // 下のパスを、ご自分のPCでテストしたいフォルダのパスに変更してください。
-//        const auto src_dir = fs::u8path(u8"F:\\Desktop\\plateauData\\15100_niigata-shi_2022_citygml_1_op\\udx");
+//        const auto src_dir = fs::u8path(u8"F:\\Desktop\\13100_tokyo23-ku_2022_citygml_1_2_op\\udx");
 //
 //        std::cout << "==== LOD Search Result ====" << std::endl;
 //        for(const auto& entry : fs::recursive_directory_iterator(src_dir)  ) {
