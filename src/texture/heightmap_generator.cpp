@@ -36,12 +36,12 @@ namespace plateau::texture {
             return std::abs(Max.y - Min.y);
         }
 
-        double getXpercent(double pos) {
+        double getXpercent(double pos) const {
             double val = pos - Min.x;
             return val / getXLength();
         }
 
-        double getYpercent(double pos) {
+        double getYpercent(double pos) const {
             double val = pos - Min.y;
             return val / getYLength();
         }
