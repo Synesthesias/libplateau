@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include <plateau/dataset/mesh_code.h>
+#include <algorithm>
 
 namespace plateau::dataset {
     namespace {
@@ -97,6 +98,13 @@ namespace plateau::dataset {
     }
 
     MeshCode::MeshCode(const std::string& code) {
+        // メッシュコードの文字列が数字のみからなることをチェックします。
+        if (!std::all_of(code.cbegin(), code.cend(), isdigit)) {
+            is_valid_ = false;
+            return;
+        }
+
+        // メッシュコードのレベル（詳細度）をチェックします。
         is_valid_ = true;
         level_ = parseLevel(code);
         if (level_ < 0) {
