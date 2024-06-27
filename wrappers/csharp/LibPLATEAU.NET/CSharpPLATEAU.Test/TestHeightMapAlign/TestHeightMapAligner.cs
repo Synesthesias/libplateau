@@ -9,13 +9,12 @@ namespace PLATEAU.Test.TestHeightMapAlign;
 public class TestHeightMapAligner
 {
     [TestMethod]
-    public void OnEmpty()
+    public void OnZeroHeightmap()
     {
-        var model = Model.Create();
+        using var model = Model.Create();
         var emptyMap = Array.Empty<UInt16>();
-        new HeightMapAligner().Align(
-            model, emptyMap, 0, 0, 0, 0,0 , 0, 0, 0
-            );
-        model.Dispose();
+        using var aligner = HeightMapAligner.Create();
+        aligner.AddHeightmapFrame(emptyMap, 0, 0, 0, 0,0 , 0, 0, 0);
+        aligner.Align(model);
     }
 }

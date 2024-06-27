@@ -9,6 +9,7 @@
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/libpng" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/libtiff" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/libxml2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../3rdparty/openmesh" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/openssl-cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/xerces-c" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../../3rdparty/zlib" vcs="Git" />

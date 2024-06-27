@@ -10,7 +10,38 @@ namespace plateau::heightMapAligner {
 
     namespace {
 
-        void alignMesh(Mesh* mesh, const HeightMapFrame& map) {
+        /// どのハイトマップに合わせるか決めます。決め方は最初の頂点がどのハイトマップに近いかを見ます。
+        const HeightMapFrame& chooseNearestMap(const std::vector<HeightMapFrame>& maps, const std::vector<TVec3d>& vertices) {
+            int min_index = 0;
+            float min_dist = std::numeric_limits<float>::max();
+            for(int i=0; i<maps.size(); i++) {
+                auto& m = maps[i];
+                auto& v = vertices[0];
+                float dist_x;
+                float dist_y;
+
+                // x
+                if(v.x < m.min_x) dist_x = m.min_x - v.x;
+                else if(v.x > m.max_x) dist_x = v.x - m.max_x;
+                else dist_x = 0;
+
+                // y
+                if(v.z < m.min_y) dist_y = m.min_y - v.z;
+                else if(v.z > m.max_y) dist_y = v.z - m.max_y;
+                else dist_y = 0;
+
+                // 距離
+                float dist = std::sqrt(dist_x * dist_x + dist_y * dist_y);
+                if(dist < min_dist) {
+                    min_dist = dist;
+                    min_index = i;
+                }
+            }
+            auto& map = maps[min_index];
+            return map;
+        }
+
+        void alignMesh(Mesh* mesh, const std::vector<HeightMapFrame>& maps) {
 
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
@@ -28,31 +59,39 @@ namespace plateau::heightMapAligner {
             mesh->combineSameSubMeshes();
 
             auto& vertices = mesh->getVertices();
+
+            auto& map = chooseNearestMap(maps, vertices);
+
             // 高さをハイトマップに合わせます
             for(auto& vertex : vertices) {
                 vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), 60 /* 気持ち高めで */);
             }
         }
 
-        void alignNode(Node& node, const HeightMapFrame& map) {
+        void alignNode(Node& node, const std::vector<HeightMapFrame>& maps) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMesh(mesh, map);
+            alignMesh(mesh, maps);
         }
 
-        void alignRecursive(Node& node, const HeightMapFrame& map) {
-            alignNode(node, map);
+        void alignRecursive(Node& node, const std::vector<HeightMapFrame>& maps) {
+            alignNode(node, maps);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursive(child, map);
+                alignRecursive(child, maps);
             }
         }
     } // END 無名namespace
 
-    void HeightMapAligner::align(Model& model, const HeightMapFrame& map) {
+    void HeightMapAligner::AddHeightmapFrame(const HeightMapFrame& heightmap_frame) {
+        height_map_frames.push_back(heightmap_frame);
+    }
+
+    void HeightMapAligner::align(Model& model) const {
+        if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::align: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursive(node, map);
+            alignRecursive(node, height_map_frames);
         }
     }
 

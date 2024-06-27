@@ -26,8 +26,16 @@ namespace plateau::heightMapAligner {
         float posToHeight(TVec2d pos, float offset_map) const;
     };
 
+    /// モデルの高さを、高さマップの高さに合わせます。
+    /// 使い方は、合わせたい高さを AddHeightmapFrame で追加し、最後に Align で合わせます。
+    /// 地形が複数ある場合を想定し、合わせたい高さマップが複数ある場合は AddHeightmapFrame をその数だけ呼び出してください。
+    /// 複数ある場合、位置が合う高さマップが利用されます。
     class LIBPLATEAU_EXPORT HeightMapAligner {
     public:
-        void align(plateau::polygonMesh::Model& model, const HeightMapFrame& map);
+        void AddHeightmapFrame(const HeightMapFrame& heightmap_frame);
+        void align(plateau::polygonMesh::Model& model) const;
+        int heightmapCount() const { return height_map_frames.size(); }
+    private:
+        std::vector<HeightMapFrame> height_map_frames;
     };
 }

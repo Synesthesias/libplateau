@@ -5,8 +5,31 @@ using namespace plateau::polygonMesh;
 using namespace libplateau;
 
 extern "C" {
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align(
-            Model* const model,
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_create(
+            HeightMapAligner** aligner
+    ) {
+        API_TRY{
+            *aligner = new HeightMapAligner();
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_destroy(
+            HeightMapAligner* aligner
+    ) {
+        API_TRY{
+            delete aligner;
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_add_heightmap_frame(
+            HeightMapAligner* const aligner,
             const uint16_t* heightmap,
             int heightmap_size, // size = width * height
             int heightmap_width,
@@ -22,11 +45,26 @@ extern "C" {
             if(heightmap_size != heightmap_width * heightmap_height) {
                 return APIResult::ErrorInvalidArgument;
             }
-            HeightMapAligner aligner;
+
             auto map = HeightMapFrame(std::vector<uint16_t>(heightmap, heightmap + heightmap_size), heightmap_width,
                                       heightmap_height, min_x, max_x, max_y, min_y, min_height,
                                       max_height);
-            aligner.align(*model, map);
+            aligner->AddHeightmapFrame(map);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align(
+            const HeightMapAligner* const aligner,
+            Model* const model
+    ) {
+        API_TRY{
+            if(aligner->heightmapCount() == 0) {
+                return APIResult::NotPreparedForOperation;
+            }
+            aligner->align(*model);
             return APIResult::Success;
         }
         API_CATCH;
