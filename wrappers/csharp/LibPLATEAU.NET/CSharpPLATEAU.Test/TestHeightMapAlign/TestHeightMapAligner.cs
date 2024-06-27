@@ -13,7 +13,7 @@ public class TestHeightMapAligner
     {
         using var model = Model.Create();
         var emptyMap = Array.Empty<UInt16>();
-        using var aligner = HeightMapAligner.Create();
+        using var aligner = HeightMapAligner.Create(0);
         aligner.AddHeightmapFrame(emptyMap, 0, 0, 0, 0,0 , 0, 0, 0);
         aligner.Align(model);
     }

@@ -9,9 +9,9 @@ class HeightMapAlignerTest : public ::testing::Test {
 };
 
 TEST_F(HeightMapAlignerTest, on_zero_heightmap) {
-    auto aligner = HeightMapAligner();
+    auto aligner = HeightMapAligner(0);
     auto model = plateau::polygonMesh::Model();
     auto frame = HeightMapFrame(std::vector<uint16_t>(), 0, 0, 0, 0, 0, 0, 0, 0);
-    aligner.AddHeightmapFrame(frame);
+    aligner.addHeightmapFrame(frame);
     aligner.align(model);
 }

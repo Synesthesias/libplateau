@@ -41,7 +41,7 @@ namespace plateau::heightMapAligner {
             return map;
         }
 
-        void alignMesh(Mesh* mesh, const std::vector<HeightMapFrame>& maps) {
+        void alignMesh(Mesh* mesh, const std::vector<HeightMapFrame>& maps, double height_offset) {
 
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
@@ -64,26 +64,26 @@ namespace plateau::heightMapAligner {
 
             // 高さをハイトマップに合わせます
             for(auto& vertex : vertices) {
-                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), 60 /* 気持ち高めで */);
+                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), height_offset);
             }
         }
 
-        void alignNode(Node& node, const std::vector<HeightMapFrame>& maps) {
+        void alignNode(Node& node, const std::vector<HeightMapFrame>& maps, double height_offset) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMesh(mesh, maps);
+            alignMesh(mesh, maps, height_offset);
         }
 
-        void alignRecursive(Node& node, const std::vector<HeightMapFrame>& maps) {
-            alignNode(node, maps);
+        void alignRecursive(Node& node, const std::vector<HeightMapFrame>& maps, double height_offset) {
+            alignNode(node, maps, height_offset);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursive(child, maps);
+                alignRecursive(child, maps, height_offset);
             }
         }
     } // END 無名namespace
 
-    void HeightMapAligner::AddHeightmapFrame(const HeightMapFrame& heightmap_frame) {
+    void HeightMapAligner::addHeightmapFrame(const HeightMapFrame& heightmap_frame) {
         height_map_frames.push_back(heightmap_frame);
     }
 
@@ -91,11 +91,11 @@ namespace plateau::heightMapAligner {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::align: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursive(node, height_map_frames);
+            alignRecursive(node, height_map_frames, height_offset);
         }
     }
 
-    float HeightMapFrame::posToHeight(TVec2d pos, float offset_map) const {
+    float HeightMapFrame::posToHeight(TVec2d pos, double height_offset) const {
         int map_x = (int)((pos.x - min_x) / (max_x - min_x) * map_width);
         int map_y = (int)((pos.y - min_y) / (max_y - min_y) * map_height);
         map_x = std::max(0, map_x);
@@ -103,6 +103,6 @@ namespace plateau::heightMapAligner {
         map_x = std::min(map_x, map_width - 1);
         map_y = std::min(map_y, map_height - 1);
         auto map_val = heightmap[map_y * map_width + map_x];
-        return min_height + (max_height - min_height) * (float)(map_val + offset_map) / std::numeric_limits<decltype(map_val)>::max();
+        return min_height + (max_height - min_height) * (float)(map_val) / std::numeric_limits<decltype(map_val)>::max() + height_offset;
     }
 }

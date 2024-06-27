@@ -7,10 +7,11 @@ using namespace libplateau;
 extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_create(
-            HeightMapAligner** aligner
+            HeightMapAligner** aligner,
+            double height_offset
     ) {
         API_TRY{
-            *aligner = new HeightMapAligner();
+            *aligner = new HeightMapAligner(height_offset);
             return APIResult::Success;
         }
         API_CATCH;
@@ -49,7 +50,7 @@ extern "C" {
             auto map = HeightMapFrame(std::vector<uint16_t>(heightmap, heightmap + heightmap_size), heightmap_width,
                                       heightmap_height, min_x, max_x, max_y, min_y, min_height,
                                       max_height);
-            aligner->AddHeightmapFrame(map);
+            aligner->addHeightmapFrame(map);
             return APIResult::Success;
         }
         API_CATCH;
