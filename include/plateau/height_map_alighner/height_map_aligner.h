@@ -6,12 +6,13 @@ namespace plateau::heightMapAligner {
 
     /// 高さマップと、そこから高さを導くためのmin,max等の情報をまとめてHeightMapFrameと名付けます。
     class HeightMapFrame {
+        using MapValueT = uint16_t;
     public:
         HeightMapFrame(std::vector<uint16_t> heightmap, int map_width, int map_height, float min_x, float max_x,
                        float min_y, float max_y, float min_height, float max_height) :
                 heightmap(std::move(heightmap)), map_width(map_width), map_height(map_height), min_x(min_x), max_x(max_x), max_y(max_y), min_y(min_y), min_height(min_height), max_height(max_height)
         {}
-        std::vector<uint16_t> heightmap;
+        std::vector<MapValueT> heightmap;
         int map_width;
         int map_height;
         float min_x;
@@ -23,7 +24,7 @@ namespace plateau::heightMapAligner {
 
         /// 場所から、ハイトマップ上の高さを返します。
         /// offset_mapは、ハイトマップの値でどれだけずらすかを指定します。
-        float posToHeight(TVec2d pos, double height_offset) const;
+        double posToHeight(TVec2d pos, double height_offset) const;
     };
 
     /// モデルの高さを、高さマップの高さに合わせます。
