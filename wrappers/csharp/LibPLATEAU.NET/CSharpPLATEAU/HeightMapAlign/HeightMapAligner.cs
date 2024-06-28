@@ -35,8 +35,41 @@ namespace PLATEAU.HeightMapAlign
             var apiResult = NativeMethods.height_map_aligner_align(Handle, model.Handle);
             DLLUtil.CheckDllError(apiResult);
         }
-        
-        
+
+        public void AlignInvert(Model model)
+        {
+            var apiResult = NativeMethods.height_map_aligner_align_invert(Handle, model.Handle);
+            DLLUtil.CheckDllError(apiResult);
+        }
+
+        public int HeightMapCount
+        {
+            get
+            {
+                var apiResult = NativeMethods.height_map_aligner_height_map_count(Handle, out int count);
+                DLLUtil.CheckDllError(apiResult);
+                return count;
+            }
+        }
+
+        public UInt16[] GetHeightMapAt(int index)
+        {
+            var apiResult = NativeMethods.height_map_aligner_get_height_map_at(
+                Handle, index, out IntPtr heightMapPtr, out int dataSize
+            );
+            DLLUtil.CheckDllError(apiResult);
+            byte[] outData = DLLUtil.PtrToBytes(heightMapPtr, sizeof(UInt16) * dataSize);
+            NativeMethods.release_heightmap_data(heightMapPtr);
+            var copiedHeightMap = new UInt16[dataSize];
+            int byteIndex = 0;
+            for (int i = 0; i < dataSize; i++)
+            {
+                copiedHeightMap[i] = BitConverter.ToUInt16(outData, byteIndex);
+                byteIndex += sizeof(UInt16);
+            }
+
+            return copiedHeightMap;
+        }
 
         protected override void DisposeNative()
         {
@@ -71,10 +104,35 @@ namespace PLATEAU.HeightMapAlign
                 [In] float maxHeight
             );
             
+                [DllImport(DLLUtil.DllName)]
+                internal static extern APIResult height_map_aligner_align(
+                    [In] IntPtr alignerPtr,
+                    [In, Out] IntPtr modelPtr
+                );
+                
+                [DllImport(DLLUtil.DllName)]
+                internal static extern APIResult height_map_aligner_align_invert(
+                    [In] IntPtr alignerPtr,
+                    [In, Out] IntPtr modelPtr
+                );
+
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult height_map_aligner_align(
+            internal static extern APIResult height_map_aligner_height_map_count(
                 [In] IntPtr alignerPtr,
-                [In, Out] IntPtr modelPtr
+                [Out] out int count
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult height_map_aligner_get_height_map_at(
+                [In] IntPtr alignerPtr,
+                [In] int index,
+                [Out] out IntPtr heightMapPtr,
+                [Out] out int dataSize
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult release_heightmap_data(
+                [In] IntPtr data
             );
         }
 

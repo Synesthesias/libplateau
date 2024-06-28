@@ -1,11 +1,11 @@
-#include <plateau/texture/heightmap_generator.h>
+#include <plateau/height_map_generator//heightmap_generator.h>
 #include "libplateau_c.h"
 #include <plateau/polygon_mesh/mesh.h>
 
 using namespace citygml;
 using namespace libplateau;
 using namespace plateau::polygonMesh;
-using namespace plateau::texture;
+using namespace plateau::heightMapGenerator;
 using namespace plateau::geometry;
 
 extern "C" {

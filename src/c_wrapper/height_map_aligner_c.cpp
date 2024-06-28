@@ -58,7 +58,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align(
-            const HeightMapAligner* const aligner,
+            HeightMapAligner* const aligner,
             Model* const model
     ) {
         API_TRY{
@@ -66,6 +66,51 @@ extern "C" {
                 return APIResult::NotPreparedForOperation;
             }
             aligner->align(*model);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align_invert(
+            HeightMapAligner* const aligner,
+            Model* const model
+    ) {
+        API_TRY{
+            if(aligner->heightmapCount() == 0) {
+                return APIResult::NotPreparedForOperation;
+            }
+            aligner->alignInvert(*model);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_height_map_count(
+            HeightMapAligner* const aligner,
+            int* out_height_map_count
+    ) {
+        API_TRY{
+            *out_height_map_count = aligner->heightmapCount();
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_get_height_map_at(
+            HeightMapAligner* const aligner,
+            int index,
+            uint16_t** out_height_map,
+            int* data_size
+    ) {
+        API_TRY{
+            auto height_map =  aligner->getHeightMapFrameAt(index).heightmap;
+            auto copied_map = new uint16_t[height_map.size()];
+            memcpy(copied_map, height_map.data(), sizeof(uint16_t) * height_map.size());
+            *out_height_map = copied_map;
+            *data_size = (int)height_map.size();
             return APIResult::Success;
         }
         API_CATCH;

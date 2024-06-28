@@ -62,6 +62,7 @@ add_subdirectory(network)
 add_subdirectory(texture)
 add_subdirectory(granularity_convert)
 add_subdirectory(height_map_aligner)
+add_subdirectory(height_map_generator)
 
 # libファイルを1つに結合します。
 if(BUILD_LIB_TYPE STREQUAL "static")
