@@ -1,6 +1,7 @@
 #include "libplateau_c.h"
 #include <plateau/height_map_alighner/height_map_aligner.h>
 using namespace plateau::heightMapAligner;
+using namespace plateau::heightMapGenerator;
 using namespace plateau::polygonMesh;
 using namespace libplateau;
 
@@ -31,7 +32,7 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_add_heightmap_frame(
             HeightMapAligner* const aligner,
-            const uint16_t* heightmap,
+            const HeightMapElemT* heightmap,
             int heightmap_size, // size = width * height
             int heightmap_width,
             int heightmap_height,
@@ -47,7 +48,7 @@ extern "C" {
                 return APIResult::ErrorInvalidArgument;
             }
 
-            auto map = HeightMapFrame(std::vector<uint16_t>(heightmap, heightmap + heightmap_size), heightmap_width,
+            auto map = HeightMapFrame(HeightMapT(heightmap, heightmap + heightmap_size), heightmap_width,
                                       heightmap_height, min_x, max_x, max_y, min_y, min_height,
                                       max_height);
             aligner->addHeightmapFrame(map);
@@ -102,13 +103,13 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_get_height_map_at(
             HeightMapAligner* const aligner,
             int index,
-            uint16_t** out_height_map,
+            HeightMapElemT** out_height_map,
             int* data_size
     ) {
         API_TRY{
             auto height_map =  aligner->getHeightMapFrameAt(index).heightmap;
-            auto copied_map = new uint16_t[height_map.size()];
-            memcpy(copied_map, height_map.data(), sizeof(uint16_t) * height_map.size());
+            auto copied_map = new HeightMapElemT[height_map.size()];
+            memcpy(copied_map, height_map.data(), sizeof(HeightMapElemT) * height_map.size());
             *out_height_map = copied_map;
             *data_size = (int)height_map.size();
             return APIResult::Success;

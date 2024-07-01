@@ -1,14 +1,14 @@
 #pragma once
 #include <libplateau_api.h>
 #include "plateau/polygon_mesh/model.h"
+#include "plateau/height_map_generator/heightmap_types.h"
 
 namespace plateau::heightMapAligner {
 
     /// 高さマップと、そこから高さを導くためのmin,max等の情報をまとめてHeightMapFrameと名付けます。
     class LIBPLATEAU_EXPORT HeightMapFrame {
-        using MapValueT = uint16_t;
     public:
-        HeightMapFrame(std::vector<uint16_t> heightmap, int map_width, int map_height, float min_x_arg, float max_x_arg,
+        HeightMapFrame(plateau::heightMapGenerator::HeightMapT heightmap, int map_width, int map_height, float min_x_arg, float max_x_arg,
                        float min_y_arg, float max_y_arg, float min_height_arg, float max_height_arg) :
                 heightmap(std::move(heightmap)), map_width(map_width), map_height(map_height), min_x(min_x_arg), max_x(max_x_arg), max_y(max_y_arg), min_y(min_y_arg), min_height(min_height_arg), max_height(max_height_arg)
         {
@@ -16,7 +16,7 @@ namespace plateau::heightMapAligner {
             if(min_y > max_y) std::swap(min_y, max_y);
             if(min_height > max_height) std::swap(min_height, max_height);
         }
-        std::vector<MapValueT> heightmap;
+        plateau::heightMapGenerator::HeightMapT heightmap;
         int map_width;
         int map_height;
         float min_x;

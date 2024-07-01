@@ -17,7 +17,7 @@ namespace plateau::heightMapGenerator {
         int ID;
         std::shared_ptr<std::vector<Triangle>> Triangles;
 
-        Tile(int id, TVec2d min, TVec2d max){
+        Tile(int id, const TVec2d min, const TVec2d max){
             ID = id;
             Min = min;
             Max = max;
@@ -43,8 +43,8 @@ namespace plateau::heightMapGenerator {
 
     // MeshからHeightMap画像となる16bitグレースケール配列を生成し、適用範囲となる位置を計算します
     // ENUに変換してから処理を実行し、元のCoordinateに変換して値を返します
-    HeightmapT HeightmapGenerator::generateFromMesh(
-        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, TVec2d margin, 
+    HeightMapT HeightmapGenerator::generateFromMesh(
+        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, const TVec2d& margin,
         const geometry::CoordinateSystem coordinate, bool fillEdges, TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
 
         const auto& InVertices = InMesh.getVertices();
@@ -64,7 +64,7 @@ namespace plateau::heightMapGenerator {
             if (margin.x != 0 || margin.y != 0) {
                 auto uvSize = TVec2f(outUVMax.x - outUVMin.x, outUVMax.y - outUVMin.y);
                 auto baseExtentSize = TVec2d(extent.getXLength() / uvSize.x, extent.getYLength() / uvSize.y);
-                auto marginPercent = TVec2f(margin.x / baseExtentSize.x, margin.y / baseExtentSize.y);
+                auto marginPercent = TVec2f(((float)margin.x) / baseExtentSize.x, ((float)margin.y) / baseExtentSize.y);
                 outUVMax.x += marginPercent.x;
                 outUVMax.y += marginPercent.y;
             }
@@ -81,19 +81,19 @@ namespace plateau::heightMapGenerator {
         outMin = extent.Min;
         outMax = extent.Max;
 
-        return map_with_alpha.height_map;
+        return map_with_alpha.getHeightMap();
     }
 
 
-    MapWithAlpha
+    HeightMapWithAlpha
     HeightmapGenerator::generateFromMeshAndTriangles(const plateau::polygonMesh::Mesh& in_mesh, size_t texture_width,
                                                      size_t texture_height,
                                                      bool fillEdges, TriangleList& triangles) {
         //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
         std::vector<Tile> tiles;
         size_t division = getTileDivision(triangles.Triangles.size()); //縦横のグリッド分割数
-        const double xTiles = texture_width / division;
-        const double yTiles = texture_height / division;
+        const double xTiles = (double)texture_width / division;
+        const double yTiles = (double)texture_height / division;
         int tileIndex = 0;
         TVec2d prev(0, 0);
         auto extent = triangles.Extent;
@@ -159,20 +159,19 @@ namespace plateau::heightMapGenerator {
             prev.y = (y < texture_height) ? y : 0;
         }
 
-        int TextureDataSize = texture_width * texture_height;
+        const auto TextureDataSize = texture_width * texture_height;
 
         // Initialize Texture Data Array
-        std::unique_ptr<HeightmapElemT[]> TextureData = std::make_unique<HeightmapElemT[]>(TextureDataSize);
-        std::unique_ptr<bool[]> AlphaData = std::make_unique<bool[]>(TextureDataSize);
+        auto map_with_alpha = HeightMapWithAlpha(texture_width, texture_height, extent.getXLength(), extent.getYLength());
 
         size_t index = 0;
-        for (int y = texture_height - 1; y >= 0; y--) {
+        for (int y = (int)texture_height - 1; y >= 0; y--) {
             for (int x = 0; x < texture_width; x++) {
 
                 const auto& percent = TVec2d((double)x / (double)texture_width, (double)y / (double)texture_height);
                 const auto& p = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
 
-                HeightmapElemT GrayValue = 0;
+                HeightMapElemT GrayValue = 0;
                 bool ValueSet = false;
                 for (auto& tile : tiles) {
                     if (tile.isWithin(TVec2d(x, y))) {
@@ -190,8 +189,8 @@ namespace plateau::heightMapGenerator {
 
                 }
                 if (index < TextureDataSize) {
-                    TextureData[index] = GrayValue;
-                    AlphaData[index] = ValueSet;
+                    map_with_alpha.setHeightAt(index, GrayValue);
+                    map_with_alpha.setAlphaAt(index, ValueSet ? 1 : 0);
                 }
 
                 index++;
@@ -201,16 +200,11 @@ namespace plateau::heightMapGenerator {
 
         //透明部分をエッジ色でFill
         if(fillEdges)
-            fillTransparentEdges(TextureData.get(), AlphaData.get(), texture_width, texture_height);
+            map_with_alpha.fillTransparentEdges();
 
         //平滑化
-        applyConvolutionFilter(TextureData.get(), texture_width, texture_height);
-
-        auto ret = MapWithAlpha(
-                HeightmapT(TextureData.get(), TextureData.get() + TextureDataSize),
-                std::vector<bool>(AlphaData.get(), AlphaData.get() + TextureDataSize)
-                );
-        return ret;
+        map_with_alpha.applyConvolutionFilterForHeightMap();
+        return map_with_alpha;
     }
 
     //Mesh数に応じてTile分割数を決めます
@@ -239,9 +233,9 @@ namespace plateau::heightMapGenerator {
         return height_in_dist / dist;
     }
 
-    HeightmapElemT HeightmapGenerator::getPercentToGrayScale(double percent) {
-        HeightmapElemT size = 65535;
-        return static_cast<HeightmapElemT>(static_cast<double>(size) * percent);
+    HeightMapElemT HeightmapGenerator::getPercentToGrayScale(double percent) {
+        HeightMapElemT size = 65535;
+        return static_cast<HeightMapElemT>(static_cast<double>(size) * percent);
     }
 
     TVec3d HeightmapGenerator::convertCoordinateFrom(geometry::CoordinateSystem coordinate, TVec3d vertice) {
@@ -267,84 +261,9 @@ namespace plateau::heightMapGenerator {
         return !(outMin.x == 0.f && outMin.y == 0.f && outMax.x == 0.f && outMax.y == 0.f);
     }
 
-    void HeightmapGenerator::applyConvolutionFilter(HeightmapElemT* image, const size_t width, const size_t height) {
-        size_t imageSize = width * height;
-        std::unique_ptr<HeightmapElemT[]> tempImage = std::make_unique<HeightmapElemT[]>(imageSize);
-        memcpy(tempImage.get(), image, sizeof(HeightmapElemT) * imageSize);
-        //エッジを除外して処理
-        for (size_t y = 1; y < height - 1; ++y) {
-            for (size_t x = 1; x < width - 1; ++x) {
-                // 3x3の領域のピクセル値の平均を計算
-                int sum = 0;
-                for (int dy = -1; dy <= 1; ++dy) {
-                    for (int dx = -1; dx <= 1; ++dx) {
-                        sum += image[(y + dy) * width + (x + dx)];
-                    }
-                }
-                tempImage[y * width + x] = sum / 9;
-            }
-        }
-        memcpy(image, tempImage.get(), sizeof(HeightmapElemT) * imageSize);
-    }
-
-    void HeightmapGenerator::fillTransparentEdges(HeightmapElemT* image, const bool* alpha, const size_t width, const size_t height) {
-        struct Pixel {
-            int x, y;
-            HeightmapElemT color;
-        };
-        std::vector<Pixel> edgePixels;
-
-        // エッジ検索
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                if (alpha[y * width + x]) {
-                    edgePixels.push_back({ x, y, image[y * width + x] });
-                    break;
-                }
-            }
-            for (int x = width - 1; x >= 0; --x) {
-                if (alpha[y * width + x]) {
-                    edgePixels.push_back({ x, y, image[y * width + x] });
-                    break;
-                }
-            }
-        }
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                if (alpha[y * width + x]) {
-                    edgePixels.push_back({ x, y, image[y * width + x] });
-                    break;
-                }
-            }
-            for (int y = height - 1; y >= 0; --y) {
-                if (alpha[y * width + x]) {
-                    edgePixels.push_back({ x, y, image[y * width + x] });
-                    break;
-                }
-            }
-        }
-
-        // アルファ部分を最も距離の近いエッジのピクセル色に
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                if (!alpha[y * width + x]) {
-                    double minDist = std::numeric_limits<double>::max();
-                    HeightmapElemT nearestColor = 0;
-                    for (const auto& p : edgePixels) {
-                        double dist = std::sqrt((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y));
-                        if (dist < minDist) {
-                            minDist = dist;
-                            nearestColor = p.color;
-                        }
-                    }
-                    image[y * width + x] = nearestColor;
-                }
-            }
-        }
-    }
 
     // 16bitグレースケールのpng画像を保存します
-    void HeightmapGenerator::savePngFile(const std::string& file_path, size_t width, size_t height, HeightmapElemT* data) {
+    void HeightmapGenerator::savePngFile(const std::string& file_path, size_t width, size_t height, HeightMapElemT* data) {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
@@ -401,7 +320,7 @@ namespace plateau::heightMapGenerator {
     }
 
     // PNG画像を読み込み、グレースケールの配列を返します
-    HeightmapT HeightmapGenerator::readPngFile(const std::string& file_path, size_t width, size_t height) {
+    HeightMapT HeightmapGenerator::readPngFile(const std::string& file_path, size_t width, size_t height) {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
@@ -440,7 +359,7 @@ namespace plateau::heightMapGenerator {
             throw std::runtime_error("Error: Invalid PNG format. Expected 16-bit grayscale.");
         }
 
-        HeightmapT grayscaleData(width * height);
+        HeightMapT grayscaleData(width * height);
 
         png_bytepp row_pointers = (png_bytepp)malloc(sizeof(png_bytep) * height);
         for (size_t y = 0; y < height; ++y) {
@@ -463,7 +382,7 @@ namespace plateau::heightMapGenerator {
     }
 
     // 16bitグレースケールのpng画像を保存します   
-    void HeightmapGenerator::saveRawFile(const std::string& file_path, size_t width, size_t height, HeightmapElemT* data) {
+    void HeightmapGenerator::saveRawFile(const std::string& file_path, size_t width, size_t height, HeightMapElemT* data) {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
@@ -480,15 +399,15 @@ namespace plateau::heightMapGenerator {
 
         // Write image data
         for (int i = 0; i < width * height; ++i) {
-            HeightmapElemT pixelValue = data[i];
-            outputFile.write(reinterpret_cast<const char*>(&pixelValue), sizeof(HeightmapElemT));
+            HeightMapElemT pixelValue = data[i];
+            outputFile.write(reinterpret_cast<const char*>(&pixelValue), sizeof(HeightMapElemT));
         }
 
         outputFile.close();
     }
 
     // Raw画像を読み込み、グレースケールの配列を返します
-    HeightmapT HeightmapGenerator::readRawFile(const std::string& file_path, size_t width, size_t height) {
+    HeightMapT HeightmapGenerator::readRawFile(const std::string& file_path, size_t width, size_t height) {
 
 #ifdef WIN32
         const auto regular_name = std::filesystem::u8path(file_path).wstring();
@@ -501,9 +420,9 @@ namespace plateau::heightMapGenerator {
             throw std::runtime_error("Error: Unable to open file for reading. ");
         }
 
-        HeightmapT grayscaleData(width * height);
+        HeightMapT grayscaleData(width * height);
         // データをバイナリとして読み込む
-        file.read(reinterpret_cast<char*>(&grayscaleData[0]), width * height * sizeof(HeightmapElemT));
+        file.read(reinterpret_cast<char*>(&grayscaleData[0]), width * height * sizeof(HeightMapElemT));
         file.close();
 
         return grayscaleData;

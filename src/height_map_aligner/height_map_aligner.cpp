@@ -91,14 +91,19 @@ namespace plateau::heightMapAligner {
             auto mesh_map = HeightmapGenerator().generateFromMeshAndTriangles(
                     *mesh, land_map.map_width, land_map.map_height, false, mesh_triangles
                     );
+            mesh_map.expandOpaqueArea();
+            mesh_map.averagingAlphaMap();
 
             // 同じ条件で作られた地形のハイトマップとメッシュのハイトマップを比較し、地形マップを修正します。
+            // メッシュのアルファマップの値が大きいほど、地形マップの値を反映させます。
             for(int y=0; y<land_map.map_height; y++) {
                 for(int x=0; x<land_map.map_width; x++) {
                     int index = y * land_map.map_width + x;
-                    if(!mesh_map.alpha_map.at(index)) continue;
-                    const auto mesh_map_val = mesh_map.height_map.at(index);
-                    land_map.heightmap.at(index) = mesh_map_val;
+                    if(mesh_map.isInvisibleAt(index)) continue;
+                    const auto mesh_map_val = mesh_map.getHeightAt(index);
+                    const auto land_map_val = land_map.heightmap.at(index);
+                    const auto alpha_map_val = mesh_map.getAlphaAt(index);
+                    land_map.heightmap.at(index) = (HeightMapElemT)(((float)land_map_val) + ((float)(mesh_map_val - land_map_val)) * alpha_map_val);
                 }
             }
         }
@@ -182,14 +187,14 @@ namespace plateau::heightMapAligner {
         const auto x_decimal_part = std::max(map_pos.x - x_floor, 0.0);
         const auto y_decimal_part = std::max(map_pos.y - y_floor, 0.0);
         const auto map_val =
-                (MapValueT)lerp(
+                (HeightMapElemT)lerp(
                         lerp(p0, p1, x_decimal_part),
                         lerp(p3, p2, x_decimal_part),
                         y_decimal_part
                 );
 
 
-        return min_height + (max_height - min_height) * (((double)map_val) + 0.5) / ((double)std::numeric_limits<MapValueT>::max()) + height_offset;
+        return min_height + (max_height - min_height) * (((double)map_val) + 0.5) / ((double)HeightMapNumericMax) + height_offset;
     }
 
     TVec2d HeightMapFrame::posToMapPos(const TVec2d& pos) const {
