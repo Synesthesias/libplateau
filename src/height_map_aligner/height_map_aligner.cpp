@@ -3,6 +3,7 @@
 #include <plateau/height_map_generator/heightmap_generator.h>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 #include "plateau/geometry/geo_coordinate.h"
 
 using namespace plateau::polygonMesh;

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include <limits>
 
 namespace plateau::heightMapGenerator {
     /// ハイトマップの1ピクセルの型です。

@@ -15,6 +15,7 @@
 #include <cassert>
 #include <codecvt>
 #include <fstream>
+#include <limits>
 
 #include <GLTFSDK/GLBResourceWriter.h>
 #include <GLTFSDK/IStreamWriter.h>
