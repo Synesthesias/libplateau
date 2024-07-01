@@ -10,7 +10,9 @@ namespace plateau::heightMapAligner {
     public:
         HeightMapFrame(plateau::heightMapGenerator::HeightMapT heightmap, int map_width, int map_height, float min_x_arg, float max_x_arg,
                        float min_y_arg, float max_y_arg, float min_height_arg, float max_height_arg) :
-                heightmap(std::move(heightmap)), map_width(map_width), map_height(map_height), min_x(min_x_arg), max_x(max_x_arg), max_y(max_y_arg), min_y(min_y_arg), min_height(min_height_arg), max_height(max_height_arg)
+                heightmap(std::move(heightmap)), map_width(map_width), map_height(map_height),
+                min_x(min_x_arg), max_x(max_x_arg), max_y(max_y_arg), min_y(min_y_arg),
+                min_height(min_height_arg), max_height(max_height_arg)
         {
             if(min_x > max_x) std::swap(min_x, max_x);
             if(min_y > max_y) std::swap(min_y, max_y);

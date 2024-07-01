@@ -220,25 +220,30 @@ namespace plateau::heightMapGenerator {
 
     double HeightmapGenerator::getPositionFromPercent(const double percent, const double min, const double max) {
         const double dist = abs(max - min);
-        return min + (dist * percent);
+        const auto pos = min + (dist * percent);
+        const auto clamped = std::clamp(pos, min, max);
+        return clamped;
     }
 
-    TVec2d HeightmapGenerator::getPositionFromPercent(const TVec2d percent, const TVec2d min, const TVec2d max) {
+    TVec2d HeightmapGenerator::getPositionFromPercent(const TVec2d& percent, const TVec2d& min, const TVec2d& max) {
         return TVec2d(getPositionFromPercent(percent.x, min.x, max.x), getPositionFromPercent(percent.y, min.y, max.y));
     }
 
-    double HeightmapGenerator::getHeightToPercent(double height, double min, double max) {
-        double dist = abs(max - min);
-        double height_in_dist = abs(height - min);
-        return height_in_dist / dist;
+    double HeightmapGenerator::getHeightToPercent(const double height, const double min, const double max) {
+        const auto height_clamped = std::clamp(height, min, max);
+        const double dist = abs(max - min);
+        const double height_in_dist = abs(height_clamped - min);
+        const auto percent = height_in_dist / dist;
+        return percent;
     }
 
-    HeightMapElemT HeightmapGenerator::getPercentToGrayScale(double percent) {
-        HeightMapElemT size = 65535;
-        return static_cast<HeightMapElemT>(static_cast<double>(size) * percent);
+    HeightMapElemT HeightmapGenerator::getPercentToGrayScale(const double percent) {
+        const auto value = static_cast<double>(HeightMapNumericMax) * percent;
+        const auto clamped = std::clamp(value, 0.0, static_cast<double>(HeightMapNumericMax));
+        return static_cast<HeightMapElemT>(clamped);
     }
 
-    TVec3d HeightmapGenerator::convertCoordinateFrom(geometry::CoordinateSystem coordinate, TVec3d vertice) {
+    TVec3d HeightmapGenerator::convertCoordinateFrom(const geometry::CoordinateSystem coordinate, const TVec3d vertice) {
         return geometry::GeoReference::convertAxisToENU(coordinate, vertice);
     }
 
