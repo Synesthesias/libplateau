@@ -8,6 +8,8 @@ namespace PLATEAU.HeightMapAlign
 {
     public class HeightMapAligner : PInvokeDisposable
     {
+        private const float MaxEdgeLength = 4; // 高さ合わせのためメッシュを細分化するときの、最大の辺の長さ。だいたい4mくらいが良さそう。
+        
         public static HeightMapAligner Create(double heightOffset)
         {
             var result = NativeMethods.height_map_aligner_create(out var createdPtr, heightOffset);
@@ -32,7 +34,7 @@ namespace PLATEAU.HeightMapAlign
         public void Align(Model model)
         {
             
-            var apiResult = NativeMethods.height_map_aligner_align(Handle, model.Handle);
+            var apiResult = NativeMethods.height_map_aligner_align(Handle, model.Handle, MaxEdgeLength);
             DLLUtil.CheckDllError(apiResult);
         }
 
@@ -107,7 +109,8 @@ namespace PLATEAU.HeightMapAlign
                 [DllImport(DLLUtil.DllName)]
                 internal static extern APIResult height_map_aligner_align(
                     [In] IntPtr alignerPtr,
-                    [In, Out] IntPtr modelPtr
+                    [In, Out] IntPtr modelPtr,
+                    [In] float maxEdgeLength
                 );
                 
                 [DllImport(DLLUtil.DllName)]

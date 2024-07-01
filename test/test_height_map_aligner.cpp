@@ -13,5 +13,5 @@ TEST_F(HeightMapAlignerTest, on_zero_heightmap) {
     auto model = plateau::polygonMesh::Model();
     auto frame = HeightMapFrame(std::vector<uint16_t>(), 0, 0, 0, 0, 0, 0, 0, 0);
     aligner.addHeightmapFrame(frame);
-    aligner.align(model);
+    aligner.align(model, 4);
 }

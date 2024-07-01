@@ -50,7 +50,8 @@ namespace plateau::heightMapAligner {
         void addHeightmapFrame(const HeightMapFrame& heightmap_frame);
 
         /// モデルの高さを高さマップに合わせます。
-        void align(plateau::polygonMesh::Model& model);
+        /// max_edge_lengthは、モデルを分割するときの最大の辺の長さで、おおむね4mくらいを想定します。
+        void align(plateau::polygonMesh::Model& model, float max_edge_length);
 
         /// 高さマップをモデルに合わせます。
         /// 変更後の高さマップは getHeightMapFrameAt で取得できます。

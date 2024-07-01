@@ -26,11 +26,11 @@ namespace plateau::heightMapGenerator {
         /// ハイトマップを平滑化します。手法は3×3ピクセルの平均値にならします。
         void applyConvolutionFilterForHeightMap();
 
-        /// アルファマップの不透明部分を広げます。
-        void expandOpaqueArea();
+        /// アルファマップの不透明部分を広げます。引数は直交座標系での広げる幅です。
+        void expandOpaqueArea(double expand_width_cartesian);
 
-        /// アルファマップを平滑化します。手法は一定距離内の平均値にならします。
-        void averagingAlphaMap();
+        /// アルファマップを平滑化します。引数を直交座標系の幅として、その範囲の一定距離内の平均値にならします。
+        void averagingAlphaMap(double averaging_width_cartesian);
 
         HeightMapT getHeightMap();
         int indexAt(int x, int y) const;

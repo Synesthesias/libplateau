@@ -106,16 +106,17 @@ namespace plateau::heightMapGenerator {
         memcpy(height_map.data(), tempImage.get(), sizeof(HeightMapElemT) * imageSize);
     }
 
-    void HeightMapWithAlpha::expandOpaqueArea() {
-        constexpr int expand_pixel_width = 10;
+    void HeightMapWithAlpha::expandOpaqueArea(double expand_width_cartesian) {
+        double pixel_width = cartesian_width / (double)texture_width;
+        double pixel_height = cartesian_height / (double)texture_height;
+        int expand_width_pixel = std::ceil(expand_width_cartesian / pixel_width);
+        int expand_height_pixel = std::ceil(expand_width_cartesian / pixel_height);
         auto next_alpha = AlphaMapT(alpha_map);
         for (int y = 0; y < texture_height; y++) {
             for (int x = 0; x < texture_width; x++) {
-                if (!isOpaqueAt(indexAt(x,y))) continue;
-                next_alpha.at(indexAt(x,y)) = 1;
-                for (int y2 = std::max(y - expand_pixel_width, 0); y2 < y; y2++) {
-                    for (int x2 = std::max(x - expand_pixel_width,0); x2 < x; x2++) {
-                        setAlphaAt(indexAt(x2,y2), 1);
+                for (int y2 = std::max(y - expand_height_pixel, 0); y2 < y; y2++) {
+                    for (int x2 = std::max(x - expand_width_pixel,0); x2 < x; x2++) {
+                        next_alpha.at(indexAt(x2,y2)) = std::max(next_alpha.at(indexAt(x2,y2)), getAlphaAt(indexAt(x,y)));
                     }
                 }
 
@@ -124,24 +125,20 @@ namespace plateau::heightMapGenerator {
         alpha_map = std::move(next_alpha);
     }
 
-    void HeightMapWithAlpha::averagingAlphaMap() {
+    void HeightMapWithAlpha::averagingAlphaMap(double averaging_width_cartesian) {
         double pixel_width = cartesian_width / (double)texture_width;
         double pixel_height = cartesian_height / (double)texture_height;
         auto next_alpha = AlphaMapT (alpha_map);
 
-        constexpr double averaging_width_cartesian = 10; // TODO 可変にする
         int averaging_width_pixel = std::floor(averaging_width_cartesian / pixel_width);
         int averaging_height_pixel = std::floor(averaging_width_cartesian / pixel_height);
         for(int y=0; y<texture_height; y++) {
             for(int x=0; x<texture_width; x++) {
-                AlphaMapElemT sum = 0;
+                double sum = 0;
                 int num = 0;
                 // 周辺のピクセルを確認
-                for(int y2 = y - averaging_height_pixel; y2 <= y + averaging_height_pixel; y2++) {
-                    for(int x2 = x - averaging_width_pixel; x2 <= x + averaging_width_pixel; x2++) {
-                        if(x2 < 0 || x2 >= texture_width || y2 < 0 || y2 >= texture_height) {
-                            continue;
-                        }
+                for(int y2 = std::max(y - averaging_height_pixel, 0); y2 <= std::min(y + averaging_height_pixel, (int)texture_height - 1); y2++) {
+                    for(int x2 = std::max(x - averaging_width_pixel, 0); x2 <= std::min(x + averaging_width_pixel, (int)texture_width - 1); x2++) {
                         sum += alpha_map.at(indexAt(x2,y2));
                         num++;
                     }

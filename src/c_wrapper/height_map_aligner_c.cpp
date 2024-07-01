@@ -60,13 +60,14 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align(
             HeightMapAligner* const aligner,
-            Model* const model
+            Model* const model,
+            const float max_edge_length
     ) {
         API_TRY{
             if(aligner->heightmapCount() == 0) {
                 return APIResult::NotPreparedForOperation;
             }
-            aligner->align(*model);
+            aligner->align(*model, max_edge_length);
             return APIResult::Success;
         }
         API_CATCH;

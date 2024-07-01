@@ -47,12 +47,12 @@ namespace plateau::heightMapAligner {
             return map;
         }
 
-        void alignMesh(Mesh* mesh, std::vector<HeightMapFrame>& maps, const double height_offset) {
+        void alignMesh(Mesh* mesh, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
 
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
             // OpenMeshについてはこちらを参照してください: https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-6.1-Documentation/a00046.html
-            auto converter = OpenMeshConverter();
+            auto converter = OpenMeshConverter(max_edge_length);
             auto om_mesh = converter.toOpenMesh(mesh);
 
             // OpenMeshでSubdivisionします
@@ -91,8 +91,10 @@ namespace plateau::heightMapAligner {
             auto mesh_map = HeightmapGenerator().generateFromMeshAndTriangles(
                     *mesh, land_map.map_width, land_map.map_height, false, mesh_triangles
                     );
-            mesh_map.expandOpaqueArea();
-            mesh_map.averagingAlphaMap();
+
+            // スムーズ化補正
+            mesh_map.expandOpaqueArea(10);
+            mesh_map.averagingAlphaMap(5);
 
             // 同じ条件で作られた地形のハイトマップとメッシュのハイトマップを比較し、地形マップを修正します。
             // メッシュのアルファマップの値が大きいほど、地形マップの値を反映させます。
@@ -108,10 +110,10 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignNode(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset) {
+        void alignNode(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMesh(mesh, maps, height_offset);
+            alignMesh(mesh, maps, height_offset, max_edge_length);
         }
 
         void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps) {
@@ -120,11 +122,11 @@ namespace plateau::heightMapAligner {
             alignMeshInvert(mesh, maps);
         }
 
-        void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset) {
-            alignNode(node, maps, height_offset);
+        void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
+            alignNode(node, maps, height_offset, max_edge_length);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursive(child, maps, height_offset);
+                alignRecursive(child, maps, height_offset, max_edge_length);
             }
         }
 
@@ -146,11 +148,11 @@ namespace plateau::heightMapAligner {
         height_map_frames.push_back(heightmap_frame);
     }
 
-    void HeightMapAligner::align(Model& model) {
+    void HeightMapAligner::align(Model& model, float max_edge_length) {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::align: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursive(node, height_map_frames, height_offset);
+            alignRecursive(node, height_map_frames, height_offset, max_edge_length);
         }
     }
 
@@ -194,7 +196,9 @@ namespace plateau::heightMapAligner {
                 );
 
 
-        return min_height + (max_height - min_height) * (((double)map_val) + 0.5) / ((double)HeightMapNumericMax) + height_offset;
+        const double height = min_height + (max_height - min_height) * (((double)map_val) + 0.5) / ((double)HeightMapNumericMax) + height_offset;
+        const auto height_clamped = std::clamp(height, (double)min_height, (double)max_height);
+        return height_clamped;
     }
 
     TVec2d HeightMapFrame::posToMapPos(const TVec2d& pos) const {

@@ -46,12 +46,16 @@ namespace plateau::heightMapAligner {
             ++face_id;
         }
 
-        // UV4をOpenMeshのプロパティに格納します。
-        uv4_prop = UV4PropT();
+        // UV1とUV4をOpenMeshのプロパティに格納します。
+        uv1_prop = UVPropT();
+        uv4_prop = UVPropT();
+        om_mesh.add_property(uv1_prop);
         om_mesh.add_property(uv4_prop);
+        const auto& src_uv1 = mesh->getUV1();
         const auto& src_uv4 = mesh->getUV4();
         int v_id = 0;
         for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
+            om_mesh.property(uv1_prop, *v_itr) = src_uv1.at(v_id);
             om_mesh.property(uv4_prop, *v_itr) = src_uv4.at(v_id);
             ++v_id;
         }
@@ -61,9 +65,9 @@ namespace plateau::heightMapAligner {
 
     void OpenMeshConverter::subdivide(plateau::heightMapAligner::MeshType& mesh) {
 
-        auto divider = LongestEdgeDividerPlateau<MeshType>(game_material_id_prop, uv4_prop);
+        auto divider = LongestEdgeDividerPlateau<MeshType>(game_material_id_prop, uv1_prop, uv4_prop);
         divider.attach(mesh);
-        divider.set_max_edge_length(4); // ここでSubdivision後の最大エッジ長を指定します。
+        divider.set_max_edge_length(max_edge_length); // ここでSubdivision後の最大エッジ長を指定します。
         divider(1); // 1回Subdivisionを実行。PLATEAU向けにカスタマイズした処理を実行します。
         divider.detach();
     }
