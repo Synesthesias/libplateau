@@ -130,7 +130,7 @@ private:
     /// その差異を補正してテストデータを実際のゲームエンジンからの入力に近づけることを目的とします。
     void adjustForTestModelForAtomic(plateau::polygonMesh::Model& model);
 
-    ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea();
+    ModelConvertTestPatterns::TGranularityToExpect createExpectsForTestMeshArea(const std::string& expect_mesh_node_name_area);
 
     const std::vector<plateau::polygonMesh::CityObjectIndex> test_indices_primary_and_atomic = {
             {0, -1}, {0,0}, {0,1},
