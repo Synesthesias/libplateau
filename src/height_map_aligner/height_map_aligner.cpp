@@ -74,7 +74,7 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
+        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
 
             // 与えられたメッシュだけのハイトマップを作ります。
             // この際、範囲などの条件を地形ハイトマップと同じに設定することで、後で比較できるようにします。
@@ -106,6 +106,8 @@ namespace plateau::heightMapAligner {
                     if(mesh_map.isInvisibleAt(index)) continue;
                     const auto mesh_map_val = mesh_map.getHeightAt(index);
                     const auto land_map_val = land_map.heightmap.at(index);
+                    const auto distance = std::abs((float)mesh_map_val - (float)land_map_val) * (/*マップ1あたりの幅*/(land_map.max_height - land_map.min_height) / HeightMapNumericMax);
+                    if(distance > skip_threshold_of_map_land_distance) continue; // 土地とメッシュの高さの差が閾値を超える場合は、その隙間を尊重して高さ変更しない
                     const auto alpha_map_val = mesh_map.getAlphaAt(index);
                     land_map.heightmap.at(index) = (HeightMapElemT)(((float)land_map_val) + ((float)(mesh_map_val - land_map_val)) * alpha_map_val + offset_map_val);
                 }
@@ -118,10 +120,10 @@ namespace plateau::heightMapAligner {
             alignMesh(mesh, maps, height_offset, max_edge_length);
         }
 
-        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
+        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMeshInvert(mesh, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
+            alignMeshInvert(mesh, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
         }
 
         void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
@@ -132,11 +134,11 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
-            alignNodeInvert(node, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
+        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
+            alignNodeInvert(node, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursiveInvert(child, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
+                alignRecursiveInvert(child, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
             }
         }
 
@@ -158,11 +160,11 @@ namespace plateau::heightMapAligner {
         }
     }
 
-    void HeightMapAligner::alignInvert(plateau::polygonMesh::Model& model, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset_inv) {
+    void HeightMapAligner::alignInvert(plateau::polygonMesh::Model& model, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset_inv, const float skip_threshold_of_map_land_distance) {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::alignInvert: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursiveInvert(node, height_map_frames, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset_inv);
+            alignRecursiveInvert(node, height_map_frames, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset_inv, skip_threshold_of_map_land_distance);
         }
     }
 

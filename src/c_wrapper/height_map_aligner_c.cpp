@@ -77,15 +77,16 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_align_invert(
             HeightMapAligner* const aligner,
             Model* const model,
-            int alpha_expand_width_cartesian,
-            int alpha_average_width_cartesian,
-            float height_offset
+            const int alpha_expand_width_cartesian,
+            const int alpha_average_width_cartesian,
+            const float height_offset,
+            const float skip_threshold_of_map_land_distance
     ) {
         API_TRY{
             if(aligner->heightmapCount() == 0) {
                 return APIResult::NotPreparedForOperation;
             }
-            aligner->alignInvert(*model, alpha_expand_width_cartesian, alpha_average_width_cartesian, height_offset);
+            aligner->alignInvert(*model, alpha_expand_width_cartesian, alpha_average_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
             return APIResult::Success;
         }
         API_CATCH;
