@@ -3,6 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include <cstring>
+#include <limits>
 
 namespace plateau::heightMapGenerator {
 
