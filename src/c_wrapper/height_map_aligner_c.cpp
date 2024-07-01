@@ -1,5 +1,6 @@
 #include "libplateau_c.h"
 #include <plateau/height_map_alighner/height_map_aligner.h>
+#include <cstring>
 using namespace plateau::heightMapAligner;
 using namespace plateau::heightMapGenerator;
 using namespace plateau::polygonMesh;

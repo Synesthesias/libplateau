@@ -2,6 +2,7 @@
 #include <cmath>
 #include <memory>
 #include <stdexcept>
+#include <cstring>
 
 namespace plateau::heightMapGenerator {
 
