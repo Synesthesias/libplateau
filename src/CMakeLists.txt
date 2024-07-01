@@ -79,6 +79,8 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:zlibstatic>
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
+          $<TARGET_FILE:OpenMeshCore>
+          $<TARGET_FILE:OpenMeshTools>
           ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
