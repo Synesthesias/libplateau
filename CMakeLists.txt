@@ -119,7 +119,6 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
-
 ## glmを導入します
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glm")
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL=1)
@@ -282,6 +281,10 @@ add_subdirectory("3rdparty/libpng")
 set(PNG_INCLUDE_DIRS
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
         "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
+
+## OpenMesh
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openmesh/src")
+add_subdirectory("3rdparty/openmesh")
 
 ####################################
 # libplateau 本体の Cmake ファイルです。

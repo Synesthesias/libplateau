@@ -143,6 +143,7 @@ namespace plateau::texture {
             ++index;
         }
         mesh->setSubMeshes(sub_mesh_list);
+        mesh->combineSameSubMeshes();
     }
 
     AtlasInfo TexturePacker::packImage(TextureImageBase* image, const std::string& src_tex_path, int& out_target_canvas_id) {

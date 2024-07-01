@@ -91,6 +91,7 @@ namespace {
                     }
 
                     // 主要地物ごとのノードを追加します。
+                    mesh_factory.optimizeMesh();
                     lod_node.addChildNode(Node(primary_object->getId(), mesh_factory.releaseMesh()));
                     mesh_factory.incrementPrimaryIndex();
                 }

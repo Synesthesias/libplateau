@@ -146,6 +146,7 @@ namespace plateau::polygonMesh {
                 }
                 mesh_factory.incrementPrimaryIndex();
             }
+            mesh_factory.optimizeMesh();
             merged_meshes.emplace(group_id, mesh_factory.releaseMesh());
         }
         return merged_meshes;

@@ -192,6 +192,12 @@ namespace plateau::polygonMesh {
             mesh_ = std::move(target);
     }
 
+    void MeshFactory::optimizeMesh() {
+        // 軽量化
+        if(mesh_.get() == nullptr) return;
+        mesh_->combineSameSubMeshes();
+    }
+
     void MeshFactory::addPolygon(const Polygon& polygon, const std::string& gml_path) const {
         if (!isValidPolygon(polygon))
             return;

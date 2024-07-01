@@ -1,6 +1,7 @@
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <cmath>
+#include <limits>
 
 namespace plateau::geometry {
     using namespace citygml;

@@ -29,6 +29,7 @@ extern "C" {
                 auto uv_4 = std::vector<TVec2f>(uv_4_array, uv_4_array + uv_4_count);
 
                 auto sub_meshes = std::vector<SubMesh>();
+                sub_meshes.reserve(sub_mesh_count);
                 for (int i = 0; i < sub_mesh_count; i++) {
                     const SubMesh* sub_mesh_ptr = *(sub_mesh_pointers_array + i);
                     sub_meshes.push_back(*sub_mesh_ptr);

@@ -103,6 +103,7 @@ namespace plateau::granularityConvert {
         }
 
         dst_model.eraseEmptyNodes();
+        dst_model.optimizeMeshes();
         return dst_model;
     }
 }

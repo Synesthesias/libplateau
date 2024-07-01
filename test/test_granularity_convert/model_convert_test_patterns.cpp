@@ -109,7 +109,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     auto& lod_node = gml_node.addChildNode(Node("lod_node"));
     auto& mesh_node = lod_node.addChildNode(Node("mesh_node"));
     mesh_node.setMesh(std::move(mesh));
-    auto expects = createExpectsForTestMeshArea();
+    auto expects = createExpectsForTestMeshArea("primary-0_combined");
     auto ret = ModelConvertTestPatterns(std::move(model), expects);
     return ret;
 }
@@ -134,11 +134,11 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     root_node.setMesh(std::move(mesh));
 
     // テストの期待値からgmlノードとlodノードの分を除いて、ルートノードを追加します。
-    auto expects = createExpectsForTestMeshArea();
+    auto expects = createExpectsForTestMeshArea("primary-0_combined");
 
     auto& expects_to_area = expects.at(MeshGranularity::PerCityModelArea);
     expects_to_area.eraseRange(0, 2);
-    expects_to_area.at(0).expect_node_name_ = "combined";
+    expects_to_area.at(0).expect_node_name_ = "primary-0_combined";
     expects_to_area.at(0).expect_city_obj_list_ =
             {{{{0, -1}, "primary-0"},
               {{0, 0}, "atomic-0-0"},
@@ -290,7 +290,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
             NodeExpect("gml2", false, 0, {}, {}, {}),
             NodeExpect("lod1", false, 0, {}, {}, {}),
             NodeExpect("lod2", false, 0, {}, {}, {}),
-            NodeExpect("combined", true, 4 * 6,
+            NodeExpect("primary-0_combined", true, 4 * 6,
                        {{
                                 {0, -1},
                                 {0, 0},
@@ -317,7 +317,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
                        }
             ),
             // 2つ目
-            NodeExpect("combined", true, 4 * 6,
+            NodeExpect("primary-0_combined", true, 4 * 6,
                        {{
                                 {0, -1},
                                 {0, 0},
@@ -378,7 +378,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     auto& expect_to_area = expects.at(MeshGranularity::PerCityModelArea);
     expect_to_area.eraseRange(0, 2);
-    expect_to_area.at(0).expect_node_name_ = "combined";
+    expect_to_area.at(0).expect_node_name_ = "primary-0_combined";
 //    CityObjectList expect_area_city_obj_list;
     expect_to_area.at(0).expect_city_obj_id_set_ = {{0, 0},
                                                     {0, 1},
@@ -441,7 +441,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
         }
     }
 
-    auto expect = createExpectsForTestMeshArea();
+    auto expect = createExpectsForTestMeshArea("mesh_node_combined");
 
     auto& expect_to_atomic = expect.at(MeshGranularity::PerAtomicFeatureObject);
     expect_to_atomic.setExpectNodeNameRange("mesh_node", 2, 7);
@@ -605,7 +605,7 @@ void ModelConvertTestPatternsFactory::adjustForTestModelForAtomic(plateau::polyg
     }
 }
 
-ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::createExpectsForTestMeshArea() {
+ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::createExpectsForTestMeshArea(const std::string& expect_mesh_node_name_area) {
 
     // メッシュを持たないオブジェクトはCityObjectIndexは無視されるので何の値でも良いです。
     const CityObjectIndex none_coi = {-999, -999};
@@ -663,7 +663,7 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
             std::vector<NodeExpect>{
                     NodeExpect("gml_node", false, 0, {}, {}, {}),
                     NodeExpect("lod_node", false, 0, {}, {}, {}),
-                    NodeExpect("combined", true, 4 * 6,
+                    NodeExpect(expect_mesh_node_name_area, true, 4 * 6,
                                {{
                                         {0, -1},
                                         {0, 0},
@@ -760,7 +760,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsFrom
             std::vector<NodeExpect>{
                     NodeExpect("gml_node", false, 0, {}, {}, {}),
                     NodeExpect("lod_node", false, 0, {}, {}, {}),
-                    NodeExpect("combined", true, 4 * 4,
+                    NodeExpect("primary-0_combined", true, 4 * 4,
                                {{
                                         {0, 0},
                                         {0, 1},

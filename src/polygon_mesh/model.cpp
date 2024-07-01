@@ -52,6 +52,24 @@ namespace plateau::polygonMesh {
     }
 
     namespace {
+        void optimizeMeshesRecursive(Node& node) {
+            if(node.getMesh() != nullptr) {
+                node.getMesh()->combineSameSubMeshes();
+            }
+            for(int i=0; i<node.getChildCount(); i++) {
+                auto& child = node.getChildAt(i);
+                optimizeMeshesRecursive(child);
+            }
+
+        }
+    }
+    void Model::optimizeMeshes() {
+        for(auto& node : root_nodes_) {
+            optimizeMeshesRecursive(node);
+        }
+    }
+
+    namespace {
         void getAllMeshesRecursive(std::vector<Mesh*>& meshes, const Node& node) {
             if(node.polygonExists()) {
                 meshes.push_back(node.getMesh());

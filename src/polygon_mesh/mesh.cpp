@@ -35,6 +35,10 @@ namespace plateau::polygonMesh {
         return indices_;
     }
 
+    std::vector<unsigned>& Mesh::getIndices() {
+        return indices_;
+    }
+
     const UV& Mesh::getUV1() const {
         return uv1_;
     }
@@ -44,6 +48,10 @@ namespace plateau::polygonMesh {
     }
 
     const UV& Mesh::getUV4() const {
+        return uv4_;
+    }
+
+    UV& Mesh::getUV4() {
         return uv4_;
     }
 
@@ -154,8 +162,6 @@ namespace plateau::polygonMesh {
 
     void Mesh::addSubMesh(const std::string& texture_path, std::shared_ptr<const citygml::Material> material, size_t sub_mesh_start_index, size_t sub_mesh_end_index, int game_material_id) {
         // テクスチャが異なる場合は追加します。
-        // TODO テクスチャありのポリゴン と なしのポリゴン が交互にマージされることで、テクスチャなしのサブメッシュが大量に生成されるので描画負荷に改善の余地ありです。
-        //      テクスチャなしのサブメッシュは1つにまとめたいところです。テクスチャなしのポリゴンを連続してマージすることで1つにまとまるはずです。
 
         // 前と同じマテリアルかどうか判定します。
         bool are_materials_same;
@@ -220,7 +226,43 @@ namespace plateau::polygonMesh {
         MeshMerger::mergeMesh(*this, other_mesh, invert_mesh_front_back, include_textures);
     }
 
+    void Mesh::combineSameSubMeshes() {
+        // SubMeshの集合を構築します。indexは無視して見た目のみチェックします。
+        std::set<SubMesh, SubMeshCompareByAppearance> sm_set;
+        bool contains_duplicate = false;
+        for(auto& sm : sub_meshes_) {
+            if(sm_set.find(sm) == sm_set.end()) {
+                sm_set.insert(sm);
+            }else{
+                contains_duplicate = true;
+            }
+        }
+        // 重複SubMeshがなければ処理不要です。
+        if(!contains_duplicate) return;
 
+        std::vector<unsigned int> next_indices;
+        std::vector<SubMesh> next_sub_meshes;
+        next_indices.reserve(indices_.size());
+        next_sub_meshes.reserve(sm_set.size());
+        size_t sm_start_index = 0;
+        for(auto& unique_sm : sm_set) {
+            for(auto& sm : sub_meshes_) {
+                if(sm.isAppearanceEqual(unique_sm)) {
+                    for(auto i = sm.getStartIndex(); i <= sm.getEndIndex(); i++) {
+                        next_indices.push_back(indices_.at(i));
+                    }
+                }
+            }
+            auto next_sm = unique_sm;
+            next_sm.setStartIndex(sm_start_index);
+            auto last_index = next_indices.size() - 1;
+            next_sm.setEndIndex(last_index);
+            next_sub_meshes.push_back(next_sm);
+            sm_start_index = last_index + 1;
+        }
+        indices_ = std::move(next_indices);
+        sub_meshes_ = std::move(next_sub_meshes);
+    }
 
     const CityObjectList& Mesh::getCityObjectList() const {
         return city_object_list_;

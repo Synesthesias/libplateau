@@ -17,3 +17,4 @@ reviewed:
     - libjpeg-turbo # 再配布可能、要ライセンス表示
     - libpng # 再配布可能、要ライセンス表示
     - libtiff # 再配布可能、要ライセンス表示
+    - openmesh # 3-clause BSD License

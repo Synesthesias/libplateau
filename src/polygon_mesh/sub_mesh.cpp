@@ -76,14 +76,35 @@ namespace plateau::polygonMesh {
         return texture_path_ == other.texture_path_;
     }
 
-    bool SubMesh::operator==(const SubMesh& other) const{
+    bool SubMesh::operator==(const SubMesh& other) const {
         bool ret = start_index_ == other.start_index_ &&
                    end_index_ == other.end_index_ &&
-                   texture_path_ == other.texture_path_ &&
-                   material_.get() == other.material_.get();
+                   isAppearanceEqual(other);
         return ret;
 
     }
+
+    bool SubMesh::isAppearanceEqual(const plateau::polygonMesh::SubMesh& other) const {
+        bool ret = texture_path_ == other.texture_path_ &&
+                material_.get() == other.material_.get() &&
+                game_material_id_ == other.game_material_id_;
+        return ret;
+    }
+
+    bool SubMeshCompareByAppearance::operator()(const plateau::polygonMesh::SubMesh& lhs,
+                                                const plateau::polygonMesh::SubMesh& rhs) const {
+        if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
+        auto& tex_path_l = lhs.getTexturePath();
+        auto& tex_path_r = rhs.getTexturePath();
+        if(tex_path_l != tex_path_r) {
+            bool ret = tex_path_l < tex_path_r;
+            return ret;
+        }
+        bool ret = lhs.getMaterial().get() < rhs.getMaterial().get();
+        return ret;
+    }
+
+
 
     void SubMesh::debugString(std::stringstream& ss, int indent) const {
         for (int i = 0; i < indent; i++) ss << "    ";
