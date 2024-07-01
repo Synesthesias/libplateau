@@ -55,7 +55,11 @@ namespace plateau::heightMapAligner {
 
         /// 高さマップをモデルに合わせます。
         /// 変更後の高さマップは getHeightMapFrameAt で取得できます。
-        void alignInvert(plateau::polygonMesh::Model& model);
+        /// alpha_expand_width_cartesianは、アルファマップの平滑化処理において不透明部分を広げる幅（直交座標系）です。
+        /// alpha_averaging_width_cartesianは、アルファマップの平滑化処理において平均化する範囲（直交座標系）です。
+        /// 上記2つの引数は、要調整ですが 2mくらいが良さそうです(Unityなら2, Unrealなら200)。
+        /// height_offsetは、高さマップを対象モデルからの相対でどの高さに合わせるかです。-0.15m くらいが良さそうです。（直交座標系）
+        void alignInvert(plateau::polygonMesh::Model& model, int alpha_expand_width_cartesian, int alpha_averaging_width_cartesian, double height_offset);
         int heightmapCount() const;
         HeightMapFrame& getHeightMapFrameAt(int index);
     private:

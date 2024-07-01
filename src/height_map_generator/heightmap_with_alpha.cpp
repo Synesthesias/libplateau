@@ -1,17 +1,27 @@
 #include "plateau/height_map_generator/height_map_with_alpha.h"
 #include <cmath>
 #include <memory>
+#include <stdexcept>
 
 namespace plateau::heightMapGenerator {
 
-    HeightMapWithAlpha::HeightMapWithAlpha(const size_t texture_width, const size_t texture_height, const double cartesian_width, const double cartesian_height) :
-            height_map(texture_width * texture_height, 0),
+    HeightMapWithAlpha::HeightMapWithAlpha(const size_t texture_width, const size_t texture_height, const double cartesian_width, const double cartesian_height, const HeightMapT& initial_height_map) :
+            height_map(initial_height_map),
             alpha_map(texture_width * texture_height, 0),
             texture_width(texture_width),
             texture_height(texture_height),
             cartesian_width(cartesian_width),
             cartesian_height(cartesian_height) {
-
+        // 足りない分を埋めます
+        auto size = texture_width * texture_height;
+        if(height_map.size() < size) {
+            for(auto i=height_map.size(); i<size; i++) {
+                height_map.push_back(0);
+            }
+        }
+        if(height_map.size() > size) {
+            throw std::runtime_error("HeightMapWithAlpha: initial_height_map size is larger than texture size.");
+        }
     }
 
     void HeightMapWithAlpha::setHeightAt(const size_t index, const HeightMapElemT height) {
@@ -114,8 +124,8 @@ namespace plateau::heightMapGenerator {
         auto next_alpha = AlphaMapT(alpha_map);
         for (int y = 0; y < texture_height; y++) {
             for (int x = 0; x < texture_width; x++) {
-                for (int y2 = std::max(y - expand_height_pixel, 0); y2 < y; y2++) {
-                    for (int x2 = std::max(x - expand_width_pixel,0); x2 < x; x2++) {
+                for (int y2 = std::max(y - expand_height_pixel, 0); y2 <= std::min(y + expand_height_pixel, (int)texture_height - 1); y2++) {
+                    for (int x2 = std::max(x - expand_width_pixel,0); x2 <= std::min(x + expand_width_pixel, (int)texture_width - 1); x2++) {
                         next_alpha.at(indexAt(x2,y2)) = std::max(next_alpha.at(indexAt(x2,y2)), getAlphaAt(indexAt(x,y)));
                     }
                 }

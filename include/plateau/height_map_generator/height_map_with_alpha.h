@@ -8,7 +8,9 @@ namespace plateau::heightMapGenerator {
     /// ハイトマップとアルファマップをまとめたクラスです。
     class LIBPLATEAU_EXPORT HeightMapWithAlpha {
     public:
-        HeightMapWithAlpha(size_t texture_width, size_t texture_height, double cartesian_width, double cartesian_height);
+        /// 初期化します。引数のinitial_mapは、特に指定がなければ空のvectorを渡し、他のマップと合わせたければそれを指定します。
+        HeightMapWithAlpha(size_t texture_width, size_t texture_height, double cartesian_width, double cartesian_height, const HeightMapT& initial_height_map);
+
         void setHeightAt(size_t index, HeightMapElemT height);
         HeightMapElemT getHeightAt(size_t index) const;
         void setAlphaAt(size_t index, AlphaMapElemT alpha);

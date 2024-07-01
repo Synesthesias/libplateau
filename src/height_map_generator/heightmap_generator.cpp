@@ -75,7 +75,7 @@ namespace plateau::heightMapGenerator {
         extent.Max.y += margin.y;
 
         // ここでハイトマップを生成します
-        auto map_with_alpha = generateFromMeshAndTriangles(InMesh, TextureWidth, TextureHeight, fillEdges, triangles);
+        auto map_with_alpha = generateFromMeshAndTriangles(InMesh, TextureWidth, TextureHeight, fillEdges, triangles, HeightMapT (0));
 
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
@@ -85,10 +85,12 @@ namespace plateau::heightMapGenerator {
     }
 
 
+    // 引数のinitial_height_mapは、特になければ空のvectorを渡し、他のマップと合わせたければそれを指定します。
     HeightMapWithAlpha
     HeightmapGenerator::generateFromMeshAndTriangles(const plateau::polygonMesh::Mesh& in_mesh, size_t texture_width,
                                                      size_t texture_height,
-                                                     bool fillEdges, TriangleList& triangles) {
+                                                     bool fillEdges, TriangleList& triangles,
+                                                     const HeightMapT& initial_height_map) {
         //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
         std::vector<Tile> tiles;
         size_t division = getTileDivision(triangles.Triangles.size()); //縦横のグリッド分割数
@@ -162,7 +164,7 @@ namespace plateau::heightMapGenerator {
         const auto TextureDataSize = texture_width * texture_height;
 
         // Initialize Texture Data Array
-        auto map_with_alpha = HeightMapWithAlpha(texture_width, texture_height, extent.getXLength(), extent.getYLength());
+        auto map_with_alpha = HeightMapWithAlpha(texture_width, texture_height, extent.getXLength(), extent.getYLength(), initial_height_map);
 
         size_t index = 0;
         for (int y = (int)texture_height - 1; y >= 0; y--) {
@@ -171,7 +173,7 @@ namespace plateau::heightMapGenerator {
                 const auto& percent = TVec2d((double)x / (double)texture_width, (double)y / (double)texture_height);
                 const auto& p = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
 
-                HeightMapElemT GrayValue = 0;
+                HeightMapElemT GrayValue = map_with_alpha.getHeightAt(index); // 初期値
                 bool ValueSet = false;
                 for (auto& tile : tiles) {
                     if (tile.isWithin(TVec2d(x, y))) {

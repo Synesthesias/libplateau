@@ -74,7 +74,7 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps) {
+        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
 
             // 与えられたメッシュだけのハイトマップを作ります。
             // この際、範囲などの条件を地形ハイトマップと同じに設定することで、後で比較できるようにします。
@@ -89,15 +89,17 @@ namespace plateau::heightMapAligner {
 
             mesh_triangles.Extent = land_extent;
             auto mesh_map = HeightmapGenerator().generateFromMeshAndTriangles(
-                    *mesh, land_map.map_width, land_map.map_height, false, mesh_triangles
-                    );
+                    *mesh, land_map.map_width, land_map.map_height, false,
+                    mesh_triangles, land_map.heightmap
+            );
 
             // スムーズ化補正
-            mesh_map.expandOpaqueArea(10);
-            mesh_map.averagingAlphaMap(5);
+            mesh_map.expandOpaqueArea(alpha_expand_width_cartesian);
+            mesh_map.averagingAlphaMap(alpha_averaging_width_cartesian);
 
             // 同じ条件で作られた地形のハイトマップとメッシュのハイトマップを比較し、地形マップを修正します。
             // メッシュのアルファマップの値が大きいほど、地形マップの値を反映させます。
+            const auto offset_map_val = height_offset / (/*マップ1あたりの幅*/(land_map.max_height - land_map.min_height) / HeightMapNumericMax);
             for(int y=0; y<land_map.map_height; y++) {
                 for(int x=0; x<land_map.map_width; x++) {
                     int index = y * land_map.map_width + x;
@@ -105,7 +107,7 @@ namespace plateau::heightMapAligner {
                     const auto mesh_map_val = mesh_map.getHeightAt(index);
                     const auto land_map_val = land_map.heightmap.at(index);
                     const auto alpha_map_val = mesh_map.getAlphaAt(index);
-                    land_map.heightmap.at(index) = (HeightMapElemT)(((float)land_map_val) + ((float)(mesh_map_val - land_map_val)) * alpha_map_val);
+                    land_map.heightmap.at(index) = (HeightMapElemT)(((float)land_map_val) + ((float)(mesh_map_val - land_map_val)) * alpha_map_val + offset_map_val);
                 }
             }
         }
@@ -116,10 +118,10 @@ namespace plateau::heightMapAligner {
             alignMesh(mesh, maps, height_offset, max_edge_length);
         }
 
-        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps) {
+        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMeshInvert(mesh, maps);
+            alignMeshInvert(mesh, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
         }
 
         void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
@@ -130,11 +132,11 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps) {
-            alignNodeInvert(node, maps);
+        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset) {
+            alignNodeInvert(node, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursiveInvert(child, maps);
+                alignRecursiveInvert(child, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset);
             }
         }
 
@@ -156,11 +158,11 @@ namespace plateau::heightMapAligner {
         }
     }
 
-    void HeightMapAligner::alignInvert(plateau::polygonMesh::Model& model) {
+    void HeightMapAligner::alignInvert(plateau::polygonMesh::Model& model, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset_inv) {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::alignInvert: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursiveInvert(node, height_map_frames);
+            alignRecursiveInvert(node, height_map_frames, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset_inv);
         }
     }
 
@@ -180,10 +182,10 @@ namespace plateau::heightMapAligner {
         const int y_floor = std::max((int)std::floor(map_pos.y), 0);
         const int x_ceil = std::min((int)std::ceil(map_pos.x), map_width - 1);
         const int y_ceil = std::min((int)std::ceil(map_pos.y), map_height - 1);
-        const auto p0 = heightmap[y_floor * map_width + x_floor];
-        const auto p1 = heightmap[y_floor * map_width + x_ceil];
-        const auto p2 = heightmap[y_ceil * map_width + x_ceil];
-        const auto p3 = heightmap[y_ceil * map_width + x_floor];
+        const auto p0 = heightmap.at(y_floor * map_width + x_floor);
+        const auto p1 = heightmap.at(y_floor * map_width + x_ceil);
+        const auto p2 = heightmap.at(y_ceil * map_width + x_ceil);
+        const auto p3 = heightmap.at(y_ceil * map_width + x_floor);
 
         // 補完します。2次元の線形補間です。
         const auto x_decimal_part = std::max(map_pos.x - x_floor, 0.0);
@@ -195,9 +197,9 @@ namespace plateau::heightMapAligner {
                         y_decimal_part
                 );
 
-
-        const double height = min_height + (max_height - min_height) * (((double)map_val) + 0.5) / ((double)HeightMapNumericMax) + height_offset;
-        const auto height_clamped = std::clamp(height, (double)min_height, (double)max_height);
+        const double percentage = (((double)map_val) + 0.5) / ((double)HeightMapNumericMax);
+        const double height = min_height + (max_height - min_height) * percentage;
+        const auto height_clamped = std::clamp(height, (double)min_height, (double)max_height) + height_offset;
         return height_clamped;
     }
 
@@ -209,6 +211,9 @@ namespace plateau::heightMapAligner {
         const auto map_y = std::max(0.0 , std::min(map_y_raw, (double)map_height - 1));
         // 上の式で -0.5 する理由は、ピクセル数の基準点をもっとも左上のピクセルの左上から移動し、もっとも左上ピクセルのピクセルの中心にするためです。
         // ピクセルの値は、ピクセルの中心点の高さを表すと考えるための -0.5 です。
-        return {map_x, map_y};
+
+        // 南北を反転
+        const auto ret = TVec2d(map_x, map_height - map_y - 1);
+        return ret;
     }
 }
