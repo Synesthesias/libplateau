@@ -3,13 +3,9 @@
 #include <fstream>
 #include "png.h"
 #include <filesystem>
+#include <algorithm>
 
 namespace plateau::heightMapGenerator {
-
-
-
-
-
 
     struct Tile {
         TVec2d Max;
