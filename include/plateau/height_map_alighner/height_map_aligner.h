@@ -10,10 +10,10 @@ namespace plateau::heightMapAligner {
     class LIBPLATEAU_EXPORT HeightMapFrame {
     public:
         HeightMapFrame(plateau::heightMapGenerator::HeightMapT heightmap, int map_width, int map_height, float min_x_arg, float max_x_arg,
-                       float min_y_arg, float max_y_arg, float min_height_arg, float max_height_arg, geometry::CoordinateSystem axis) :
+                       float min_y_arg, float max_y_arg, float min_z_arg, float max_z_arg, geometry::CoordinateSystem axis) :
                 heightmap(std::move(heightmap)), map_width(map_width), map_height(map_height),
                 min_x(min_x_arg), max_x(max_x_arg), max_y(max_y_arg), min_y(min_y_arg),
-                min_height(min_height_arg), max_height(max_height_arg)
+                min_height(min_z_arg), max_height(max_z_arg)
         {
             // 座標軸変換
             const TVec3d min_v_row = TVec3d(min_x, min_y, min_height);
