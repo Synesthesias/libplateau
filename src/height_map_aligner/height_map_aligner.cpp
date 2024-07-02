@@ -90,7 +90,7 @@ namespace plateau::heightMapAligner {
 
             mesh_triangles.Extent = land_extent;
             auto mesh_map = HeightmapGenerator().generateFromMeshAndTriangles(
-                    *mesh, land_map.map_width, land_map.map_height, false,
+                    *mesh, land_map.map_width, land_map.map_height, false, true,
                     mesh_triangles, land_map.heightmap
             );
 

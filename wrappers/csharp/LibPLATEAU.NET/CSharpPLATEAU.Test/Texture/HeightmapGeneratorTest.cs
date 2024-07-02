@@ -36,7 +36,7 @@ namespace PLATEAU.Test.Texture
             PlateauVector2d margin = new PlateauVector2d(0, 0);
 
             HeightmapGenerator gen = new HeightmapGenerator();
-            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, true, out var min, out var max, out var minUV, out var maxUV, out var outData);
+            gen.GenerateFromMesh(mesh, textureWidth, textureHeight, margin, true, true, out var min, out var max, out var minUV, out var maxUV, out var outData);
             Assert.AreEqual(textureWidth * textureHeight, outData.Length);
         }
 
