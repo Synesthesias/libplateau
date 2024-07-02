@@ -12,8 +12,8 @@ namespace PLATEAU.HeightMapAlign
         private const float MaxEdgeLength = 4; // 高さ合わせのためメッシュを細分化するときの、最大の辺の長さ。だいたい4mくらいが良さそう。
         private const int AlphaExpandWidthCartesian = 2; // 逆高さ合わせのアルファの平滑化処理において、不透明部分を広げる幅（直交座標系）
         private const int AlphaAverageWidthCartesian = 2; // 逆高さ合わせのアルファの平滑化処理において、周りの平均を取る幅（直交座標系）
-        private const float AlignInvertHeightOffset = -0.15f; // 逆高さ合わせで、土地を対象と比べてどの高さに合わせるか（直交座標系）
-        private const float SkipThresholdOfMapLandDistance = 0.5f; // 逆高さ合わせで、土地との距離がこの値以上の箇所は高さ合わせしない（直交座標系）
+        private const float AlignInvertHeightOffset = -0.2f; // 逆高さ合わせで、土地を対象と比べてどの高さに合わせるか（直交座標系）
+        private const float SkipThresholdOfMapLandDistance = 0.8f; // 逆高さ合わせで、土地との距離がこの値以上の箇所は高さ合わせしない（直交座標系）
         
         public static HeightMapAligner Create(double heightOffset, CoordinateSystem axis)
         {
