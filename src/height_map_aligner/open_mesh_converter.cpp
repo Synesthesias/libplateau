@@ -80,7 +80,7 @@ namespace plateau::heightMapAligner {
         p_vertices.reserve(next_vert_count);
         for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
             MeshType::Point point = om_mesh.point(*v_itr);
-            p_vertices.push_back(TVec3d(point[0], point[1], point[2]));
+            p_vertices.emplace_back(point[0], point[1], point[2]);
         }
 
         // indices
@@ -106,7 +106,7 @@ namespace plateau::heightMapAligner {
             auto prop_game_mat = om_mesh.property(game_material_id_prop, *f_itr);
             // ゲームマテリアルIDが変わったとき、または最後のときにSubMeshを追加します。
             if((/*prop_game_mat.has_value() && */game_mat_id != prop_game_mat) || (f_itr+1) == om_mesh.faces_end()) {
-                submeshes.emplace_back(submesh_start, face_id * 3 - 1, "", nullptr, game_mat_id.has_value() ? game_mat_id.value() : -1);
+                submeshes.emplace_back(submesh_start, face_id * 3 + 2, "", nullptr, game_mat_id.has_value() ? game_mat_id.value() : -1);
                 game_mat_id = prop_game_mat;
                 submesh_start = face_id * 3;
             }
