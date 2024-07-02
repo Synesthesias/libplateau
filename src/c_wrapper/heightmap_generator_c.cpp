@@ -13,11 +13,12 @@ extern "C" {
     // 注意 : out_heightmap_dataはコピー終了後にrelease_heightmap_dataを呼んで削除する必要あり
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_generator_generate_from_mesh(
             Mesh* const src_mesh,
-            size_t TextureWidth,
-            size_t TextureHeight,
-            TVec3d margin,
-            CoordinateSystem coordinate,
-            bool fillEdges,
+            const size_t TextureWidth,
+            const size_t TextureHeight,
+            const TVec3d margin,
+            const CoordinateSystem coordinate,
+            const bool fillEdges,
+            const bool applyConvolutionFilterForHeightMap,
             TVec3d* outMin,
             TVec3d* outMax,
             TVec2f* outUVMin,
@@ -27,7 +28,10 @@ extern "C" {
     ) {
         API_TRY{
             HeightmapGenerator generator;
-            const auto& vec = generator.generateFromMesh(*src_mesh, TextureWidth, TextureHeight, TVec2d(margin.x, margin.y) , coordinate, fillEdges, *outMin, *outMax, *outUVMin, *outUVMax);
+            const auto& vec = generator.generateFromMesh(
+                    *src_mesh, TextureWidth, TextureHeight, TVec2d(margin.x, margin.y) , coordinate,
+                    fillEdges, applyConvolutionFilterForHeightMap,
+                    *outMin, *outMax, *outUVMin, *outUVMax);
             HeightMapElemT* heightmap_data = new HeightMapElemT [vec.size()];
             memcpy(heightmap_data, vec.data(), sizeof(HeightMapElemT) * vec.size());
             *out_heightmap_data = heightmap_data;
@@ -39,7 +43,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_save_png_file(
-            const char* filename, size_t width, size_t height, HeightMapElemT* data
+            const char* filename, const size_t width, const size_t height, HeightMapElemT* data
     ) {
         API_TRY{
             HeightmapGenerator::savePngFile(std::string(filename), width, height, data);
@@ -64,7 +68,7 @@ extern "C" {
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_save_raw_file(
-        const char* filename, size_t width, size_t height, HeightMapElemT* data
+        const char* filename, const size_t width, const size_t height, HeightMapElemT* data
     ) {
         API_TRY{
             HeightmapGenerator::saveRawFile(std::string(filename), width, height, data);
@@ -75,7 +79,7 @@ extern "C" {
 
     // 注意 : out_heightmap_dataはコピー終了後にrelease_heightmap_dataを呼んで削除する必要あり
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API heightmap_read_raw_file(
-    const char* filename, size_t width, size_t height, const HeightMapElemT** out_heightmap_data, size_t* dataSize
+    const char* filename, const size_t width, const size_t height, const HeightMapElemT** out_heightmap_data, size_t* dataSize
     ) {
         API_TRY{
             const auto & vec = HeightmapGenerator::readRawFile(std::string(filename), width, height);

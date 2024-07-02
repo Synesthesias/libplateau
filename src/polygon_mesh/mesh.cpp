@@ -3,6 +3,7 @@
 
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
+#include "plateau/geometry/geo_reference.h"
 
 namespace plateau::polygonMesh {
     using namespace citygml;
@@ -274,5 +275,17 @@ namespace plateau::polygonMesh {
 
     void Mesh::setCityObjectList(const CityObjectList& city_obj_list) {
         city_object_list_ = city_obj_list;
+    }
+
+    void Mesh::convertAxisToENUFrom(geometry::CoordinateSystem from_axis) {
+        for(auto& vertex : vertices_) {
+            vertex = geometry::GeoReference::convertAxisToENU(from_axis, vertex);
+        }
+    }
+
+    void Mesh::convertAxisFromENUTo(geometry::CoordinateSystem to_axis) {
+        for(auto& vertex : vertices_) {
+            vertex = geometry::GeoReference::convertAxisFromENUTo(to_axis, vertex);
+        }
     }
 }

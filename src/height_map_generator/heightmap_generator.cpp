@@ -40,8 +40,10 @@ namespace plateau::heightMapGenerator {
     // MeshからHeightMap画像となる16bitグレースケール配列を生成し、適用範囲となる位置を計算します
     // ENUに変換してから処理を実行し、元のCoordinateに変換して値を返します
     HeightMapT HeightmapGenerator::generateFromMesh(
-        const plateau::polygonMesh::Mesh& InMesh, size_t TextureWidth, size_t TextureHeight, const TVec2d& margin,
-        const geometry::CoordinateSystem coordinate, bool fillEdges, TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
+        const plateau::polygonMesh::Mesh& InMesh, const size_t TextureWidth, const size_t TextureHeight,
+        const TVec2d& margin, const geometry::CoordinateSystem coordinate,
+        const bool fillEdges, const bool applyConvolutionFilterForHeightMap,
+        TVec3d& outMin, TVec3d& outMax, TVec2f& outUVMin, TVec2f& outUVMax) {
 
         const auto& InVertices = InMesh.getVertices();
         const auto& InIndices = InMesh.getIndices();
@@ -71,7 +73,7 @@ namespace plateau::heightMapGenerator {
         extent.Max.y += margin.y;
 
         // ここでハイトマップを生成します
-        auto map_with_alpha = generateFromMeshAndTriangles(InMesh, TextureWidth, TextureHeight, fillEdges, triangles, HeightMapT (0));
+        auto map_with_alpha = generateFromMeshAndTriangles(InMesh, TextureWidth, TextureHeight, fillEdges, applyConvolutionFilterForHeightMap, triangles, HeightMapT (0));
 
         extent.convertCoordinateTo(coordinate);
         outMin = extent.Min;
@@ -84,8 +86,10 @@ namespace plateau::heightMapGenerator {
     // 引数のinitial_height_mapは、特になければ空のvectorを渡し、他のマップと合わせたければそれを指定します。
     HeightMapWithAlpha
     HeightmapGenerator::generateFromMeshAndTriangles(const plateau::polygonMesh::Mesh& in_mesh, size_t texture_width,
-                                                     size_t texture_height,
-                                                     bool fillEdges, TriangleList& triangles,
+                                                     const size_t texture_height,
+                                                     const bool fillEdges,
+                                                     const bool applyConvolutionFilterForHeightMap,
+                                                     const TriangleList& triangles,
                                                      const HeightMapT& initial_height_map) {
         //Tile生成 : Triangleのイテレーションを減らすため、グリッド分割して範囲ごとに処理します
         std::vector<Tile> tiles;
@@ -201,7 +205,8 @@ namespace plateau::heightMapGenerator {
             map_with_alpha.fillTransparentEdges();
 
         //平滑化
-        map_with_alpha.applyConvolutionFilterForHeightMap();
+        if(applyConvolutionFilterForHeightMap)
+            map_with_alpha.applyConvolutionFilterForHeightMap();
         return map_with_alpha;
     }
 

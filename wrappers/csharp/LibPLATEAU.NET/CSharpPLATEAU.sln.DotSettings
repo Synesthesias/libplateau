@@ -18,6 +18,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=RUF/@EntryIndexedValue">RUF</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=SRS/@EntryIndexedValue">SRS</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=URL/@EntryIndexedValue">URL</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UV/@EntryIndexedValue">UV</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WNU/@EntryIndexedValue">WNU</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WUN/@EntryIndexedValue">WUN</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=EnumMember/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb"&gt;&lt;ExtraRule Prefix="COT_" Suffix="" Style="AaBb" /&gt;&lt;ExtraRule Prefix="GT_" Suffix="" Style="AaBb" /&gt;&lt;ExtraRule Prefix="COT_TIN" Suffix="" Style="AaBb" /&gt;&lt;ExtraRule Prefix="WM_" Suffix="" Style="AaBb" /&gt;&lt;/Policy&gt;</s:String>

@@ -33,8 +33,8 @@ namespace plateau::heightMapAligner {
                 else dist_x = 0;
 
                 // y
-                if(v.z < m.min_y) dist_y = m.min_y - v.z;
-                else if(v.z > m.max_y) dist_y = v.z - m.max_y;
+                if(v.y < m.min_y) dist_y = m.min_y - v.y;
+                else if(v.y > m.max_y) dist_y = v.y - m.max_y;
                 else dist_y = 0;
 
                 // 距離
@@ -48,8 +48,9 @@ namespace plateau::heightMapAligner {
             return map;
         }
 
-        void alignMesh(Mesh* mesh, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
-
+        void alignMesh(Mesh* mesh, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length, const CoordinateSystem axis) {
+            // 座標系はENUで処理
+            mesh->convertAxisToENUFrom(axis);
 
             // OpenMeshのSubdivision機能を使いたいので、OpenMeshのメッシュを作成します。
             // OpenMeshについてはこちらを参照してください: https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-6.1-Documentation/a00046.html
@@ -71,26 +72,34 @@ namespace plateau::heightMapAligner {
 
             // 高さをハイトマップに合わせます
             for(auto& vertex : vertices) {
-                vertex.y = map.posToHeight(TVec2d(vertex.x, vertex.z), height_offset);
+                vertex.z = map.posToHeight(TVec2d(vertex.x, vertex.y), height_offset);
             }
+
+            // 座標系を元に戻す
+            mesh->convertAxisFromENUTo(axis);
         }
 
-        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
+        void alignMeshInvert(Mesh* mesh, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance, const CoordinateSystem axis) {
+
+
+            // 頂点をコピーしてENUに変換します。
+            auto vertices = std::vector<TVec3<double>>(mesh->getVertices());
+            for(auto& vertex : vertices) {
+                vertex = geometry::GeoReference::convertAxisToENU(axis, vertex);
+            }
 
             // 与えられたメッシュだけのハイトマップを作ります。
             // この際、範囲などの条件を地形ハイトマップと同じに設定することで、後で比較できるようにします。
-            auto& vertices = mesh->getVertices();
             if(vertices.empty()) return;
             auto& land_map = chooseNearestMap(maps, vertices.at(0));
-            constexpr CoordinateSystem coordinate = CoordinateSystem::EUN;
-            auto mesh_triangles = TriangleList::generateFromMesh(mesh->getIndices(), vertices, coordinate);
+            auto mesh_triangles = TriangleList::generateFromMesh(mesh->getIndices(), vertices, CoordinateSystem::ENU);
             auto land_extent = HeightMapExtent();
-            land_extent.Min = TVec3d(land_map.min_x, land_map.min_y, land_map.min_height); // EUN to ENU
-            land_extent.Max = TVec3d(land_map.max_x, land_map.max_y, land_map.max_height); // EUN to ENU
+            land_extent.Min = TVec3d(land_map.min_x, land_map.min_y, land_map.min_height);
+            land_extent.Max = TVec3d(land_map.max_x, land_map.max_y, land_map.max_height);
 
             mesh_triangles.Extent = land_extent;
             auto mesh_map = HeightmapGenerator().generateFromMeshAndTriangles(
-                    *mesh, land_map.map_width, land_map.map_height, false,
+                    *mesh, land_map.map_width, land_map.map_height, false, true,
                     mesh_triangles, land_map.heightmap
             );
 
@@ -115,31 +124,31 @@ namespace plateau::heightMapAligner {
             }
         }
 
-        void alignNode(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
+        void alignNode(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length, const CoordinateSystem axis) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMesh(mesh, maps, height_offset, max_edge_length);
+            alignMesh(mesh, maps, height_offset, max_edge_length, axis);
         }
 
-        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
+        void alignNodeInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance, const CoordinateSystem axis) {
             auto mesh = node.getMesh();
             if(mesh == nullptr) return;
-            alignMeshInvert(mesh, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
+            alignMeshInvert(mesh, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance, axis);
         }
 
-        void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length) {
-            alignNode(node, maps, height_offset, max_edge_length);
+        void alignRecursive(Node& node, std::vector<HeightMapFrame>& maps, const double height_offset, const float max_edge_length, const CoordinateSystem axis) {
+            alignNode(node, maps, height_offset, max_edge_length, axis);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursive(child, maps, height_offset, max_edge_length);
+                alignRecursive(child, maps, height_offset, max_edge_length, axis);
             }
         }
 
-        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance) {
-            alignNodeInvert(node, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
+        void alignRecursiveInvert(Node& node, std::vector<HeightMapFrame>& maps, const int alpha_expand_width_cartesian, const int alpha_averaging_width_cartesian, const double height_offset, const float skip_threshold_of_map_land_distance, const CoordinateSystem axis) {
+            alignNodeInvert(node, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance, axis);
             for(int i=0; i<node.getChildCount(); i++) {
                 auto& child = node.getChildAt(i);
-                alignRecursiveInvert(child, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
+                alignRecursiveInvert(child, maps, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset, skip_threshold_of_map_land_distance, axis);
             }
         }
 
@@ -157,7 +166,7 @@ namespace plateau::heightMapAligner {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::align: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursive(node, height_map_frames, height_offset, max_edge_length);
+            alignRecursive(node, height_map_frames, height_offset, max_edge_length, axis);
         }
     }
 
@@ -165,7 +174,7 @@ namespace plateau::heightMapAligner {
         if(height_map_frames.empty()) throw std::runtime_error("HeightMapAligner::alignInvert: No height map frame added.");
         for(int i=0; i<model.getRootNodeCount(); i++){
             auto& node = model.getRootNodeAt(i);
-            alignRecursiveInvert(node, height_map_frames, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset_inv, skip_threshold_of_map_land_distance);
+            alignRecursiveInvert(node, height_map_frames, alpha_expand_width_cartesian, alpha_averaging_width_cartesian, height_offset_inv, skip_threshold_of_map_land_distance, axis);
         }
     }
 
