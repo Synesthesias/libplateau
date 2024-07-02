@@ -1,19 +1,22 @@
 #include "libplateau_c.h"
 #include <plateau/height_map_alighner/height_map_aligner.h>
+#include <plateau/geometry/geo_coordinate.h>
 #include <cstring>
 using namespace plateau::heightMapAligner;
 using namespace plateau::heightMapGenerator;
 using namespace plateau::polygonMesh;
+using namespace plateau::geometry;
 using namespace libplateau;
 
 extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_create(
             HeightMapAligner** aligner,
-            double height_offset
+            double height_offset,
+            CoordinateSystem axis
     ) {
         API_TRY{
-            *aligner = new HeightMapAligner(height_offset);
+            *aligner = new HeightMapAligner(height_offset, axis);
             return APIResult::Success;
         }
         API_CATCH;
@@ -34,15 +37,16 @@ extern "C" {
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API height_map_aligner_add_heightmap_frame(
             HeightMapAligner* const aligner,
             const HeightMapElemT* heightmap,
-            int heightmap_size, // size = width * height
-            int heightmap_width,
-            int heightmap_height,
-            float min_x,
-            float max_x,
-            float min_y,
-            float max_y,
-            float min_height,
-            float max_height
+            const int heightmap_size, // size = width * height
+            const int heightmap_width,
+            const int heightmap_height,
+            const float min_x,
+            const float max_x,
+            const float min_y,
+            const float max_y,
+            const float min_height,
+            const float max_height,
+            const CoordinateSystem axis
     ) {
         API_TRY{
             if(heightmap_size != heightmap_width * heightmap_height) {
@@ -51,7 +55,7 @@ extern "C" {
 
             auto map = HeightMapFrame(HeightMapT(heightmap, heightmap + heightmap_size), heightmap_width,
                                       heightmap_height, min_x, max_x, max_y, min_y, min_height,
-                                      max_height);
+                                      max_height, axis);
             aligner->addHeightmapFrame(map);
             return APIResult::Success;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using PLATEAU.Geometries;
 using PLATEAU.Interop;
 using PLATEAU.Native;
 using PLATEAU.PolygonMesh;
@@ -14,9 +15,9 @@ namespace PLATEAU.HeightMapAlign
         private const float AlignInvertHeightOffset = -0.15f; // 逆高さ合わせで、土地を対象と比べてどの高さに合わせるか（直交座標系）
         private const float SkipThresholdOfMapLandDistance = 0.5f; // 逆高さ合わせで、土地との距離がこの値以上の箇所は高さ合わせしない（直交座標系）
         
-        public static HeightMapAligner Create(double heightOffset)
+        public static HeightMapAligner Create(double heightOffset, CoordinateSystem axis)
         {
-            var result = NativeMethods.height_map_aligner_create(out var createdPtr, heightOffset);
+            var result = NativeMethods.height_map_aligner_create(out var createdPtr, heightOffset, axis);
             DLLUtil.CheckDllError(result);
             return new HeightMapAligner(createdPtr);
         }
@@ -25,13 +26,13 @@ namespace PLATEAU.HeightMapAlign
         {
         }
 
-        public void AddHeightmapFrame(UInt16[] heightMapData, int heightMapWidth, int heightMapHeight, float minX, float maxX, float minY, float maxY, float minHeight, float maxHeight)
+        public void AddHeightmapFrame(UInt16[] heightMapData, int heightMapWidth, int heightMapHeight, float minX, float maxX, float minY, float maxY, float minZ, float maxZ, CoordinateSystem axis)
         {
             if (heightMapData.Length != heightMapWidth * heightMapHeight)
             {
                 throw new ArgumentException($"{nameof(heightMapData)}のサイズとWidth,Heightの積が一致しません。");
             }
-            var apiResult = NativeMethods.height_map_aligner_add_heightmap_frame(Handle, heightMapData, heightMapData.Length, heightMapWidth, heightMapHeight, minX, maxX, minY, maxY, minHeight, maxHeight);
+            var apiResult = NativeMethods.height_map_aligner_add_heightmap_frame(Handle, heightMapData, heightMapData.Length, heightMapWidth, heightMapHeight, minX, maxX, minY, maxY, minZ, maxZ, axis);
             DLLUtil.CheckDllError(apiResult);
         }
         
@@ -87,7 +88,8 @@ namespace PLATEAU.HeightMapAlign
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult height_map_aligner_create(
                 out IntPtr createdPtr,
-                [In] double heightOffset
+                [In] double heightOffset,
+                [In] CoordinateSystem axis
             );
             
             [DllImport(DLLUtil.DllName)]
@@ -106,8 +108,9 @@ namespace PLATEAU.HeightMapAlign
                 [In] float maxX,
                 [In] float minY,
                 [In] float maxY,
-                [In] float minHeight,
-                [In] float maxHeight
+                [In] float minZ,
+                [In] float maxZ,
+                [In] CoordinateSystem axis
             );
             
                 [DllImport(DLLUtil.DllName)]
