@@ -14,10 +14,9 @@
     <mapping directory="$PROJECT_DIR$/3rdparty/openssl-cmake" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/xerces-c" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/3rdparty/zlib" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Debug-Unity/RapidJSON-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Debug-Unity/RapidJSON-src/thirdparty/gtest" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Release-Unreal-Mac/RapidJSON-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/out/build/x64-Release-Unreal-Mac/RapidJSON-src/thirdparty/gtest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/ios/RapidJSON-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/ios/RapidJSON-src/thirdparty/gtest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/out/build/ios/googletest-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/test/gtest" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/wrappers/python/pybind11" vcs="Git" />
   </component>
