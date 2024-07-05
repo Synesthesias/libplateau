@@ -81,7 +81,7 @@ runs:
         -S ${{github.workspace}}
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
         -G "Ninja"
-        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILD_TYPE}}"
         -D CMAKE_CXX_FLAGS="-w"
         -D BUILD_LIB_TYPE=static
         -D RUNTIME_LIB_TYPE=MD
