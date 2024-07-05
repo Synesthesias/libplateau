@@ -89,7 +89,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
   # windows で libファイル結合します。
   # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
   if(BUILD_LIB_TYPE STREQUAL "static")
-    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff)
+    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff OpenMeshCore OpenMeshTools)
 
     if(WIN32)
       find_program(MSVC_LIB_TOOL lib.exe)
