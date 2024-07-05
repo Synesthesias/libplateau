@@ -81,8 +81,10 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:zlibstatic>
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
-          $<TARGET_FILE:OpenMeshCore>
-          $<TARGET_FILE:OpenMeshTools>
+          # OpenMeshについては、普通に$<TARGET_FILE>すると、Windowsでは良いですがMacだと静的ライブラリが欲しいのに動的ライブラリが取得されてしまいます。
+          # そのため、TARGET_FILEを使わない少々周りくどい方法でパスを取得します。
+          $<TARGET_FILE_DIR:OpenMeshCore>/$<TARGET_FILE_PREFIX:OpenMeshCore>$<TARGET_FILE_BASE_NAME:OpenMeshCore>${CMAKE_STATIC_LIBRARY_SUFFIX}
+          $<TARGET_FILE_DIR:OpenMeshTools>/$<TARGET_FILE_PREFIX:OpenMeshTools>$<TARGET_FILE_BASE_NAME:OpenMeshTools>${CMAKE_STATIC_LIBRARY_SUFFIX}
           ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
