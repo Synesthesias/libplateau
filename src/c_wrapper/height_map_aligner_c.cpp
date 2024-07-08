@@ -70,7 +70,7 @@ extern "C" {
     ) {
         API_TRY{
             if(aligner->heightmapCount() == 0) {
-                return APIResult::NotPreparedForOperation;
+                return APIResult::ErrorNotPreparedForOperation;
             }
             aligner->align(*model, max_edge_length);
             return APIResult::Success;
@@ -89,7 +89,7 @@ extern "C" {
     ) {
         API_TRY{
             if(aligner->heightmapCount() == 0) {
-                return APIResult::NotPreparedForOperation;
+                return APIResult::ErrorNotPreparedForOperation;
             }
             aligner->alignInvert(*model, alpha_expand_width_cartesian, alpha_average_width_cartesian, height_offset, skip_threshold_of_map_land_distance);
             return APIResult::Success;

@@ -1,6 +1,7 @@
 #include <plateau/polygon_mesh/node.h>
 #include "plateau/polygon_mesh/model.h"
 #include <algorithm>
+#include <queue>
 
 namespace plateau::polygonMesh {
 
@@ -94,5 +95,22 @@ namespace plateau::polygonMesh {
 
     void Model::reserveRootNodes(size_t reserve_count) {
         root_nodes_.reserve(reserve_count);
+    }
+
+    std::vector<Node*> Model::bfsNodes() {
+        std::vector<Node*> nodes;
+        std::queue<Node*> queue;
+        for(auto& node : root_nodes_) {
+            queue.push(&node);
+        }
+        while(!queue.empty()) {
+            auto node = queue.front();
+            queue.pop();
+            nodes.push_back(node);
+            for(int i=0; i<node->getChildCount(); i++) {
+                queue.push(&node->getChildAt(i));
+            }
+        }
+        return nodes;
     }
 }

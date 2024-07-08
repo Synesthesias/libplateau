@@ -377,6 +377,6 @@ namespace libplateau {
     // このenumを戻り値にすると良いです。
     enum APIResult {
         Success, ErrorUnknown, ErrorValueNotFound, ErrorLoadingCityGml, ErrorIndexOutOfBounds, ErrorFileSystem,
-        ErrorInvalidArgument, ErrorValueIsInvalid, NotPreparedForOperation
+        ErrorInvalidArgument, ErrorValueIsInvalid, ErrorNotPreparedForOperation, ErrorValueIsDuplicate
     };
 }
