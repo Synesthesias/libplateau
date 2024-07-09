@@ -1,4 +1,4 @@
-#include <plateau/material_adjust/material_adjuster_by_type.h.>
+#include <plateau/material_adjust/material_adjuster_by_type.h>
 #include "libplateau_c.h"
 using namespace plateau::materialAdjust;
 using namespace libplateau;
