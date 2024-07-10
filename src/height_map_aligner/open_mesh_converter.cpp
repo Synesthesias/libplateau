@@ -113,13 +113,19 @@ namespace plateau::heightMapAligner {
             ++face_id;
         }
 
-        // UV4の設定
+        // UV1, UV4の設定
+        auto& p_uv1 = p_mesh->getUV1();
         auto& p_uv4 = p_mesh->getUV4();
+        p_uv1.clear();
         p_uv4.clear();
+        p_uv1.reserve(next_vert_count);
         p_uv4.reserve(next_vert_count);
         for(MeshType::VertexIter v_itr = om_mesh.vertices_begin(); v_itr != om_mesh.vertices_end(); ++v_itr) {
+            auto& uv1_opt = om_mesh.property(uv1_prop, *v_itr);
             auto& uv4_opt = om_mesh.property(uv4_prop, *v_itr);
+            auto uv1 = uv1_opt.value_or(TVec2f(-999, -999));
             auto uv4 = uv4_opt.value_or(TVec2f(-999, -999));
+            p_uv1.push_back(uv1);
             p_uv4.push_back(uv4);
         }
     }
