@@ -238,7 +238,14 @@ namespace plateau::meshWriter {
                     }
                 } else {
                     FbxString material_name = fs::u8path(texture_path).filename().replace_extension("").u8string().c_str();
-                    fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
+
+                    // 経験上、同じマテリアルから複数のFBXマテリアルが生成されるとサブメッシュの順序が崩れる(Blender,Unityで確認)ので、前と同名のマテリアルが来たらマテリアルをCreateせずに設定します。。
+                    fbx_material = fbx_scene->GetMaterial(material_name); // 同じマテリアルがすでにあればそれを利用します。
+                    if(!fbx_material) {
+                        // 同じマテリアルがなければ生成します。
+                        fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
+                    }
+
                     FbxProperty FbxColorProperty = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
                     if (FbxColorProperty.IsValid()) {
                         //Create a fbx property
