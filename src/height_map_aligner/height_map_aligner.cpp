@@ -119,7 +119,11 @@ namespace plateau::heightMapAligner {
                     const auto distance = std::abs((float)mesh_map_val - (float)land_map_val) * (/*マップ1あたりの幅*/(land_map.max_height - land_map.min_height) / HeightMapNumericMax);
                     if(distance > skip_threshold_of_map_land_distance) continue; // 土地とメッシュの高さの差が閾値を超える場合は、その隙間を尊重して高さ変更しない
                     const auto alpha_map_val = mesh_map.getAlphaAt(index);
-                    land_map.heightmap.at(index) = (HeightMapElemT)(((float)land_map_val) + ((float)(mesh_map_val - land_map_val)) * alpha_map_val + offset_map_val);
+                    // 実装上の注意:
+                    // ハイトマップの値はunsigned shortなので、加減時はオーバーフローとアンダーフローを起こさないよう浮動小数点に変換する必要があります。
+                    // またハイトマップの型に戻すときはunsigned shortの範囲内に収まるよう配慮する必要があります。
+                    const float height_val_float =  ((float)land_map_val) + ((float)(mesh_map_val) - (float)(land_map_val)) * (float)alpha_map_val + (float)offset_map_val;
+                    land_map.heightmap.at(index) = (HeightMapElemT)std::clamp(height_val_float, 0.0f, (float)(HeightMapNumericMax) - 0.00001f);
                 }
             }
         }
