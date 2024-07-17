@@ -225,6 +225,7 @@ namespace plateau::meshWriter {
             const auto& sub_meshes = mesh.getSubMeshes();
             for (const auto& sub_mesh : sub_meshes) {
                 FbxSurfaceMaterial* fbx_material;
+                bool is_new_material = false;
                 const auto& texture_path = sub_mesh.getTexturePath();
                 if (texture_path.empty()) {
                     // ここでFBXのマテリアル名が同じになると、勝手に結合される可能性があります。
@@ -235,10 +236,17 @@ namespace plateau::meshWriter {
                         fbx_material = FbxSurfacePhong::Create(fbx_scene, default_material_name.Buffer());
                         ((FbxSurfacePhong*)fbx_material)->Diffuse.Set(FbxDouble3(0.72, 0.72, 0.72));
                         ((FbxSurfacePhong*)fbx_material)->DiffuseFactor.Set(1.);
+                        is_new_material = true;
                     }
                 } else {
                     FbxString material_name = fs::u8path(texture_path).filename().replace_extension("").u8string().c_str();
-                    fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
+                    fbx_material = fbx_scene->GetMaterial(material_name); // 同じマテリアルがすでにあればそれを利用します。
+                    if(!fbx_material) {
+                        // 同じマテリアルがなければ生成します。
+                        fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
+                        is_new_material = true;
+                    }
+
                     FbxProperty FbxColorProperty = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
                     if (FbxColorProperty.IsValid()) {
                         //Create a fbx property
@@ -251,7 +259,12 @@ namespace plateau::meshWriter {
                     }
                 }
 
-                const int material_index = fbx_node->AddMaterial(fbx_material);
+                int material_index;
+                if(is_new_material) {
+                    material_index = fbx_node->AddMaterial(fbx_material);
+                } else {
+                    material_index = fbx_node->GetMaterialIndex(fbx_material->GetName());
+                }
 
                 const unsigned triangle_count = (sub_mesh.getEndIndex() - sub_mesh.getStartIndex() + 1) / 3;
 
