@@ -124,7 +124,7 @@ namespace plateau::polygonMesh {
                                                 const plateau::polygonMesh::SubMesh& rhs) const {
 
         // 留意: ここを編集するときは、SubMesh::isAppearanceEqual も対応するように編集してください。
-        //      lhsがrhsよりも小さい場合にtrueを返します。
+        //      lhsがrhsよりも小さい場合にtrueを返します。等しい場合はfalseです。
 
         // gameMaterialの比較
         if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
@@ -140,7 +140,7 @@ namespace plateau::polygonMesh {
         constexpr float epsilon = 0.0001f;
         const auto mat_l = lhs.getMaterial();
         const auto mat_r = rhs.getMaterial();
-        if(!mat_l && !mat_r) return true;
+        if(!mat_l && !mat_r) return false;
         if(mat_l && !mat_r) return false;
         if(!mat_l && mat_r) return true;
         const auto diffuse_l = mat_l->getDiffuse();
