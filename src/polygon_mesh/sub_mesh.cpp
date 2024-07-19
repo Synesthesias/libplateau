@@ -110,6 +110,8 @@ namespace plateau::polygonMesh {
         const auto mat_s = getMaterial();
         const auto mat_o = other.getMaterial();
         if(mat_s.get() == mat_o.get()) return true;
+        if(!mat_s && mat_o) return false;
+        if(mat_s && !mat_o) return false;
         if(mat_s->getDiffuse() != mat_o->getDiffuse()) return false;
         if(mat_s->getEmissive() != mat_o->getEmissive()) return false;
         if(mat_s->getSpecular() != mat_o->getSpecular()) return false;
