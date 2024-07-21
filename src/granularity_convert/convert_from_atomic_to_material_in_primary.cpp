@@ -32,14 +32,18 @@ namespace plateau::granularityConvert {
             if(src_node->isPrimary()) {
                 // 2段目のループでマテリアルごとに結合
                 auto stack2 = NodeStack();
+                for(int i=(int)src_node->getChildCount() - 1; i>=0; i--) {
+                    stack2.push(node_path.plus(i));
+                }
                 std::map<SubMesh, std::vector<NodePath>, SubMeshCompareByAppearance> sub_mesh_map;
                 while(!stack2.empty()) {
-                    // 2段目のスタックに追加
-                    for(int i=(int)src_node->getChildCount() - 1; i>=0; i--) {
-                        stack2.push(node_path.plus(i));
-                    }
                     const auto atomic_node_path = stack2.pop();
                     const auto atomic_src_node = atomic_node_path.toNode(src);
+                    // 2段目のスタックに追加
+                    for(int i=(int)atomic_src_node->getChildCount() - 1; i>=0; i--) {
+                        stack2.push(atomic_node_path.plus(i));
+                    }
+
                     if(!atomic_src_node->isActive()) {
                         continue;
                     }
@@ -62,9 +66,9 @@ namespace plateau::granularityConvert {
                         auto atomic_src_node = atomic_node_path.toNode(src);
                         auto atomic_src_mesh = atomic_src_node->getMesh();
                         if(!atomic_src_mesh) continue;
-                        auto ids = atomic_src_mesh->getCityObjectList().getAllKeys();
-                        if(ids->empty()) continue;
-                        MergePrimaryNodeAndChildren().merge(*atomic_src_mesh, *merged_mesh, ids->at(0));
+                        auto ids = atomic_src_mesh->getCityObjectList().getAllAtomicIndices();
+                        if(ids.empty()) continue;
+                        MergePrimaryNodeAndChildren().merge(*atomic_src_mesh, *merged_mesh, ids.at(0));
                     }
                     auto merged_node = Node("Material-" + std::to_string(sub_mesh.getGameMaterialID()));
                     merged_node.setMesh(std::move(merged_mesh));
@@ -78,5 +82,6 @@ namespace plateau::granularityConvert {
                 }
             }
         }
+        return dst_model;
     }
 }
