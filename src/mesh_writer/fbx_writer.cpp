@@ -227,8 +227,7 @@ namespace plateau::meshWriter {
                 FbxSurfaceMaterial* fbx_material;
                 const auto& texture_path = sub_mesh.getTexturePath();
                 if (texture_path.empty()) {
-                    // ここでFBXのマテリアル名が同じになると、勝手に結合される可能性があります。
-                    // しかしテクスチャが空であっても、GameMaterialIDが違うケースでは違うマテリアルを割り当てたいはずなので、名前にIDを含めて結合されないようにします。
+                    // マテリアル名の末尾は "-(gameMaterialID)" である必要があります。これはUnityの「Assetsへ変換」機能を動かすために必要です。
                     FbxString default_material_name = ("Default-Material-" + std::to_string(sub_mesh.getGameMaterialID())).c_str();
                     fbx_material = fbx_scene->GetMaterial(default_material_name);
                     if (!fbx_material) {
@@ -237,21 +236,28 @@ namespace plateau::meshWriter {
                         ((FbxSurfacePhong*)fbx_material)->DiffuseFactor.Set(1.);
                     }
                 } else {
-                    FbxString material_name = fs::u8path(texture_path).filename().replace_extension("").u8string().c_str();
-                    fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
-                    FbxProperty FbxColorProperty = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
-                    if (FbxColorProperty.IsValid()) {
-                        //Create a fbx property
-                        FbxFileTexture* lTexture = FbxFileTexture::Create(fbx_scene, fs::u8path(texture_path).filename().u8string().c_str());
-                        lTexture->SetFileName(texture_path.c_str());
-                        lTexture->SetTextureUse(FbxTexture::eStandard);
-                        lTexture->SetMappingType(FbxTexture::eUV);
-                        lTexture->ConnectDstProperty(FbxColorProperty);
-                        required_textures_.insert(texture_path);
+                    FbxString material_name = (fs::u8path(texture_path).filename().replace_extension("").u8string() + "-" + std::to_string(sub_mesh.getGameMaterialID())).c_str();
+                    fbx_material = fbx_scene->GetMaterial(material_name); // 同じマテリアルがすでにあればそれを利用します。
+                    if(!fbx_material) {
+                        // 同じマテリアルがなければ生成します。
+                        fbx_material = FbxSurfacePhong::Create(fbx_scene, material_name);
+                        FbxProperty FbxColorProperty = fbx_material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+                        if (FbxColorProperty.IsValid()) {
+                            //Create a fbx property
+                            FbxFileTexture* lTexture = FbxFileTexture::Create(fbx_scene, fs::u8path(texture_path).filename().u8string().c_str());
+                            lTexture->SetFileName(texture_path.c_str());
+                            lTexture->SetTextureUse(FbxTexture::eStandard);
+                            lTexture->SetMappingType(FbxTexture::eUV);
+                            lTexture->ConnectDstProperty(FbxColorProperty);
+                            required_textures_.insert(texture_path);
+                        }
                     }
                 }
 
-                const int material_index = fbx_node->AddMaterial(fbx_material);
+                auto material_index = fbx_node->GetMaterialIndex(fbx_material->GetName());
+                if(material_index < 0) {
+                    material_index = fbx_node->AddMaterial(fbx_material);
+                }
 
                 const unsigned triangle_count = (sub_mesh.getEndIndex() - sub_mesh.getStartIndex() + 1) / 3;
 
