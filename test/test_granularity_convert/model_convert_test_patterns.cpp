@@ -79,16 +79,16 @@ void checkModelBFS(const Model& model, const ModelExpect& expect) {
     EXPECT_EQ(node_index, expect.nodeCount());
 }
 
-void ModelConvertTestPatterns::test(MeshGranularity granularity) {
+void ModelConvertTestPatterns::test(ConvertGranularity granularity) {
     std::cout << "====== Model Test Start ======"<< std::endl;
     std::cout << "rootNodeCount: " << src_model_.getRootNodeCount() << std::endl;
         std::string granularity_str;
         switch(granularity) {
-            case MeshGranularity::PerCityModelArea:
+            case ConvertGranularity::PerCityModelArea:
                 granularity_str = "area"; break;
-            case MeshGranularity::PerPrimaryFeatureObject:
+            case ConvertGranularity::PerPrimaryFeatureObject:
                 granularity_str = "primary"; break;
-            case MeshGranularity::PerAtomicFeatureObject:
+            case ConvertGranularity::PerAtomicFeatureObject:
                 granularity_str = "atomic"; break;
         };
         std::cout << "====== Testing converting to " << granularity_str << " ======" << std::endl;
@@ -116,7 +116,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary() {
     auto area_patterns = createTestPatternsOfArea();
-    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
     return {std::move(primary_model), primary_expect};
@@ -136,7 +136,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
     // テストの期待値からgmlノードとlodノードの分を除いて、ルートノードを追加します。
     auto expects = createExpectsForTestMeshArea("primary-0_combined");
 
-    auto& expects_to_area = expects.at(MeshGranularity::PerCityModelArea);
+    auto& expects_to_area = expects.at(ConvertGranularity::PerCityModelArea);
     expects_to_area.eraseRange(0, 2);
     expects_to_area.at(0).expect_node_name_ = "primary-0_combined";
     expects_to_area.at(0).expect_city_obj_list_ =
@@ -157,10 +157,10 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
             };
 
 
-    auto& expects_to_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& expects_to_atomic = expects.at(ConvertGranularity::PerAtomicFeatureObject);
     expects_to_atomic.eraseRange(0, 2);
 
-    auto& expects_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& expects_to_primary = expects.at(ConvertGranularity::PerPrimaryFeatureObject);
     expects_to_primary.eraseRange(0, 2);
 
     auto ret = ModelConvertTestPatterns(std::move(src_model), expects);
@@ -170,7 +170,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyRoot() {
     auto area_patterns = createTestPatternsOfArea_OnlyRoot();
-    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
     return {std::move(primary_model), primary_expect};
@@ -178,11 +178,11 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyRoot() {
     auto area_patterns = createTestPatternsOfArea_OnlyRoot();
-    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
     adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
-    auto& expect_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& expect_primary = expects.at(ConvertGranularity::PerPrimaryFeatureObject);
 
     return {std::move(atomic_model), expects};
 }
@@ -345,16 +345,16 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     });
     ModelConvertTestPatterns::TGranularityToExpect expects = {
-            {MeshGranularity::PerAtomicFeatureObject, atomic_expect},
-            {MeshGranularity::PerPrimaryFeatureObject, primary_expect},
-            {MeshGranularity::PerCityModelArea, area_expect}
+            {ConvertGranularity::PerAtomicFeatureObject, atomic_expect},
+            {ConvertGranularity::PerPrimaryFeatureObject, primary_expect},
+            {ConvertGranularity::PerCityModelArea, area_expect}
     };
     return {std::move(model), expects};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh() {
     auto area_patterns = createTestPatternsFromArea_OnlyAtomicMesh();
-    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
     return {std::move(primary_model), primary_expect};
@@ -368,15 +368,15 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     auto expects = createTestPatternsFromArea_OnlyAtomicMesh().getExpects();
 
-    auto& expect_to_atomic = expects.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& expect_to_atomic = expects.at(ConvertGranularity::PerAtomicFeatureObject);
     expect_to_atomic.eraseRange(0, 2);
 
-    auto& expect_to_primary = expects.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& expect_to_primary = expects.at(ConvertGranularity::PerPrimaryFeatureObject);
     expect_to_primary.eraseRange(0, 2);
     expect_to_primary.at(0).expect_city_obj_list_ = {
             {{{0, -1}, "primary-0"}, {{0, 0}, "atomic-0-0"}, {{0, 1}, "atomic-0-1"}}};
 
-    auto& expect_to_area = expects.at(MeshGranularity::PerCityModelArea);
+    auto& expect_to_area = expects.at(ConvertGranularity::PerCityModelArea);
     expect_to_area.eraseRange(0, 2);
     expect_to_area.at(0).expect_node_name_ = "primary-0_combined";
 //    CityObjectList expect_area_city_obj_list;
@@ -405,14 +405,14 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_OnlyAtomicMesh_Root() {
     auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
     auto atomic_expect = createTestPatternsOfAtomic_OnlyAtomicMesh_Root();
-    auto options = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto options = GranularityConvertOption(ConvertGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), options);
     return {std::move(primary_model), atomic_expect.getExpects()};
 }
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyAtomicMesh_Root() {
     auto area_patterns = createTestPatternsOfArea_OnlyAtomicMesh_Root();
-    auto options = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto options = GranularityConvertOption(ConvertGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), options);
     adjustForTestModelForAtomic(atomic_model);
     auto expects = area_patterns.getExpects();
@@ -443,20 +443,20 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
     auto expect = createExpectsForTestMeshArea("mesh_node_combined");
 
-    auto& expect_to_atomic = expect.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& expect_to_atomic = expect.at(ConvertGranularity::PerAtomicFeatureObject);
     expect_to_atomic.setExpectNodeNameRange("mesh_node", 2, 7);
     expect_to_atomic.setExpectGmlIdRange("gml_id_not_found", 2, 7);
     expect_to_atomic.at(4).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
     expect_to_atomic.at(5).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0,-1)) = "mesh_node";
 
-    auto& expect_to_primary = expect.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& expect_to_primary = expect.at(ConvertGranularity::PerPrimaryFeatureObject);
     expect_to_primary.setExpectNodeNameRange("mesh_node", 2, 3);
     expect_to_primary.setExpectGmlIdRange("gml_id_not_found", 2, 3);
     expect_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
     expect_to_primary.at(3).expect_node_name_ = "gml_id_not_found_1";
     expect_to_primary.at(2).expect_city_obj_list_.getIdMap().at(CityObjectIndex(0, -1)) = "mesh_node";
 
-    auto& expect_to_area = expect.at(MeshGranularity::PerCityModelArea);
+    auto& expect_to_area = expect.at(ConvertGranularity::PerCityModelArea);
     expect_to_area.at(2).expect_city_obj_list_ =
             {{{{0, -1}, "mesh_node"},
               {{0, 0}, "gml_id_not_found"},
@@ -472,11 +472,11 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPrimary_WithoutCityObjList() {
     auto area_patterns = createTestPatternsOfArea_WithoutCityObjList();
-    auto option = GranularityConvertOption(MeshGranularity::PerPrimaryFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerPrimaryFeatureObject, 10);
     auto primary_model = GranularityConverter().convert(area_patterns.getModel(), option);
     auto primary_expect = area_patterns.getExpects();
 
-    auto& primary_to_primary = primary_expect.at(MeshGranularity::PerPrimaryFeatureObject);
+    auto& primary_to_primary = primary_expect.at(ConvertGranularity::PerPrimaryFeatureObject);
     primary_to_primary.at(2).expect_node_name_ = "mesh_node";
 //    primary_to_primary.at(2).expect_node_name_ = "gml_id_not_found_0";
     primary_to_primary.at(2).expect_city_obj_list_ =
@@ -485,7 +485,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
               {{0, 1}, "gml_id_not_found"}}};
     primary_to_primary.at(3).expect_node_name_ = "gml_id_not_found_0";
 
-    auto& primary_to_atomic = primary_expect.at(MeshGranularity::PerAtomicFeatureObject);
+    auto& primary_to_atomic = primary_expect.at(ConvertGranularity::PerAtomicFeatureObject);
 //    primary_to_atomic.at(0).expect_node_name_ = "gml_id_not_found_0";
 //    primary_to_atomic.at(1).expect_node_name_ = "gml_id_not_found_1";
     primary_to_atomic.at(2).expect_node_name_ = "mesh_node";
@@ -507,7 +507,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfPr
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_WithoutCityObjList() {
     auto area_patterns = createTestPatternsFromArea_OnlyAtomicMesh();
-    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
     adjustForTestModelForAtomic(atomic_model);
     auto atomic_expect = area_patterns.getExpects();
@@ -520,7 +520,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
     // もし前提機能が壊れた場合、他のテストで検出できるはずです。
     // その代わり、デバッガでブレークポイントを貼りながら実行する時は変換が2回行われ、Atomicから各種単位への変換は2回目のほうであることに留意してください。
     auto area_patterns = createTestPatternsOfArea();
-    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_patterns.getModel(), option);
     adjustForTestModelForAtomic(atomic_model);
     // 期待する変換結果は地域単位と同じです。
@@ -530,7 +530,7 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAt
 
 ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsOfAtomic_OnlyAtomicMesh() {
     auto area_model = createTestPatternsFromArea_OnlyAtomicMesh();
-    auto option = GranularityConvertOption(MeshGranularity::PerAtomicFeatureObject, 10);
+    auto option = GranularityConvertOption(ConvertGranularity::PerAtomicFeatureObject, 10);
     auto atomic_model = GranularityConverter().convert(area_model.getModel(), option);
     adjustForTestModelForAtomic(atomic_model);
     // 期待する変換結果は地域単位と同じです。
@@ -692,9 +692,9 @@ ModelConvertTestPatterns::TGranularityToExpect ModelConvertTestPatternsFactory::
     );
 
     auto convert_expects = ModelConvertTestPatterns::TGranularityToExpect{
-            {MeshGranularity::PerAtomicFeatureObject, atomic_expect},
-            {MeshGranularity::PerPrimaryFeatureObject, primary_expect},
-            {MeshGranularity::PerCityModelArea, area_expect}
+            {ConvertGranularity::PerAtomicFeatureObject, atomic_expect},
+            {ConvertGranularity::PerPrimaryFeatureObject, primary_expect},
+            {ConvertGranularity::PerCityModelArea, area_expect}
     };
     return convert_expects;
 }
@@ -785,9 +785,9 @@ ModelConvertTestPatterns ModelConvertTestPatternsFactory::createTestPatternsFrom
     );
 
     auto convert_expects = ModelConvertTestPatterns::TGranularityToExpect{
-            {MeshGranularity::PerAtomicFeatureObject, atomic_expect},
-            {MeshGranularity::PerPrimaryFeatureObject, primary_expect},
-            {MeshGranularity::PerCityModelArea, area_expect}
+            {ConvertGranularity::PerAtomicFeatureObject, atomic_expect},
+            {ConvertGranularity::PerPrimaryFeatureObject, primary_expect},
+            {ConvertGranularity::PerCityModelArea, area_expect}
     };
     return {std::move(model), convert_expects};
 }

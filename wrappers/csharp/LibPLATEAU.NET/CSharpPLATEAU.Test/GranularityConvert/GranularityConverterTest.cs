@@ -13,7 +13,7 @@ namespace PLATEAU.Test.GranularityConvert
         {
             var srcModel = TestGeometryUtil.ExtractModel();
             var converter = new GranularityConverter();
-            var option = new GranularityConvertOption(MeshGranularity.PerCityModelArea, 10);
+            var option = new GranularityConvertOption(ConvertGranularity.PerCityModelArea, 10);
             var dstModel = converter.Convert(srcModel, option);
         }
 

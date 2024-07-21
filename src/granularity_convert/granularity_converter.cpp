@@ -3,6 +3,7 @@
 #include <plateau/granularity_convert/convert_from_atomic_to_primary.h>
 #include <plateau/granularity_convert/merge_primary_node_and_children.h>
 #include "plateau/granularity_convert/convert_from_atomic_to_area.h"
+#include <plateau/granularity_convert/convert_from_atomic_to_material_in_primary.h>
 
 namespace plateau::granularityConvert {
     using namespace plateau::polygonMesh;
@@ -14,17 +15,21 @@ namespace plateau::granularityConvert {
         auto converters = std::vector<std::shared_ptr<IModelConverter>>{to_atomic};
 
         switch(option.granularity_) {
-            case MeshGranularity::PerAtomicFeatureObject:
+            case ConvertGranularity::PerAtomicFeatureObject:
                 break;
-            case MeshGranularity::PerPrimaryFeatureObject: {
+            case ConvertGranularity::PerPrimaryFeatureObject: {
                 auto to_primary = std::make_shared<ConvertFromAtomicToPrimary>();
                 converters.push_back(to_primary);
                 break;
             }
-            case MeshGranularity::PerCityModelArea: {
+            case ConvertGranularity::PerCityModelArea: {
                 auto to_area = std::make_shared<ConvertFromAtomicToArea>();
                 converters.push_back(to_area);
                 break;
+            }
+            case ConvertGranularity::MaterialInPrimary: {
+                auto to_material_in_primary = std::make_shared<ConvertFromAtomicToMaterialInPrimary>();
+                converters.push_back(to_material_in_primary);
             }
         }
 

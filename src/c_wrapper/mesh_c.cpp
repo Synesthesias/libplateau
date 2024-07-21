@@ -9,7 +9,7 @@ extern "C" {
     DLL_CREATE_FUNC(plateau_create_mesh,
                     Mesh)
 
-        LIBPLATEAU_C_EXPORT libplateau::APIResult LIBPLATEAU_C_API plateau_create_mesh_9(
+        LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_create_mesh_9(
             Mesh** out_ptr,
             TVec3d* vertices_array,
             const int vertices_count,
@@ -36,9 +36,9 @@ extern "C" {
                 }
                 
             *out_ptr = new Mesh(std::move(vertices), std::move(indices), std::move(uv_1), std::move(uv_4), std::move(sub_meshes), CityObjectList());
-            return libplateau::APIResult::Success;
+            return APIResult::Success;
         }API_CATCH
-            return libplateau::APIResult::ErrorUnknown;
+            return APIResult::ErrorUnknown;
     }
 
         DLL_DELETE_FUNC(plateau_delete_mesh,

@@ -5,7 +5,9 @@ if(BUILD_LIB_TYPE STREQUAL "dynamic")
   target_compile_definitions(plateau PUBLIC LIBPLATEAU_BUILD_DYNAMIC)
   message("plateau is dynamic library.")
 else()
-  add_library(plateau STATIC "")
+  add_library(plateau STATIC ""
+          ../include/plateau/granularity_convert/convert_from_atomic_to_material_in_primary.h
+          granularity_convert/convert_from_atomic_to_material_in_primary.cpp)
 endif()
 
 if( NOT(IOS OR ANDROID) )
@@ -65,6 +67,7 @@ add_subdirectory(texture)
 add_subdirectory(granularity_convert)
 add_subdirectory(height_map_aligner)
 add_subdirectory(height_map_generator)
+add_subdirectory(material_adjust)
 
 # libファイルを1つに結合します。
 if(BUILD_LIB_TYPE STREQUAL "static")

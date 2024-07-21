@@ -2,6 +2,7 @@
 #include <utility>
 
 #include "plateau/polygon_mesh/model.h"
+#include <plateau/granularity_convert/granularity_converter.h>
 
 /// Nodeの状態がどのようなものと期待するかです。
 class NodeExpect {
@@ -73,12 +74,12 @@ class ModelConvertTestPatterns {
 public:
 
     /// 変換先の粒度と、変換後に期待する値のmapです。
-    using TGranularityToExpect = std::map<plateau::polygonMesh::MeshGranularity, ModelExpect>;
+    using TGranularityToExpect = std::map<plateau::granularityConvert::ConvertGranularity, ModelExpect>;
 
     ModelConvertTestPatterns(plateau::polygonMesh::Model&& src_model, TGranularityToExpect& convert_expects) :
             src_model_(std::move(src_model)),
             convert_expects_(convert_expects) {};
-    void test(plateau::polygonMesh::MeshGranularity granularity);
+    void test(plateau::granularityConvert::ConvertGranularity granularity);
     plateau::polygonMesh::Model& getModel() {return src_model_;};
     TGranularityToExpect& getExpects(){return convert_expects_;};
 private:

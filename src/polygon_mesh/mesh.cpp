@@ -76,6 +76,10 @@ namespace plateau::polygonMesh {
         sub_meshes_ = sub_mesh_list;
     }
 
+    void Mesh::setSubMeshes(std::vector<SubMesh>&& sub_mesh_list) {
+        sub_meshes_ = std::move(sub_mesh_list);
+    }
+
     void Mesh::reserve(long long vertex_count) {
         vertices_.reserve(vertex_count);
         indices_.reserve(vertex_count);
