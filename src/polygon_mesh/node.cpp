@@ -144,4 +144,16 @@ namespace plateau::polygonMesh {
     void Node::reserveChild(size_t reserve_count) {
         child_nodes_.reserve(reserve_count);
     }
+
+    Node Node::copyWithoutChildren() const {
+        auto ret = Node(getName());
+        if(mesh_) {
+            auto copied_mesh = Mesh(*mesh_);
+            ret.setMesh(std::make_unique<Mesh>(copied_mesh));
+        }
+        ret.is_primary_ = is_primary_;
+        ret.local_transform_ = getLocalTransform();
+        ret.setIsActive(isActive());
+        return ret;
+    }
 }

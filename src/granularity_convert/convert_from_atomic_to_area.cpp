@@ -121,7 +121,7 @@ namespace plateau::granularityConvert {
 
                 // Primaryに行き着くまで探索を続けます。
                 // index 0から処理したいため逆順にpush
-                for (int i = src_node->getChildCount() - 1; i >= 0; i--) {
+                for (int i = (int)src_node->getChildCount() - 1; i >= 0; i--) {
                     stack.push(node_path.plus(i));
                 }
             }
