@@ -5,7 +5,9 @@ if(BUILD_LIB_TYPE STREQUAL "dynamic")
   target_compile_definitions(plateau PUBLIC LIBPLATEAU_BUILD_DYNAMIC)
   message("plateau is dynamic library.")
 else()
-  add_library(plateau STATIC "")
+  add_library(plateau STATIC ""
+          ../include/plateau/granularity_convert/convert_from_atomic_to_material_in_primary.h
+          granularity_convert/convert_from_atomic_to_material_in_primary.cpp)
 endif()
 
 if( NOT(IOS OR ANDROID) )
