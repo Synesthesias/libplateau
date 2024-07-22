@@ -14,7 +14,7 @@ if( NOT(IOS OR ANDROID) )
   target_link_libraries(plateau PUBLIC
           citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper OpenMeshCore OpenMeshTools
           )
-  target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
+  target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}" "${HMM_INCLUDE}")
 
   # 注意点:
   # libpngのバージョンは、Unreal EngineのPngImageWrapper.hに記載のバージョンに合わせる必要があります。
@@ -84,6 +84,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:zlibstatic>
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
+          $<TARGET_FILE:hmm>
           # OpenMeshについては、普通に$<TARGET_FILE>すると、Windowsでは良いですがMacだと静的ライブラリが欲しいのに動的ライブラリが取得されてしまいます。
           # そのため、TARGET_FILEを使わない少々周りくどい方法でパスを取得します。
           $<TARGET_FILE_DIR:OpenMeshCore>/$<TARGET_FILE_PREFIX:OpenMeshCore>$<TARGET_FILE_BASE_NAME:OpenMeshCore>${CMAKE_STATIC_LIBRARY_SUFFIX}

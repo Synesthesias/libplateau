@@ -123,6 +123,7 @@ add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glm")
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL=1)
 
+set(GLM_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glm")
 
 if( NOT(IOS OR ANDROID) )
   ## ユニットテスト
@@ -290,6 +291,11 @@ else()
 endif()
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openmesh/src")
 add_subdirectory("3rdparty/openmesh")
+
+## hmm
+add_subdirectory("3rdparty/hmm")
+set(HMM_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/hmm/src")
+
 
 ####################################
 # libplateau 本体の Cmake ファイルです。
