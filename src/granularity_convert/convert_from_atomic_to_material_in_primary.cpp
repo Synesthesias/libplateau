@@ -17,9 +17,6 @@ namespace plateau::granularityConvert {
             auto node_path = stack.pop();
             const auto src_node = node_path.toNode(src);
             const auto parent = node_path.parent().toNode(&dst_model);
-            if(!src_node->isActive()) {
-                continue;
-            }
 
             // ノードをコピー
             auto dst_node = src_node->copyWithoutChildren();
@@ -43,10 +40,7 @@ namespace plateau::granularityConvert {
                     for(int i=(int)atomic_src_node->getChildCount() - 1; i>=0; i--) {
                         stack2.push(atomic_node_path.plus(i));
                     }
-
-                    if(!atomic_src_node->isActive()) {
-                        continue;
-                    }
+                    
                     const auto atomic_src_mesh = atomic_src_node->getMesh();
                     if(!atomic_src_mesh) continue;
                     auto atomic_sub_meshes = atomic_src_mesh->getSubMeshes();
