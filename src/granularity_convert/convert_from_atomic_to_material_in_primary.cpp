@@ -27,12 +27,16 @@ namespace plateau::granularityConvert {
             }
 
             if(src_node->isPrimary()) {
-                // 2段目のループでマテリアルごとに結合
+                // Primary Nodeが見つかったら、その子を走査する2段目のループでマテリアルごとに結合します。
+
+                // 2段目ループのスタックを用意します。
                 auto stack2 = NodeStack();
                 for(int i=(int)src_node->getChildCount() - 1; i>=0; i--) {
                     stack2.push(node_path.plus(i));
                 }
                 std::map<SubMesh, std::vector<NodePath>, SubMeshCompareByAppearance> sub_mesh_map;
+
+                // Primaryの子に関するループ
                 while(!stack2.empty()) {
                     const auto atomic_node_path = stack2.pop();
                     const auto atomic_src_node = atomic_node_path.toNode(src);
@@ -54,15 +58,15 @@ namespace plateau::granularityConvert {
                     }
                 }
                 // 辞書に応じて結合
+                int atomic_id = 0;
                 for(auto& [sub_mesh, node_paths]: sub_mesh_map) {
                     auto merged_mesh = std::make_unique<Mesh>();
                     for(auto& atomic_node_path: node_paths) {
                         auto atomic_src_node = atomic_node_path.toNode(src);
                         auto atomic_src_mesh = atomic_src_node->getMesh();
                         if(!atomic_src_mesh) continue;
-                        auto ids = atomic_src_mesh->getCityObjectList().getAllAtomicIndices();
-                        if(ids.empty()) continue;
-                        MergePrimaryNodeAndChildren().merge(*atomic_src_mesh, *merged_mesh, ids.at(0));
+                        MergePrimaryNodeAndChildren().merge(*atomic_src_mesh, *merged_mesh, CityObjectIndex(0, atomic_id));
+                        atomic_id++;
                     }
                     auto merged_node = Node("Material-" + std::to_string(sub_mesh.getGameMaterialID()));
                     merged_node.setMesh(std::move(merged_mesh));
