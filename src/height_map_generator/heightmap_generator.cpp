@@ -1,4 +1,4 @@
-#include <plateau/height_map_generator//heightmap_generator.h>
+#include <plateau/height_map_generator/heightmap_generator.h>
 #include <iostream>
 #include <fstream>
 #include "png.h"

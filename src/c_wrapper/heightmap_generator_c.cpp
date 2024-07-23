@@ -1,4 +1,4 @@
-#include <plateau/height_map_generator//heightmap_generator.h>
+#include <plateau/height_map_generator/heightmap_generator.h>
 #include "libplateau_c.h"
 #include <plateau/polygon_mesh/mesh.h>
 #include <cstring>
