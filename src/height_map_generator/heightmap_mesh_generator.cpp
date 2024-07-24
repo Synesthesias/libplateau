@@ -1,31 +1,13 @@
-
-#include <plateau/height_map_generator/heightmap_generator.h>
 #include <plateau/height_map_generator/heightmap_mesh_generator.h>
-#include <png.h>
-
+#include <plateau/height_map_generator/heightmap_operation.h>
 #include <plateau/geometry/geo_reference.h>
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-
 #include <base.h>
 #include <heightmap.h>
-//#include "hmm/stl.h"
 #include <triangulator.h>
-
+#include <filesystem>
 
 namespace plateau::heightMapGenerator {
-    double HeightmapMeshGenerator::getPositionFromPercent(const double percent, const double min, const double max) {
-        const double dist = abs(max - min);
-        const auto pos = min + (dist * percent);
-        const auto clamped = std::clamp(pos, min, max);
-        return clamped;
-    }
 
-    TVec2d HeightmapMeshGenerator::getPositionFromPercent(const TVec2d& percent, const TVec2d& min, const TVec2d& max) {
-        return TVec2d(getPositionFromPercent(percent.x, min.x, max.x), getPositionFromPercent(percent.y, min.y, max.y));
-    }
-   
     void HeightmapMeshGenerator::generateMeshFromHeightmap(plateau::polygonMesh::Mesh& out_mesh, const size_t width, const size_t height, const float zScale, const HeightMapElemT* data, geometry::CoordinateSystem coordinate, TVec3d Min, TVec3d Max, TVec2f UVMin, TVec2f UVMax, const bool invert_mesh) {
         const float maxError = 0.001;
         const int maxTriangles = 0;
@@ -33,23 +15,6 @@ namespace plateau::heightMapGenerator {
         const float zExaggeration = 1;
         const float baseHeight = 0;
 
-        //未使用 ====================
-        const bool level = false;
-        const bool invert = false;
-        const int blurSigma = 0;
-        const float gamma = 0;
-        const int borderSize = 0;
-        const float borderHeight = 1;
-        const std::string normalmapPath = "";
-        const std::string shadePath = "";
-        const float shadeAlt = 45;
-        const float shadeAz = 0;
-        // =========================
-
-        //const std::string outFile = "E:\\outfile.stl";
-
-        //const int width = 513;
-        //const int height = 513;
         std::vector<float> fdata;
         const int n = width * height;
         const float m = 1.f / 65535.f;
@@ -58,10 +23,7 @@ namespace plateau::heightMapGenerator {
             fdata[i] = data[i] * m;
         }
 
-
         const auto hm = std::make_shared<Heightmap>(width, height, fdata);
-        //hm->Invert();
-
         Triangulator tri(hm);
         tri.Run(maxError, maxTriangles, maxPoints);
 
@@ -74,11 +36,7 @@ namespace plateau::heightMapGenerator {
             AddBase(points, triangles, width, height, z);
         }
 
-        //Export STL Debug
-        //SaveBinarySTL(outFile, points, triangles);
- 
-        //mesh 
-        
+        // create mesh      
         plateau::heightMapGenerator::HeightMapExtent extent;
         extent.Min = Min;
         extent.Max = Max;
@@ -107,12 +65,12 @@ namespace plateau::heightMapGenerator {
         for (auto p : points) {
 
             const auto& percent = TVec2d((double)p.x / (double)width, (double)p.y / (double)height);
-            TVec2d position = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
+            TVec2d position = HeightmapOperation::getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
             TVec3d converted = geometry::GeoReference::convertAxisFromENUTo(coordinate, TVec3d((double)position.x, (double)position.y, extent.Min.z + (double)p.z));
             vertices.push_back(converted);
 
             //UV
-            TVec2d uv = getPositionFromPercent(percent, UVMind, UVMaxd);
+            TVec2d uv = HeightmapOperation::getPositionFromPercent(percent, UVMind, UVMaxd);
             uv1.push_back(TVec2f(uv.x, uv.y));
         }
 
@@ -125,5 +83,5 @@ namespace plateau::heightMapGenerator {
     }
 
 
-} // namespace texture
+} // namespace heightMapGenerator
 
