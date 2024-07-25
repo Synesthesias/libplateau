@@ -57,7 +57,7 @@ add_library(c_wrapper OBJECT
   "height_map_aligner_c.cpp"
   "material_adjuster_by_attr.cpp"
   "material_adjuster_by_type_c.cpp"
-        )
+  "heightmap_mesh_generator_c.cpp")
 
 if(NOT(IOS OR ANDROID))
         # 非モバイル向け

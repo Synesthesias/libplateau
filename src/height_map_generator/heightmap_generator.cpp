@@ -1,9 +1,11 @@
-#include <plateau/height_map_generator//heightmap_generator.h>
+#include <plateau/height_map_generator/heightmap_generator.h>
+#include <plateau/height_map_generator/heightmap_operation.h>
 #include <iostream>
 #include <fstream>
 #include "png.h"
 #include <filesystem>
 #include <algorithm>
+
 
 namespace plateau::heightMapGenerator {
 
@@ -126,9 +128,9 @@ namespace plateau::heightMapGenerator {
                     TVec2d tmin(0, 0);
                     TVec2d tmax(texture_width, texture_height);
                     //Triangle頂点(Texture座標）
-                    const auto& v1 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V1)), tmin, tmax);
-                    const auto& v2 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V2)), tmin, tmax);
-                    const auto& v3 = getPositionFromPercent(extent.getPercent(TVec2d(tri.V3)), tmin, tmax);
+                    const auto& v1 = HeightmapOperation::getPositionFromPercent(extent.getPercent(TVec2d(tri.V1)), tmin, tmax);
+                    const auto& v2 = HeightmapOperation::getPositionFromPercent(extent.getPercent(TVec2d(tri.V2)), tmin, tmax);
+                    const auto& v3 = HeightmapOperation::getPositionFromPercent(extent.getPercent(TVec2d(tri.V3)), tmin, tmax);
                     const double tolerance = xTiles / 2;
                     if (tile.isWithin(v1) || tile.isWithin(v2) || tile.isWithin(v3)) {
                         tile.Triangles->push_back(tri);
@@ -171,7 +173,7 @@ namespace plateau::heightMapGenerator {
             for (int x = 0; x < texture_width; x++) {
 
                 const auto& percent = TVec2d((double)x / (double)texture_width, (double)y / (double)texture_height);
-                const auto& p = getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
+                const auto& p = HeightmapOperation::getPositionFromPercent(percent, TVec2d(extent.Min), TVec2d(extent.Max));
 
                 HeightMapElemT GrayValue = map_with_alpha.getHeightAt(index); // 初期値
                 bool ValueSet = false;
@@ -219,17 +221,6 @@ namespace plateau::heightMapGenerator {
         if (triangleSize > 10000)
             return 12;
         return 8;
-    }
-
-    double HeightmapGenerator::getPositionFromPercent(const double percent, const double min, const double max) {
-        const double dist = abs(max - min);
-        const auto pos = min + (dist * percent);
-        const auto clamped = std::clamp(pos, min, max);
-        return clamped;
-    }
-
-    TVec2d HeightmapGenerator::getPositionFromPercent(const TVec2d& percent, const TVec2d& min, const TVec2d& max) {
-        return TVec2d(getPositionFromPercent(percent.x, min.x, max.x), getPositionFromPercent(percent.y, min.y, max.y));
     }
 
     double HeightmapGenerator::getHeightToPercent(const double height, const double min, const double max) {
@@ -435,5 +426,5 @@ namespace plateau::heightMapGenerator {
 
         return grayscaleData;
     }
-} // namespace texture
+} // namespace heightMapGenerator
 

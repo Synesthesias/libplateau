@@ -21,12 +21,14 @@ if( NOT(IOS OR ANDROID) )
   # そうでないと、UEでパッケージ化したあとexeを起動したときにassertion failedのダイアログが出て強制終了になります。
   # Unreal Engineの対応バージョンを上げるときには併せてPngImageWrapperで利用のlibpngバージョンを確認し、
   # libpngのバージョンが上がる場合はlibplateau submoduleのlibpngを新しいバージョンにしたうえで下のpng15_staticの15を{major_ver}{minor_ver}に置き換える必要がありそうです。
-  add_dependencies(plateau libjpeg-turbo png15_static tiff)
-  target_link_libraries(plateau PRIVATE ${JPEG_TURBO_LIBRARIES} png15_static tiff)
+  add_dependencies(plateau libjpeg-turbo png15_static tiff hmm)
+  target_link_libraries(plateau PRIVATE ${JPEG_TURBO_LIBRARIES} png15_static tiff hmm)
   target_include_directories(plateau PRIVATE
     "${JPEG_TURBO_INCLUDE_DIRS}"
     "${PNG_INCLUDE_DIRS}"
-    "${TIFF_INCLUDE}")
+    "${TIFF_INCLUDE}"
+    "${HMM_INCLUDE}"
+  )
 else()
   target_link_libraries(plateau PUBLIC 
     "citygml" 
@@ -37,6 +39,7 @@ else()
     "png15_static"
     "OpenMeshCore"
     "OpenMeshTools"
+    "hmm"
   )
 
   # UnityでiOS向けのビルドを通すため、info.plistというファイルにバイナリの情報が入るようにします。
@@ -49,7 +52,7 @@ else()
   )
 
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}")
-  target_include_directories(plateau PUBLIC "${PNG_INCLUDE_DIRS}")
+  target_include_directories(plateau PUBLIC "${PNG_INCLUDE_DIRS}"  "${HMM_INCLUDE}")
 endif()
 
 set_target_properties(plateau PROPERTIES RUNTIME_OUTPUT_DIRECTORY
@@ -84,6 +87,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:zlibstatic>
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
+          $<TARGET_FILE:hmm>
           # OpenMeshについては、普通に$<TARGET_FILE>すると、Windowsでは良いですがMacだと静的ライブラリが欲しいのに動的ライブラリが取得されてしまいます。
           # そのため、TARGET_FILEを使わない少々周りくどい方法でパスを取得します。
           $<TARGET_FILE_DIR:OpenMeshCore>/$<TARGET_FILE_PREFIX:OpenMeshCore>$<TARGET_FILE_BASE_NAME:OpenMeshCore>${CMAKE_STATIC_LIBRARY_SUFFIX}
@@ -94,7 +98,7 @@ if(BUILD_LIB_TYPE STREQUAL "static")
   # windows で libファイル結合します。
   # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
   if(BUILD_LIB_TYPE STREQUAL "static")
-    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff OpenMeshCore OpenMeshTools)
+    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff OpenMeshCore OpenMeshTools hmm)
 
     if(WIN32)
       find_program(MSVC_LIB_TOOL lib.exe)
