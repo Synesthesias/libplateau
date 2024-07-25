@@ -14,12 +14,13 @@ namespace {
     using namespace polygonMesh;
     using namespace dataset;
     using namespace texture;
+    using namespace citygml;
     namespace fs = std::filesystem;
 
-    bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
+    bool shouldSkipCityObj(const CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
 
         // 範囲内であっても、COT_Roomは意図的に省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
-        if(city_obj.getType() == citygml::CityObject::CityObjectsType::COT_Room) return true;
+        if(city_obj.getType() == CityObject::CityObjectsType::COT_Room) return true;
 
         // 範囲外を省く設定ならば省きます。
         if (!options.exclude_city_object_outside_extent)
@@ -34,7 +35,7 @@ namespace {
     }
 
     void extractInner(
-        Model& out_model, const citygml::CityModel& city_model,
+        Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
         const std::vector<geometry::Extent>& extents) {
 
@@ -160,20 +161,20 @@ namespace {
 }
 
 namespace plateau::polygonMesh {
-    std::shared_ptr<Model> MeshExtractor::extract(const citygml::CityModel& city_model,
+    std::shared_ptr<Model> MeshExtractor::extract(const CityModel& city_model,
                                                   const MeshExtractOptions& options) {
         auto result = std::make_shared<Model>();
         extract(*result, city_model, options);
         return result;
     }
 
-    void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model,
+    void MeshExtractor::extract(Model& out_model, const CityModel& city_model,
                                 const MeshExtractOptions& options) {
         extractInner(out_model, city_model, options, { plateau::geometry::Extent::all() });
     }
 
     std::shared_ptr<Model> MeshExtractor::extractInExtents(
-        const citygml::CityModel& city_model, const MeshExtractOptions& options,
+        const CityModel& city_model, const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
 
         auto result = std::make_shared<Model>();
@@ -182,28 +183,34 @@ namespace plateau::polygonMesh {
     }
 
     void MeshExtractor::extractInExtents(
-        Model& out_model, const citygml::CityModel& city_model,
+        Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
+
 
         extractInner(out_model, city_model, options, extents);
     }
 
 
 
-    bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj) {
-        // LOD2以上の建築物以外の場合主要地物の形状を含める
-        return !(lod >= 2 &&
-                 (primary_obj.getType() & citygml::CityObject::CityObjectsType::COT_Building) !=
-                 static_cast<citygml::CityObject::CityObjectsType>(0));
+    bool MeshExtractor::shouldContainPrimaryMesh(unsigned lod, const CityObject& primary_obj) {
+        // LOD2以上の建築物の場合、重複を防ぐため主要地物を含めません。
+        bool is_building_lod_gte2 =
+                lod >= 2 &&
+                (primary_obj.getType() & CityObject::CityObjectsType::COT_Building) != static_cast<CityObject::CityObjectsType>(0);
+        // LOD2以上の道路の場合も同様に主要地物を含めません。
+        bool is_road_lod_gte2 =
+                lod >= 2 &&
+                (primary_obj.getType() & CityObject::CityObjectsType::COT_Road) != static_cast<CityObject::CityObjectsType>(0);
+        return !is_building_lod_gte2 && !is_road_lod_gte2;
     }
 
-    bool MeshExtractor::isTypeToSkip(citygml::CityObject::CityObjectsType type) {
+    bool MeshExtractor::isTypeToSkip(CityObject::CityObjectsType type) {
 
         return
             // COT_Roomは省きます。なぜなら、LOD4の建物においてRoomと天井、床等が完全に重複するのをなくしたいからです。
-            type == citygml::CityObject::CityObjectsType::COT_Room ||
+            type == CityObject::CityObjectsType::COT_Room ||
             // COT_CityObjectGroupも省きます。なぜなら、LOD4の建物でbldg以下の建物パーツと重複するのをなくしたいからです。
-            type == citygml::CityObject::CityObjectsType::COT_CityObjectGroup;
+            type == CityObject::CityObjectsType::COT_CityObjectGroup;
     }
 }
