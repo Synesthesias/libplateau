@@ -1,5 +1,6 @@
 #include <plateau/height_map_generator/heightmap_operation.h>
 #include <filesystem>
+#include <algorithm>
 
 namespace plateau::heightMapGenerator {
 
