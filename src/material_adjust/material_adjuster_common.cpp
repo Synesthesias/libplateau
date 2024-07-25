@@ -25,6 +25,7 @@ namespace plateau::materialAdjust {
             auto indices_count = mesh->getIndices().size();
             auto src_sub_mesh_count = src_sub_meshes.size();
             dst_sub_meshes.reserve(src_sub_meshes.size());
+            bool prev_should_override_material = false;
 
             auto current_obj_id = CityObjectIndex(-99, -99);
             int current_src_sub_mesh_id = -99;
@@ -51,14 +52,20 @@ namespace plateau::materialAdjust {
 
                 // CityObjectIndexが変わったなら、マテリアル分けの対象となったかチェックします。
                 bool should_override_material = false; // マテリアル分けにより新たなマテリアルに切り替えるかどうかです。
+                bool end_of_overriding_material = false;
                 int next_override_game_mat_id; // should_override_material がtrueのとき、どのマテリアルを設定すべきかです。
                 if (obj_id_changed) {
                     current_obj_id = next_obj_id;
                     // CityObjectIndexが変わったとき、マテリアル分けの対象となっているかチェックします。
                     std::string gml_id;
                     if(src_obj_list.tryGetAtomicGmlID(current_obj_id, gml_id)) {
+                        // マテリアル分けするかどうかの判定を委譲します。
                         should_override_material = base->shouldOverrideMaterial(gml_id, next_override_game_mat_id);
                     }
+                    if(!should_override_material && prev_should_override_material) {
+                        end_of_overriding_material = true;
+                    }
+                    prev_should_override_material = should_override_material;
                 }
 
                 // srcのサブメッシュが変わったかどうか確認します。
@@ -72,7 +79,8 @@ namespace plateau::materialAdjust {
                     current_src_sub_mesh_id = std::max(current_src_sub_mesh_id+1, 0);
                 }
 
-                if(should_override_material || src_sub_mesh_changed) {
+                // 新しいSubMeshを生成する条件は、マテリアルをオーバーライドするとき、そのオーバーライドが終わるとき、元のSubMeshが変わるときです。
+                if(should_override_material || src_sub_mesh_changed || end_of_overriding_material) {
                     // 新しいSubMeshを生成します。
                     auto next_sub_mesh = src_sub_meshes.at(current_src_sub_mesh_id);
                     next_sub_mesh.setStartIndex(i);
