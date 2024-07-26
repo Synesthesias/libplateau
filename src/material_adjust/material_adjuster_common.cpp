@@ -56,16 +56,7 @@ namespace plateau::materialAdjust {
                 int next_override_game_mat_id; // should_override_material がtrueのとき、どのマテリアルを設定すべきかです。
                 if (obj_id_changed) {
                     current_obj_id = next_obj_id;
-                    // CityObjectIndexが変わったとき、マテリアル分けの対象となっているかチェックします。
-                    std::string gml_id;
-                    if(src_obj_list.tryGetAtomicGmlID(current_obj_id, gml_id)) {
-                        // マテリアル分けするかどうかの判定を委譲します。
-                        should_override_material = base->shouldOverrideMaterial(gml_id, next_override_game_mat_id);
-                    }
-                    if(!should_override_material && prev_should_override_material) {
-                        end_of_overriding_material = true;
-                    }
-                    prev_should_override_material = should_override_material;
+
                 }
 
                 // srcのサブメッシュが変わったかどうか確認します。
@@ -77,6 +68,19 @@ namespace plateau::materialAdjust {
                         );
                 if(src_sub_mesh_changed) {
                     current_src_sub_mesh_id = std::max(current_src_sub_mesh_id+1, 0);
+                }
+
+                if(obj_id_changed || src_sub_mesh_changed) {
+                    // CityObjectIndexが変わったとき、または、元メッシュのSubMeshが変わった時、マテリアル分けの対象となっているかチェックします。
+                    std::string gml_id;
+                    if(src_obj_list.tryGetAtomicGmlID(current_obj_id, gml_id)) {
+                        // マテリアル分けするかどうかの判定を委譲します。
+                        should_override_material = base->shouldOverrideMaterial(gml_id, next_override_game_mat_id);
+                    }
+                    if(!should_override_material && prev_should_override_material) {
+                        end_of_overriding_material = true;
+                    }
+                    prev_should_override_material = should_override_material;
                 }
 
                 // 新しいSubMeshを生成する条件は、マテリアルをオーバーライドするとき、そのオーバーライドが終わるとき、元のSubMeshが変わるときです。
