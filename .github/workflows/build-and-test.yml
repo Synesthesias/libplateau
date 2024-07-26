@@ -17,7 +17,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-14, ubuntu-20.04]
+        include:
+          - os: windows-2022
+            arch: x86_64
+          - os: macos-14
+            arch: arm64
+          - os: ubuntu-20.04
+            arch: x86_64
 
     steps:
 
@@ -38,6 +44,7 @@ jobs:
       with:
         shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
         visual_studio_version: "17 2022"
+        arch: ${{matrix.arch}}
 
     - name: Run Test
       run: |
