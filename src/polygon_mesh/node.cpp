@@ -9,7 +9,8 @@ namespace plateau::polygonMesh {
             mesh_(nullptr),
             is_primary_(false),
             is_active_(true),
-            local_transform_(Transform())
+            local_transform_(Transform()),
+            parent_node_()
             {
     }
 
@@ -19,16 +20,30 @@ namespace plateau::polygonMesh {
     }
 
     Node& Node::addChildNode(Node&& node) {
-        child_nodes_.push_back(std::forward<Node>(node));
+        node.setParentNode(*this);
+        child_nodes_.push_back(std::forward<Node>(node));     
         return child_nodes_.at(child_nodes_.size()-1);
     }
 
     void Node::setChildNodes(std::vector<Node>&& child_nodes) {
+        for (auto& child : child_nodes) {
+            child.setParentNode(*this);
+        }
         child_nodes_ = std::move(child_nodes);
     }
 
     Node& Node::addEmptyChildNode(const std::string& name) {
-        return child_nodes_.emplace_back(name);
+        auto& child = child_nodes_.emplace_back(name);
+        child.setParentNode(*this);
+        return child;
+    }
+
+    void Node::setParentNode(Node& node) {
+        parent_node_ = &node;
+    }
+
+    const Node& Node::getParentNode() const {
+        return *parent_node_;
     }
 
     const std::string& Node::getName() const {
