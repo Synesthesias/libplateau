@@ -67,7 +67,7 @@ runs:
             # vcvarsall.bat
             $vcvars = "& `"$vcvarsallPath`" x64 14.36"
             $vcvarsOutput = cmd /c "$vcvars & set"
-            set environment vars to github Actions
+            # set environment vars to github Actions
             $vcvarsOutput | ForEach-Object {
               if ($_ -match "^(.*?)=(.*)$") {
                 $name = $matches[1]
