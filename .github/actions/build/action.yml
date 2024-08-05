@@ -53,19 +53,15 @@ runs:
         choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
       shell: ${{ inputs.shell_type }}
 
-    - name: Setup MSVC environment
-      if: runner.os == 'Windows'
-      run: |
-        $vsPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools"
-        $vcvarsallPath = "$vsPath\VC\Auxiliary\Build\vcvarsall.bat"
-        echo "VCVARSALL=$vcvarsallPath" >> $env:GITHUB_ENV
-      shell: ${{ inputs.shell_type }}
-
     # ここのバージョンもUnreal Engineと合わせる必要があります。
     - name: Call MSVC path setup tool
       if: runner.os == 'Windows'
       run: |
-        call "%VCVARSALL%" x64 -vcvars_ver=14.36
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vcvarsall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+        $vcvarsall = Join-Path $vcvarsall "VC\Auxiliary\Build\vcvarsall.bat"
+        $Command = "`"$vcvarsall`" x64 -vcvars_ver=14.36"
+        cmd /c $Command
       shell: ${{ inputs.shell_type }}
 
       # Linuxのみコンパイラを明示
