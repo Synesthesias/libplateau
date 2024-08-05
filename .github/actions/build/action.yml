@@ -41,10 +41,32 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
-      # Windowsのみコンパイラを用意
-    - name: Setup MSVC for Windows
+    # Windowsのみコンパイラを用意します。
+    - name: Add msbuild to PATH
       if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: microsoft/setup-msbuild@v1.1
+
+    # ここのバージョンは、対応したいUnreal Engineのバージョンがリリースされた時点で最新だったMSVCのバージョンと合わせる必要があります。でないとUnreal Engineでリンク時にエラーになる可能性があります。
+    - name: Install Visual Studio Build Tools with MSVC 14.36
+      if: runner.os == 'Windows'
+      run: |
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
+      shell: ${{ inputs.shell_type }}
+
+    - name: Setup MSVC environment
+      if: runner.os == 'Windows'
+      run: |
+        $vsPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools"
+        $vcvarsallPath = "$vsPath\VC\Auxiliary\Build\vcvarsall.bat"
+        echo "VCVARSALL=$vcvarsallPath" >> $env:GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
+    # ここのバージョンもUnreal Engineと合わせる必要があります。
+    - name: Call MSVC path setup tool
+      if: runner.os == 'Windows'
+      run: |
+        call "%VCVARSALL%" x64 -vcvars_ver=14.36
+      shell: ${{ inputs.shell_type }}
 
       # Linuxのみコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
