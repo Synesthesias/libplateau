@@ -80,7 +80,8 @@ runs:
     - name: Setup Additional Cmake Options in Windows
       if: runner.os == 'Windows'
       run: |
-        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=`"cl.exe`"" >> $env:GITHUB_ENV
+        $cl_path = (Get-Command cl.exe).Path
+        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=`"$cl_path`"" >> $env:GITHUB_ENV
       shell: ${{ inputs.shell_type }}
 
     - name: Configure CMake for Unity
