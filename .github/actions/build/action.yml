@@ -50,7 +50,7 @@ runs:
     - name: Install Visual Studio Build Tools with MSVC 14.36
       if: runner.os == 'Windows'
       run: |
-        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
+        choco install visualstudio2022buildtools --package-parameters "'--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64'"
       shell: ${{ inputs.shell_type }}
 
     # ここのバージョンもUnreal Engineと合わせる必要があります。
@@ -60,8 +60,8 @@ runs:
         $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
         $vcvarsall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
         $vcvarsall = Join-Path $vcvarsall "VC\Auxiliary\Build\vcvarsall.bat"
-        $Command = "`"$vcvarsall`" x64 -vcvars_ver=14.36"
-        cmd /c $Command
+        $Command = "& `"$vcvarsall`" x64 14.36"
+        Invoke-Expression $Command
       shell: ${{ inputs.shell_type }}
 
       # Linuxのみコンパイラを明示
