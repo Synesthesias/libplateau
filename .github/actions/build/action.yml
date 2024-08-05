@@ -43,6 +43,7 @@ runs:
 
 
     # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
+    # 参考: https://github.com/actions/runner-images/issues/9701
     - name: Delete components
       if: runner.os == 'Windows'
       run: |
@@ -75,10 +76,18 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
+
 #     Windowsのみコンパイラパスを通します。
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
+
+    # Windowsで使うコンパイラを明示
+    - name: Setup Additional Cmake Options in Windows
+      if: runner.os == 'Windows'
+      run: |
+        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=cl.exe" >> $env:GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
 
       # Linuxで使うコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
