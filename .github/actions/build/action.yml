@@ -44,7 +44,9 @@ runs:
     # Windowsのみコンパイラを用意します。
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
+      with:
+        msbuild-architecture: x64
 
     # ここのバージョンは、対応したいUnreal Engineのバージョンがリリースされた時点で最新だったMSVCのバージョンと合わせる必要があります。でないとUnreal Engineでリンク時にエラーになる可能性があります。
 #    - name: Install Visual Studio Build Tools
