@@ -62,8 +62,7 @@ runs:
         $vsInstallerUrl = "https://aka.ms/vs/17/release/vs_buildtools.exe"
         $vsInstallerPath = "$env:TEMP\vs_buildtools.exe"
         Invoke-WebRequest -Uri $vsInstallerUrl -OutFile $vsInstallerPath
-        $installCommand = "& '$vsInstallerPath' --quiet --wait --norestart --nocache  --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
-        Invoke-Expression -Command $installCommand
+        & "$vsInstallerPath" --wait --quiet --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64
         $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
         $installationPath = & $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 -property installationPath
         if ($installationPath) {
