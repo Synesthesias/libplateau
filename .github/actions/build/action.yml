@@ -47,21 +47,32 @@ runs:
       uses: microsoft/setup-msbuild@v1.1
 
     # ここのバージョンは、対応したいUnreal Engineのバージョンがリリースされた時点で最新だったMSVCのバージョンと合わせる必要があります。でないとUnreal Engineでリンク時にエラーになる可能性があります。
-    - name: Install Visual Studio Build Tools with MSVC 14.36
-      if: runner.os == 'Windows'
-      run: |
-        choco install visualstudio2022buildtools --package-parameters "'--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 Microsoft.VisualStudio.Component.VC.14.36.17.6.CLI.Support'"
-      shell: ${{ inputs.shell_type }}
+#    - name: Install Visual Studio Build Tools
+#      if: runner.os == 'Windows'
+#      run: |
+#        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 Microsoft.VisualStudio.Component.VC.14.36.17.6.CLI.Support"
+#      shell: ${{ inputs.shell_type }}
 
     # ここのバージョンもUnreal Engineと合わせる必要があります。
-    - name: Call MSVC path setup tool
+    - name: Setup MSVC Build Tools
       if: runner.os == 'Windows'
       run: |
+        $vsInstallerUrl = "https://aka.ms/vs/17/release/vs_buildtools.exe"
+        $vsInstallerPath = "$env:TEMP\vs_buildtools.exe"
+        Invoke-WebRequest -Uri $vsInstallerUrl -OutFile $vsInstallerPath
+        $installCommand = "& '$vsInstallerPath' --quiet --wait --norestart --nocache  --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
+        Invoke-Expression -Command $installCommand
         $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $installationPath = & $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 -property installationPath
+        if ($installationPath) {
+        Write-Host "MSVC 14.36 is installed."
+        Write-Host "install path: $installationPath"
+        } else {
+        Write-Host [ERROR] "MSVC 14.36 is not installed."
+        }
         $vcvarsall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
         $vcvarsall = Join-Path $vcvarsall "VC\Auxiliary\Build\vcvarsall.bat"
-        $Command = "& '$vcvarsall' x64 -vcvars_ver=`"14.36`""
-        Invoke-Expression $Command
+        cmd.exe /c "`"$vcvarsall`" x64"
       shell: ${{ inputs.shell_type }}
 
       # Linuxのみコンパイラを明示
