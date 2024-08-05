@@ -1,0 +1,10 @@
+diff a/src/polygon_mesh/node.cpp b/src/polygon_mesh/node.cpp	(rejected hunks)
+@@ -20,6 +20,8 @@
+     }
+ 
+     Node& Node::addChildNode(Node&& node) {
++        node.setParentNode(*this);
++        child_nodes_.push_back(std::forward<Node>(node));     
+         return child_nodes_.at(child_nodes_.size()-1);
+     }
+ 

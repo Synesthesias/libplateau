@@ -10,7 +10,8 @@ namespace plateau::polygonMesh {
             is_primary_(false),
             is_active_(true),
             local_transform_(Transform()),
-            parent_node_()
+            parent_node_(nullptr),
+            root_node_(nullptr)
             {
     }
 
@@ -20,30 +21,44 @@ namespace plateau::polygonMesh {
     }
 
     Node& Node::addChildNode(Node&& node) {
-        node.setParentNode(*this);
-        child_nodes_.push_back(std::forward<Node>(node));     
-        return child_nodes_.at(child_nodes_.size()-1);
+        child_nodes_.push_back(std::forward<Node>(node));
+        return child_nodes_.at(child_nodes_.size() - 1);
     }
 
     void Node::setChildNodes(std::vector<Node>&& child_nodes) {
-        for (auto& child : child_nodes) {
-            child.setParentNode(*this);
-        }
         child_nodes_ = std::move(child_nodes);
     }
 
     Node& Node::addEmptyChildNode(const std::string& name) {
-        auto& child = child_nodes_.emplace_back(name);
-        child.setParentNode(*this);
-        return child;
+        return child_nodes_.emplace_back(name);
     }
 
-    void Node::setParentNode(Node& node) {
-        parent_node_ = &node;
+    void Node::setParentNode(Node* node) {
+        parent_node_ = node;
     }
 
     const Node& Node::getParentNode() const {
-        return *parent_node_;
+        if(hasParentNode())
+         return *parent_node_;
+        return *this;
+    }
+
+    const bool Node::hasParentNode() const {
+        return parent_node_ != nullptr;
+    }
+
+    void Node::setRootNode(Node* node) {
+        root_node_ = node;
+    }
+
+    const Node& Node::getRootNode() const {
+        if(hasRootNode())
+            return *root_node_;
+        return *this;
+    }
+
+    const bool Node::hasRootNode() const {
+        return root_node_ != nullptr;
     }
 
     const std::string& Node::getName() const {

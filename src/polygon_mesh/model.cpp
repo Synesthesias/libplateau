@@ -93,6 +93,23 @@ namespace plateau::polygonMesh {
         return meshes;
     }
 
+    namespace {
+        void assignNodeHierarchyRecursive(Node* node, Node* root) {
+            for (int i = 0; i < node->getChildCount(); i++) {
+                auto& child = node->getChildAt(i);
+                child.setParentNode(node);
+                child.setRootNode(root);
+                assignNodeHierarchyRecursive(&child, root);
+            }
+        }
+    }
+
+    void Model::assignNodeHierarchy() {
+        for (auto& node : root_nodes_) {
+            assignNodeHierarchyRecursive(&node, &node);
+        }
+    }
+
     void Model::reserveRootNodes(size_t reserve_count) {
         root_nodes_.reserve(reserve_count);
     }
