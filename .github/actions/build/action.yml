@@ -67,6 +67,8 @@ runs:
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
+      with:
+        toolset: 14.36
 
       # Linuxで使うコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
