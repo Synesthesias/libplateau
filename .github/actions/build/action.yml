@@ -97,13 +97,6 @@ runs:
       shell: ${{ inputs.shell_type }}
       # Ubuntu 18 だとデフォルトでは g++-7 になりますが、std::filesystem を使う都合上 g++-9 を指定します。
 
-      # Windowsで使うコンパイラを明示
-    - name: Setup Additional Cmake Options in Windows
-      if: runner.os == 'Windows'
-      run: |
-        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=`"$env:CMAKE_CXX_COMPILER`"" >> $env:GITHUB_ENV
-      shell: ${{ inputs.shell_type }}
-
     - name: Configure CMake for Unity
       run: >
         cmake
