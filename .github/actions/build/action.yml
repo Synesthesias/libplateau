@@ -59,13 +59,13 @@ runs:
     - name: Setup MSVC Build Tools
       if: runner.os == 'Windows'
       run: |
-        # Visual Studioのインストールパスを取得
+        # get Visual Studio install path
         $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
         if ($vsPath) {
-        # Visual Studio Installerを使用してコンポーネントを追加
+        # add visual studio component by Visual Studio Installer
         & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart
         } else {
-        Write-Host "対応するVisual Studioのインストールが見つかりませんでした。"
+        Write-Host "Visual Studio Installer is not found."
         }
       shell: ${{ inputs.shell_type }}
 
