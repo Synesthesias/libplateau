@@ -41,122 +41,44 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
-    # ここのバージョンは、対応したいUnreal Engineのバージョンがリリースされた時点で最新だったMSVCのバージョンと合わせる必要があります。でないとUnreal Engineでリンク時にエラーになる可能性があります。
-#    - name: Install Visual Studio Build Tools
-#      if: runner.os == 'Windows'
-#      run: |
-#        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 Microsoft.VisualStudio.Component.VC.14.36.17.6.CLI.Support"
-#      shell: ${{ inputs.shell_type }}
 
-    # ここのバージョンもUnreal Engineと合わせる必要があります。
-    - name: Setup MSVC Build Tools
+    # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
+    - name: Delete components
       if: runner.os == 'Windows'
       run: |
-        # Enable error handling
-        $ErrorActionPreference = "Stop"
-        
-        try {
-        # Get Visual Studio installation path
-        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
-        
-        if (-not $vsPath) {
-        throw "Visual Studio installation not found."
-        }
-        
-        Write-Host "Visual Studio found at: $vsPath"
-        
-        # Use Visual Studio Installer to add components
-          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart --wait
-          
-          # Locate 14.36 toolset path
-          $vcvarsallPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
-          
-          # Find the exact toolset version dynamically
-          $msvcPath = Join-Path $vsPath "VC\Tools\MSVC"
-          $toolsetVersion = Get-ChildItem $msvcPath | Where-Object { $_.Name.StartsWith("14.36") } | Sort-Object Name -Descending | Select-Object -First 1 -ExpandProperty Name
-          
-          if (-not $toolsetVersion) {
-          throw "MSVC 14.36 toolset not found."
-        }
-          $toolsetPath = Join-Path $msvcPath $toolsetVersion
-          $clPath = Join-Path $toolsetPath "bin\Hostx64\x64\cl.exe"
-          
-          if (-not (Test-Path $vcvarsallPath)) {
-        throw "vcvarsall.bat not found at: $vcvarsallPath"
-        }
-        
-        # Execute vcvarsall.bat and get environment variables (specify 14.36)
-          $vcvars = "`"$vcvarsallPath`" x64 14.36"
-          $vcvarsOutput = cmd /c "$vcvars && set"
-          
-          # Set environment variables for GitHub Actions
-          $vcvarsOutput | ForEach-Object {
-          if ($_ -match "^(.*?)=(.*)$") {
-          $name = $matches[1]
-          $value = $matches[2]
-          if ($name -eq "PATH") {
-          $value = "$toolsetPath\bin\Hostx64\x64;$value"
-          }
-          [System.Environment]::SetEnvironmentVariable($name, $value)
-          Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
-        }
-        }
-        
-        # Check for compiler existence
-          if (Test-Path $clPath) {
-        Write-Host "Compiler found at: $clPath"
-          
-          $env:CXX = $clPath
-          Add-Content -Path $env:GITHUB_ENV -Value "CXX=$clPath"
-          
-          $env:CMAKE_CXX_COMPILER = $clPath
-          Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_CXX_COMPILER=$clPath"
-          
-          $clVersion = & $clPath 2>&1 | Select-String "Version"
-        Write-Host "Compiler version: $clVersion"
-        } else {
-        Write-Host "Compiler not found at: $clPath"
-          Write-Host "Searching for cl.exe in Visual Studio directory..."
-          $foundClExe = Get-ChildItem -Path $vsPath -Recurse -Filter "cl.exe" | Where-Object { $_.FullName -like "*14.36*" } | Select-Object -First 1
-          if ($foundClExe) {
-          $clPath = $foundClExe.FullName
-        Write-Host "Found compiler at: $clPath"
-          $env:CXX = $clPath
-          Add-Content -Path $env:GITHUB_ENV -Value "CXX=$clPath"
-          $env:CMAKE_CXX_COMPILER = $clPath
-          Add-Content -Path $env:GITHUB_ENV -Value "CMAKE_CXX_COMPILER=$clPath"
-        } else {
-          throw "Could not find cl.exe for version 14.36"
-        }
-        }
-          
-          Write-Host "Visual Studio 14.36 environment variables have been set."
-        
-        # Verify PATH and compiler settings
-        Write-Host "PATH: $env:PATH"
-        Write-Host "CXX: $env:CXX"
-        Write-Host "CMAKE_CXX_COMPILER: $env:CMAKE_CXX_COMPILER"
-        
-        # Recheck compiler existence
-          if (Test-Path $env:CMAKE_CXX_COMPILER) {
-        Write-Host "Compiler exists at: $env:CMAKE_CXX_COMPILER"
-        } else {
-        throw "Compiler does not exist at: $env:CMAKE_CXX_COMPILER"
-        }
-        
-        } catch {
-        Write-Host "Error: $_"
-          exit 1
-        }
+        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        $componentsToRemove= @(
+         "Microsoft.VisualStudio.Component.VC.x86.x64"
+        )
+        [string]$workloadArgs = $componentsToRemove | ForEach-Object {" --remove " +  $_}
+        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+        # should be run twice
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+      shell: ${{ inputs.shell_type }}
+
+    # Unreal Engineと合わせたバージョンでMSVCを用意します。
+    - name: Install components
+      if: runner.os == 'Windows'
+      run: |
+        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        $componentsToInstall= @(
+          "Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
+        )
+        [string]$workloadArgs = $componentsToInstall | ForEach-Object {" --add " +  $_}
+        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+        # should be run twice
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
       shell: ${{ inputs.shell_type }}
 
 
-    # Windowsのみコンパイラを用意します。
-#    - name: Add msbuild to PATH
-#      if: runner.os == 'Windows'
-#      uses: ilammy/msvc-dev-cmd@v1
-#      with:
-#        toolset: 14.36
+#     Windowsのみコンパイラパスを通します。
+    - name: Add msbuild to PATH
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
 
       # Linuxで使うコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
