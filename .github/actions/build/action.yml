@@ -41,12 +41,55 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
-      # Windowsのみコンパイラを用意
-    - name: Setup MSVC for Windows
+
+    # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
+    # 参考: https://github.com/actions/runner-images/issues/9701
+    - name: Delete components
+      if: runner.os == 'Windows'
+      run: |
+        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        $componentsToRemove= @(
+         "Microsoft.VisualStudio.Component.VC.x86.x64"
+        )
+        [string]$workloadArgs = $componentsToRemove | ForEach-Object {" --remove " +  $_}
+        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+        # should be run twice
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+      shell: ${{ inputs.shell_type }}
+
+    # Unreal Engineと合わせたバージョンでMSVCを用意します。
+    - name: Install components
+      if: runner.os == 'Windows'
+      run: |
+        Set-Location "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        $InstallPath = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise"
+        $componentsToInstall= @(
+          "Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64"
+        )
+        [string]$workloadArgs = $componentsToInstall | ForEach-Object {" --add " +  $_}
+        $Arguments = ('/c', "vs_installer.exe", 'modify', '--installPath', "`"$InstallPath`"",$workloadArgs, '--quiet', '--norestart', '--nocache')
+        # should be run twice
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+        $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
+      shell: ${{ inputs.shell_type }}
+
+
+
+#     Windowsのみコンパイラパスを通します。
+    - name: Add msbuild to PATH
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
 
-      # Linuxのみコンパイラを明示
+    # Windowsで使うコンパイラを明示
+    - name: Setup Additional Cmake Options in Windows
+      if: runner.os == 'Windows'
+      run: |
+        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=cl.exe" >> $env:GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
+      # Linuxで使うコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
       if: runner.os == 'Linux'
       run: |
@@ -60,7 +103,7 @@ runs:
         -S ${{github.workspace}} 
         -B ${{github.workspace}}/out/build/x64-Release-Unity 
         -G "Ninja" 
-        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}" 
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILD_TYPE}}" 
         -D CMAKE_CXX_FLAGS="-w"
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
@@ -98,7 +141,7 @@ runs:
         -B ${{github.workspace}}/out/build/x64-Release-Unreal
         -G "Visual Studio ${{ inputs.visual_studio_version }}"
         -D CMAKE_INSTALL_PREFIX="C:/ninja"
-        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILDTYPE}}"
+        -D CMAKE_BUILD_TYPE:STRING="${{env.BUILD_TYPE}}"
         -D CMAKE_CXX_FLAGS="-w"
         -D BUILD_LIB_TYPE=static
         -D RUNTIME_LIB_TYPE=MD
