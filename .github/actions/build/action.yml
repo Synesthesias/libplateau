@@ -41,13 +41,6 @@ runs:
       shell: ${{ inputs.shell_type }}
 
 
-    # Windowsのみコンパイラを用意します。
-    - name: Add msbuild to PATH
-      if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v2
-      with:
-        msbuild-architecture: x64
-
     # ここのバージョンは、対応したいUnreal Engineのバージョンがリリースされた時点で最新だったMSVCのバージョンと合わせる必要があります。でないとUnreal Engineでリンク時にエラーになる可能性があります。
 #    - name: Install Visual Studio Build Tools
 #      if: runner.os == 'Windows'
@@ -65,9 +58,17 @@ runs:
         # add visual studio component by Visual Studio Installer
         & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart
         } else {
-        Write-Host "Visual Studio Installer is not found."
+        Write-Host "[Error] Visual Studio Installer is not found."
         }
       shell: ${{ inputs.shell_type }}
+
+
+    # Windowsのみコンパイラを用意します。
+    - name: Add msbuild to PATH
+      if: runner.os == 'Windows'
+      uses: microsoft/setup-msbuild@v2
+      with:
+        msbuild-architecture: x64
 
       # Linuxのみコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
