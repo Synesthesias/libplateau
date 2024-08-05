@@ -70,7 +70,7 @@ runs:
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
       with:
-        toolset: 14.36
+        toolset: 14.36.32532
 
     - name: Verify MSVC version
       run: |
