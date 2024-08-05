@@ -59,21 +59,14 @@ runs:
     - name: Setup MSVC Build Tools
       if: runner.os == 'Windows'
       run: |
-        $vsInstallerUrl = "https://aka.ms/vs/17/release/vs_buildtools.exe"
-        $vsInstallerPath = "$env:TEMP\vs_buildtools.exe"
-        Invoke-WebRequest -Uri $vsInstallerUrl -OutFile $vsInstallerPath
-        & "$vsInstallerPath" --wait --quiet --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64
-        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-        $installationPath = & $vswhere -products * -requires Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 -property installationPath
-        if ($installationPath) {
-        Write-Host "MSVC 14.36 is installed."
-        Write-Host "install path: $installationPath"
+        # Visual Studioのインストールパスを取得
+        $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
+        if ($vsPath) {
+        # Visual Studio Installerを使用してコンポーネントを追加
+        & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart
         } else {
-        Write-Host [ERROR] "MSVC 14.36 is not installed."
+        Write-Host "対応するVisual Studioのインストールが見つかりませんでした。"
         }
-        $vcvarsall = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
-        $vcvarsall = Join-Path $vcvarsall "VC\Auxiliary\Build\vcvarsall.bat"
-        cmd.exe /c "`"$vcvarsall`" x64"
       shell: ${{ inputs.shell_type }}
 
       # Linuxのみコンパイラを明示
