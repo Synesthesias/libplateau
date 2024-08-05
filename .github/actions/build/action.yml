@@ -57,6 +57,8 @@ runs:
         if ($vsPath) {
         # add visual studio component by Visual Studio Installer
         & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart
+        # wait for installation
+        Start-Sleep -Seconds 30
         } else {
         Write-Host "[Error] Visual Studio Installer is not found."
         }
@@ -69,6 +71,11 @@ runs:
       uses: ilammy/msvc-dev-cmd@v1
       with:
         toolset: 14.36
+
+    - name: Verify MSVC version
+      run: |
+        cl
+      shell: ${{ inputs.shell_type }}
 
       # Linuxで使うコンパイラを明示
     - name: Setup Additional Cmake Options in Linux
