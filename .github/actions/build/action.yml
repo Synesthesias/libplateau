@@ -58,9 +58,10 @@ runs:
           # add visual studio component by Visual Studio Installer
           & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "$vsPath" --add Microsoft.VisualStudio.Component.VC.14.36.17.6.x86.x64 --quiet --norestart
           $vcvarsallPath = Join-Path $vsPath "VC\Auxiliary\Build\vcvarsall.bat"
+          $toolsetPath = Join-Path $vsPath "VC\Tools\MSVC\14.36.32532"
           if (Test-Path $vcvarsallPath) {
             # exec vcvarsall.bat
-            $vcvars = "`"$vcvarsallPath`" x64 & set"
+            $vcvars = "`"$vcvarsallPath`" x64 14.36 & set"
             $vcvarsOutput = cmd /c "$vcvars"
             # set environment variables
             $vcvarsOutput | ForEach-Object {
