@@ -142,6 +142,7 @@ namespace {
             out_model.addNode(std::move(lod_node));
         }
         out_model.eraseEmptyNodes();
+        out_model.assignNodeHierarchy();
 
         // テクスチャを結合します。
         if (options.enable_texture_packing) {
