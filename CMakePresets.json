@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "x64-Unity-Release",
+	    "displayName": "x64-Unity-Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/x64-Release-Unity",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS": "-w",
+        "BUILD_LIB_TYPE": "dynamic",
+        "RUNTIME_LIB_TYPE": "MT"
+      }
+    },
+	{
+      "name": "x64-Unreal-Release",
+	    "displayName": "x64-Unreal-Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/x64-Release-Unreal",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS": "-w",
+        "BUILD_LIB_TYPE": "static",
+        "RUNTIME_LIB_TYPE": "MD"
+      }
+    },
+    {
+      "name": "x64-Unity-Debug",
+	    "displayName": "x64-Unity-Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/x64-Debug-Unity",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "-w",
+        "BUILD_LIB_TYPE": "dynamic",
+        "RUNTIME_LIB_TYPE": "MT"
+      }
+    },
+	{
+      "name": "x64-Unreal-Debug",
+	    "displayName": "x64-Unreal-Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/x64-Debug-Unreal",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS": "-w",
+        "BUILD_LIB_TYPE": "static",
+        "RUNTIME_LIB_TYPE": "MD"
+      }
+    }
+  ]
+}

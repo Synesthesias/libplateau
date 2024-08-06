@@ -106,6 +106,13 @@ namespace plateau::polygonMesh {
 
         // 留意: ここを編集するときは、SubMeshCompareByAppearance::operator() も対応するように編集してください。
         if(getGameMaterialID() != other.getGameMaterialID()) return false;
+
+        // ゲームマテリアルIDがセットされているなら、他のすべてに優先してこれだけで比較します。
+        if(getGameMaterialID() >= 0){
+            return true;
+        }
+
+
         if(getTexturePath() != other.getTexturePath()) return false;
         const auto mat_s = getMaterial();
         const auto mat_o = other.getMaterial();
@@ -130,6 +137,9 @@ namespace plateau::polygonMesh {
 
         // gameMaterialの比較
         if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
+
+        // GameMaterialIDがセットされている場合、他のすべてに優先してこれだけでの比較とします。
+        if(lhs.getGameMaterialID() >= 0) return false; // 等しい
 
         // テクスチャパスの比較
         const auto& tex_path_l = lhs.getTexturePath();

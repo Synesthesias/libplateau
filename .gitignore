@@ -33,3 +33,4 @@ bin
 # Intermidiate build data
 3rdparty/*/*.tar.gz
 .editorconfig
+.idea/cmake.xml
