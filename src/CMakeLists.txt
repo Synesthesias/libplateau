@@ -100,8 +100,6 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
           $<TARGET_FILE:hmm>
-          $<TARGET_FILE:OpenMeshCoreStatic>
-          $<TARGET_FILE:OpenMeshToolsStatic>
           ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
