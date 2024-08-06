@@ -105,6 +105,18 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
+  if(WIN32)
+    list(APPEND COMBINE_LIB_FILES
+            $<TARGET_FILE:OpenMeshCore>
+            $<TARGET_FILE:OpenMeshTools>
+    )
+  else()
+    list(APPEND COMBINE_LIB_FILES
+            $<TARGET_FILE:OpenMeshCoreStatic>
+            $<TARGET_FILE:OpenMeshToolsStatic>
+    )
+  endif()
+
   if(BUILD_LIB_TYPE STREQUAL "static")
     set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff ${LibOpenMeshCore} ${LibOpenMeshTools} hmm)
 
