@@ -284,11 +284,11 @@ set(PNG_INCLUDE_DIRS
         "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
 
 ## OpenMesh
-if(BUILD_LIB_TYPE STREQUAL "dynamic")
-  set(OPENMESH_BUILD_SHARED CACHE BOOL ON FORCE)
-else()
+#if(BUILD_LIB_TYPE STREQUAL "dynamic")
+#  set(OPENMESH_BUILD_SHARED CACHE BOOL ON FORCE)
+#else()
   set(OPENMESH_BUILD_SHARED CACHE BOOL OFF FORCE)
-endif()
+#endif()
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/openmesh/src")
 add_subdirectory("3rdparty/openmesh")
 
