@@ -41,6 +41,7 @@ namespace plateau::granularityConvert {
             next_dst = converter->convert(next_src);
             next_src = &next_dst;
         }
+        next_dst.assignNodeHierarchy();
         return next_dst;
     }
 }
