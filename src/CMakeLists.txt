@@ -10,9 +10,21 @@ else()
           granularity_convert/convert_from_atomic_to_material_in_primary.cpp)
 endif()
 
+# OpenMeshでWindowsとそれ以外の扱いの差を吸収します
+if(WIN32)
+  set(LibOpenMeshCore OpenMeshCore)
+  set(LibOpenMeshTools OpenMeshTools)
+else()
+  set(LibOpenMeshCore OpenMeshCoreStatic)
+  set(LibOpenMeshTools OpenMeshToolsStatic)
+endif()
+
+
 if( NOT(IOS OR ANDROID) )
+  # plateauにリンクするのは動的ライブラリではなく静的ライブラリである必要があります。
+  # なぜなら、他の動的ライブラリへの依存が生まれてしまうとUnityでDllNotFoundExceptionになるためです。
   target_link_libraries(plateau PUBLIC
-          citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper OpenMeshCore OpenMeshTools
+          citygml xerces-c GLTFSDK crypto ssl "${FBXSDK_LIBRARIES}" LibXml2 "${ZLIB_LIBRARY}" c_wrapper "${LibOpenMeshCore}" "${LibOpenMeshTools}"
           )
   target_include_directories(plateau PUBLIC "${CMAKE_SOURCE_DIR}/include" "${LIBCITYGML_INCLUDE}" "${GLTFSDK_INCLUDE}" "${CPPHTTPLIB_INCLUDE}" "${FBXSDK_INCLUDE}")
 
@@ -37,8 +49,8 @@ else()
     "ssl" 
     "c_wrapper"
     "png15_static"
-    "OpenMeshCore"
-    "OpenMeshTools"
+    "${LibOpenMeshCore}"
+    "${LibOpenMeshTools}"
     "hmm"
   )
 
@@ -88,18 +100,26 @@ if(BUILD_LIB_TYPE STREQUAL "static")
           $<TARGET_FILE:png15_static>
           $<TARGET_FILE:tiff>
           $<TARGET_FILE:hmm>
-          # OpenMeshについては、普通に$<TARGET_FILE>すると、Windowsでは良いですがMacだと静的ライブラリが欲しいのに動的ライブラリが取得されてしまいます。
-          # そのため、TARGET_FILEを使わない少々周りくどい方法でパスを取得します。
-          $<TARGET_FILE_DIR:OpenMeshCore>/$<TARGET_FILE_PREFIX:OpenMeshCore>$<TARGET_FILE_BASE_NAME:OpenMeshCore>${CMAKE_STATIC_LIBRARY_SUFFIX}
-          $<TARGET_FILE_DIR:OpenMeshTools>/$<TARGET_FILE_PREFIX:OpenMeshTools>$<TARGET_FILE_BASE_NAME:OpenMeshTools>${CMAKE_STATIC_LIBRARY_SUFFIX}
           ${JPEG_TURBO_LIBRARIES}
           ${FBXSDK_LIBRARIES})
 
-  # windows で libファイル結合します。
-  # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
-  if(BUILD_LIB_TYPE STREQUAL "static")
-    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff OpenMeshCore OpenMeshTools hmm)
+  if(WIN32)
+    list(APPEND COMBINE_LIB_FILES
+            $<TARGET_FILE:OpenMeshCore>
+            $<TARGET_FILE:OpenMeshTools>
+    )
+  else()
+    list(APPEND COMBINE_LIB_FILES
+            $<TARGET_FILE:OpenMeshCoreStatic>
+            $<TARGET_FILE:OpenMeshToolsStatic>
+    )
+  endif()
 
+  if(BUILD_LIB_TYPE STREQUAL "static")
+    set(COMBINE_LIB_DEPENDS plateau citygml xerces-c GLTFSDK crypto ssl LibXml2 httplib zlibstatic libjpeg-turbo png15_static tiff ${LibOpenMeshCore} ${LibOpenMeshTools} hmm)
+
+    # windows で libファイル結合します。
+    # 参考 : https://stackoverflow.com/questions/60190374/how-to-bundle-multiple-static-libraries-into-single-library-in-cmake-for-windows
     if(WIN32)
       find_program(MSVC_LIB_TOOL lib.exe)
       message("msvc_lib_tool = ${MSVC_LIB_TOOL}")
