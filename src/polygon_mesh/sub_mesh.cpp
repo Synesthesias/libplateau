@@ -104,36 +104,12 @@ namespace plateau::polygonMesh {
 
     bool SubMesh::isAppearanceEqual(const plateau::polygonMesh::SubMesh& other) const {
 
-        // 留意: ここを編集するときは、SubMeshCompareByAppearance::operator() も対応するように編集してください。
-        if(getGameMaterialID() != other.getGameMaterialID()) return false;
-
-        // ゲームマテリアルIDがセットされているなら、他のすべてに優先してこれだけで比較します。
-        if(getGameMaterialID() >= 0){
-            return true;
-        }
-
-
-        if(getTexturePath() != other.getTexturePath()) return false;
-        const auto mat_s = getMaterial();
-        const auto mat_o = other.getMaterial();
-        if(mat_s.get() == mat_o.get()) return true;
-        if(!mat_s && mat_o) return false;
-        if(mat_s && !mat_o) return false;
-        if(mat_s->getDiffuse() != mat_o->getDiffuse()) return false;
-        if(mat_s->getEmissive() != mat_o->getEmissive()) return false;
-        if(mat_s->getSpecular() != mat_o->getSpecular()) return false;
-        if(mat_s->getAmbientIntensity() != mat_o->getAmbientIntensity()) return false;
-        if(mat_s->getShininess() != mat_o->getShininess()) return false;
-        if(mat_s->getTransparency() != mat_o->getTransparency()) return false;
-        if(mat_s->isSmooth() != mat_o->isSmooth()) return false;
-        return true;
+        SubMeshCompareByAppearance comp;
+        return comp(*this, other) == false && comp(other, *this) == false;
     }
 
     bool SubMeshCompareByAppearance::operator()(const plateau::polygonMesh::SubMesh& lhs,
                                                 const plateau::polygonMesh::SubMesh& rhs) const {
-
-        // 留意: ここを編集するときは、SubMesh::isAppearanceEqual も対応するように編集してください。
-        //      lhsがrhsよりも小さい場合にtrueを返します。等しい場合はfalseです。
 
         // gameMaterialの比較
         if(lhs.getGameMaterialID() != rhs.getGameMaterialID()) return lhs.getGameMaterialID() < rhs.getGameMaterialID();
