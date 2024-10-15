@@ -44,7 +44,7 @@ runs:
 
     - name: Upload DLL for Windows
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libplateau-windows
         path: D:\a\output
@@ -78,14 +78,14 @@ runs:
 
     - name: Upload DLL(so) for Ubuntu
       if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libplateau-${{matrix.os}}
         path: ${{env.HOME}}/output/
 
     - name: Upload DLL(dylib) for MacOS
       if: runner.os == 'MacOS'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libplateau-${{matrix.os}}-${{matrix.arch}}
         path: ${{env.HOME}}/output/
