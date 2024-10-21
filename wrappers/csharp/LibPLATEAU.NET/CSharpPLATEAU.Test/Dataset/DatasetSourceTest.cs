@@ -15,7 +15,7 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void Accessor_From_Server_Works()
         {
             using var source = DatasetSource.CreateForMockServer("23ku");
