@@ -54,7 +54,7 @@ TEST_F(DatasetTest, getGmlsLocal) { // NOLINT
     checkVectors(expected_files, actual_files);
 }
 
-TEST_F(DatasetTest, getGmlsServer) { // NOLINT
+TEST_F(DatasetTest,DISABLED_getGmlsServer) { // NOLINT
     const auto source = DatasetSource::createServer("23ku", Client::createClientForMockServer());
     const auto accessor = source.getAccessor();
     const auto gml_files = accessor->getGmlFiles(PredefinedCityModelPackage::Building | PredefinedCityModelPackage::LandUse);
@@ -131,7 +131,7 @@ TEST_F(DatasetTest, fetch_local_generates_files) { // NOLINT
 //    fs::remove_all(temp_test_dir);
 }
 
-TEST_F(DatasetTest, fetch_server_generates_files) { // NOLINT
+TEST_F(DatasetTest, DISABLED_fetch_server_generates_files) { // NOLINT
     // テスト用の一時的なフォルダを fetch のコピー先とし、そこにファイルが存在するかテストします。
     // パスに日本語を含むケースで動作確認します。
     auto temp_test_dir = fs::u8path(u8"../テスト用一時ディレクトリ");

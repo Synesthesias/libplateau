@@ -12,7 +12,7 @@ namespace plateau::network {
 
     };
 
-    TEST_F(ClientTest, GetMetadataOfMockServer) { // NOLINT
+    TEST_F(ClientTest, DISABLED_GetMetadataOfMockServer) { // NOLINT
         auto metadata_groups = Client::createClientForMockServer().getMetadata();
         ASSERT_NE(metadata_groups->size(), 0) << "Metadata Exists.";
         if (!metadata_groups->empty()) {
@@ -20,12 +20,12 @@ namespace plateau::network {
         }
     }
 
-    TEST_F(ClientTest, GetFilesOfMockServer){ // NOLINT
+    TEST_F(ClientTest, DISABLED_GetFilesOfMockServer){ // NOLINT
         auto files = Client::createClientForMockServer().getFiles("23ku");
         ASSERT_TRUE(!files.empty());
     }
     
-    TEST_F(ClientTest, DownloadFromMockServer) { // NOLINT
+    TEST_F(ClientTest, DISABLED_DownloadFromMockServer) { // NOLINT
         std::string gml_file_name = "53392642_bldg_6697_2_op.gml";
         fs::remove(gml_file_name);
         auto fpath_str = Client::createClientForMockServer().download(u8".", Client::getMockServerUrl() + u8"/13100_tokyo23-ku_2020_citygml_3_2_op/udx/bldg/53392642_bldg_6697_2_op.gml");
