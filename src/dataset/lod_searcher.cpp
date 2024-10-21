@@ -54,9 +54,10 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
     char chunk[chunk_mem_size];
     const char* const chunk_const = chunk;
     int found_max_lod = -1;
-    std::streamsize total_read_size_from_first_lod_found = 0;
-    std::streamsize total_read_size_from_second_lod_found = 0;
-    std::streamsize total_read_size_from_third_lod_found = 0;
+    std::streamsize total_read_size_from_lod_0_found = 0;
+    std::streamsize total_read_size_from_lod_1_found = 0;
+    std::streamsize total_read_size_from_lod_2_found = 0;
+    std::streamsize total_read_size_from_lod_3_found = 0;
 
     do {
         ifs.read(chunk, chunk_read_size);
@@ -86,13 +87,15 @@ int LodSearcher::searchMaxLodInIstream(std::istream& ifs, int specification_max_
         }
 
         // 最初のLODが見つかってからここまで読めば十分という値に達したとき
-        total_read_size_from_first_lod_found += (found_max_lod >= 0) ? read_size : 0;
-        total_read_size_from_second_lod_found += (found_max_lod >= 2) ? read_size : 0;
-        total_read_size_from_third_lod_found += (found_max_lod >= 3) ? read_size : 0;
+        total_read_size_from_lod_0_found += (found_max_lod >= 0) ? read_size : 0;
+        total_read_size_from_lod_1_found += (found_max_lod >= 1) ? read_size : 0;
+        total_read_size_from_lod_2_found += (found_max_lod >= 2) ? read_size : 0;
+        total_read_size_from_lod_3_found += (found_max_lod >= 3) ? read_size : 0;
         if (
-                total_read_size_from_first_lod_found > max_gml_read_size_from_first_lod_found &&
-                (found_max_lod < 2 || /* LOD2→3を探すとき*/ total_read_size_from_second_lod_found > max_gml_read_size_from_second_lod_found) &&
-                (found_max_lod < 3 || /* LOD3→4を探すとき*/ total_read_size_from_third_lod_found > max_gml_read_size_from_third_lod_found)
+                total_read_size_from_lod_0_found > max_gml_read_size_from_lod_0_found &&
+                (found_max_lod < 1 || /* LOD1→2を探すとき*/ total_read_size_from_lod_1_found > max_gml_read_size_from_lod_1_found) &&
+                (found_max_lod < 2 || /* LOD2→3を探すとき*/ total_read_size_from_lod_2_found > max_gml_read_size_from_lod_2_found) &&
+                (found_max_lod < 3 || /* LOD3→4を探すとき*/ total_read_size_from_lod_3_found > max_gml_read_size_from_lod_3_found)
                 ) {
             break;
         }
