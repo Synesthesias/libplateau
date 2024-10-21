@@ -93,14 +93,14 @@ runs:
 
     - name: Upload framework for Android
       if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libplateau-android-dll
         path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
 
     - name: Upload framework for iOS
       if: runner.os == 'MacOS'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libplateau-ios-dll
 #        path: ${{github.workspace}}/out/build/x64-Release/src/Release-iphoneos/plateau.framework/*
