@@ -17,6 +17,10 @@ runs:
   using: Composite
 
   steps:
+    - name: Setup Git LFS
+      run: |
+        git lfs install
+      shell: bash
 
     - name: Update Submodules
       run: git submodule update --init --recursive
