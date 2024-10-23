@@ -26,6 +26,7 @@ runs:
         path: 3rdparty/fbx_sdk
         fetch-depth: 1
         ssh-key: ${{ env.KEY_TO_ACCESS_FBXSDK }}
+        lfs: true
       env:
         GIT_CLONE_PROTECTION_ACTIVE: false
 
