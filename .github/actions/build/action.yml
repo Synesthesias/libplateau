@@ -22,7 +22,7 @@ runs:
     - name: Clone fbx_sdk
       uses: actions/checkout@v4
       with:
-        repository: Synesthesias/fbx_sdk.git
+        repository: Synesthesias/fbx_sdk
         path: 3rdparty/fbx_sdk
         fetch-depth: 1
       env:
