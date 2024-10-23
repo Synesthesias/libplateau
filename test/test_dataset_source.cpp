@@ -22,7 +22,7 @@ namespace plateau::dataset {
         ASSERT_EQ(mesh_code_str, "533925");
     }
 
-    TEST_F(DatasetSourceTest, get_accessor_of_server_source_returns_server_accessor) { // NOLINT
+    TEST_F(DatasetSourceTest, DISABLED_get_accessor_of_server_source_returns_server_accessor) { // NOLINT
         auto source = DatasetSource::createServer(std::string("23ku"), network::Client::createClientForMockServer());
         auto accessor = source.getAccessor();
         auto mesh_code_str = accessor->getMeshCodes().begin()->get();

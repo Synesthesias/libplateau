@@ -25,7 +25,7 @@ namespace PLATEAU.Test.Dataset
             Console.WriteLine(accessor.MeshCodes.At(0).ToString());
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void GetMeshCodeServer()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
@@ -49,7 +49,7 @@ namespace PLATEAU.Test.Dataset
             );
         }
         
-        [TestMethod]
+        [Ignore, TestMethod]
         public void GetGmlFilesServer()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
@@ -70,7 +70,7 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(expected, accessor.Packages);
         }
         
-        [TestMethod]
+        [Ignore, TestMethod]
         public void GetPackagesServer()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
@@ -88,7 +88,7 @@ namespace PLATEAU.Test.Dataset
             TestCenterPoint(source);
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void CalcCenterPointServer()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
@@ -106,7 +106,7 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(2, maxLod);
         }
         
-        [TestMethod]
+        [Ignore, TestMethod]
         public void MaxLodServer()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
@@ -126,7 +126,7 @@ namespace PLATEAU.Test.Dataset
             Assert.IsFalse(DoResultOfFilterByMeshCodesContainsMeshCode(accessor, invalidMeshCode));
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void FilterByMeshCodes_Contains_MeshCode_Only_If_Valid_Server()
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);

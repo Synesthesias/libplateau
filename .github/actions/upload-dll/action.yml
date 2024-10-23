@@ -17,9 +17,6 @@ runs:
 
   steps:
 
-    - name: checkout submodules
-      shell: bash
-      run: git submodule update --init --recursive
 
     - name: Build
       uses: ./.github/actions/build

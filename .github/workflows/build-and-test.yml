@@ -13,6 +13,8 @@ jobs:
   build-and-test:
 
     runs-on: ${{matrix.os}}
+    env:
+      KEY_TO_ACCESS_FBXSDK: ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
 
     strategy:
       fail-fast: false
@@ -27,17 +29,17 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 1
 
     - name: Add SSH private keys for submodule repositories
       uses: webfactory/ssh-agent@v0.7.0
       with:
         ssh-private-key: |
-          ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
+          ${{ env.KEY_TO_ACCESS_FBXSDK }}
 
-    - name: checkout submodules
-      shell: bash
-      run: git submodule update --init --recursive
 
     - name: Build
       uses: ./.github/actions/build

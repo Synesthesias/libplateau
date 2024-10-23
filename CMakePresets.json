@@ -34,7 +34,7 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_FLAGS": "-w",
         "BUILD_LIB_TYPE": "dynamic",
-        "RUNTIME_LIB_TYPE": "MT"
+        "RUNTIME_LIB_TYPE": "MD"
       }
     },
 	{

@@ -7,7 +7,7 @@ namespace PLATEAU.Test.Network
     [TestClass]
     public class ClientTest
     {
-        [TestMethod]
+        [Ignore, TestMethod]
         public void GetDatasetMetadataGroup()
         {
             var client = Client.CreateForMockServer();

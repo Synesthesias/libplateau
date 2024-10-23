@@ -18,18 +18,18 @@ runs:
 
   steps:
 
-    - name: Update Submodules
-      run: git submodule update --init --recursive
-      shell: ${{ inputs.shell_type }}
 
     - name: Clone fbx_sdk
+      uses: actions/checkout@v4
+      with:
+        repository: Synesthesias/fbx_sdk
+        path: 3rdparty/fbx_sdk
+        fetch-depth: 1
+        ssh-key: ${{ env.KEY_TO_ACCESS_FBXSDK }}
+        lfs: true
       env:
         GIT_CLONE_PROTECTION_ACTIVE: false
-      run: |
-        cd ./3rdparty
-        git clone git@github.com:Synesthesias/fbx_sdk.git
-        cd ..
-      shell: ${{ inputs.shell_type }}
+
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3

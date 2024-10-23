@@ -10,10 +10,6 @@ runs:
   using: Composite
 
   steps:
-    - name: checkout submodules
-      run: |
-        git submodule update --init --recursive
-      shell: bash
 
     - name: setup ubuntu
       if: runner.os == 'Linux'

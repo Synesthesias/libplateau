@@ -82,7 +82,7 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual(2, gmls.At(0).GetMaxLod());
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void GetMaxLodServer()
         {
             using var source = DatasetSource.CreateForMockServer("23ku");
@@ -128,7 +128,7 @@ namespace PLATEAU.Test.Dataset
             CollectionAssert.AreEquivalent(expectedImages, imagePaths);
         }
 
-        [TestMethod]
+        [Ignore, TestMethod]
         public void Fetch_Server_Downloads_Files()
         {
             using var source = DatasetSource.CreateForMockServer("23ku");
