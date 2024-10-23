@@ -32,7 +32,7 @@ runs:
 
 
     - name: Install ninja-build tool
-      uses: seanmiddleditch/gha-setup-ninja@v3
+      uses: seanmiddleditch/gha-setup-ninja@v5
 
       # Ubuntuでビルドを通すには OpenGL API のインストールが必要です。
     - name: Install OpenGL API on Ubuntu machine
@@ -155,7 +155,7 @@ runs:
 
 
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
