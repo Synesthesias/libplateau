@@ -19,11 +19,11 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 1
 
-    - name: checkout submodules
-      shell: bash
-      run: git submodule update --init --recursive
 
     - uses: ruby/setup-ruby@v1
       with:

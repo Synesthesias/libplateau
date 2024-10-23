@@ -17,23 +17,17 @@ runs:
   using: Composite
 
   steps:
-    - name: Setup Git LFS
-      run: |
-        git lfs install
-      shell: bash
 
-    - name: Update Submodules
-      run: git submodule update --init --recursive
-      shell: ${{ inputs.shell_type }}
 
     - name: Clone fbx_sdk
+      uses: actions/checkout@v4
+      with:
+        repository: Synesthesias/fbx_sdk.git
+        path: 3rdparty/fbx_sdk
+        fetch-depth: 1
       env:
         GIT_CLONE_PROTECTION_ACTIVE: false
-      run: |
-        cd ./3rdparty
-        git clone --depth 1 --single-branch --branch main git@github.com:Synesthesias/fbx_sdk.git
-        cd ..
-      shell: ${{ inputs.shell_type }}
+
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
