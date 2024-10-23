@@ -25,7 +25,7 @@ runs:
         repository: Synesthesias/fbx_sdk
         path: 3rdparty/fbx_sdk
         fetch-depth: 1
-        token: ${{ env.KEY_TO_ACCESS_FBXSDK }}
+        ssh-key: ${{ env.KEY_TO_ACCESS_FBXSDK }}
       env:
         GIT_CLONE_PROTECTION_ACTIVE: false
 
