@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_TYPE: RelWithDebInfo
+  KEY_TO_ACCESS_FBXSDK: ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
 
 jobs:
   # 1つ目のジョブです。
@@ -36,7 +37,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: |
-            ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
+            ${{ env.KEY_TO_ACCESS_FBXSDK }}
 
       - name: Upload Dll
         uses: ./.github/actions/upload-dll
@@ -67,7 +68,7 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: |
-            ${{ secrets.KEY_TO_ACCESS_FBXSDK }}
+            ${{ env.KEY_TO_ACCESS_FBXSDK }}
 
       - name: Upload Dlls for Mobile
         uses: ./.github/actions/upload-mobile-dlls
