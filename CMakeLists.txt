@@ -119,6 +119,13 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+# 例外処理を有効にします。
+if(MSVC)
+  add_compile_options(/EHsc)
+else()
+  add_compile_options(-fexceptions)
+endif()
+
 ## glmを導入します
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/glm")
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL=1)
