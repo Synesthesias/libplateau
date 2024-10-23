@@ -31,7 +31,7 @@ runs:
         GIT_CLONE_PROTECTION_ACTIVE: false
       run: |
         cd ./3rdparty
-        git clone git@github.com:Synesthesias/fbx_sdk.git
+        git clone --depth 1 --single-branch --branch main git@github.com:Synesthesias/fbx_sdk.git
         cd ..
       shell: ${{ inputs.shell_type }}
 
