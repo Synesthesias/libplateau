@@ -89,16 +89,15 @@ namespace plateau::polygonMesh {
         bool compareTVec3f(const TVec3f& l, const TVec3f& r) {
             // lがrより小さいときにtrueを返します。
             constexpr float epsilon = 0.0001f;
-            if(std::abs(l.x - l.y) > epsilon) return l.x < r.x;
-            if(std::abs(l.y - l.y) > epsilon) return l.y < r.y;
-            if(std::abs(l.z - l.z) > epsilon) return l.z < r.z;
-            return false; // areEqualTVec3f() がtrueを返すときにこの行が実行されるようにします。
+            if(std::abs(l.x - r.x) > epsilon) return l.x < r.x;
+            if(std::abs(l.y - r.y) > epsilon) return l.y < r.y;
+            if(std::abs(l.z - r.z) > epsilon) return l.z < r.z;
+            return false;
         }
 
         bool areEqualTVec3f(const TVec3f& l, const TVec3f& r) {
-            // compareTVec3f() の最後の行のreturn falseが実行されるケースを記述します。
-            constexpr float epsilon = 0.0001f;
-            return std::abs(l.x - r.x) <= epsilon && std::abs(l.y - r.y) <= epsilon && std::abs(l.z - r.z) <= epsilon;
+
+            return compareTVec3f(l, r) == false && compareTVec3f(r, l) == false;
         }
     }
 
