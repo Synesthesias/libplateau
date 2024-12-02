@@ -47,15 +47,25 @@ namespace plateau::granularityConvert {
         auto indices_id_transform = std::vector<long>();
         dst_indices.reserve(src_indices.size());
         indices_id_transform.reserve(src_indices.size());
-        for (auto src_index: src_indices) {
-            const auto next_id = vert_id_transform.at(src_index); // 削除頂点を詰めたあとの新たな頂点番号
-            if (next_id < 0) {
-                indices_id_transform.push_back(-1);
+
+        auto src_triangle_count = src_indices.size() / 3;
+        for(int tri=0; tri<src_triangle_count; tri++) {
+            unsigned int src_index[3] = {src_indices.at(tri*3), src_indices.at(tri*3+1), src_indices.at(tri*3+2)};
+            long next_id[3];
+            for(int i=0; i<3; i++){
+                next_id[i] = vert_id_transform.at(src_index[i]);
+            }
+            if(next_id[0] < 0 || next_id[1] < 0 || next_id[2] < 0) {
+                for(int i=0; i<3; i++) indices_id_transform.push_back(-1);
                 continue;
             }
-            dst_indices.push_back(next_id);
-            indices_id_transform.push_back((long) dst_indices.size() - 1);
+            for(int i=0; i<3; i++) {
+                dst_indices.push_back((unsigned) next_id[i]);
+                indices_id_transform.push_back((long) dst_indices.size() - 1);
+            }
         }
+
+
 
         // SubMeshについて、元から削除部分を除いたvector<SubMesh>を生成します。
         auto dst_sub_meshes = std::vector<SubMesh>();
