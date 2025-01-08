@@ -30,18 +30,35 @@ namespace {
             if (extent.contains(city_obj))
                 return false;
         }
-
         return true;
+    }
+
+    /// extentsの幅と奥行きの長さを multiplier 倍にします。
+    std::vector<geometry::Extent> extendExtents(const std::vector<geometry::Extent>& src_extents, float multiplier) {
+        auto result = std::vector<geometry::Extent>();
+
+        for (const auto& src_extent : src_extents) {
+            const auto center = src_extent.centerPoint();
+            const auto prev_min = src_extent.min;
+            const auto prev_max = src_extent.max;
+            auto next_min = center + (prev_min - center) * multiplier;
+            auto next_max = center + (prev_max - center) * multiplier;
+            result.emplace_back(next_min, next_max);
+        }
+        return result;
     }
 
     void extractInner(
         Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
-        const std::vector<geometry::Extent>& extents) {
+        const std::vector<geometry::Extent>& extents_before_adjust) {
 
         if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
 
         const auto geo_reference = geometry::GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
+
+        // 範囲の境界上にある地物を取り逃さないように、範囲を少し広げます。
+        auto extents = extendExtents(extents_before_adjust, 1.2f);
 
         // rootNode として LODノード を作ります。
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
@@ -187,7 +204,6 @@ namespace plateau::polygonMesh {
         Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
-
 
         extractInner(out_model, city_model, options, extents);
     }
