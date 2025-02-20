@@ -88,7 +88,7 @@ namespace plateau::meshWriter {
 
             for (int i = 0; i < model.getRootNodeCount(); ++i) {
                 const auto& node = model.getRootNodeAt(i);
-                processNodeRecursive(node, fbx_scene->GetRootNode(), fbx_scene);
+                processNodeRecursive(node, fbx_scene->GetRootNode(), fbx_scene, fs::absolute(path).u8string());
             }
 
             const auto exporter = FbxExporter::Create(manager_, "");
@@ -107,14 +107,14 @@ namespace plateau::meshWriter {
             exporter->Destroy();
 
             // テクスチャファイルコピー
-            for (const auto& texture : required_textures_) {
-                copyTexture(fs::absolute(path).u8string(), texture);
+            for (const auto& texture_path : required_textures_) {
+                copyTexture(fs::absolute(path).u8string(), texture_path);
             }
 
             return true;
         }
 
-        void processNodeRecursive(const polygonMesh::Node& node, FbxNode* parent_fbx_node, FbxScene* fbx_scene) {
+        void processNodeRecursive(const polygonMesh::Node& node, FbxNode* parent_fbx_node, FbxScene* fbx_scene, const std::string& fbx_path) {
             const auto fbx_node = FbxNode::Create(fbx_scene, node.getName().c_str());
             parent_fbx_node->AddChild(fbx_node);
 
@@ -137,15 +137,15 @@ namespace plateau::meshWriter {
 
             const auto mesh = node.getMesh();
             if (mesh != nullptr)
-                addMesh(*mesh, fbx_scene, fbx_node);
+                addMesh(*mesh, fbx_scene, fbx_node, fbx_path);
 
             for (size_t i = 0; i < node.getChildCount(); ++i) {
                 const auto& child_node = node.getChildAt(i);
-                processNodeRecursive(child_node, fbx_node, fbx_scene);
+                processNodeRecursive(child_node, fbx_node, fbx_scene, fbx_path);
             }
         }
 
-        void addMesh(const polygonMesh::Mesh& mesh, FbxScene* fbx_scene, FbxNode* fbx_node) {
+        void addMesh(const polygonMesh::Mesh& mesh, FbxScene* fbx_scene, FbxNode* fbx_node, const std::string& fbx_path) {
             const auto fbx_mesh = FbxMesh::Create(fbx_scene, "");
 
             // Create control points.
@@ -245,7 +245,10 @@ namespace plateau::meshWriter {
                         if (FbxColorProperty.IsValid()) {
                             //Create a fbx property
                             FbxFileTexture* lTexture = FbxFileTexture::Create(fbx_scene, fs::u8path(texture_path).filename().u8string().c_str());
-                            lTexture->SetFileName(texture_path.c_str());
+                            auto dst_path = fs::u8path(fbx_path).parent_path();
+                            dst_path /= fs::u8path(texture_path).parent_path().filename();
+                            dst_path /= fs::u8path(texture_path).filename();
+                            lTexture->SetFileName(dst_path.u8string().c_str());
                             lTexture->SetTextureUse(FbxTexture::eStandard);
                             lTexture->SetMappingType(FbxTexture::eUV);
                             lTexture->ConnectDstProperty(FbxColorProperty);

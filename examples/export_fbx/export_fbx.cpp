@@ -67,11 +67,12 @@ int main() {
         const auto destination = fs::path(".").string();
         const auto gml_file_name = fs::path(gml_file_path).filename().string();
         auto base_obj_name = fs::path(gml_file_name).replace_extension(".fbx").string();
-        const auto gltf_file_path = fs::path(destination).append(base_obj_name).make_preferred().string();
-        plateau::meshWriter::FbxWriteOptions options;
-        options.file_format = plateau::meshWriter::FbxFileFormat::ASCII;
-        auto result = plateau::meshWriter::FbxWriter().write(gltf_file_path , *model, options);
+        const auto fbx_file_path = fs::path(destination).append(base_obj_name).make_preferred().string();
 
+        plateau::meshWriter::FbxWriteOptions options;
+        options.file_format = plateau::meshWriter::FbxFileFormat::Binary;
+        options.coordinate_system = plateau::geometry::CoordinateSystem::ENU;
+        auto result = plateau::meshWriter::FbxWriter().write(fbx_file_path, *model, options);
     }
     catch (std::exception& e) {
         std::cout << e.what() << std::endl;
