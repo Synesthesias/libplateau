@@ -81,12 +81,10 @@ namespace PLATEAU.Test.CityGML
         [TestMethod]
         public void AsBool_Returns_GML_Value()
         {
-            const string parentKey = "uro:buildingDetails";
-            const string childKey = "energy:isHeated";
             const bool valueInGmlFile = true;
-            var parentVal = attrMap[parentKey];
+            var parentVal = attrMap["uro:buildingDetails"].AsAttrSet["uro:BuildingDetails"];
             var children = parentVal.AsAttrSet;
-            bool actualVal = children[childKey].AsBool;
+            bool actualVal = children["energy:isHeated"].AsBool;
             Assert.AreEqual(valueInGmlFile, actualVal);
         }
     }
