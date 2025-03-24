@@ -1,3 +1,4 @@
+自動レビューのテスト：この文章は不要だよ。テスト用文
 
 [![Build and Test](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Synesthesias/libplateau/actions/workflows/build-and-test.yml)
 
