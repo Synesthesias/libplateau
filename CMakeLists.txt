@@ -22,7 +22,7 @@
 # .soファイルが存在しても、 .so が依存する .so ファイルが存在しない場合に DllNotFoundException になります。
 # 次のコマンドで .so がどのようなライブラリに依存するか調べると良いです。
 # objdump -x libplateau.so | grep NEEDED
-# ldd ./libplateau.so | grep "not found”
+# ldd ./libplateau.so | grep "not found"
 
 
 cmake_minimum_required(VERSION 3.8)
@@ -78,6 +78,9 @@ message(compiler_id = ${CMAKE_CXX_COMPILER_ID}, compiler_version = ${CMAKE_CXX_C
 if(WIN32) # CMake文法上の WIN32
   add_definitions(-D WIN32) # C言語の #define キーワードとしての WIN32
 endif()
+
+# clangdで静的解析するための情報を出力
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # libjpeg-turboが複数architecture向けビルドをサポートしていないため限定
 # https://github.com/libjpeg-turbo/libjpeg-turbo/blob/main/CMakeLists.txt#L101

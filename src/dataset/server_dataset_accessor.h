@@ -18,7 +18,7 @@ namespace plateau::dataset {
 
         void loadFromServer();
 
-        std::set<MeshCode>& getMeshCodes() override;
+        std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
         std::shared_ptr<std::vector<GmlFile>> getGmlFiles(const PredefinedCityModelPackage package) override;
         void getGmlFiles(const PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
 
@@ -43,7 +43,7 @@ namespace plateau::dataset {
         network::Client client_;
         std::string dataset_id_;
         network::DatasetFiles dataset_files_;
-        std::set<MeshCode> mesh_codes_;
+        std::set<std::shared_ptr<GridCode>, GridCodeComparator> grid_codes_;
 
         void addFile(const std::string& sub_folder, const network::DatasetFileItem& gml_file_info);
     };

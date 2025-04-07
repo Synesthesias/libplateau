@@ -15,18 +15,20 @@ namespace plateau::dataset {
     void ServerDatasetAccessor::loadFromServer() {
         // データセット情報を再取得します。
         dataset_files_ = client_.getFiles(dataset_id_);
-        mesh_codes_.clear();
+        grid_codes_.clear();
     }
 
-    std::set<MeshCode>& ServerDatasetAccessor::getMeshCodes() {
-        if (mesh_codes_.empty()) {
+    std::set<std::shared_ptr<GridCode>, GridCodeComparator>& ServerDatasetAccessor::getGridCodes() {
+        if (grid_codes_.empty()) {
             for (const auto& [_, files] : dataset_files_) {
                 for (const auto& file : files) {
-                    mesh_codes_.insert(MeshCode(file.mesh_code));
+                    auto grid_code = GridCode::create(file.grid_code);
+                    if(!grid_code->isValid()) continue;
+                    grid_codes_.insert(std::move(grid_code));
                 }
             }
         }
-        return mesh_codes_;
+        return grid_codes_;
     }
 
     std::shared_ptr<std::vector<GmlFile>> ServerDatasetAccessor::getGmlFiles(
@@ -57,13 +59,13 @@ namespace plateau::dataset {
         double lat_sum = 0;
         double lon_sum = 0;
         double height_sum = 0;
-        for (const auto& mesh_code : getMeshCodes()) {
-            const auto& center = mesh_code.getExtent().centerPoint();
+        for (const auto& grid_code : getGridCodes()) {
+            const auto& center = grid_code->getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
             height_sum += center.height;
         }
-        auto num = (double)getMeshCodes().size();
+        auto num = (double)getGridCodes().size();
         geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
         auto euclid_average = geo_reference.project(geo_average);
         return euclid_average;
@@ -97,7 +99,7 @@ namespace plateau::dataset {
 
         for (const auto& [package, files] : dataset_files_) {
             for (const auto& file : files) {
-                auto extent = MeshCode(file.mesh_code).getExtent();
+                auto extent = GridCode::create(file.grid_code)->getExtent();
                 if (extent_filter.intersects2D(extent)) {
                     out_collection_ptr->addFile(package, file);
                 }
@@ -126,7 +128,7 @@ namespace plateau::dataset {
         // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
         for (const auto& [sub_folder, files] : dataset_files_) {
             for (const auto& file : files) {
-                if (mesh_codes_str_set.find(file.mesh_code) != mesh_codes_str_set.end()) {
+                if (mesh_codes_str_set.find(file.grid_code) != mesh_codes_str_set.end()) {
                     out_collection_ptr->addFile(sub_folder, file);
                 }
             }

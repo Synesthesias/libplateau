@@ -5,25 +5,26 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Native
 {
-    public class NativeVectorMeshCode : NativeVectorDisposableBase<MeshCode>
+    public class NativeVectorGridCode : NativeVectorDisposableBase<GridCode>
     {
-        private NativeVectorMeshCode(IntPtr ptr) : base(ptr)
+        private NativeVectorGridCode(IntPtr ptr) : base(ptr)
         {
         }
 
-        public static NativeVectorMeshCode Create()
+        public static NativeVectorGridCode Create()
         {
             var result = NativeMethods.plateau_create_vector_mesh_code(out var ptr);
             DLLUtil.CheckDllError(result);
-            return new NativeVectorMeshCode(ptr);
+            return new NativeVectorGridCode(ptr);
         }
 
-        public override MeshCode At(int index)
+        public override GridCode At(int index)
         {
             ThrowIfDisposed();
-            var meshCode = DLLUtil.GetNativeValue<MeshCode>(Handle, index,
-                NativeMethods.plateau_vector_mesh_code_get_value);
-            return meshCode;
+            var gridCodePtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
+                NativeMethods.plateau_vector_grid_code_get_value);
+            var gridCode = new GridCode(gridCodePtr, false);
+            return gridCode.Copy(); // 寿命管理のためコピーを渡します。元データはvector廃棄時に消します。
         }
 
         public override int Length
@@ -32,7 +33,7 @@ namespace PLATEAU.Native
             {
                 ThrowIfDisposed();
                 int count = DLLUtil.GetNativeValue<int>(Handle,
-                    NativeMethods.plateau_vector_mesh_code_count);
+                    NativeMethods.plateau_vector_grid_code_count);
                 return count;
             }
         }
@@ -62,20 +63,20 @@ namespace PLATEAU.Native
                 [In] IntPtr vectorPtr);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_vector_mesh_code_get_value(
+            internal static extern APIResult plateau_vector_grid_code_get_value(
                 [In] IntPtr vectorPtr,
-                out MeshCode outMeshCode,
+                out IntPtr outGridCodePtr,
                 int index);
         
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_vector_mesh_code_count(
+            internal static extern APIResult plateau_vector_grid_code_count(
                 [In] IntPtr handle,
                 out int outCount);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_vector_mesh_code_push_back_value(
+            internal static extern APIResult grid_code_push_back_value(
                 [In] IntPtr handle,
-                [In] MeshCode meshCode);
+                [In] IntPtr gridCodePtr);
         }
     }
 }

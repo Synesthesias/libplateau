@@ -234,11 +234,17 @@ namespace plateau::dataset {
         return result;
     }
 
-    bool MeshCode::isWithin(const MeshCode& other) const {
-        if (get() == other.get())
+    bool MeshCode::isWithin(const GridCode& other) const {
+        // 型チェック
+        const auto* other_mesh = dynamic_cast<const MeshCode*>(&other);
+        if (other_mesh == nullptr) {
+            return false;  // 異なる型の場合は内包関係にないとみなす
+        }
+
+        if (get() == other_mesh->get())
             return true;
 
-        return get().substr(0, 6) == other.get();
+        return get().substr(0, 6) == other_mesh->get();
     }
 
     MeshCode MeshCode::asSecond() const {
@@ -298,13 +304,6 @@ namespace plateau::dataset {
         return get() == other.get();
     }
 
-    bool MeshCode::operator<(MeshCode& other) const {
-        return std::stoi(get()) < std::stoi(other.get());
-    }
-
-    bool MeshCode::operator<(const MeshCode& other) const {
-        return std::stoi(get()) < std::stoi(other.get());
-    }
 
     void MeshCode::nextCol(MeshCode& mesh_code) {
         if (mesh_code.third_col_ < third_division_count - 1) {

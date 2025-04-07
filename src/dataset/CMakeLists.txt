@@ -4,4 +4,7 @@ target_sources(plateau PRIVATE
     "server_dataset_accessor.cpp"
     "mesh_code.cpp"
     "lod_searcher.cpp"
-    "dataset_source.cpp")
+    "dataset_source.cpp"
+    "grid_code.cpp"
+    "standard_map_grid.cpp"
+)

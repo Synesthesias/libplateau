@@ -41,11 +41,11 @@ namespace PLATEAU.Dataset
             return GetGmlFiles((PredefinedCityModelPackage)allPackages);
         }
 
-        public NativeVectorMeshCode MeshCodes
+        public NativeVectorGridCode GridCodes
         {
             get
             {
-                var meshCodes = NativeVectorMeshCode.Create();
+                var meshCodes = NativeVectorGridCode.Create();
                 var result = NativeMethods.plateau_i_dataset_accessor_get_mesh_codes(
                     Handle, meshCodes.Handle);
                 DLLUtil.CheckDllError(result);
@@ -76,7 +76,7 @@ namespace PLATEAU.Dataset
 
         public DatasetAccessor FilterByMeshCodes(IEnumerable<MeshCode> meshCodes)
         {
-            var nativeMeshCodes = NativeVectorMeshCode.Create();
+            var nativeMeshCodes = NativeVectorGridCode.Create();
             foreach (var meshCode in meshCodes)
             {
                 nativeMeshCodes.Add(meshCode);

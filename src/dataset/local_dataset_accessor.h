@@ -66,9 +66,9 @@ namespace plateau::dataset {
         int getGmlFileCount(PredefinedCityModelPackage package);
 
         /**
-         * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。
+         * \brief 都市モデルデータが存在するGridCodeのリストを取得します。
          */
-        std::set<MeshCode>& getMeshCodes() override;
+        std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
@@ -84,7 +84,7 @@ namespace plateau::dataset {
     private:
         std::string udx_path_;
         std::map<PredefinedCityModelPackage, std::vector<GmlFile>> files_;
-        std::set<MeshCode> mesh_codes_;
+        std::set<std::shared_ptr<GridCode>, GridCodeComparator> grid_codes_;
         std::map<std::string, std::vector<GmlFile>> files_by_code_;
         void addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info);
         void setUdxPath(std::string udx_path);

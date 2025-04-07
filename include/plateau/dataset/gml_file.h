@@ -20,7 +20,8 @@ namespace plateau::dataset {
 
         const std::string& getPath() const;
         void setPath(const std::string& path);
-        MeshCode getMeshCode() const;
+        std::shared_ptr<GridCode> getGridCode() const;
+        GridCode* getGridCodeRaw() const; // 寿命管理をDLL利用者に任せる用です
         const std::string& getFeatureType() const;
         PredefinedCityModelPackage getPackage() const;
         std::string getAppearanceDirectoryPath() const;
@@ -61,7 +62,7 @@ namespace plateau::dataset {
 
     private:
         std::string path_;
-        std::string code_;
+        std::shared_ptr<GridCode> grid_code_;
         std::string feature_type_;
         bool is_valid_;
         bool is_local_;

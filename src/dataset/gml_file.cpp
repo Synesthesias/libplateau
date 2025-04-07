@@ -47,8 +47,12 @@ namespace plateau::dataset {
         applyPath();
     }
 
-    MeshCode GmlFile::getMeshCode() const {
-        return MeshCode(code_);
+    std::shared_ptr<GridCode> GmlFile::getGridCode() const {
+        return grid_code_;
+    }
+
+    GridCode* GmlFile::getGridCodeRaw() const {
+        return GridCode::createRaw(grid_code_->get());
     }
 
     const std::string& GmlFile::getFeatureType() const {
@@ -87,7 +91,7 @@ namespace plateau::dataset {
     }
 
     bool GmlFile::isValid() const {
-        return is_valid_ && getMeshCode().isValid();
+        return is_valid_ && getGridCode()->isValid();
     }
 
     bool GmlFile::isMaxLodCalculated() const {
@@ -111,7 +115,7 @@ namespace plateau::dataset {
             current += character;
         }
         try {
-            code_ = filename_parts.empty() ? "" : filename_parts.at(0);
+            grid_code_ = GridCode::create(filename_parts.empty() ? "" : filename_parts.at(0));
             feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts.at(1);
             is_valid_ = true;
         }

@@ -19,7 +19,7 @@ namespace plateau::network {
      * データセットに含まれるファイルです。
      */
     struct DatasetFileItem {
-        std::string mesh_code;
+        std::string grid_code;
         std::string url;
         int max_lod = 0;
     };

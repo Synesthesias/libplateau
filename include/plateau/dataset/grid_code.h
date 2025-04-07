@@ -1,0 +1,62 @@
+#pragma once
+
+#include <string>
+#include <memory>
+#include <libplateau_api.h>
+#include "plateau/geometry/geo_coordinate.h"
+
+namespace plateau::dataset {
+    /**
+     * \brief 地図の区画を表すコードの基底クラスです。
+     * 
+     * メッシュコードや国土基本図図郭など、地図の区画を表現するコードシステムの共通機能を提供します。
+     */
+    class LIBPLATEAU_EXPORT GridCode {
+    public:
+        virtual ~GridCode() = default;
+
+        /**
+         * \brief コードを文字列として取得します。
+         */
+        virtual std::string get() const = 0;
+
+        /**
+         * \brief コードが表す緯度経度範囲を取得します。
+         */
+        virtual geometry::Extent getExtent() const = 0;
+
+        /**
+         * \brief このコードが他のコードに内包されるかどうかを計算します。
+         */
+        virtual bool isWithin(const GridCode& other) const = 0;
+
+        /**
+         * \brief コードが適切な値かどうかを返します。
+         */
+        virtual bool isValid() const = 0;
+
+        /**
+         * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。
+         * \param code コード文字列
+         * \return コードの形式に応じてMeshCodeまたはStandardMapGridのインスタンスを返します。
+         * \throw std::invalid_argument コードの形式が不正な場合
+         */
+        static std::shared_ptr<GridCode> create(const std::string& code);
+
+        /**
+         * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。
+         * \param code コード文字列
+         * \return コードの形式に応じてMeshCodeまたはStandardMapGridのインスタンスを返します。生ポインタで返されます。
+         * \throw std::invalid_argument コードの形式が不正な場合
+         */
+        static GridCode* createRaw(const std::string& code);
+
+    };
+
+    struct GridCodeComparator {
+        bool operator()(const std::shared_ptr<GridCode>& lhs, const std::shared_ptr<GridCode>& rhs) const {
+            if(lhs == nullptr || rhs == nullptr) return false;
+            return lhs->get() < rhs->get();
+        }
+    };
+} 

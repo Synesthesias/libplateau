@@ -17,12 +17,13 @@ extern "C" {
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_i_dataset_accessor_get_mesh_codes(
             IDatasetAccessor* const dataset_accessor,
-            std::vector<MeshCode>* const out_mesh_codes
+            std::vector<std::string>* const out_grid_codes
     ) {
         API_TRY{
-            const auto& mesh_codes = dataset_accessor->getMeshCodes();
-            for (const auto& mesh_code : mesh_codes)
-                out_mesh_codes->push_back(mesh_code);
+            const auto& grid_codes = dataset_accessor->getGridCodes();
+            for (const auto& grid_code : grid_codes) {
+                out_grid_codes->push_back(grid_code->get());
+            }
             return APIResult::Success;
         } API_CATCH;
         return APIResult::ErrorUnknown;

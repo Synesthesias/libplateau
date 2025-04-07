@@ -12,16 +12,19 @@ namespace PLATEAU.Native
     {
         public IntPtr Handle { get; }
         private bool isDisposed;
+        private bool autoDispose;
 
         protected abstract void DisposeNative();
 
-        protected PInvokeDisposable(IntPtr handle)
+        protected PInvokeDisposable(IntPtr handle, bool autoDispose = true)
         {
             Handle = handle;
+            this.autoDispose = autoDispose;
         }
         
         public void Dispose()
         {
+            if (!this.autoDispose) return;
             if (this.isDisposed) return;
             DisposeNative();
             GC.SuppressFinalize(this);

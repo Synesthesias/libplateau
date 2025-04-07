@@ -73,8 +73,8 @@ TEST_F(DatasetTest,DISABLED_getGmlsServer) { // NOLINT
 }
 
 TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
-    const auto& mesh_codes = local_dataset_accessor->getMeshCodes();
-    ASSERT_TRUE(mesh_codes.size() > 0);
+    const auto& grid_codes = local_dataset_accessor->getGridCodes();
+    ASSERT_TRUE(grid_codes.size() > 0);
 }
 
 namespace {

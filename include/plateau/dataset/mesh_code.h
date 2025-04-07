@@ -5,6 +5,7 @@
 
 #include <libplateau_api.h>
 #include "plateau/geometry/geo_coordinate.h"
+#include "plateau/dataset/grid_code.h"
 
 namespace plateau::dataset {
     /**
@@ -12,7 +13,7 @@ namespace plateau::dataset {
      * 
      * 2~5次メッシュの緯度経度範囲の取得、緯度経度範囲を内包する3次メッシュの取得を行う機能を提供しています。
      */
-    class LIBPLATEAU_EXPORT MeshCode {
+    class LIBPLATEAU_EXPORT MeshCode : public GridCode {
     public:
         explicit MeshCode(const std::string& code);
         MeshCode() = default;
@@ -20,7 +21,7 @@ namespace plateau::dataset {
         /**
          * \brief メッシュコードを文字列として取得します。
          */
-        std::string get() const;
+        std::string get() const override;
 
         /**
          * \brief メッシュコードの次数を取得します。
@@ -30,7 +31,7 @@ namespace plateau::dataset {
         /**
          * \brief メッシュコードの緯度経度範囲を取得します。
          */
-        geometry::Extent getExtent() const;
+        geometry::Extent getExtent() const override;
 
         /**
          * \brief 座標点を含む3次メッシュを取得します。
@@ -50,7 +51,7 @@ namespace plateau::dataset {
         /**
          * \brief 地域メッシュが内包されるかどうかを計算します。
          */
-        bool isWithin(const MeshCode& other) const;
+        bool isWithin(const GridCode& other) const override;
 
         /**
          * \brief 地域メッシュを2次メッシュとして取得します。
@@ -65,7 +66,7 @@ namespace plateau::dataset {
         /**
          * \brief メッシュコードが適切な値かどうかを返します。
         */
-        bool isValid() const;
+        bool isValid() const override;
 
         bool operator==(const MeshCode& other) const;
 

@@ -6,6 +6,7 @@
 
 #include <plateau/geometry/geo_reference.h>
 #include "local_dataset_accessor.h"
+#include "plateau/dataset/grid_code.h"
 
 namespace plateau::dataset {
     namespace fs = std::filesystem;
@@ -152,12 +153,12 @@ namespace plateau::dataset {
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path(), gml_files);
             for (const auto& gml_file: gml_files) {
-                auto mesh_code = gml_file.getMeshCode();
+                auto grid_code = gml_file.getGridCode();
                 if (!gml_file.isValid()) continue;
-                if (collection.files_by_code_.count(mesh_code.get()) == 0) {
-                    collection.files_by_code_.emplace(mesh_code.get(), std::vector<GmlFile>());
+                if (collection.files_by_code_.count(grid_code->get()) == 0) {
+                    collection.files_by_code_.emplace(grid_code->get(), std::vector<GmlFile>());
                 }
-                collection.files_by_code_[mesh_code.get()].push_back(gml_file);
+                collection.files_by_code_[grid_code->get()].push_back(gml_file);
             }
         }
     }
@@ -175,7 +176,7 @@ namespace plateau::dataset {
 
         out_collection_ptr->setUdxPath(udx_path_);
         for (const auto& [code, files] : files_by_code_) {
-            if (extent_filter.intersects2D(MeshCode(code).getExtent())) {
+            if (extent_filter.intersects2D(GridCode::create(code)->getExtent())) {
                 for (const auto& file : files) {
                     out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
@@ -285,13 +286,13 @@ namespace plateau::dataset {
         double lat_sum = 0;
         double lon_sum = 0;
         double height_sum = 0;
-        for (const auto& mesh_code : mesh_codes_) {
-            const auto& center = mesh_code.getExtent().centerPoint();
+        for (const auto& grid_code : grid_codes_) {
+            const auto& center = grid_code->getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
             height_sum += center.height;
         }
-        auto num = (double)mesh_codes_.size();
+        auto num = (double)grid_codes_.size();
         geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
         auto euclid_average = geo_reference.project(geo_average);
         return euclid_average;
@@ -301,17 +302,17 @@ namespace plateau::dataset {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
-        if (mesh_codes_.empty()) {
+    std::set<std::shared_ptr<GridCode>, GridCodeComparator>& LocalDatasetAccessor::getGridCodes() {
+        if (grid_codes_.empty()) {
             for (const auto& [_, files]: files_) {
                 for (const auto& file: files) {
-                    auto mesh_code = file.getMeshCode();
-                    if (!mesh_code.isValid()) continue;
-                    mesh_codes_.insert(file.getMeshCode());
+                    auto grid_code = file.getGridCode();
+                    if (!grid_code->isValid()) continue;
+                    grid_codes_.insert(GridCode::create(file.getGridCode()->get()));
                 }
             }
         }
-        return mesh_codes_;
+        return grid_codes_;
     }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
@@ -320,11 +321,11 @@ namespace plateau::dataset {
         }
         files_.at(sub_folder).push_back(gml_file_info);
 
-        const auto mesh_code = gml_file_info.getMeshCode().get();
-        if (files_by_code_.count(mesh_code) == 0) {
-            files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
+        const auto grid_code = gml_file_info.getGridCode()->get();
+        if (files_by_code_.count(grid_code) == 0) {
+            files_by_code_.emplace(grid_code, std::vector<GmlFile>());
         }
-        files_by_code_[mesh_code].push_back(gml_file_info);
+        files_by_code_[grid_code].push_back(gml_file_info);
     }
 
     void LocalDatasetAccessor::setUdxPath(std::string udx_path) {

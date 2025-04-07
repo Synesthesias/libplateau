@@ -18,16 +18,16 @@ namespace plateau::dataset {
                 std::make_shared<DatasetSource>(
                         std::move(DatasetSource::createLocal(u8"../data/日本語パステスト")));
         auto accessor = source->getAccessor();
-        auto mesh_code_str = accessor->getMeshCodes().begin()->get();
-        ASSERT_EQ(mesh_code_str, "533925");
+        auto grid_code_str = accessor->getGridCodes().begin()->get()->get();
+        ASSERT_EQ(grid_code_str, "533925");
     }
 
     TEST_F(DatasetSourceTest, DISABLED_get_accessor_of_server_source_returns_server_accessor) { // NOLINT
         auto source = DatasetSource::createServer(std::string("23ku"), network::Client::createClientForMockServer());
         auto accessor = source.getAccessor();
-        auto mesh_code_str = accessor->getMeshCodes().begin()->get();
-        ASSERT_EQ(mesh_code_str, "533926");
+        auto grid_code_str = accessor->getGridCodes().begin()->get()->get();
+        ASSERT_EQ(grid_code_str, "533926");
         auto gml_files = accessor->getGmlFiles(PredefinedCityModelPackage::Building);
-        ASSERT_EQ(gml_files->at(0).getMeshCode().get(), "53392642");
+        ASSERT_EQ(gml_files->at(0).getGridCode()->get(), "53392642");
     }
 }

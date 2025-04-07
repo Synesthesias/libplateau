@@ -21,8 +21,8 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             using var accessor = source.Accessor;
-            Assert.IsTrue(accessor.MeshCodes.Length > 0, "メッシュコードが存在します。");
-            Console.WriteLine(accessor.MeshCodes.At(0).ToString());
+            Assert.IsTrue(accessor.GridCodes.Length > 0, "メッシュコードが存在します。");
+            Console.WriteLine(accessor.GridCodes.At(0).ToString());
         }
 
         [Ignore, TestMethod]
@@ -30,7 +30,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
-            var meshCodes = accessor.MeshCodes;
+            var meshCodes = accessor.GridCodes;
             Assert.AreEqual(3, meshCodes.Length);
             Assert.AreEqual("53392642", meshCodes.At(1).ToString());
         }
@@ -100,7 +100,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var datasetSource = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             var accessor = datasetSource.Accessor;
-            var meshCodes = accessor.MeshCodes;
+            var meshCodes = accessor.GridCodes;
             Assert.IsTrue(meshCodes.Length > 0, "メッシュコードが存在します。");
             int maxLod = accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GetMaxLod();
             Assert.AreEqual(2, maxLod);
@@ -153,7 +153,7 @@ namespace PLATEAU.Test.Dataset
         private static void TestCenterPoint(DatasetSource source)
         {
             using var collection = source.Accessor;
-            var meshCodes = collection.MeshCodes.ToArray();
+            var meshCodes = collection.GridCodes.ToArray();
             Assert.IsTrue(meshCodes.Length > 0);
 
             PlateauVector3d center;

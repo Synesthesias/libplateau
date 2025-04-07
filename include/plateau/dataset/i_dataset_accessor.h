@@ -3,6 +3,8 @@
 #include <libplateau_api.h>
 #include <plateau/dataset/gml_file.h>
 #include <plateau/dataset/city_model_package.h>
+#include <plateau/dataset/grid_code.h>
+#include <memory>
 
 namespace plateau::geometry {
     class GeoReference;
@@ -129,7 +131,7 @@ namespace plateau::dataset {
         /**
          * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。
          */
-        virtual std::set<MeshCode>& getMeshCodes() = 0;
+        virtual std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() = 0;
 
         virtual TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference) = 0;
 
