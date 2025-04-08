@@ -1,5 +1,7 @@
 #include "libplateau_c.h"
 #include <plateau/dataset/i_dataset_accessor.h>
+#include <vector>
+#include <string>
 
 extern "C" {
     using namespace plateau::dataset;
