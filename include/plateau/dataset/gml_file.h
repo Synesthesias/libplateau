@@ -21,6 +21,8 @@ namespace plateau::dataset {
         const std::string& getPath() const;
         void setPath(const std::string& path);
         MeshCode getMeshCode() const;
+        double getEpsg() const;
+        double isPolarCoordinate() const;
         const std::string& getFeatureType() const;
         PredefinedCityModelPackage getPackage() const;
         std::string getAppearanceDirectoryPath() const;
@@ -63,6 +65,7 @@ namespace plateau::dataset {
         std::string path_;
         std::string code_;
         std::string feature_type_;
+        std::string epsg_;
         bool is_valid_;
         bool is_local_;
         int max_lod_;

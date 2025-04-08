@@ -51,6 +51,20 @@ namespace plateau::dataset {
         return MeshCode(code_);
     }
 
+    double GmlFile::getEpsg() const {
+        return std::stod(epsg_);
+    }
+
+    double GmlFile::isPolarCoordinate() const {
+        double epsg = getEpsg();
+        // 平面直角座標系の区分についてはこちらを参照してください :
+        // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
+        if (epsg >= 10162 && epsg <= 10174) {
+			return false;
+		}
+        return true;
+    }
+
     const std::string& GmlFile::getFeatureType() const {
         return feature_type_;
     }
@@ -113,6 +127,7 @@ namespace plateau::dataset {
         try {
             code_ = filename_parts.empty() ? "" : filename_parts.at(0);
             feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts.at(1);
+            epsg_ = filename_parts.empty() ? "" : filename_parts.at(2);
             is_valid_ = true;
         }
         catch (...) {
