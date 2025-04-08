@@ -63,7 +63,6 @@ namespace plateau::polygonMesh {
         auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath());
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
         return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.isPolarCoordinate());
-        //return geometry::GeoReference(coordinate_zone_id).project(city_center);
     }
 
     /**
