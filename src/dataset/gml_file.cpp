@@ -52,7 +52,12 @@ namespace plateau::dataset {
     }
 
     double GmlFile::getEpsg() const {
-        return std::stod(epsg_);
+        try {
+            return epsg_.empty() ? 6697 : std::stod(epsg_);
+        }
+        catch (const std::exception&) {
+            return 6697; 
+        }
     }
 
     double GmlFile::isPolarCoordinate() const {

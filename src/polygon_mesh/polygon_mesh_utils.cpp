@@ -60,7 +60,7 @@ namespace plateau::polygonMesh {
         if (!envelope.validBounds()) {
             return TVec3d{0, 0, 0};
         }
-        auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath());
+        const auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath());
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
         return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.isPolarCoordinate());
     }
