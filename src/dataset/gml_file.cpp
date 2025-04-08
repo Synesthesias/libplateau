@@ -132,7 +132,7 @@ namespace plateau::dataset {
         try {
             code_ = filename_parts.empty() ? "" : filename_parts.at(0);
             feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts.at(1);
-            epsg_ = filename_parts.empty() ? "" : filename_parts.at(2);
+            epsg_ = filename_parts.size() <= 2 ? "" : filename_parts.at(2);
             is_valid_ = true;
         }
         catch (...) {
