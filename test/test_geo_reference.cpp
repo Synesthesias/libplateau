@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>
-#include "../src/geometry/polar_to_plane_cartesian.h"
+#include "../src/geometry/polar_to_plane_cartesian.cpp"
 
 namespace plateau::geometry {
     class GeoReferenceTest : public ::testing::Test {
