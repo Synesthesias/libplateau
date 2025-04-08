@@ -60,7 +60,7 @@ namespace plateau::dataset {
         }
     }
 
-    double GmlFile::usePolarConversion() const {
+    bool GmlFile::isPolarCoordinateSystem() const {
         double epsg = getEpsg();
         // 平面直角座標系の区分についてはこちらを参照してください :
         // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/

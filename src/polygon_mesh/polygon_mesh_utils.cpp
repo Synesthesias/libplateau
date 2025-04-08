@@ -62,7 +62,7 @@ namespace plateau::polygonMesh {
         }
         const auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath());
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.usePolarConversion());
+        return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.isPolarCoordinateSystem());
     }
 
     /**
