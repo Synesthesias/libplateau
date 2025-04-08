@@ -56,7 +56,7 @@ namespace plateau::polygonMesh {
             auto& out_vertices = out_mesh.getVertices();
             out_vertices.reserve(vertices_lat_lon.size());
             for (const auto& lat_lon : vertices_lat_lon) {
-                auto xyz = geo_reference.convert(lat_lon, false, gml.isPolarCoordinate());
+                auto xyz = geo_reference.convert(lat_lon, false, gml.usePolarConversion());
                 out_vertices.push_back(xyz);
             }
             assert(out_vertices.size() == vertices_lat_lon.size());

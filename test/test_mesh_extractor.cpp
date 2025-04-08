@@ -224,7 +224,7 @@ namespace plateau::polygonMesh {
         const std::shared_ptr<const CityModel> city_model = load(gml_path, params);
 
         const auto& gml = plateau::dataset::GmlFile((city_model->getGmlPath()));
-        ASSERT_FALSE(gml.isPolarCoordinate());
+        ASSERT_FALSE(gml.usePolarConversion());
 
         auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
         const auto& lod_node = model->getRootNodeAt(0);
