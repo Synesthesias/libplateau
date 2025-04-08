@@ -8,6 +8,7 @@
 #include "../src/polygon_mesh/area_mesh_factory.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/dataset/mesh_code.h>
+#include <plateau/dataset/gml_file.h>
 
 using namespace citygml;
 using namespace plateau::geometry;
@@ -201,6 +202,53 @@ namespace plateau::polygonMesh {
         for (int i = 0; i <= 2; ++i) {
             ASSERT_GT(all_model->getRootNodeAt(i).getChildCount(), 0);
             ASSERT_EQ(all_model->getRootNodeAt(i).getChildCount(), model->getRootNodeAt(i).getChildCount());
+        }
+    }
+
+    // Epsgが6697以外の場合、平面直角座標変換を行わない
+    TEST_F(MeshExtractorTest, no_coordinate_transformation_during_conversion) { // NOLINT
+
+        const std::string gml_path = u8"../data/日本語パステスト/udx/unf/08EE763_unf_10169_sewer_op.gml";
+        ParserParams params;
+        MeshExtractOptions mesh_extract_options = MeshExtractOptions();
+        params.tesselate = true;
+        mesh_extract_options.min_lod = 0;
+        mesh_extract_options.max_lod = 2;
+        mesh_extract_options.mesh_granularity = MeshGranularity::PerPrimaryFeatureObject;
+        mesh_extract_options.grid_count_of_side = 5;
+        mesh_extract_options.exclude_city_object_outside_extent = true;
+        mesh_extract_options.exclude_polygons_outside_extent = false;
+        mesh_extract_options.coordinate_zone_id = 8;
+        mesh_extract_options.mesh_axes = CoordinateSystem::ENU;
+        const std::shared_ptr<const CityModel> city_model = load(gml_path, params);
+
+        auto info = plateau::dataset::GmlFile((city_model->getGmlPath()));
+        ASSERT_FALSE(info.isPolarCoordinate());
+
+        auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
+        const auto& lod_node = model->getRootNodeAt(0);
+        const auto& first_model_node = lod_node.getChildAt(0);
+        const auto& mesh = first_model_node.getMesh();
+        bool hasVertices = mesh->hasVertices();
+
+        ASSERT_TRUE(hasVertices);
+
+        const auto& vertices = mesh->getVertices();
+
+        ASSERT_TRUE(city_model->getRootCityObjects().size() > 0);
+
+        // CityModel Vertex
+        const auto root_city_object = city_model->getRootCityObjects()[0];
+        const auto root_geometry = root_city_object->getGeometry(0).getGeometry(0);
+        const auto city_model_polygon = root_geometry.getPolygon(0);
+        const auto city_model_vertices = city_model_polygon->getVertices();
+
+        for (int i = 0; i < city_model_vertices.size(); i++) {
+
+            const auto& city_model_vertex = city_model_vertices[i];
+            const auto& vertex = vertices[i];
+
+            ASSERT_EQ(vertex, city_model_vertex);
         }
     }
 

@@ -49,7 +49,8 @@ add_executable(plateau_test
     "test_map_zoom_level_searcher.cpp"
     "test_height_map_aligner.cpp"
     "test_heightmap_mesh_generator.cpp"
-    "test_geo_reference.cpp")
+    "test_geo_reference.cpp"
+    )
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test_granularity_convert")
 
