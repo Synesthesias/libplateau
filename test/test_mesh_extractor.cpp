@@ -205,13 +205,13 @@ namespace plateau::polygonMesh {
         }
     }
 
-    // Epsgが6697以外の場合、平面直角座標変換を行わない
+    // Epsgが6697以外(10162～10174)の場合、平面直角座標変換を行わない
     TEST_F(MeshExtractorTest, no_coordinate_transformation_during_conversion) { // NOLINT
 
         const std::string gml_path = u8"../data/日本語パステスト/udx/unf/08EE763_unf_10169_sewer_op.gml";
         ParserParams params;
-        MeshExtractOptions mesh_extract_options = MeshExtractOptions();
         params.tesselate = true;
+        MeshExtractOptions mesh_extract_options = MeshExtractOptions();     
         mesh_extract_options.min_lod = 0;
         mesh_extract_options.max_lod = 2;
         mesh_extract_options.mesh_granularity = MeshGranularity::PerPrimaryFeatureObject;
@@ -219,35 +219,32 @@ namespace plateau::polygonMesh {
         mesh_extract_options.exclude_city_object_outside_extent = true;
         mesh_extract_options.exclude_polygons_outside_extent = false;
         mesh_extract_options.coordinate_zone_id = 8;
+		mesh_extract_options.unit_scale = 1.0;
         mesh_extract_options.mesh_axes = CoordinateSystem::ENU;
         const std::shared_ptr<const CityModel> city_model = load(gml_path, params);
 
-        auto info = plateau::dataset::GmlFile((city_model->getGmlPath()));
-        ASSERT_FALSE(info.isPolarCoordinate());
+        const auto& gml = plateau::dataset::GmlFile((city_model->getGmlPath()));
+        ASSERT_FALSE(gml.isPolarCoordinate());
 
         auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
         const auto& lod_node = model->getRootNodeAt(0);
         const auto& first_model_node = lod_node.getChildAt(0);
         const auto& mesh = first_model_node.getMesh();
-        bool hasVertices = mesh->hasVertices();
 
-        ASSERT_TRUE(hasVertices);
-
+        ASSERT_TRUE(mesh->hasVertices());
         const auto& vertices = mesh->getVertices();
+        ASSERT_TRUE(vertices.size() > 0);
 
-        ASSERT_TRUE(city_model->getRootCityObjects().size() > 0);
-
-        // CityModel Vertex
-        const auto root_city_object = city_model->getRootCityObjects()[0];
-        const auto& root_geometry = root_city_object->getGeometry(0).getGeometry(0);
+        // CityModel Vertices
+        const auto& root_city_object = city_model->getRootCityObject(0);
+        const auto& root_geometry = root_city_object.getGeometry(0).getGeometry(0);
         const auto& city_model_polygon = root_geometry.getPolygon(0);
         const auto& city_model_vertices = city_model_polygon->getVertices();
 
+        // 変換されないのでscale:1でENUであればCityModelと座標が同じになる
         for (int i = 0; i < city_model_vertices.size(); i++) {
-
             const auto& city_model_vertex = city_model_vertices[i];
             const auto& vertex = vertices[i];
-
             ASSERT_EQ(vertex, city_model_vertex);
         }
     }
