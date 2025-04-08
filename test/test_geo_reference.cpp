@@ -21,7 +21,6 @@ namespace plateau::geometry {
     };
 
     TEST_F(GeoReferenceTest, ConvertAxisProject) { // NOLINT
-
         // 平面直角座標変換・座標軸変換を行う
         TVec3d converted = ref.convert(base_point, true, true);
         TVec3d projected = ref.project(base_point);
@@ -37,7 +36,6 @@ namespace plateau::geometry {
     }
 
     TEST_F(GeoReferenceTest, ConvertProjectOnly) { // NOLINT
-
         // 平面直角座標変換を行う・座標軸変換を行わない
         TVec3d converted = ref.convert(base_point, false, true);
         TVec3d projected = ref.projectWithoutAxisConvert(base_point);
@@ -52,7 +50,6 @@ namespace plateau::geometry {
     }
 
     TEST_F(GeoReferenceTest, ConvertAxisOnly) { // NOLINT
-
         // 平面直角座標変換を行わない・座標軸変換を行う
         TVec3d point = ref.convert(base_point, true, false);
 
@@ -64,7 +61,6 @@ namespace plateau::geometry {
     }
 
     TEST_F(GeoReferenceTest, ConvertOnly) { // NOLINT
-
         // 平面直角座標変換・座標軸変換を行わない
         TVec3d point = ref.convert(base_point, false, false);
 

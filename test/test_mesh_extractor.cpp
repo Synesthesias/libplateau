@@ -239,9 +239,9 @@ namespace plateau::polygonMesh {
 
         // CityModel Vertex
         const auto root_city_object = city_model->getRootCityObjects()[0];
-        const auto root_geometry = root_city_object->getGeometry(0).getGeometry(0);
-        const auto city_model_polygon = root_geometry.getPolygon(0);
-        const auto city_model_vertices = city_model_polygon->getVertices();
+        const auto& root_geometry = root_city_object->getGeometry(0).getGeometry(0);
+        const auto& city_model_polygon = root_geometry.getPolygon(0);
+        const auto& city_model_vertices = city_model_polygon->getVertices();
 
         for (int i = 0; i < city_model_vertices.size(); i++) {
 
