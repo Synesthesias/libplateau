@@ -33,8 +33,8 @@ namespace plateau::dataset {
 
         void filter(const geometry::Extent& extent, IDatasetAccessor& collection) const override;
         std::shared_ptr<IDatasetAccessor> filter(const geometry::Extent& extent) const override;
-        void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, IDatasetAccessor& collection) const override;
-        std::shared_ptr<IDatasetAccessor> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const override;
+        void filterByGridCodes(const std::vector<GridCode*>& grid_codes, IDatasetAccessor& collection) const override;
+        std::shared_ptr<IDatasetAccessor> filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const override;
 
         ServerDatasetAccessor* create() const override { return new ServerDatasetAccessor(dataset_id_, client_); }
         ServerDatasetAccessor* clone() const override { return new ServerDatasetAccessor(*this); }

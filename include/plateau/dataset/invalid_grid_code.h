@@ -43,5 +43,16 @@ namespace plateau::dataset {
          * \return 常にfalseを返します。
          */
         bool isValid() const override { return false; }
+
+        /**
+         * \brief １段階上のレベルのグリッドコードに変換します。
+         * \return 無効なグリッドコードを返します。
+         */
+        std::shared_ptr<GridCode> upper() override { 
+            return std::make_shared<InvalidGridCode>(); 
+        }
+
+        int getLevel() const override { return -1; }
+        bool isLargestLevel() const override { return true; }
     };
 } 

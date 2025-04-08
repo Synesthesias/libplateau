@@ -17,14 +17,14 @@ extern "C" {
                    std::vector<GmlFile>* out_gml_files,
                    accessor->getGmlFiles(package, *out_gml_files))
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_i_dataset_accessor_get_mesh_codes(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_i_dataset_accessor_get_grid_codes(
             IDatasetAccessor* const dataset_accessor,
-            std::vector<std::string>* const out_grid_codes
+            std::vector<GridCode*>* const out_grid_codes
     ) {
         API_TRY{
             const auto& grid_codes = dataset_accessor->getGridCodes();
             for (const auto& grid_code : grid_codes) {
-                out_grid_codes->push_back(grid_code->get());
+                out_grid_codes->push_back(GridCode::createRaw(grid_code->get()));  // GridCode::createRawを使用
             }
             return APIResult::Success;
         } API_CATCH;
@@ -42,12 +42,12 @@ extern "C" {
                    TVec3d* const out_center_point,
                    *out_center_point = accessor->calculateCenterPoint(*geo_reference))
 
-    DLL_3_ARG_FUNC(plateau_i_dataset_accessor_filter_by_mesh_codes,
+    DLL_3_ARG_FUNC(plateau_i_dataset_accessor_filter_by_grid_codes,
                    const IDatasetAccessor* const accessor,
-                   const std::vector<MeshCode>* mesh_codes,
+                   const std::vector<GridCode*>* grid_codes,
                    IDatasetAccessor** out_dataset_accessor_ptr,
                    auto filtered = accessor->create();
-                   accessor->filterByMeshCodes(*mesh_codes, *filtered);
+                           accessor->filterByGridCodes(*grid_codes, *filtered);
                    *out_dataset_accessor_ptr = filtered;
     )
 

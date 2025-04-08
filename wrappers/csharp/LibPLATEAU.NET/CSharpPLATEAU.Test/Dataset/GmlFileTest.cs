@@ -32,7 +32,7 @@ namespace PLATEAU.Test.Dataset
         {
             string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
             var info = GmlFile.Create(path);
-            Assert.AreEqual("53392642", info.MeshCode.ToString());
+            Assert.AreEqual("53392642", info.GridCode.ToString());
             info.Dispose();
         }
         
@@ -76,7 +76,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(new DatasetSourceConfigLocal("data/日本語パステスト"));
             using var accessor = source.Accessor;
-            using var filtered = accessor.FilterByMeshCodes(new [] { MeshCode.Parse("53392642") });
+            using var filtered = accessor.FilterByGridCoords(new [] { GridCode.Create("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(2, gmls.At(0).GetMaxLod());
@@ -87,7 +87,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer("23ku");
             using var accessor = source.Accessor;
-            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse("53392642") });
+            using var filtered = accessor.FilterByGridCoords(new[] { GridCode.Create("53392642") });
             var gmls = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
             Assert.AreEqual(1, gmls.At(0).GetMaxLod());

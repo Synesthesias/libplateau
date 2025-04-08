@@ -177,22 +177,22 @@ TEST_F(DatasetTest, DISABLED_fetch_server_generates_files) { // NOLINT
     fs::remove_all(temp_test_dir);
 }
 
-namespace { // テスト filterByMeshCodes で使う無名名前空間の関数です。
+namespace { // テスト filterByGridCodes で使う無名名前空間の関数です。
     bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
                                                      const IDatasetAccessor& udx_file_collection,
                                                      const PredefinedCityModelPackage sub_folder) {
-        auto mesh_code = std::vector<MeshCode>{ MeshCode(mesh_code_str) };
-        auto filtered_collection = udx_file_collection.filterByMeshCodes(mesh_code);
+        auto grid_code = std::vector<std::shared_ptr<GridCode>>{GridCode::create(mesh_code_str) };
+        auto filtered_collection = udx_file_collection.filterByGridCodes(grid_code);
         auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
         bool contains_mesh_code = false;
         for (const auto& building_gml : *gml_vector) {
-            if (building_gml.getPath().find(mesh_code[0].get()) != std::string::npos) {
+            if (building_gml.getPath().find(grid_code[0]->get()) != std::string::npos) {
                 contains_mesh_code = true;
             }
         }
         return contains_mesh_code;
     }
-} // テスト filterByMeshCodes で使う無名名前空間の関数です。
+} // テスト filterByGridCodes で使う無名名前空間の関数です。
 
 TEST_F(DatasetTest, filter_by_mesh_codes) { // NOLINT
     ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", *local_dataset_accessor,

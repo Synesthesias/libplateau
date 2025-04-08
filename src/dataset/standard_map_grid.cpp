@@ -40,6 +40,21 @@ namespace plateau::dataset {
         return is_valid_;
     }
 
+    std::shared_ptr<GridCode> StandardMapGrid::upper() {
+        // 仮実装: 自分自身のコピーを返す
+        return std::make_shared<StandardMapGrid>(code_);
+    }
+
+    int StandardMapGrid::getLevel() const {
+        // 仮実装: 常に1を返す
+        return 1;
+    }
+
+    bool StandardMapGrid::isLargestLevel() const {
+        // 仮実装: 常にtrueを返す
+        return true;
+    }
+
     bool StandardMapGrid::operator==(const StandardMapGrid& other) const {
         return code_ == other.code_;
     }

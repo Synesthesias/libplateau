@@ -107,21 +107,25 @@ namespace plateau::dataset {
         }
     }
 
-    void ServerDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
-                                                 IDatasetAccessor& collection) const {
+    void ServerDatasetAccessor::filterByGridCodes(const std::vector<GridCode*>& grid_codes,
+                                                  IDatasetAccessor& collection) const {
         const auto out_collection_ptr = dynamic_cast<ServerDatasetAccessor*>(&collection);
         if (out_collection_ptr == nullptr)
             return;
 
         // 検索用に、引数の mesh_codes を文字列のセットにします。
+        // TODO ここの処理はlocal_dataset_accessor.cppと重複する
         auto mesh_codes_str_set = std::set<std::string>();
-        for (auto mesh_code : mesh_codes) {
+        for (auto grid_code : grid_codes) {
             // 各地域メッシュについて上位の地域メッシュも含め登録する。
             // 重複する地域メッシュはinsert関数で弾かれる。
-            for (; mesh_code.getLevel() >= 2; mesh_code = mesh_code.upper()) {
-                if (!mesh_code.isValid())
+            auto next_grid_code = GridCode::create(grid_code->get());
+            for (; !next_grid_code->isLargestLevel(); ) {
+                if (!grid_code->isValid())
                     break;
-                mesh_codes_str_set.insert(mesh_code.get());
+                mesh_codes_str_set.insert(grid_code->get());
+
+                next_grid_code = next_grid_code->upper();
             }
         }
 
@@ -136,9 +140,14 @@ namespace plateau::dataset {
     }
 
     std::shared_ptr<IDatasetAccessor>
-        ServerDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
+        ServerDatasetAccessor::filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const {
         auto result = std::make_shared<ServerDatasetAccessor>(dataset_id_, client_);
-        filterByMeshCodes(mesh_codes, *result);
+        std::vector<GridCode*> raw_grid_codes;
+        raw_grid_codes.reserve(grid_codes.size());
+        for(const auto grid_code : grid_codes) {
+            raw_grid_codes.push_back(grid_code.get());
+        }
+        filterByGridCodes(raw_grid_codes, *result);
         return result;
     }
 }

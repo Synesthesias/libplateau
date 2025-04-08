@@ -12,7 +12,7 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.Create(new DatasetSourceConfigLocal("data/日本語パステスト"));
             using var accessor = source.Accessor;
-            Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).MeshCode.ToString(), "53392642");
+            Assert.AreEqual(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).GridCode.ToString(), "53392642");
         }
 
         [Ignore, TestMethod]

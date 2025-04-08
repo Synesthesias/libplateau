@@ -10,20 +10,21 @@ namespace PLATEAU.Dataset
     /// </summary>
     public class GridCode : PInvokeDisposable
     {
-        internal GridCode(IntPtr handle, bool autoDispose = true) : base(handle, autoDispose)
+        private GridCode(IntPtr handle, bool autoDispose = true) : base(handle, autoDispose)
         {
         }
 
-        public static GridCode Parse(string code)
+        public static GridCode Create(string code)
         {
             var result = NativeMethods.plateau_grid_code_parse(code, out var gridCodePtr);
             DLLUtil.CheckDllError(result);
             return new GridCode(gridCodePtr);
         }
-
-        public GridCode Copy()
+        
+        public static GridCode CopyFrom(IntPtr otherGridCodePtr)
         {
-            return Parse(StringCode);
+            var other = new GridCode(otherGridCodePtr, false);
+            return Create(other.StringCode);
         }
         
         public Extent Extent
@@ -49,6 +50,11 @@ namespace PLATEAU.Dataset
                     NativeMethods.plateau_grid_code_get_string_code
                 );
             }
+        }
+
+        public override string ToString()
+        {
+            return StringCode;
         }
         
         public bool IsValid

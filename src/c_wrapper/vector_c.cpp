@@ -82,8 +82,26 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
         handle->at(index), \
         index >= handle->size())
 
+/**
+ * vector<ポインタ型> の要素をdeleteしてからvectorをクリアするための関数を生成するマクロです。
+ * これはvectorがポインタを含む場合（例：vector<GridCode*>）に使用します。
+ * 生成される関数は plateau_cleanup_vector_FUNC_NAME という名前になります。
+ */
+#define CLEANUP(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_cleanup_vector_ ## FUNC_NAME ( \
+        std::vector< VECTOR_ELEMENT_TYPE >* vector_ptr \
+    ){ \
+        if (vector_ptr == nullptr) return APIResult::ErrorInvalidArgument; \
+        for (auto* element : *vector_ptr) { \
+            delete element; \
+        } \
+        vector_ptr->clear(); \
+        return APIResult::Success; \
+    }
+
     PLATEAU_VECTOR_GET_BY_PTR(gml_file, GmlFile)
     PLATEAU_VECTOR_GET_BY_VALUE(grid_code, GridCode*) // TODO クリーンアップ
+    CLEANUP(grid_code, GridCode*)
     PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata_group, DatasetMetadataGroup)
     PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata, DatasetMetadata)
     PLATEAU_VECTOR_GET_BY_PTR(string, std::string)

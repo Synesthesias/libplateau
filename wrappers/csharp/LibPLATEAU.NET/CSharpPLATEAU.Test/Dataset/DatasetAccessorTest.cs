@@ -42,7 +42,7 @@ namespace PLATEAU.Test.Dataset
             using var accessor = datasetSource.Accessor;
             var gmls = accessor.GetGmlFiles(PredefinedCityModelPackage.Building);
             Assert.AreEqual(1, gmls.Length);
-            Assert.AreEqual("53392642", gmls.At(0).MeshCode.ToString());
+            Assert.AreEqual("53392642", gmls.At(0).GridCode.ToString());
             Assert.AreEqual(
                 Path.GetFullPath("data/日本語パステスト/udx/bldg/53392642_bldg_6697_op2.gml"),
                 Path.GetFullPath(gmls.At(0).Path)
@@ -146,7 +146,7 @@ namespace PLATEAU.Test.Dataset
             Assert.IsTrue(gmlFiles.Length > 0);
             var firstGml = gmlFiles.At(0);
             Assert.AreEqual(PredefinedCityModelPackage.Building, firstGml.Package);
-            Assert.AreEqual("53392642", firstGml.MeshCode.ToString());
+            Assert.AreEqual("53392642", firstGml.GridCode.ToString());
         }
 
 
@@ -172,12 +172,12 @@ namespace PLATEAU.Test.Dataset
         
         private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCodeStr)
         {
-            using var filtered = accessor.FilterByMeshCodes(new[] { MeshCode.Parse(meshCodeStr) });
+            using var filtered = accessor.FilterByGridCoords(new[] { GridCode.Create(meshCodeStr) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)
             {
-                var meshCode = gml.MeshCode;
+                var meshCode = gml.GridCode;
                 if (meshCode.ToString() == meshCodeStr)
                 {
                     contains = true;

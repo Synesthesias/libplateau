@@ -253,13 +253,14 @@ namespace plateau::dataset {
         return result;
     }
 
-    MeshCode& MeshCode::upper() {
+    std::shared_ptr<GridCode> MeshCode::upper() {
         // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
-        level_ = std::max(1, level_ - 1);
-        if (level_ < 2)
-            is_valid_ = false;
+        auto new_mesh_code = std::make_shared<MeshCode>(*this);
+        new_mesh_code->level_ = std::max(1, level_ - 1);
+        if (new_mesh_code->level_ < 2)
+            new_mesh_code->is_valid_ = false;
 
-        return *this;
+        return new_mesh_code;
     }
 
     std::string MeshCode::get() const {
@@ -298,6 +299,10 @@ namespace plateau::dataset {
 
     bool MeshCode::isValid() const {
         return is_valid_;
+    }
+
+    bool MeshCode::isLargestLevel() const {
+        return getLevel() == 2;
     }
 
     bool MeshCode::operator==(const MeshCode& other) const {

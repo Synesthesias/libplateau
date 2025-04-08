@@ -17,7 +17,7 @@ extern "C" {
         return APIResult::Success;
     }
 
-    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_code_get_extent(
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_get_extent(
         const GridCode* grid_code, Extent* extent
     ) {
         API_TRY{

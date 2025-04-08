@@ -36,6 +36,22 @@ namespace plateau::dataset {
         virtual bool isValid() const = 0;
 
         /**
+         * \brief １段階上のレベルのグリッドコードに変換します。
+         */
+        virtual std::shared_ptr<GridCode> upper() = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）を取得します。
+         */
+        virtual int getLevel() const = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも大きいものであるときにtrueを返します。
+         * @return
+         */
+        virtual bool isLargestLevel() const = 0;
+
+        /**
          * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。
          * \param code コード文字列
          * \return コードの形式に応じてMeshCodeまたはStandardMapGridのインスタンスを返します。

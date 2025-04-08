@@ -46,7 +46,7 @@ namespace PLATEAU.Dataset
             get
             {
                 var meshCodes = NativeVectorGridCode.Create();
-                var result = NativeMethods.plateau_i_dataset_accessor_get_mesh_codes(
+                var result = NativeMethods.plateau_i_dataset_accessor_get_grid_codes(
                     Handle, meshCodes.Handle);
                 DLLUtil.CheckDllError(result);
                 return meshCodes;
@@ -74,15 +74,15 @@ namespace PLATEAU.Dataset
             return centerPoint;
         }
 
-        public DatasetAccessor FilterByMeshCodes(IEnumerable<MeshCode> meshCodes)
+        public DatasetAccessor FilterByGridCoords(IEnumerable<GridCode> gridCodes)
         {
             var nativeMeshCodes = NativeVectorGridCode.Create();
-            foreach (var meshCode in meshCodes)
+            foreach (var meshCode in gridCodes)
             {
                 nativeMeshCodes.Add(meshCode);
             }
 
-            var result = NativeMethods.plateau_i_dataset_accessor_filter_by_mesh_codes(
+            var result = NativeMethods.plateau_i_dataset_accessor_filter_by_grid_codes(
                 Handle, nativeMeshCodes.Handle, out var filteredPtr);
             DLLUtil.CheckDllError(result);
             nativeMeshCodes.Dispose();
@@ -121,7 +121,7 @@ namespace PLATEAU.Dataset
                 [In] IntPtr refVectorGmlFilePtr);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_i_dataset_accessor_get_mesh_codes(
+            internal static extern APIResult plateau_i_dataset_accessor_get_grid_codes(
                 [In] IntPtr accessorPtr,
                 [In,Out] IntPtr refVectorMeshCodePtr);
 
@@ -137,7 +137,7 @@ namespace PLATEAU.Dataset
                 out PlateauVector3d outCenterPoint);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_i_dataset_accessor_filter_by_mesh_codes(
+            internal static extern APIResult plateau_i_dataset_accessor_filter_by_grid_codes(
                 [In] IntPtr accessorPtr,
                 [In] IntPtr nativeVectorMeshCodePtr,
                 out IntPtr outFilteredAccessorPtr);

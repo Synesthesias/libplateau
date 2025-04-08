@@ -116,17 +116,18 @@ namespace plateau::dataset {
 
         /**
          * \brief メッシュコードで都市モデルデータをフィルタリングします。
-         * \param mesh_codes 欲しい地域IDのvector
+         * \param grid_codes 欲しい地域IDのvector
          * \param collection フィルタリングされた都市モデルデータの格納先
          */
-        virtual void filterByMeshCodes(const std::vector<MeshCode>& mesh_codes, IDatasetAccessor& collection) const = 0;
+        virtual void filterByGridCodes(const std::vector<GridCode*>& grid_codes, IDatasetAccessor& collection) const = 0;
 
         /**
          * \brief メッシュコードで都市モデルデータをフィルタリングします。
-         * \param mesh_codes 欲しい地域IDのvector
+         * \param grid_codes 欲しい地域IDのvector
          * \return フィルタリングされた都市モデルデータ
          */
-        virtual std::shared_ptr<IDatasetAccessor> filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const = 0;
+        virtual std::shared_ptr<IDatasetAccessor> filterByGridCodes(
+                const std::vector<std::shared_ptr<GridCode>>& grid_codes) const = 0;
 
         /**
          * \brief 都市モデルデータが存在する地域メッシュのリストを取得します。

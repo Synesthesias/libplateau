@@ -27,7 +27,7 @@ namespace plateau::dataset {
     TEST_F(ServerDatasetAccessorTest, DISABLED_getmaxLod) { // NOLINT
         const auto dataset_source = DatasetSource::createServer("23ku", network::Client::createClientForMockServer());
         const auto accessor = dataset_source.getAccessor();
-        const auto filter_by_mesh_codes = accessor->filterByMeshCodes({MeshCode("53392670")});
+        const auto filter_by_mesh_codes = accessor->filterByGridCodes({GridCode::create("53392670")});
         const auto gml_files = filter_by_mesh_codes->getGmlFiles(PredefinedCityModelPackage::Building);
         auto first_gml = gml_files->at(0);
         int max_lod = first_gml.getMaxLod();

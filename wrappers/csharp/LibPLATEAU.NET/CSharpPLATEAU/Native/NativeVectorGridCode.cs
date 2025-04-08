@@ -10,10 +10,9 @@ namespace PLATEAU.Native
         private NativeVectorGridCode(IntPtr ptr) : base(ptr)
         {
         }
-
         public static NativeVectorGridCode Create()
         {
-            var result = NativeMethods.plateau_create_vector_mesh_code(out var ptr);
+            var result = NativeMethods.plateau_create_vector_grid_code(out var ptr);
             DLLUtil.CheckDllError(result);
             return new NativeVectorGridCode(ptr);
         }
@@ -23,8 +22,7 @@ namespace PLATEAU.Native
             ThrowIfDisposed();
             var gridCodePtr = DLLUtil.GetNativeValue<IntPtr>(Handle, index,
                 NativeMethods.plateau_vector_grid_code_get_value);
-            var gridCode = new GridCode(gridCodePtr, false);
-            return gridCode.Copy(); // 寿命管理のためコピーを渡します。元データはvector廃棄時に消します。
+            return GridCode.CopyFrom(gridCodePtr); // 寿命管理のためコピーを渡します。元データはvector廃棄時に消します。
         }
 
         public override int Length
@@ -38,28 +36,41 @@ namespace PLATEAU.Native
             }
         }
 
-        public void Add(MeshCode meshCode)
+        public void Add(GridCode gridCode)
         {
-            var result = NativeMethods.plateau_vector_mesh_code_push_back_value(
-                Handle, meshCode);
+            gridCode.PreventAutoDispose();
+            var result = NativeMethods.plateau_vector_grid_code_push_back_value(
+                Handle, gridCode.Handle);
             DLLUtil.CheckDllError(result);
         }
 
-
         protected override void DisposeNative()
         {
-            var result = NativeMethods.plateau_delete_vector_mesh_code(Handle);
+            // ベクター内の各GridCodeを削除してからベクターを解放
+            CleanupElements();
+            var result = NativeMethods.plateau_delete_vector_grid_code(Handle);
+            DLLUtil.CheckDllError(result);
+        }
+
+        /// <summary>
+        /// ベクター内の各GridCodeオブジェクトを削除します。
+        /// ベクター自体は削除しません。
+        /// </summary>
+        public void CleanupElements()
+        {
+            ThrowIfDisposed();
+            var result = NativeMethods.plateau_cleanup_vector_grid_code(Handle);
             DLLUtil.CheckDllError(result);
         }
 
         private static class NativeMethods
         {
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_create_vector_mesh_code(
+            internal static extern APIResult plateau_create_vector_grid_code(
                 out IntPtr outVectorPtr);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_delete_vector_mesh_code(
+            internal static extern APIResult plateau_delete_vector_grid_code(
                 [In] IntPtr vectorPtr);
 
             [DllImport(DLLUtil.DllName)]
@@ -74,9 +85,13 @@ namespace PLATEAU.Native
                 out int outCount);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult grid_code_push_back_value(
+            internal static extern APIResult plateau_vector_grid_code_push_back_value(
                 [In] IntPtr handle,
                 [In] IntPtr gridCodePtr);
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_cleanup_vector_grid_code(
+                [In] IntPtr handle);
         }
     }
 }

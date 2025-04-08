@@ -61,18 +61,21 @@ namespace plateau::dataset {
         /**
          * \brief レベル2以上の範囲で１段階上のレベルの地域メッシュに変換します。
         */
-        MeshCode& upper();
+        std::shared_ptr<GridCode> upper() override;
 
         /**
          * \brief メッシュコードが適切な値かどうかを返します。
         */
         bool isValid() const override;
 
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも大きいものであるときにtrueを返します。
+        */
+        bool isLargestLevel() const override;
+
         bool operator==(const MeshCode& other) const;
 
-        //! setに入れるために演算子オーバーロードします。
-        bool operator<(MeshCode& other) const;
-        bool operator<(const MeshCode& other) const;
+
 
     private:
         int first_row_;

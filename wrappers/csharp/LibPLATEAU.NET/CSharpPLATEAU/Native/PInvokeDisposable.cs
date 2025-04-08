@@ -30,6 +30,11 @@ namespace PLATEAU.Native
             GC.SuppressFinalize(this);
             this.isDisposed = true;
         }
+        
+        public void PreventAutoDispose()
+        {
+            this.autoDispose = false;
+        }
 
         protected void ThrowIfDisposed()
         {
