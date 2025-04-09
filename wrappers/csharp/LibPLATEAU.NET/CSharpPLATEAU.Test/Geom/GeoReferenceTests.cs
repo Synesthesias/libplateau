@@ -132,6 +132,7 @@ namespace PLATEAU.Test.Geom
             Assert.AreEqual(xyz, geoReference.Convert(xyz, false, false));
             Assert.AreEqual(GeoReference.ConvertAxisFromENUTo(CoordinateSystem.EUN, xyz), geoReference.Convert(xyz, true, false));
             Assert.AreEqual(geoReference.Project(xyz), geoReference.Convert(xyz, true, true));
+            Assert.AreEqual(geoReference.ProjectWithoutAxisConvert(xyz), geoReference.Convert(xyz, false, true));
         }
     }
 }

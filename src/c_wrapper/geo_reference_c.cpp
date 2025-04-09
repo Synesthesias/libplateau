@@ -39,6 +39,12 @@ extern "C" {
                 handle->project(point),
                 , TVec3d point)
 
+    DLL_VALUE_FUNC(plateau_geo_reference_project_without_axis_convert,
+                GeoReference,
+                TVec3d,
+                handle->projectWithoutAxisConvert(point),
+                , TVec3d point)
+
 	DLL_VALUE_FUNC(plateau_geo_reference_convert,
                 GeoReference,
                 TVec3d,
