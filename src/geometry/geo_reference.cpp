@@ -24,6 +24,23 @@ namespace plateau::geometry {
         return converted_point;
     }
 
+    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const bool project) const {
+        //平面直角座標変換、座標軸変換をフラグに応じてスキップします。
+        TVec3d point = lat_lon;
+		// 平面直角座標系に変換
+        if (project)
+            PolarToPlaneCartesian().project(point, zone_id_);
+        if (!convert_axis) {
+			// 座標軸変換をしない場合
+            TVec3 converted_point = point / unit_scale_ - convertAxisToENU(coordinate_system_, reference_point_);
+            return converted_point;
+        }
+		// 座標軸変換をする場合
+        TVec3 converted_point = convertAxisFromENUTo(coordinate_system_, point);
+        converted_point = converted_point / unit_scale_ - reference_point_;
+        return converted_point;
+    }
+
     TVec3d GeoReference::convertAxisToENU(const TVec3d& vertex) const {
         return convertAxisToENU(getCoordinateSystem(), vertex);
     }

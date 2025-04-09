@@ -9,6 +9,7 @@
 
 #include "plateau/polygon_mesh/mesh_merger.h"
 #include "plateau/polygon_mesh/mesh_extractor.h"
+#include "plateau/dataset/gml_file.h"
 
 
 namespace plateau::polygonMesh {
@@ -33,6 +34,8 @@ namespace plateau::polygonMesh {
             const Polygon& polygon, const std::string& gml_path,
             const GeoReference& geo_reference, Mesh& out_mesh) {
 
+            const auto& gml = plateau::dataset::GmlFile(gml_path);
+
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon = polygon.getVertices();
             const auto& in_indices = polygon.getIndices();
@@ -53,7 +56,7 @@ namespace plateau::polygonMesh {
             auto& out_vertices = out_mesh.getVertices();
             out_vertices.reserve(vertices_lat_lon.size());
             for (const auto& lat_lon : vertices_lat_lon) {
-                auto xyz = geo_reference.projectWithoutAxisConvert(lat_lon);
+                auto xyz = geo_reference.convert(lat_lon, false, gml.isPolarCoordinateSystem());
                 out_vertices.push_back(xyz);
             }
             assert(out_vertices.size() == vertices_lat_lon.size());
