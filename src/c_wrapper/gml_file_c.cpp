@@ -40,13 +40,23 @@ extern "C" {
     }
 
     DLL_STRING_PTR_FUNC(plateau_gml_file_get_feature_type_str,
-                        GmlFile,
-                        handle->getFeatureType())
+                    GmlFile,
+                    handle->getFeatureType())
 
     DLL_VALUE_FUNC(plateau_gml_file_get_mesh_code,
-                   GmlFile,
-                   MeshCode,
-                   handle->getMeshCode())
+                    GmlFile,
+                    MeshCode,
+                    handle->getMeshCode())
+
+    DLL_VALUE_FUNC(plateau_gml_file_get_epsg,
+                    GmlFile,
+                    double,
+                    handle->getEpsg())
+
+	DLL_VALUE_FUNC(plateau_gml_file_is_polar_coordinate_system,
+		            GmlFile,
+		            bool,
+		            handle->isPolarCoordinateSystem())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
             const GmlFile* const gml_file_info,

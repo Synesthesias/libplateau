@@ -22,16 +22,28 @@ extern "C" {
                     GeoReference)
 
     DLL_VALUE_FUNC(plateau_geo_reference_project,
-                   GeoReference,
-                   TVec3d,
-                   handle->project(lat_lon),
-                   , GeoCoordinate lat_lon)
+                GeoReference,
+                TVec3d,
+                handle->project(lat_lon),
+                , GeoCoordinate lat_lon)
 
     DLL_VALUE_FUNC(plateau_geo_reference_unproject,
                GeoReference,
                GeoCoordinate,
                handle->unproject(point),
                , TVec3d point)
+
+    DLL_VALUE_FUNC(plateau_geo_reference_project_point,
+                GeoReference,
+                TVec3d,
+                handle->project(point),
+                , TVec3d point)
+
+	DLL_VALUE_FUNC(plateau_geo_reference_convert,
+                GeoReference,
+                TVec3d,
+                handle->convert(point, convert_axis, project),
+                , TVec3d point, bool convert_axis, bool project)
 
     DLL_VALUE_FUNC(plateau_geo_reference_get_reference_point,
                   GeoReference,
