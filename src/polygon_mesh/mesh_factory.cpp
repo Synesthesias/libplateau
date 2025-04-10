@@ -128,12 +128,12 @@ namespace plateau::polygonMesh {
         void findAllPolygonsInGeometry(
             const Geometry& geom, std::list<const citygml::Polygon*>& polygons,
             const unsigned lod, long long& out_vertices_count,
-            const std::vector<plateau::geometry::Extent> extents, bool is_polar_coordinate_system) {
+            const std::vector<plateau::geometry::Extent> extents, const MeshExtractOptions& options) {
 
             // 子のジオメトリのポリゴンをすべて取得
             const unsigned int child_count = geom.getGeometriesCount();
             for (unsigned int i = 0; i < child_count; i++) {
-                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count, extents, is_polar_coordinate_system);
+                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count, extents, options);
             }
 
             if (geom.getLOD() != lod) return;
@@ -146,7 +146,18 @@ namespace plateau::polygonMesh {
                 // TODO: 計算コストが頂点数と範囲数に比例するため高速化
                 for (const auto& vertex : polygon->getVertices()) {
                     for (const auto& extent : extents) {
-                        if (extent.contains(vertex, true, is_polar_coordinate_system)) {
+
+                        if (!options.is_polar_coordinate_system) {
+                            //plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
+                            //if (extent.contains(geo_ref.unproject(vertex))) {
+                            //    is_in_extent = true;
+                            //    break;
+                            //}
+                            is_in_extent = true;
+                            break;
+                        }
+
+                        if (extent.contains(vertex)) {
                             is_in_extent = true;
                             break;
                         }
@@ -347,11 +358,11 @@ namespace plateau::polygonMesh {
         std::vector<Extent> extents = { Extent::all() };
         if (options_.exclude_polygons_outside_extent)
             extents = extents_;
-
+        
         for (unsigned i = 0; i < geometry_count; i++) {
             findAllPolygonsInGeometry(
                 city_obj.getGeometry(i), out_polygons, lod,
-                out_vertices_count, extents, options_.is_polar_coordinate_system);
+                out_vertices_count, extents, options_);
         }
     }
 

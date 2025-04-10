@@ -19,7 +19,16 @@ namespace {
             return false;
 
         for (const auto& extent : extents) {
-            if (extent.contains(city_obj, true, options.is_polar_coordinate_system))
+
+            if (!options.is_polar_coordinate_system) {
+                //plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
+                //auto pos = PolygonMeshUtils::cityObjPos(city_obj);
+                //if (extent.contains(geo_ref.unproject(pos)))
+                //    return false;
+                return false;
+            }
+
+            if (extent.contains(city_obj))
                 return false;
         }
 
