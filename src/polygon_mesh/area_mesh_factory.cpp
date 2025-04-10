@@ -19,7 +19,7 @@ namespace {
             return false;
 
         for (const auto& extent : extents) {
-            if (extent.contains(city_obj))
+            if (extent.contains(city_obj, true, options.is_polar_coordinate_system))
                 return false;
         }
 

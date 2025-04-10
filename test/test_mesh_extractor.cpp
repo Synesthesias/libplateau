@@ -221,6 +221,7 @@ namespace plateau::polygonMesh {
         mesh_extract_options.coordinate_zone_id = 8;
 		mesh_extract_options.unit_scale = 1.0;
         mesh_extract_options.mesh_axes = CoordinateSystem::ENU;
+        mesh_extract_options.is_polar_coordinate_system = false;
         const std::shared_ptr<const CityModel> city_model = load(gml_path, params);
 
         const auto& gml = plateau::dataset::GmlFile((city_model->getGmlPath()));

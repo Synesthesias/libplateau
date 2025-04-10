@@ -1,5 +1,6 @@
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
+#include <plateau/geometry/geo_reference.h>
 #include <cmath>
 #include <limits>
 
@@ -49,14 +50,18 @@ namespace plateau::geometry {
                max.height >= point.height;
     }
 
-    bool Extent::contains(TVec3d point, bool ignore_height) const {
+    bool Extent::contains(TVec3d point, bool ignore_height, bool is_polar_coordinate_system) const {
+        if (!is_polar_coordinate_system) {
+			plateau::geometry::GeoReference geo_ref(0, TVec3d(0, 0, 0), 1.0f, CoordinateSystem::ENU);
+            return contains(geo_ref.unproject(point), ignore_height);
+        }
         return contains(GeoCoordinate(point.x, point.y, point.z), ignore_height);
     }
 
-    bool Extent::contains(const CityObject& city_obj, bool ignore_height) const{
+    bool Extent::contains(const CityObject& city_obj, bool ignore_height, bool is_polar_coordinate_system) const{
         try{
             auto pos = PolygonMeshUtils::cityObjPos(city_obj);
-            return contains(pos, ignore_height);
+            return contains(pos, ignore_height, is_polar_coordinate_system);
         }catch(std::invalid_argument& e){
             // 位置不明は false 扱いとします。
             return false;
