@@ -26,8 +26,11 @@ namespace {
         if (!options.exclude_city_object_outside_extent)
             return false;
 
+        if (!options.is_polar_coordinate_system)
+            return false;
+
         for (const auto& extent : extents) {
-            if (extent.contains(city_obj, true, options.is_polar_coordinate_system))
+            if (extent.contains(city_obj))
                 return false;
         }
         return true;

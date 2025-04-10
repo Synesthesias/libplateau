@@ -70,13 +70,13 @@ namespace plateau::geometry {
         }
 
         bool contains(GeoCoordinate point, bool ignore_height = true) const;
-        bool contains(TVec3d point, bool ignore_height = true, bool is_polar_coordinate_system = true, int zone_id = 0) const;
+        bool contains(TVec3d point, bool ignore_height = true) const;
 
         /**
          * 引数 city_obj の位置を推定し、その位置が Extent の範囲内に含まれるかどうかを返します。
          * city_obj の位置が不明の場合は false を返します。
          */
-        bool contains(const citygml::CityObject& city_obj, bool ignore_height = true, bool is_polar_coordinate_system = true, int zone_id = 0) const;
+        bool contains(const citygml::CityObject& city_obj, bool ignore_height = true) const;
 
         /**
          * other と交わる箇所があるかどうかを返します。

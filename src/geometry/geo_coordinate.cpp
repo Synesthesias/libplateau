@@ -50,19 +50,14 @@ namespace plateau::geometry {
                max.height >= point.height;
     }
 
-    bool Extent::contains(TVec3d point, bool ignore_height, bool is_polar_coordinate_system, int zone_id) const {
-   //     if (!is_polar_coordinate_system) {
-			//plateau::geometry::GeoReference geo_ref(zone_id, TVec3d(0, 0, 0), 1.0f, CoordinateSystem::ENU);
-   //         return contains(geo_ref.unproject(point), ignore_height);
-   //         //return true;
-   //     }
+    bool Extent::contains(TVec3d point, bool ignore_height) const {
         return contains(GeoCoordinate(point.x, point.y, point.z), ignore_height);
     }
 
-    bool Extent::contains(const CityObject& city_obj, bool ignore_height, bool is_polar_coordinate_system, int zone_id) const{
+    bool Extent::contains(const CityObject& city_obj, bool ignore_height) const{
         try{
             auto pos = PolygonMeshUtils::cityObjPos(city_obj);
-            return contains(pos, ignore_height, is_polar_coordinate_system);
+            return contains(pos, ignore_height);
         }catch(std::invalid_argument& e){
             // 位置不明は false 扱いとします。
             return false;
