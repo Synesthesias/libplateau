@@ -72,7 +72,7 @@ namespace PLATEAU.PolygonMesh
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct MeshExtractOptions
     {
-        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL)
+        public MeshExtractOptions(PlateauVector3d referencePoint, CoordinateSystem meshAxes, MeshGranularity meshGranularity, uint minLOD, uint maxLOD, bool exportAppearance, int gridCountOfSide, float unitScale, int coordinateZoneID, bool excludeCityObjectOutsideExtent, bool excludePolygonsOutsideExtent, bool enableTexturePacking, uint texturePackingResolution, bool attachMapTile, int mapTileZoomLevel, string mapTileURL, bool isPolarCoordinateSystem)
         {
             this.ReferencePoint = referencePoint;
             this.MeshAxes = meshAxes;
@@ -90,6 +90,7 @@ namespace PLATEAU.PolygonMesh
             this.AttachMapTile = attachMapTile;
             this.MapTileZoomLevel = mapTileZoomLevel;
             this.mapTileURL = mapTileURL;
+            this.IsPolarCoordinateSystem = isPolarCoordinateSystem;
 
             // 上で全てのメンバー変数を設定できてますが、バリデーションをするため念のためメソッドやプロパティも呼びます。
             SetLODRange(minLOD, maxLOD);
@@ -223,6 +224,12 @@ namespace PLATEAU.PolygonMesh
                 this.mapTileURL = value;
             }
         }
+
+        /// <summary>
+        /// 極座標系か、平面直角座標系かを指定します。
+        /// EPSG:6697 極座標系, EPSG:10162～10174 平面直角座標系
+        /// </summary>
+        [MarshalAs(UnmanagedType.U1)] public bool IsPolarCoordinateSystem;
 
         /// <summary> デフォルト値の設定を返します。 </summary>
         internal static MeshExtractOptions DefaultValue()
