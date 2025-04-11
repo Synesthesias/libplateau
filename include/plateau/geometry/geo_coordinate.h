@@ -96,8 +96,6 @@ namespace plateau::geometry {
             return {
                     GeoCoordinate(-90, -180, -9999),
                     GeoCoordinate(90, 180, 9999)
-                    //GeoCoordinate(-9999999, -9999999, -9999),
-                    //GeoCoordinate(9999999, 9999999, 9999)
             };
         }
     };
