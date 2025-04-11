@@ -228,7 +228,9 @@ namespace plateau::polygonMesh {
         ASSERT_FALSE(gml.isPolarCoordinateSystem());
 
         auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
+        ASSERT_GE(1, model->getRootNodeCount());   
         const auto& lod_node = model->getRootNodeAt(0);
+        ASSERT_GE(1, lod_node.getChildCount());
         const auto& first_model_node = lod_node.getChildAt(0);
         const auto& mesh = first_model_node.getMesh();
 

@@ -148,18 +148,17 @@ namespace plateau::polygonMesh {
                     for (const auto& extent : extents) {
 
                         if (!options.is_polar_coordinate_system) {
-                            //plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
-                            //if (extent.contains(geo_ref.unproject(vertex))) {
-                            //    is_in_extent = true;
-                            //    break;
-                            //}
-                            is_in_extent = true;
-                            break;
+                            plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
+                            if (extent.contains(geo_ref.unproject(vertex))) {
+                                is_in_extent = true;
+                                break;
+                            }
                         }
-
-                        if (extent.contains(vertex)) {
-                            is_in_extent = true;
-                            break;
+                        else {
+                            if (extent.contains(vertex)) {
+                                is_in_extent = true;
+                                break;
+                            }
                         }
                     }
                     if (is_in_extent)
