@@ -6,6 +6,9 @@
 #include "plateau/geometry/geo_coordinate.h"
 
 namespace plateau::dataset {
+    class StandardMapGrid;
+    class MeshCode;
+
     /**
      * \brief 地図の区画を表すコードの基底クラスです。
      * 
@@ -38,7 +41,8 @@ namespace plateau::dataset {
         /**
          * \brief １段階上のレベルのグリッドコードに変換します。
          */
-        virtual std::shared_ptr<GridCode> upper() = 0;
+        virtual std::shared_ptr<GridCode> upper() const = 0;
+        virtual GridCode* upperRaw() const = 0;
 
         /**
          * \brief コードのレベル（詳細度）を取得します。
@@ -50,6 +54,18 @@ namespace plateau::dataset {
          * @return
          */
         virtual bool isLargestLevel() const = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの典型的な建物のGMLファイルのレベルよりも小さい場合にtrueを返します。
+         */
+        virtual bool isSmallerThanNormalGml() const = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの典型的な建物のGMLファイルのレベルである場合にtrueを返します。
+         */
+        virtual bool isNormalGmlLevel() const = 0;
+
+        bool isMeshCode() const;
 
         /**
          * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。

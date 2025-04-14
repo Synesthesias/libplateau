@@ -48,11 +48,17 @@ namespace plateau::dataset {
          * \brief １段階上のレベルのグリッドコードに変換します。
          * \return 無効なグリッドコードを返します。
          */
-        std::shared_ptr<GridCode> upper() override { 
+        std::shared_ptr<GridCode> upper() const override {
             return std::make_shared<InvalidGridCode>(); 
+        }
+
+        GridCode* upperRaw() const override {
+            return new InvalidGridCode();
         }
 
         int getLevel() const override { return -1; }
         bool isLargestLevel() const override { return true; }
+        bool isSmallerThanNormalGml() const override { return false; }
+        bool isNormalGmlLevel() const override { return true; }
     };
 } 

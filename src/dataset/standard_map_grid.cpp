@@ -40,9 +40,14 @@ namespace plateau::dataset {
         return is_valid_;
     }
 
-    std::shared_ptr<GridCode> StandardMapGrid::upper() {
+    std::shared_ptr<GridCode> StandardMapGrid::upper() const {
         // 仮実装: 自分自身のコピーを返す
-        return std::make_shared<StandardMapGrid>(code_);
+        return std::shared_ptr<GridCode>(upperRaw());
+    }
+
+    GridCode* StandardMapGrid::upperRaw() const {
+        // 仮実装: 自分自身のコピーを返す
+        return new StandardMapGrid(code_);
     }
 
     int StandardMapGrid::getLevel() const {
@@ -51,6 +56,16 @@ namespace plateau::dataset {
     }
 
     bool StandardMapGrid::isLargestLevel() const {
+        // 仮実装: 常にtrueを返す
+        return true;
+    }
+
+    bool StandardMapGrid::isSmallerThanNormalGml() const {
+        // 仮実装
+        return false;
+    }
+
+    bool StandardMapGrid::isNormalGmlLevel() const {
         // 仮実装: 常にtrueを返す
         return true;
     }

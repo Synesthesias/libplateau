@@ -40,7 +40,8 @@ namespace plateau::dataset {
         /**
          * \brief １段階上のレベルのグリッドコードに変換します。
          */
-        std::shared_ptr<GridCode> upper() override;
+        std::shared_ptr<GridCode> upper() const override;
+        GridCode* upperRaw() const override;
 
         /**
          * \brief コードのレベル（詳細度）を取得します。
@@ -51,6 +52,8 @@ namespace plateau::dataset {
          * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも大きいものであるときにtrueを返します。
          */
         bool isLargestLevel() const override;
+        bool isSmallerThanNormalGml() const override;
+        bool isNormalGmlLevel() const override;
 
         bool operator==(const StandardMapGrid& other) const;
         bool operator<(StandardMapGrid& other) const;
