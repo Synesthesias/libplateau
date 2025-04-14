@@ -27,16 +27,16 @@ namespace {
             return false;
 
         if (!options.is_polar_coordinate_system) {
+            // 平面直角座標系の判定
             plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);  
             try {
-                auto pos = PolygonMeshUtils::cityObjPos(city_obj);
+                auto pos = geo_ref.unproject(PolygonMeshUtils::cityObjPos(city_obj));
                 for (const auto& extent : extents) {
-                    if (extent.contains(geo_ref.unproject(pos)))
+                    if (extent.contains(pos))
                         return false;
                 }
             }
             catch (std::invalid_argument& e) {}
-            return false;
         }
         else {
             for (const auto& extent : extents) {

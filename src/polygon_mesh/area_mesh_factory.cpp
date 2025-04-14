@@ -22,6 +22,7 @@ namespace {
         for (const auto& extent : extents) {
 
             if (!options.is_polar_coordinate_system) {
+                // 平面直角座標系の判定
                 plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
                 try {
                     auto pos = PolygonMeshUtils::cityObjPos(city_obj);
