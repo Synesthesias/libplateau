@@ -46,38 +46,40 @@ namespace {
             plateau::geometry::GeoReference geo_ref3(options.coordinate_zone_id, TVec3d(), options.unit_scale, options.mesh_axes);
             const auto original_ref = geo_ref3.unproject(options.reference_point);
 
-            plateau::geometry::GeoReference geo(options.coordinate_zone_id);
-            GeoCoordinate ref_point = ReferencePointFactory::GetReferencePoint(options.epsg_code); //EPSGの基準点
-            const auto prj = geo.project(ref_point);
-            plateau::geometry::GeoReference geo_ref4(options.coordinate_zone_id, prj, options.unit_scale); 
+            plateau::geometry::GeoReference geo1(options.coordinate_zone_id);
+            plateau::geometry::GeoReference geo2(8); //8固定
 
-            plateau::geometry::GeoReference geo2(options.coordinate_zone_id);
-            GeoCoordinate ref_point2(37.4258, 138.7378, 0); //08EE751の中心
-            const auto prj2 = geo2.project(ref_point2);
-            plateau::geometry::GeoReference geo_ref5(options.coordinate_zone_id, prj2, options.unit_scale);
+            GeoCoordinate ref_point_epsg = ReferencePointFactory::GetReferencePoint(options.epsg_code); //EPSGの基準点
+            const auto prj_epsg = geo1.project(ref_point_epsg);
+            plateau::geometry::GeoReference geo_ref_epsg(options.coordinate_zone_id, prj_epsg, options.unit_scale);
 
-            plateau::geometry::GeoReference geo3(options.coordinate_zone_id);
-            GeoCoordinate ref_point3(36, 138.5, 0); //EPSG:10169 の基準点
-            const auto prj3 = geo3.project(ref_point3);
-            plateau::geometry::GeoReference geo_ref6(options.coordinate_zone_id, prj3, options.unit_scale);
+            GeoCoordinate ref_point_zukaku(37.4258, 138.7378, 0); //08EE751の中心
+            const auto prj2 = geo1.project(ref_point_zukaku);
+            plateau::geometry::GeoReference geo_ref_zukaku(options.coordinate_zone_id, prj2, options.unit_scale);
+
+            GeoCoordinate ref_point_epsg_static(36, 138.5, 0); //EPSG:10169 の基準点
+            const auto prj3 = geo1.project(ref_point_epsg_static);
+            plateau::geometry::GeoReference geo_ref_epsg_static(options.coordinate_zone_id, prj3, options.unit_scale);
 
             try {
                 const auto pos = PolygonMeshUtils::cityObjPos(city_obj);   
 
-                const auto unprojected = geo_ref4.unproject(pos);
-
-                const auto unprojected1 = geo_ref2.unproject(pos + epsg_offset);
+                const auto unprojected = geo_ref2.unproject(pos + epsg_offset);
                 //const auto unprojected2 = geo_ref2.unproject(epsg_offset - pos);
                 //const auto unprojected2 = geo_ref2.unproject(pos);
                 //const auto unprojected3 = geo_ref4.unproject(pos + epsg_offset);
-
-                const auto unprojected4 = geo_ref5.unproject(pos + epsg_offset);
                 //const auto unprojected5 = geo_ref5.unproject(epsg_offset- pos);
 
-                const auto unprojected5 = geo_ref6.unproject(pos + epsg_offset);
+                const auto unprojected_epsg = geo_ref_epsg.unproject(pos);
+                const auto unprojected_zukaku = geo_ref_zukaku.unproject(pos);
+                const auto unprojected_epsg_static = geo_ref_epsg_static.unproject(pos);
+
+                const auto unprojected_epsg_offset = geo_ref_epsg.unproject(pos + epsg_offset);
+                const auto unprojected_zukaku_offset = geo_ref_zukaku.unproject(pos + epsg_offset);
+                const auto unprojected_epsg_static_offset = geo_ref_epsg_static.unproject(pos + epsg_offset);
 
                 for (const auto& extent : extents) {
-                    if (extent.contains(unprojected1))
+                    if (extent.contains(unprojected))
                         return false;
                 }
 
