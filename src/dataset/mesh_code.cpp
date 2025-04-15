@@ -259,7 +259,7 @@ namespace plateau::dataset {
         return new_mesh_code;
     }
 
-    GridCode* MeshCode::upperRaw() const { ||
+    GridCode* MeshCode::upperRaw() const {
         // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
         auto new_mesh_code = new MeshCode(*this);
         new_mesh_code->level_ = std::max(1, level_ - 1);

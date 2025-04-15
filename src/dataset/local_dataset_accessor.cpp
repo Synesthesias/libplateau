@@ -201,7 +201,7 @@ namespace plateau::dataset {
             for (; !next_grid_code->isLargestLevel(); ) {
                 if (!grid_code->isValid())
                     break;
-                mesh_codes_str_set.insert(grid_code->get());
+                mesh_codes_str_set.insert(next_grid_code->get());
                 
                 next_grid_code = next_grid_code->upper();
             }

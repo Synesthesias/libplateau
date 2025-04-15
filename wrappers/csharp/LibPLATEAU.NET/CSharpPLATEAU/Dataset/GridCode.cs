@@ -14,11 +14,11 @@ namespace PLATEAU.Dataset
         {
         }
 
-        public static GridCode Create(string code)
+        public static GridCode Create(string code, bool autoDispose = true)
         {
             var result = NativeMethods.plateau_grid_code_parse(code, out var gridCodePtr);
             DLLUtil.CheckDllError(result);
-            return new GridCode(gridCodePtr);
+            return new GridCode(gridCodePtr, autoDispose);
         }
         
         public static GridCode CopyFrom(IntPtr otherGridCodePtr)

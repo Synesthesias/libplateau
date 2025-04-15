@@ -100,7 +100,7 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
     }
 
     PLATEAU_VECTOR_GET_BY_PTR(gml_file, GmlFile)
-    PLATEAU_VECTOR_GET_BY_VALUE(grid_code, GridCode*) // TODO クリーンアップ
+    PLATEAU_VECTOR_GET_BY_VALUE(grid_code, GridCode*)
     CLEANUP(grid_code, GridCode*)
     PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata_group, DatasetMetadataGroup)
     PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata, DatasetMetadata)
