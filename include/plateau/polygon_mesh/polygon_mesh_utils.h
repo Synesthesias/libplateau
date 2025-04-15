@@ -37,6 +37,8 @@ namespace plateau::polygonMesh {
          */
         static TVec3d cityObjPos(const citygml::CityObject& city_obj);
 
+        //static TVec3d cityObjPos(const citygml::CityObject& city_obj, const double epsg, int coordinate_zone_id);
+
         /**
          * cityObjのポリゴンであり、頂点数が1以上であるものを検索します。
          * 最初に見つかったポリゴンを返します。なければ nullptr を返します。

@@ -28,15 +28,70 @@ namespace {
 
         if (!options.is_polar_coordinate_system) {
             // 平面直角座標系の判定
-            plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);  
+
+            //plateau::geometry::GeoCoordinate refPoint = plateau::geometry::ReferencePointFactory::GetReferencePoint(options.epsg_code);
+            //plateau::geometry::GeoReference geo_ref1(options.coordinate_zone_id);
+            //const auto epsg_offset = geo_ref1.getOffset(options.epsg_code);
+            //geo_ref1.setReferencePoint(epsg_offset);
+
+            plateau::geometry::GeoReference geo_ref2(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes); 
+            const auto epsg_offset = geo_ref2.getOffset(options.epsg_code);
+
+            //const auto diff = options.reference_point - epsg_offset;
+            //plateau::geometry::GeoReference geo_ref3(options.coordinate_zone_id, options.reference_point - diff , options.unit_scale, options.mesh_axes);
+
+            const auto meshcode_offset = GeoReference::convertAxisToENU(options.mesh_axes, options.reference_point);
+            //const auto original_ref = geo_ref2.unproject(options.reference_point);
+
+            plateau::geometry::GeoReference geo_ref3(options.coordinate_zone_id, TVec3d(), options.unit_scale, options.mesh_axes);
+            const auto original_ref = geo_ref3.unproject(options.reference_point);
+
+            plateau::geometry::GeoReference geo(options.coordinate_zone_id);
+            GeoCoordinate ref_point = ReferencePointFactory::GetReferencePoint(options.epsg_code); //EPSGの基準点
+            const auto prj = geo.project(ref_point);
+            plateau::geometry::GeoReference geo_ref4(options.coordinate_zone_id, prj, options.unit_scale); 
+
+            plateau::geometry::GeoReference geo2(options.coordinate_zone_id);
+            GeoCoordinate ref_point2(37.4258, 138.7378, 0); //08EE751の中心
+            const auto prj2 = geo2.project(ref_point2);
+            plateau::geometry::GeoReference geo_ref5(options.coordinate_zone_id, prj2, options.unit_scale);
+
+            plateau::geometry::GeoReference geo3(options.coordinate_zone_id);
+            GeoCoordinate ref_point3(36, 138.5, 0); //EPSG:10169 の基準点
+            const auto prj3 = geo3.project(ref_point3);
+            plateau::geometry::GeoReference geo_ref6(options.coordinate_zone_id, prj3, options.unit_scale);
+
             try {
-                auto pos = geo_ref.unproject(PolygonMeshUtils::cityObjPos(city_obj));
+                const auto pos = PolygonMeshUtils::cityObjPos(city_obj);   
+
+                const auto unprojected = geo_ref4.unproject(pos);
+
+                const auto unprojected1 = geo_ref2.unproject(pos + epsg_offset);
+                //const auto unprojected2 = geo_ref2.unproject(epsg_offset - pos);
+                //const auto unprojected2 = geo_ref2.unproject(pos);
+                //const auto unprojected3 = geo_ref4.unproject(pos + epsg_offset);
+
+                const auto unprojected4 = geo_ref5.unproject(pos + epsg_offset);
+                //const auto unprojected5 = geo_ref5.unproject(epsg_offset- pos);
+
+                const auto unprojected5 = geo_ref6.unproject(pos + epsg_offset);
+
                 for (const auto& extent : extents) {
-                    if (extent.contains(pos))
+                    if (extent.contains(unprojected1))
                         return false;
                 }
+
+                //auto pos = PolygonMeshUtils::cityObjPos(city_obj);
+                //for (const auto& extent : extents) {
+                //    if (extent.contains(geo_ref.unproject(pos)))
+                //        return false;
+                //}
             }
             catch (std::invalid_argument& e) {}
+
+            //Temp Debug =======================
+            //return false;
+            //Temp Debug =======================
         }
         else {
             for (const auto& extent : extents) {

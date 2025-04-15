@@ -37,7 +37,6 @@ namespace plateau::geometry {
         GeoCoordinate operator/(GeoCoordinate op) const;
     };
 
-
     /**
      * @enum CoordinateSystem
      *
@@ -97,6 +96,50 @@ namespace plateau::geometry {
                     GeoCoordinate(-90, -180, -9999),
                     GeoCoordinate(90, 180, 9999)
             };
+        }
+    };
+
+    struct ReferencePointFactory {
+        // EPSGごとの基準点取得
+        static void GetReferencePoint(double epsg, GeoCoordinate& point) {
+            // EPSG:10169は、日本測地系2011（JGD2011）に基づく平面直角座標系第VIII系を指します。この座標系の基準点は、緯度36度、経度138.5度に設定されています。
+            if (epsg == 10169) {
+                point = GeoCoordinate(36, 138.5, 0);
+                return;
+            }
+            else if (epsg == 10162) {
+                point = GeoCoordinate(33, 129.5, 0);
+                return;
+            }
+            else if (epsg == 10163) {
+                point = GeoCoordinate(33, 131, 0);
+                return;
+            }
+            point = GeoCoordinate();
+        }
+
+        static GeoCoordinate GetReferencePoint(double epsg) {
+            // EPSG:10169は、日本測地系2011（JGD2011）に基づく平面直角座標系第VIII系を指します。この座標系の基準点は、緯度36度、経度138.5度に設定されています。
+            if (epsg == 10169) {
+                return GeoCoordinate(36, 138.5, 0);
+            }
+            else if (epsg == 10162) {
+                return GeoCoordinate(33, 129.5, 0);
+            }
+            else if (epsg == 10163) {
+                return GeoCoordinate(33, 131, 0);
+            }
+            return GeoCoordinate();
+        }
+
+        // 極座標系・平面直角座標系判定
+        static bool IsPolarCoordinateSystem(double epsg) {
+            // 平面直角座標系の区分についてはこちらを参照してください :
+            // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
+            if (epsg >= 10162 && epsg <= 10174) {
+                return false;
+            }
+            return true;
         }
     };
 }

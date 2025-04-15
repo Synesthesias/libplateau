@@ -32,7 +32,7 @@ namespace plateau::polygonMesh {
          */
         void cityGmlPolygonToMesh(
             const Polygon& polygon, const std::string& gml_path,
-            const GeoReference& geo_reference, Mesh& out_mesh, bool is_polar_coordinate_system) {
+            const GeoReference& geo_reference, Mesh& out_mesh, double epsg) {
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon = polygon.getVertices();
@@ -54,7 +54,19 @@ namespace plateau::polygonMesh {
             auto& out_vertices = out_mesh.getVertices();
             out_vertices.reserve(vertices_lat_lon.size());
             for (const auto& lat_lon : vertices_lat_lon) {
-                auto xyz = geo_reference.convert(lat_lon, false, is_polar_coordinate_system);
+
+                //auto xyz = geo_reference.convert(lat_lon, false, is_polar_coordinate_system);
+                //if (!is_polar_coordinate_system) {
+                //    plateau::geometry::GeoCoordinate refPoint;
+                //    plateau::geometry::ReferencePointFactory::GetReferencePoint(epsg, refPoint);
+                //    plateau::geometry::GeoReference geo_ref(geo_reference.getZoneID());
+                //    const auto& offset = geo_ref.project(refPoint);
+                //    //xyz = xyz + GeoReference::convertAxisToENU(geo_reference.getCoordinateSystem(), geo_reference.getReferencePoint());
+                //    xyz = lat_lon + offset;
+                //}
+
+                auto xyz = geo_reference.convert(lat_lon, false, epsg);
+
                 out_vertices.push_back(xyz);
             }
             assert(out_vertices.size() == vertices_lat_lon.size());
@@ -150,10 +162,17 @@ namespace plateau::polygonMesh {
                         if (!options.is_polar_coordinate_system) {
                             // 平面直角座標系の判定
                             plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
-                            if (extent.contains(geo_ref.unproject(vertex))) {
+                            //plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id);
+                            const auto unprojected = geo_ref.unproject(vertex);
+                            if (extent.contains(unprojected)) {
                                 is_in_extent = true;
                                 break;
                             }
+
+                            //Temp Debug =======================
+                            //is_in_extent = true;
+                            //break;
+                            //Temp Debug =======================
                         }
                         else {
                             if (extent.contains(vertex)) {
@@ -215,7 +234,7 @@ namespace plateau::polygonMesh {
             return;
 
         Mesh mesh;
-        cityGmlPolygonToMesh(polygon, gml_path, geo_reference_, mesh, options_.is_polar_coordinate_system);
+        cityGmlPolygonToMesh(polygon, gml_path, geo_reference_, mesh, options_.epsg_code);
 
         const auto from_axis = geometry::CoordinateSystem::ENU;
         const auto to_axis = options_.mesh_axes;

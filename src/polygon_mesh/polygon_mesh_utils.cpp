@@ -1,6 +1,7 @@
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include "plateau/polygon_mesh/mesh.h"
 #include "plateau/geometry/geo_reference.h"
+#include "plateau/geometry/geo_coordinate.h"
 #include "citygml/citymodel.h"
 #include <plateau/dataset/gml_file.h>
 
@@ -54,6 +55,16 @@ namespace plateau::polygonMesh {
         // 位置が不明
         throw std::invalid_argument("Could not find position of CityObject.");
     }
+
+    //TVec3d PolygonMeshUtils::cityObjPos(const citygml::CityObject& city_obj, const double epsg, int coordinate_zone_id) {
+    //    const auto is_polar = plateau::geometry::ReferencePointFactory::IsPolarCoordinateSystem(epsg);
+    //    const auto pos = cityObjPos(city_obj);
+    //    if (is_polar) {
+    //        return pos;
+    //    }
+    //    plateau::geometry::GeoReference geo_ref(coordinate_zone_id);
+    //    return geo_ref.unproject(pos);
+    //}
 
     TVec3d PolygonMeshUtils::getCenterPoint(const CityModel& city_model, int coordinate_zone_id) {
         auto& envelope = city_model.getEnvelope();

@@ -38,7 +38,8 @@ namespace plateau::polygonMesh {
                 attach_map_tile(true),
                 map_tile_zoom_level(15),
                 map_tile_url("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"),
-                is_polar_coordinate_system(true)
+                is_polar_coordinate_system(true),
+                epsg_code(6697)
                 {}
 
     public:
@@ -117,5 +118,10 @@ namespace plateau::polygonMesh {
 		 * 極座標系か、平面直角座標系かを指定します。
 		 */
         bool is_polar_coordinate_system;
+
+        /**
+         * 平面直角座標系は、EPSGコードに応じて基準点を取得します。
+         */
+        double epsg_code;
     };
 }

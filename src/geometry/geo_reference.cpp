@@ -41,6 +41,41 @@ namespace plateau::geometry {
         return converted_point;
     }
 
+    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const double epsg) const {
+        //平面直角座標変換、座標軸変換をフラグに応じてスキップします。
+        TVec3d point = lat_lon;
+
+        // 極座標系・平面直角座標系判定
+        const bool project = ReferencePointFactory::IsPolarCoordinateSystem(epsg);
+        // 平面直角座標系に変換
+        if (project) {
+            PolarToPlaneCartesian().project(point, zone_id_);
+            if (!convert_axis) {
+                // 座標軸変換をしない場合
+                TVec3 converted_point = point / unit_scale_ - convertAxisToENU(coordinate_system_, reference_point_);
+                return converted_point;
+            }
+            // 座標軸変換をする場合
+            TVec3 converted_point = convertAxisFromENUTo(coordinate_system_, point);
+            converted_point = converted_point / unit_scale_ - reference_point_;
+            return converted_point;
+        }
+
+        // 平面直角座標系の場合基準座標値をオフセット
+        //GeoCoordinate ref_point;
+        //ReferencePointFactory::GetReferencePoint(epsg, ref_point);
+        //plateau::geometry::GeoReference geo_ref(zone_id_);
+        //const auto& offset = geo_ref.project(ref_point);
+        const auto& offset = getOffset(epsg);
+        return point + offset;
+    }
+
+    TVec3d GeoReference::getOffset(const double epsg) const {        
+        GeoCoordinate ref_point = ReferencePointFactory::GetReferencePoint(epsg);
+        plateau::geometry::GeoReference geo_ref(zone_id_);
+        return geo_ref.project(ref_point);
+    }
+
     TVec3d GeoReference::convertAxisToENU(const TVec3d& vertex) const {
         return convertAxisToENU(getCoordinateSystem(), vertex);
     }

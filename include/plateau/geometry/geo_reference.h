@@ -27,6 +27,7 @@ namespace plateau::geometry {
         TVec3d projectWithoutAxisConvert(const TVec3d& lat_lon) const;
         TVec3d convertAxisToENU(const TVec3d& vertex) const;
         TVec3d convert(const TVec3d& lat_lon, const bool convert_axis = true, const bool project = true) const;
+        TVec3d convert(const TVec3d& lat_lon, const bool convert_axis = true, const double epsg = 6697) const;
         static TVec3d convertAxisFromENUTo(CoordinateSystem axis, const TVec3d& vertex);
         static TVec3d convertAxisToENU(CoordinateSystem axis, const TVec3d& vertex); 
 
@@ -38,6 +39,7 @@ namespace plateau::geometry {
         void setZoneID(int value);
         float getUnitScale() const;
         CoordinateSystem getCoordinateSystem() const;
+        TVec3d getOffset(const double epsg) const;
 
     private:
         TVec3d reference_point_;
