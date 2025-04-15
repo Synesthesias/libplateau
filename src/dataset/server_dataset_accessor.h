@@ -14,7 +14,7 @@ namespace plateau::dataset {
          * コンストラクト時にデータセットIDを指定します。
          * このIDはサーバーにデータセット一覧を問い合わせて得られる文字列です。
          */
-        explicit ServerDatasetAccessor(const std::string& dataset_id, const network::Client& client);
+        explicit ServerDatasetAccessor(std::string  dataset_id, network::Client  client);
 
         void loadFromServer();
 

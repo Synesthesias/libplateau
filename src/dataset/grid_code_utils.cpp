@@ -26,6 +26,4 @@ namespace plateau::dataset::utils {
         }
         return grid_codes_str_set;
     }
-
-
 }

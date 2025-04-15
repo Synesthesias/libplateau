@@ -28,11 +28,6 @@ namespace plateau::dataset {
         geometry::Extent getExtent() const override;
 
         /**
-         * \brief 図郭が他の図郭に内包されるかどうかを計算します。
-         */
-        bool isWithin(const GridCode& other) const override;
-
-        /**
          * \brief 図郭コードが適切な値かどうかを返します。
          */
         bool isValid() const override;
@@ -56,7 +51,6 @@ namespace plateau::dataset {
         bool isNormalGmlLevel() const override;
 
         bool operator==(const StandardMapGrid& other) const;
-        bool operator<(StandardMapGrid& other) const;
         bool operator<(const StandardMapGrid& other) const;
 
     private:

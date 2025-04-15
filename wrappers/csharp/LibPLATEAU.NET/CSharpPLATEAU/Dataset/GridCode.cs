@@ -14,6 +14,10 @@ namespace PLATEAU.Dataset
         {
         }
 
+        /// <summary>
+        /// コード文字列からグリッドコードを生成します。
+        /// コードが不正である場合は例外がスローされます。
+        /// </summary>
         public static GridCode Create(string code, bool autoDispose = true)
         {
             var result = NativeMethods.plateau_grid_code_parse(code, out var gridCodePtr);
@@ -23,7 +27,9 @@ namespace PLATEAU.Dataset
         
         public static GridCode CopyFrom(IntPtr otherGridCodePtr)
         {
+            // C++で現にあるインスタンスのアドレスをC#と紐付ます
             var other = new GridCode(otherGridCodePtr, false);
+            // コピーします
             return Create(other.StringCode);
         }
         
@@ -111,7 +117,7 @@ namespace PLATEAU.Dataset
         private void ThrowIfInvalid()
         {
             if (IsValid) return;
-            throw new Exception("Invalid GridCode.");
+            throw new Exception("Invalid GridCode: " + StringCode);
         }
 
         protected override void DisposeNative()

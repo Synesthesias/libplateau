@@ -15,10 +15,13 @@ namespace plateau::dataset {
         bool has_digit = false;
         bool has_upper = false;
 
-        // コードの文字を検査
+        // コードの文字を検査（数字と大文字英字の有無をチェック）
         for (char c : code) {
             if (std::isdigit(c)) has_digit = true;
             if (std::isupper(c)) has_upper = true;
+            if (!std::isalnum(c)) { // 無効な文字
+                return new InvalidGridCode();
+            }
         }
 
         try {

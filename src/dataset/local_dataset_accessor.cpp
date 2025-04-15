@@ -12,7 +12,6 @@
 namespace plateau::dataset {
     namespace fs = std::filesystem;
     using namespace geometry;
-    using namespace utils;
 
     //! 建築物、建築物部分、建築物付属物及びこれらの境界面
     const std::string UdxSubFolder::bldg = "bldg";
@@ -157,9 +156,8 @@ namespace plateau::dataset {
             for (const auto& gml_file: gml_files) {
                 auto grid_code = gml_file.getGridCode();
                 if (!gml_file.isValid()) continue;
-                if (collection.files_by_code_.count(grid_code->get()) == 0) {
-                    collection.files_by_code_.emplace(grid_code->get(), std::vector<GmlFile>());
-                }
+                if (!grid_code->isValid()) continue;
+                collection.files_by_code_.try_emplace(grid_code->get(), std::vector<GmlFile>());
                 collection.files_by_code_[grid_code->get()].push_back(gml_file);
             }
         }
@@ -195,7 +193,7 @@ namespace plateau::dataset {
         // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
         out_collection_ptr->setUdxPath(udx_path_);
         // 検索用に、引数の grid_codes を文字列のセットにします。
-        auto grid_codes_str_set = createExpandedGridCodeSet(grid_codes);
+        auto grid_codes_str_set = utils::createExpandedGridCodeSet(grid_codes);
 
         // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [code, files] : files_by_code_) {
@@ -286,6 +284,7 @@ namespace plateau::dataset {
         double lon_sum = 0;
         double height_sum = 0;
         for (const auto& grid_code : grid_codes_) {
+            if(grid_code == nullptr && !grid_code->isValid()) continue;
             const auto& center = grid_code->getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
@@ -307,7 +306,7 @@ namespace plateau::dataset {
                 for (const auto& file: files) {
                     auto grid_code = file.getGridCode();
                     if (!grid_code->isValid()) continue;
-                    grid_codes_.insert(GridCode::create(file.getGridCode()->get()));
+                    grid_codes_.insert(grid_code);
                 }
             }
         }
@@ -315,15 +314,11 @@ namespace plateau::dataset {
     }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
-        if (files_.count(sub_folder) <= 0) {
-            files_.emplace(sub_folder, std::vector<GmlFile>());
-        }
+        files_.try_emplace(sub_folder, std::vector<GmlFile>());
         files_.at(sub_folder).push_back(gml_file_info);
 
         const auto grid_code = gml_file_info.getGridCode()->get();
-        if (files_by_code_.count(grid_code) == 0) {
-            files_by_code_.emplace(grid_code, std::vector<GmlFile>());
-        }
+        files_by_code_.try_emplace(grid_code, std::vector<GmlFile>());
         files_by_code_[grid_code].push_back(gml_file_info);
     }
 

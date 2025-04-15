@@ -2,16 +2,17 @@
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>
 
+#include <utility>
+
 #include "server_dataset_accessor.h"
 #include "grid_code_utils.h"
 
 namespace plateau::dataset {
     using namespace network;
-    using namespace utils;
 
-    ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id, const Client& client)
-        : client_(client)
-        , dataset_id_(dataset_id) {
+    ServerDatasetAccessor::ServerDatasetAccessor(std::string  dataset_id, Client  client)
+        : client_(std::move(client))
+        , dataset_id_(std::move(dataset_id)) {
     }
 
     void ServerDatasetAccessor::loadFromServer() {
@@ -116,7 +117,7 @@ namespace plateau::dataset {
             return;
 
         // 検索用に、引数の grid_codes を文字列のセットにします。
-        auto grid_codes_str_set = createExpandedGridCodeSet(grid_codes);
+        auto grid_codes_str_set = utils::createExpandedGridCodeSet(grid_codes);
 
         // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [sub_folder, files] : dataset_files_) {

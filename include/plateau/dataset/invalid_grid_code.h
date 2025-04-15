@@ -33,12 +33,6 @@ namespace plateau::dataset {
         }
 
         /**
-         * \brief このコードが他のコードに内包されるかどうかを計算します。
-         * \return 常にfalseを返します。
-         */
-        bool isWithin(const GridCode& other) const override { return false; }
-
-        /**
          * \brief コードが適切な値かどうかを返します。
          * \return 常にfalseを返します。
          */

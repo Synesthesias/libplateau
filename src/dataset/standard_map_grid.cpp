@@ -25,17 +25,6 @@ namespace plateau::dataset {
         return {geometry::GeoCoordinate(0, 0, 0), geometry::GeoCoordinate(0, 0, 0)};
     }
 
-    bool StandardMapGrid::isWithin(const GridCode& other) const {
-        if (!isValid()) return false;
-        
-        // 同じ型の場合のみ比較
-        const auto* other_grid = dynamic_cast<const StandardMapGrid*>(&other);
-        if (other_grid == nullptr) return false;
-        
-        // TODO: 図郭の包含関係を判定する実装を追加
-        return false;
-    }
-
     bool StandardMapGrid::isValid() const {
         return is_valid_;
     }
@@ -72,10 +61,6 @@ namespace plateau::dataset {
 
     bool StandardMapGrid::operator==(const StandardMapGrid& other) const {
         return code_ == other.code_;
-    }
-
-    bool StandardMapGrid::operator<(StandardMapGrid& other) const {
-        return code_ < other.code_;
     }
 
     bool StandardMapGrid::operator<(const StandardMapGrid& other) const {

@@ -14,4 +14,4 @@ namespace plateau::dataset::utils {
  */
     std::set<std::string> createExpandedGridCodeSet(const std::vector<GridCode*>& grid_codes);
 
-} 
+} // namespace plateau::dataset::utils

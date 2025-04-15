@@ -234,19 +234,6 @@ namespace plateau::dataset {
         return result;
     }
 
-    bool MeshCode::isWithin(const GridCode& other) const {
-        // 型チェック
-        const auto* other_mesh = dynamic_cast<const MeshCode*>(&other);
-        if (other_mesh == nullptr) {
-            return false;  // 異なる型の場合は内包関係にないとみなす
-        }
-
-        if (get() == other_mesh->get())
-            return true;
-
-        return get().substr(0, 6) == other_mesh->get();
-    }
-
     MeshCode MeshCode::asSecond() const {
         auto result = *this;
         result.level_ = 2;

@@ -13,8 +13,15 @@ extern "C" {
         const char* code,
         GridCode** out_grid_code
     ) {
-        *out_grid_code = GridCode::createRaw(code);
-        return APIResult::Success;
+        API_TRY {
+            if(code == nullptr) return APIResult::ErrorInvalidArgument;
+            if(out_grid_code == nullptr) return APIResult::ErrorInvalidArgument;
+            *out_grid_code = GridCode::createRaw(code);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+
     }
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_get_extent(
@@ -22,6 +29,7 @@ extern "C" {
     ) {
         API_TRY{
             if (grid_code == nullptr) return APIResult::ErrorInvalidArgument;
+            if (extent == nullptr) return APIResult::ErrorInvalidArgument;
             *extent = grid_code->getExtent();
             return APIResult::Success;
         }

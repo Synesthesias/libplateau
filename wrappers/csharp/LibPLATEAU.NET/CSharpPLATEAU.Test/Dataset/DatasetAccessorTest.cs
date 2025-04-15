@@ -30,9 +30,9 @@ namespace PLATEAU.Test.Dataset
         {
             using var source = DatasetSource.CreateForMockServer(TestDatasetIdServer);
             using var accessor = source.Accessor;
-            var meshCodes = accessor.GridCodes;
-            Assert.AreEqual(3, meshCodes.Length);
-            Assert.AreEqual("53392642", meshCodes.At(1).ToString());
+            var gridCodes = accessor.GridCodes;
+            Assert.AreEqual(3, gridCodes.Length);
+            Assert.AreEqual("53392642", gridCodes.At(1).ToString());
         }
         
         [TestMethod]
@@ -172,7 +172,7 @@ namespace PLATEAU.Test.Dataset
         
         private static bool DoResultOfFilterByMeshCodesContainsMeshCode(DatasetAccessor accessor, string meshCodeStr)
         {
-            using var filtered = accessor.FilterByGridCoords(new[] { GridCode.Create(meshCodeStr) });
+            using var filtered = accessor.FilterByGridCodes(new[] { GridCode.Create(meshCodeStr) });
             var filteredGMLArray = filtered.GetGmlFiles(PredefinedCityModelPackage.Building);
             bool contains = false;
             foreach (var gml in filteredGMLArray)

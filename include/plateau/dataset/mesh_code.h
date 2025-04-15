@@ -49,11 +49,6 @@ class LIBPLATEAU_EXPORT MeshCode : public plateau::dataset::GridCode {
         static std::shared_ptr<std::vector<MeshCode>> getThirdMeshes(const geometry::Extent& extent);
 
         /**
-         * \brief 地域メッシュが内包されるかどうかを計算します。
-         */
-        bool isWithin(const GridCode& other) const override;
-
-        /**
          * \brief 地域メッシュを2次メッシュとして取得します。
         */
         MeshCode asSecond() const;

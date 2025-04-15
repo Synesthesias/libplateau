@@ -21,10 +21,6 @@ namespace PLATEAU.Dataset
         public readonly int Level;
         [MarshalAs(UnmanagedType.U1)] private readonly bool isValid;
 
-        
-        
-
-
         private static bool getHalfMeshNumber(out int num, int row, int col)
         {
             if (row < 0 || row > 1 ||
@@ -71,6 +67,5 @@ namespace PLATEAU.Dataset
             // ThrowIfInvalid();
             return $"{Level2()}{this.ThirdRow | 0}{this.ThirdCol | 0}";
         }
-        
     }
 }
