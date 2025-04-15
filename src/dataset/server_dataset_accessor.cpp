@@ -83,9 +83,7 @@ namespace plateau::dataset {
     }
 
     void ServerDatasetAccessor::addFile(const std::string& sub_folder, const DatasetFileItem& gml_file_info) {
-        if (dataset_files_.find(sub_folder) == dataset_files_.end()) {
-            dataset_files_.emplace(sub_folder, std::vector<DatasetFileItem>());
-        }
+        dataset_files_.try_emplace(sub_folder, std::vector<DatasetFileItem>());
         dataset_files_[sub_folder].push_back(gml_file_info);
     }
 
@@ -102,7 +100,9 @@ namespace plateau::dataset {
 
         for (const auto& [package, files] : dataset_files_) {
             for (const auto& file : files) {
-                auto extent = GridCode::create(file.grid_code)->getExtent();
+                auto tmp_grid_code = GridCode::create(file.grid_code);
+                if(!tmp_grid_code->isValid()) continue;
+                auto extent = tmp_grid_code->getExtent();
                 if (extent_filter.intersects2D(extent)) {
                     out_collection_ptr->addFile(package, file);
                 }

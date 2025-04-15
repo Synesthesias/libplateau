@@ -176,7 +176,8 @@ namespace plateau::dataset {
 
         out_collection_ptr->setUdxPath(udx_path_);
         for (const auto& [code, files] : files_by_code_) {
-            if (extent_filter.intersects2D(GridCode::create(code)->getExtent())) {
+            auto tmp_grid_code = GridCode::create(code);
+            if (tmp_grid_code->isValid() && extent_filter.intersects2D(tmp_grid_code->getExtent())) {
                 for (const auto& file : files) {
                     out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
@@ -284,7 +285,7 @@ namespace plateau::dataset {
         double lon_sum = 0;
         double height_sum = 0;
         for (const auto& grid_code : grid_codes_) {
-            if(grid_code == nullptr && !grid_code->isValid()) continue;
+            if (grid_code == nullptr || !grid_code->isValid()) continue;
             const auto& center = grid_code->getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
@@ -317,6 +318,8 @@ namespace plateau::dataset {
         files_.try_emplace(sub_folder, std::vector<GmlFile>());
         files_.at(sub_folder).push_back(gml_file_info);
 
+        auto code_ptr = gml_file_info.getGridCode();
+        if(!code_ptr->isValid()) return;
         const auto grid_code = gml_file_info.getGridCode()->get();
         files_by_code_.try_emplace(grid_code, std::vector<GmlFile>());
         files_by_code_[grid_code].push_back(gml_file_info);
