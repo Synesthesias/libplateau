@@ -14,7 +14,7 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT StandardMapGrid : public GridCode {
     public:
-        explicit StandardMapGrid(const std::string& code);
+        explicit StandardMapGrid(std::string  code);
         StandardMapGrid() = default;
 
         /**
@@ -61,6 +61,6 @@ namespace plateau::dataset {
 
     private:
         std::string code_;  // 図郭コード
-        bool is_valid_;     // コードが有効かどうか
+        bool is_valid_ = false;     // コードが有効かどうか
     };
 } 

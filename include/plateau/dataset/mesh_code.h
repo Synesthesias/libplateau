@@ -26,7 +26,7 @@ class LIBPLATEAU_EXPORT MeshCode : public plateau::dataset::GridCode {
         /**
          * \brief メッシュコードの次数を取得します。
          */
-        int getLevel() const;
+        int getLevel() const override;
 
         /**
          * \brief メッシュコードの緯度経度範囲を取得します。

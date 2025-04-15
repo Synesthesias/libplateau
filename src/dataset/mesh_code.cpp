@@ -255,8 +255,8 @@ namespace plateau::dataset {
 
     std::shared_ptr<GridCode> MeshCode::upper() const {
         // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
-        auto new_mesh_code = std::shared_ptr<GridCode>(upperRaw());
-        return new_mesh_code;
+        auto new_grid_code = std::shared_ptr<GridCode>(upperRaw());
+        return new_grid_code;
     }
 
     GridCode* MeshCode::upperRaw() const {

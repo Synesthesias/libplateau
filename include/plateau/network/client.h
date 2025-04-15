@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <plateau/dataset/mesh_code.h>
+#include <map>
+#include <memory>
+#include <plateau/dataset/grid_code.h>
+#include "libplateau_api.h"
 
 namespace plateau::network {
 

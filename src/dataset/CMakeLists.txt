@@ -6,5 +6,6 @@ target_sources(plateau PRIVATE
     "lod_searcher.cpp"
     "dataset_source.cpp"
     "grid_code.cpp"
+    "grid_code_utils.cpp"
     "standard_map_grid.cpp"
 )

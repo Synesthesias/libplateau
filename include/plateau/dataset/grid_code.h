@@ -65,7 +65,6 @@ namespace plateau::dataset {
          */
         virtual bool isNormalGmlLevel() const = 0;
 
-        bool isMeshCode() const;
 
         /**
          * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。

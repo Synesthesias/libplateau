@@ -7,10 +7,12 @@
 #include <plateau/geometry/geo_reference.h>
 #include "local_dataset_accessor.h"
 #include "plateau/dataset/grid_code.h"
+#include "grid_code_utils.h"
 
 namespace plateau::dataset {
     namespace fs = std::filesystem;
     using namespace geometry;
+    using namespace utils;
 
     //! 建築物、建築物部分、建築物付属物及びこれらの境界面
     const std::string UdxSubFolder::bldg = "bldg";
@@ -192,23 +194,12 @@ namespace plateau::dataset {
 
         // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
         out_collection_ptr->setUdxPath(udx_path_);
-        // 検索用に、引数の mesh_codes を文字列のセットにします。
-        auto mesh_codes_str_set = std::set<std::string>();
-        for (auto grid_code : grid_codes) {
-            // 各地域メッシュについて上位の地域メッシュも含め登録する。
-            // 重複する地域メッシュはinsert関数で弾かれる。
-            auto next_grid_code = GridCode::create(grid_code->get());
-            for (; !next_grid_code->isLargestLevel(); ) {
-                if (!grid_code->isValid())
-                    break;
-                mesh_codes_str_set.insert(next_grid_code->get());
-                
-                next_grid_code = next_grid_code->upper();
-            }
-        }
-        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        // 検索用に、引数の grid_codes を文字列のセットにします。
+        auto grid_codes_str_set = createExpandedGridCodeSet(grid_codes);
+
+        // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [code, files] : files_by_code_) {
-            if (mesh_codes_str_set.find(code) != mesh_codes_str_set.end()) {
+            if (grid_codes_str_set.find(code) != grid_codes_str_set.end()) {
                 for (const auto& file : files) {
                     out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }

@@ -19,8 +19,8 @@ namespace plateau::dataset {
         void loadFromServer();
 
         std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
-        std::shared_ptr<std::vector<GmlFile>> getGmlFiles(const PredefinedCityModelPackage package) override;
-        void getGmlFiles(const PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
+        std::shared_ptr<std::vector<GmlFile>> getGmlFiles(PredefinedCityModelPackage package) override;
+        void getGmlFiles(PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
 
         TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference) override;
         

@@ -6,7 +6,6 @@
 #include <utility>
 
 #include <plateau/dataset/gml_file.h>
-#include <plateau/dataset/mesh_code.h>
 #include <plateau/network/client.h>
 #include <plateau/dataset/lod_searcher.h>
 #include <plateau/dataset/i_dataset_accessor.h>

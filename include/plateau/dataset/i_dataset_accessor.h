@@ -16,7 +16,7 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT UdxSubFolder {
     public:
-        UdxSubFolder(std::string name)
+        explicit UdxSubFolder(std::string name)
             : name_(std::move(name)) {
         }
 
@@ -27,11 +27,11 @@ namespace plateau::dataset {
             return name_;
         }
 
-        operator std::string& () {
+        explicit operator std::string& () {
             return name_;
         }
 
-        operator std::string() const {
+        explicit operator std::string() const {
             return name_;
         }
 
@@ -95,9 +95,9 @@ namespace plateau::dataset {
          * \brief GMLファイル群のうち、範囲が extent の内部であり、パッケージ種が package であるものを vector で返します。
          * なお、 package はフラグの集合と見なされるので、複数のビットを立てることで複数の指定が可能です。
          */
-         virtual std::shared_ptr<std::vector<GmlFile>> getGmlFiles(const PredefinedCityModelPackage package) = 0;
+         virtual std::shared_ptr<std::vector<GmlFile>> getGmlFiles(PredefinedCityModelPackage package) = 0;
 
-         virtual void getGmlFiles(const PredefinedCityModelPackage package,
+         virtual void getGmlFiles(PredefinedCityModelPackage package,
                                   std::vector<GmlFile>& out_vector) = 0;
 
          /**

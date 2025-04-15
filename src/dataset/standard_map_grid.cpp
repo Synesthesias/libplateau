@@ -1,11 +1,11 @@
 #include "plateau/dataset/standard_map_grid.h"
 #include "plateau/geometry/geo_coordinate.h"
-#include <cctype>
 #include <stdexcept>
+#include <utility>
 
 namespace plateau::dataset {
 
-    StandardMapGrid::StandardMapGrid(const std::string& code) : code_(code), is_valid_(false) {
+    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code)), is_valid_(false) {
         // コードの形式を検証
         // TODO
         is_valid_ = true;
@@ -22,7 +22,7 @@ namespace plateau::dataset {
         
         // TODO: 図郭コードから緯度経度範囲を計算する実装を追加
         // この実装は図郭コードの仕様に基づいて行う必要があります
-        return geometry::Extent(geometry::GeoCoordinate(0, 0, 0), geometry::GeoCoordinate(0, 0, 0));
+        return {geometry::GeoCoordinate(0, 0, 0), geometry::GeoCoordinate(0, 0, 0)};
     }
 
     bool StandardMapGrid::isWithin(const GridCode& other) const {

@@ -26,10 +26,10 @@ namespace plateau::dataset {
          * \return 原点（0,0,0）を中心とする無効な範囲を返します。
          */
         geometry::Extent getExtent() const override {
-            return geometry::Extent(
+            return {
                 geometry::GeoCoordinate(0, 0, 0),
                 geometry::GeoCoordinate(0, 0, 0)
-            );
+            };
         }
 
         /**

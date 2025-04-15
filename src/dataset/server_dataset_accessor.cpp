@@ -3,9 +3,11 @@
 #include <plateau/geometry/geo_reference.h>
 
 #include "server_dataset_accessor.h"
+#include "grid_code_utils.h"
 
 namespace plateau::dataset {
     using namespace network;
+    using namespace utils;
 
     ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id, const Client& client)
         : client_(client)
@@ -113,26 +115,13 @@ namespace plateau::dataset {
         if (out_collection_ptr == nullptr)
             return;
 
-        // 検索用に、引数の mesh_codes を文字列のセットにします。
-        // TODO ここの処理はlocal_dataset_accessor.cppと重複する
-        auto mesh_codes_str_set = std::set<std::string>();
-        for (auto grid_code : grid_codes) {
-            // 各地域メッシュについて上位の地域メッシュも含め登録する。
-            // 重複する地域メッシュはinsert関数で弾かれる。
-            auto next_grid_code = GridCode::create(grid_code->get());
-            for (; !next_grid_code->isLargestLevel(); ) {
-                if (!grid_code->isValid())
-                    break;
-                mesh_codes_str_set.insert(next_grid_code->get());
+        // 検索用に、引数の grid_codes を文字列のセットにします。
+        auto grid_codes_str_set = createExpandedGridCodeSet(grid_codes);
 
-                next_grid_code = next_grid_code->upper();
-            }
-        }
-
-        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [sub_folder, files] : dataset_files_) {
             for (const auto& file : files) {
-                if (mesh_codes_str_set.find(file.grid_code) != mesh_codes_str_set.end()) {
+                if (grid_codes_str_set.find(file.grid_code) != grid_codes_str_set.end()) {
                     out_collection_ptr->addFile(sub_folder, file);
                 }
             }

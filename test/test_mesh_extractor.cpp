@@ -1,13 +1,13 @@
 #include "gtest/gtest.h"
 #include "citygml/citymodel.h"
 #include "citygml/citygml.h"
+#include "plateau/dataset/grid_code.h"
 #include "../src/c_wrapper/mesh_extractor_c.cpp"
 #include "../src/c_wrapper/model_c.cpp"
 #include "../src/c_wrapper/city_model_c.cpp"
 #include "../src/c_wrapper/citygml_c.cpp"
 #include "../src/polygon_mesh/area_mesh_factory.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
-#include <plateau/dataset/mesh_code.h>
 
 using namespace citygml;
 using namespace plateau::geometry;
@@ -190,7 +190,7 @@ namespace plateau::polygonMesh {
         for (int i = 1; i <= 4; ++i) {
             for (int j = 1; j <= 4; ++j) {
                 const auto mesh_code_str = third_mesh_code_str + std::to_string(i) + std::to_string(j);
-                extents.push_back(plateau::dataset::MeshCode(mesh_code_str).getExtent());
+                extents.push_back(plateau::dataset::GridCode::create(mesh_code_str)->getExtent());
             }
         }
 

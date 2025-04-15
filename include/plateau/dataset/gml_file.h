@@ -1,7 +1,6 @@
 #pragma once
 
 #include <libplateau_api.h>
-#include <plateau/dataset/mesh_code.h>
 #include <set>
 #include <optional>
 #include "plateau/network/client.h"
