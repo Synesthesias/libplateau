@@ -66,7 +66,7 @@ namespace PLATEAU.Test.Dataset
             using var datasetSource = DatasetSource.Create(new DatasetSourceConfigLocal(TestDataPathLocal));
             using var accessor = datasetSource.Accessor;
             Console.WriteLine(Path.GetFullPath(accessor.GetGmlFiles(PredefinedCityModelPackage.Building).At(0).Path));
-            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road;
+            var expected = PredefinedCityModelPackage.Building | PredefinedCityModelPackage.Road | PredefinedCityModelPackage.UndergroundFacility;
             Assert.AreEqual(expected, accessor.Packages);
         }
         
