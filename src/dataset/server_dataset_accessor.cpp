@@ -132,6 +132,7 @@ namespace plateau::dataset {
     std::shared_ptr<IDatasetAccessor>
         ServerDatasetAccessor::filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const {
         auto result = std::make_shared<ServerDatasetAccessor>(dataset_id_, client_);
+        // 生ポインタに変換しますが、生ポインタはfilterByGridCodes内でのみ使用されます。これにより共有ポインタのライフタイム内となるので問題ありません。
         std::vector<GridCode*> raw_grid_codes;
         raw_grid_codes.reserve(grid_codes.size());
         for(const auto grid_code : grid_codes) {
