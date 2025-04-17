@@ -43,10 +43,10 @@ extern "C" {
                         GmlFile,
                         handle->getFeatureType())
 
-    DLL_VALUE_FUNC(plateau_gml_file_get_mesh_code,
+    DLL_PTR_FUNC(plateau_gml_file_get_grid_code,
                    GmlFile,
-                   MeshCode,
-                   handle->getMeshCode())
+                   GridCode,
+                   handle->getGridCodeRaw())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
             const GmlFile* const gml_file_info,

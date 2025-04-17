@@ -1,0 +1,7 @@
+CompileFlags:
+  If:
+    PathMatch: [.*]
+    Condition: "system(windows)"
+  CompilationDatabase: out/build/x64-Debug-Unity
+  Remove: [-fPIC]
+  Add: [--target=x86_64-pc-windows-msvc]

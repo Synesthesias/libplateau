@@ -116,6 +116,6 @@ namespace plateau::geometry {
         TVec3d before_convert_lat_lon = (point + reference_point_) * unit_scale_;
         TVec3d lat_lon = convertAxisToENU(coordinate_system_, before_convert_lat_lon);
         PolarToPlaneCartesian().unproject(lat_lon, zone_id_);
-        return GeoCoordinate(lat_lon.x, lat_lon.y, lat_lon.z);
+        return {lat_lon.x, lat_lon.y, lat_lon.z};
     }
 }
