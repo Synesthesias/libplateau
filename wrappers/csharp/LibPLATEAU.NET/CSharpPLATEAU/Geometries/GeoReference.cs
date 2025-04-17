@@ -142,11 +142,11 @@ namespace PLATEAU.Geometries
             return outLatLon;
         }
 
-        public PlateauVector3d Convert(PlateauVector3d point, bool convertAxis, bool project)
+        public PlateauVector3d Convert(PlateauVector3d point, bool convertAxis, double epsg)
         {
             var result = NativeMethods.plateau_geo_reference_convert(
                 Handle, out var outXyz,
-                point, convertAxis, project);
+                point, convertAxis, epsg);
             DLLUtil.CheckDllError(result);
             return outXyz;
         }
@@ -256,7 +256,7 @@ namespace PLATEAU.Geometries
             internal static extern APIResult plateau_geo_reference_convert(
             [In] IntPtr geoReferencePtr,
             out PlateauVector3d outXyz,
-            PlateauVector3d point, [MarshalAs(UnmanagedType.U1)] bool convertAxis, [MarshalAs(UnmanagedType.U1)] bool project);
+            PlateauVector3d point, [MarshalAs(UnmanagedType.U1)] bool convertAxis, double epsg);
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_geo_reference_get_reference_point(

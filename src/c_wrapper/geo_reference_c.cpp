@@ -48,8 +48,8 @@ extern "C" {
 	DLL_VALUE_FUNC(plateau_geo_reference_convert,
                 GeoReference,
                 TVec3d,
-                handle->convert(point, convert_axis, project),
-                , TVec3d point, bool convert_axis, bool project)
+                handle->convert(point, convert_axis, epsg),
+                , TVec3d point, bool convert_axis, double epsg)
 
     DLL_VALUE_FUNC(plateau_geo_reference_get_reference_point,
                   GeoReference,

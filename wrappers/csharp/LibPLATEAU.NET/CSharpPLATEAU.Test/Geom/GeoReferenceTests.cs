@@ -129,10 +129,8 @@ namespace PLATEAU.Test.Geom
                 new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 5
             );
             var xyz = new PlateauVector3d(1, 2, 3);
-            Assert.AreEqual(xyz, geoReference.Convert(xyz, false, false));
-            Assert.AreEqual(GeoReference.ConvertAxisFromENUTo(CoordinateSystem.EUN, xyz), geoReference.Convert(xyz, true, false));
-            Assert.AreEqual(geoReference.Project(xyz), geoReference.Convert(xyz, true, true));
-            Assert.AreEqual(geoReference.ProjectWithoutAxisConvert(xyz), geoReference.Convert(xyz, false, true));
+            Assert.AreEqual(geoReference.Project(xyz), geoReference.Convert(xyz, true, 6697));
+            Assert.AreEqual(geoReference.ProjectWithoutAxisConvert(xyz), geoReference.Convert(xyz, false, 6697));
         }
     }
 }
