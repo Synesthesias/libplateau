@@ -9,7 +9,7 @@ using PLATEAU.Native;
 namespace PLATEAU.Dataset
 {
     /// <summary>
-    /// GMLファイル群から利用可能なファイル、メッシュコード、LODを検索します。
+    /// GMLファイル群から利用可能なファイル、グリッドコード、LODを検索します。
     /// C++の内部ではこれは基底クラスとなっており、継承によりローカル向けとサーバー向けの両方に対応しています。
     /// このクラスのポインタ (Handle) の具体的な型がローカル向けとサーバー向けのどちらであるかは、
     /// <see cref="DatasetSource"/> の初期化時に指定し、
@@ -45,11 +45,11 @@ namespace PLATEAU.Dataset
         {
             get
             {
-                var meshCodes = NativeVectorGridCode.Create();
+                var gridCodes = NativeVectorGridCode.Create();
                 var result = NativeMethods.plateau_i_dataset_accessor_get_grid_codes(
-                    Handle, meshCodes.Handle);
+                    Handle, gridCodes.Handle);
                 DLLUtil.CheckDllError(result);
-                return meshCodes;
+                return gridCodes;
             }
         }
 
@@ -74,18 +74,18 @@ namespace PLATEAU.Dataset
             return centerPoint;
         }
 
-        public DatasetAccessor FilterByGridCoords(IEnumerable<GridCode> gridCodes)
+        public DatasetAccessor FilterByGridCodes(IEnumerable<GridCode> gridCodes)
         {
-            var nativeMeshCodes = NativeVectorGridCode.Create();
-            foreach (var meshCode in gridCodes)
+            var nativeGridCodes = NativeVectorGridCode.Create();
+            foreach (var gridCode in gridCodes)
             {
-                nativeMeshCodes.Add(meshCode);
+                nativeGridCodes.Add(gridCode);
             }
 
             var result = NativeMethods.plateau_i_dataset_accessor_filter_by_grid_codes(
-                Handle, nativeMeshCodes.Handle, out var filteredPtr);
+                Handle, nativeGridCodes.Handle, out var filteredPtr);
             DLLUtil.CheckDllError(result);
-            nativeMeshCodes.Dispose();
+            nativeGridCodes.Dispose();
             return new DatasetAccessor(filteredPtr);
         }
 
@@ -123,7 +123,7 @@ namespace PLATEAU.Dataset
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_i_dataset_accessor_get_grid_codes(
                 [In] IntPtr accessorPtr,
-                [In,Out] IntPtr refVectorMeshCodePtr);
+                [In,Out] IntPtr refVectorGridCodePtr);
 
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_i_dataset_accessor_get_packages(
@@ -139,7 +139,7 @@ namespace PLATEAU.Dataset
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_i_dataset_accessor_filter_by_grid_codes(
                 [In] IntPtr accessorPtr,
-                [In] IntPtr nativeVectorMeshCodePtr,
+                [In] IntPtr nativeVectorGridCodePtr,
                 out IntPtr outFilteredAccessorPtr);
         }
     }

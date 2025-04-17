@@ -72,7 +72,7 @@ TEST_F(DatasetTest,DISABLED_getGmlsServer) { // NOLINT
     checkVectors(expected_files, actual_gml_files);
 }
 
-TEST_F(DatasetTest, getAllMeshCodes) { // NOLINT
+TEST_F(DatasetTest, getAllGridCodes) { // NOLINT
     const auto& grid_codes = local_dataset_accessor->getGridCodes();
     ASSERT_TRUE(grid_codes.size() > 0);
 }
@@ -178,27 +178,27 @@ TEST_F(DatasetTest, DISABLED_fetch_server_generates_files) { // NOLINT
 }
 
 namespace { // テスト filterByGridCodes で使う無名名前空間の関数です。
-    bool doResultOfFilterByMeshCodesContainsMeshCode(const std::string& mesh_code_str,
+    bool doResultOfFilterByGridCodesContainsGridCode(const std::string& grid_code_str,
                                                      const IDatasetAccessor& udx_file_collection,
                                                      const PredefinedCityModelPackage sub_folder) {
-        auto grid_code = std::vector<std::shared_ptr<GridCode>>{GridCode::create(mesh_code_str) };
+        auto grid_code = std::vector<std::shared_ptr<GridCode>>{GridCode::create(grid_code_str) };
         auto filtered_collection = udx_file_collection.filterByGridCodes(grid_code);
         auto gml_vector = filtered_collection->getGmlFiles(sub_folder);
-        bool contains_mesh_code = false;
+        bool contains_grid_code = false;
         for (const auto& building_gml : *gml_vector) {
             if (building_gml.getPath().find(grid_code[0]->get()) != std::string::npos) {
-                contains_mesh_code = true;
+                contains_grid_code = true;
             }
         }
-        return contains_mesh_code;
+        return contains_grid_code;
     }
 } // テスト filterByGridCodes で使う無名名前空間の関数です。
 
-TEST_F(DatasetTest, filter_by_mesh_codes) { // NOLINT
-    ASSERT_TRUE(doResultOfFilterByMeshCodesContainsMeshCode("53392642", *local_dataset_accessor,
-        PredefinedCityModelPackage::Building));
-    ASSERT_FALSE(doResultOfFilterByMeshCodesContainsMeshCode("99999999", *local_dataset_accessor,
-        PredefinedCityModelPackage::Building));
+TEST_F(DatasetTest, filter_by_grid_codes) { // NOLINT
+    ASSERT_TRUE(doResultOfFilterByGridCodesContainsGridCode("53392642", *local_dataset_accessor,
+                                                            PredefinedCityModelPackage::Building));
+    ASSERT_FALSE(doResultOfFilterByGridCodesContainsGridCode("99999999", *local_dataset_accessor,
+                                                             PredefinedCityModelPackage::Building));
 }
 
 

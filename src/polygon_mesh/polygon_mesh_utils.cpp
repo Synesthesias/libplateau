@@ -2,6 +2,7 @@
 #include "plateau/polygon_mesh/mesh.h"
 #include "plateau/geometry/geo_reference.h"
 #include "citygml/citymodel.h"
+#include <plateau/dataset/gml_file.h>
 
 namespace plateau::polygonMesh {
     using namespace citygml;
@@ -59,8 +60,9 @@ namespace plateau::polygonMesh {
         if (!envelope.validBounds()) {
             return TVec3d{0, 0, 0};
         }
+        const auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath());
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        return geometry::GeoReference(coordinate_zone_id).project(city_center);
+        return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.isPolarCoordinateSystem());
     }
 
     /**

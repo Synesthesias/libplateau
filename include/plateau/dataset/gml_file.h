@@ -1,7 +1,6 @@
 #pragma once
 
 #include <libplateau_api.h>
-#include <plateau/dataset/mesh_code.h>
 #include <set>
 #include <optional>
 #include "plateau/network/client.h"
@@ -22,6 +21,8 @@ namespace plateau::dataset {
         void setPath(const std::string& path);
         std::shared_ptr<GridCode> getGridCode() const;
         GridCode* getGridCodeRaw() const; // 寿命管理をDLL利用者に任せる用です
+        double getEpsg() const;
+        bool isPolarCoordinateSystem() const;
         const std::string& getFeatureType() const;
         PredefinedCityModelPackage getPackage() const;
         std::string getAppearanceDirectoryPath() const;
@@ -64,6 +65,7 @@ namespace plateau::dataset {
         std::string path_;
         std::shared_ptr<GridCode> grid_code_;
         std::string feature_type_;
+        std::string epsg_;
         bool is_valid_;
         bool is_local_;
         int max_lod_;

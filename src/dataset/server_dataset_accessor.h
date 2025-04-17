@@ -14,13 +14,13 @@ namespace plateau::dataset {
          * コンストラクト時にデータセットIDを指定します。
          * このIDはサーバーにデータセット一覧を問い合わせて得られる文字列です。
          */
-        explicit ServerDatasetAccessor(const std::string& dataset_id, const network::Client& client);
+        explicit ServerDatasetAccessor(std::string  dataset_id, network::Client  client);
 
         void loadFromServer();
 
         std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
-        std::shared_ptr<std::vector<GmlFile>> getGmlFiles(const PredefinedCityModelPackage package) override;
-        void getGmlFiles(const PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
+        std::shared_ptr<std::vector<GmlFile>> getGmlFiles(PredefinedCityModelPackage package) override;
+        void getGmlFiles(PredefinedCityModelPackage package_flags, std::vector<GmlFile>& out_gml_files) override;
 
         TVec3d calculateCenterPoint(const plateau::geometry::GeoReference& geo_reference) override;
         
@@ -33,6 +33,10 @@ namespace plateau::dataset {
 
         void filter(const geometry::Extent& extent, IDatasetAccessor& collection) const override;
         std::shared_ptr<IDatasetAccessor> filter(const geometry::Extent& extent) const override;
+
+        /**
+         * グリッドコードで対象データを絞り込みます。P/Invoke用に生ポインタを利用する版とshared_ptrを利用する版があります。
+         */
         void filterByGridCodes(const std::vector<GridCode*>& grid_codes, IDatasetAccessor& collection) const override;
         std::shared_ptr<IDatasetAccessor> filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const override;
 

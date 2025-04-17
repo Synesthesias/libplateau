@@ -6,7 +6,6 @@
 #include <utility>
 
 #include <plateau/dataset/gml_file.h>
-#include <plateau/dataset/mesh_code.h>
 #include <plateau/network/client.h>
 #include <plateau/dataset/lod_searcher.h>
 #include <plateau/dataset/i_dataset_accessor.h>
@@ -53,6 +52,25 @@ namespace plateau::dataset {
 
     GridCode* GmlFile::getGridCodeRaw() const {
         return GridCode::createRaw(grid_code_->get());
+    }
+
+    double GmlFile::getEpsg() const {
+        try {
+            return epsg_.empty() ? 6697 : std::stod(epsg_);
+        }
+        catch (const std::exception&) {
+            return 6697; 
+        }
+    }
+
+    bool GmlFile::isPolarCoordinateSystem() const {
+        double epsg = getEpsg();
+        // 平面直角座標系の区分についてはこちらを参照してください :
+        // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
+        if (epsg >= 10162 && epsg <= 10174) {
+            return false;
+        }
+        return true;
     }
 
     const std::string& GmlFile::getFeatureType() const {
@@ -117,6 +135,7 @@ namespace plateau::dataset {
         try {
             grid_code_ = GridCode::create(filename_parts.empty() ? "" : filename_parts.at(0));
             feature_type_ = filename_parts.size() <= 1 ? "" : filename_parts.at(1);
+            epsg_ = filename_parts.size() <= 2 ? "" : filename_parts.at(2);
             is_valid_ = true;
         }
         catch (...) {

@@ -6,6 +6,9 @@
 #include "plateau/geometry/geo_coordinate.h"
 
 namespace plateau::dataset {
+    class StandardMapGrid;
+    class MeshCode;
+
     /**
      * \brief 地図の区画を表すコードの基底クラスです。
      * 
@@ -26,11 +29,6 @@ namespace plateau::dataset {
         virtual geometry::Extent getExtent() const = 0;
 
         /**
-         * \brief このコードが他のコードに内包されるかどうかを計算します。
-         */
-        virtual bool isWithin(const GridCode& other) const = 0;
-
-        /**
          * \brief コードが適切な値かどうかを返します。
          */
         virtual bool isValid() const = 0;
@@ -38,7 +36,12 @@ namespace plateau::dataset {
         /**
          * \brief １段階上のレベルのグリッドコードに変換します。
          */
-        virtual std::shared_ptr<GridCode> upper() = 0;
+        virtual std::shared_ptr<GridCode> upper() const = 0;
+
+        /**
+         * \brief upper()のP/Invokeから呼び出す版です。newして返すので、利用者が適切に廃棄する必要があります。
+         */
+        virtual GridCode* upperRaw() const = 0;
 
         /**
          * \brief コードのレベル（詳細度）を取得します。
@@ -46,10 +49,20 @@ namespace plateau::dataset {
         virtual int getLevel() const = 0;
 
         /**
-         * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも大きいものであるときにtrueを返します。
-         * @return
+         * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも広域であるときにtrueを返します。
          */
         virtual bool isLargestLevel() const = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの典型的な建物のGMLファイルのレベルよりも詳細である場合にtrueを返します。
+         */
+        virtual bool isSmallerThanNormalGml() const = 0;
+
+        /**
+         * \brief コードのレベル（詳細度）が、PLATEAUの典型的な建物のGMLファイルのレベルである場合にtrueを返します。
+         */
+        virtual bool isNormalGmlLevel() const = 0;
+
 
         /**
          * \brief 与えられたコードから適切なGridCodeの派生クラスのインスタンスを作成します。
@@ -71,7 +84,9 @@ namespace plateau::dataset {
 
     struct GridCodeComparator {
         bool operator()(const std::shared_ptr<GridCode>& lhs, const std::shared_ptr<GridCode>& rhs) const {
-            if(lhs == nullptr || rhs == nullptr) return false;
+            if(lhs == nullptr && rhs == nullptr) return false;
+            if(lhs != nullptr && rhs == nullptr) return false;
+            if(lhs == nullptr) return true;
             return lhs->get() < rhs->get();
         }
     };

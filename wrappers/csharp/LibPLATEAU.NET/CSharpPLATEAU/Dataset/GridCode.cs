@@ -14,16 +14,22 @@ namespace PLATEAU.Dataset
         {
         }
 
-        public static GridCode Create(string code)
+        /// <summary>
+        /// コード文字列からグリッドコードを生成します。
+        /// コードが不正である場合は例外がスローされます。
+        /// </summary>
+        public static GridCode Create(string code, bool autoDispose = true)
         {
             var result = NativeMethods.plateau_grid_code_parse(code, out var gridCodePtr);
             DLLUtil.CheckDllError(result);
-            return new GridCode(gridCodePtr);
+            return new GridCode(gridCodePtr, autoDispose);
         }
         
         public static GridCode CopyFrom(IntPtr otherGridCodePtr)
         {
+            // C++で現にあるインスタンスのアドレスをC#と紐付ます
             var other = new GridCode(otherGridCodePtr, false);
+            // コピーします
             return Create(other.StringCode);
         }
         
@@ -57,6 +63,47 @@ namespace PLATEAU.Dataset
             return StringCode;
         }
         
+        public bool IsLargestLevel
+        {
+            get
+            {
+                var result = NativeMethods.plateau_grid_code_is_largest_level(Handle, out bool isLargestLevel);
+                DLLUtil.CheckDllError(result);
+                return isLargestLevel;
+            }
+        }
+        
+        public bool IsSmallerThanNormalGml
+        {
+            get
+            {
+                var result = NativeMethods.plateau_grid_code_is_smaller_than_normal_gml(Handle, out bool isSmallerThanNormalGml);
+                DLLUtil.CheckDllError(result);
+                return isSmallerThanNormalGml;
+            }
+        }
+        
+        public bool IsNormalGmlLevel
+        {
+            get
+            {
+                var result = NativeMethods.plateau_grid_code_is_normal_gml_level(Handle, out bool isNormalGmlLevel);
+                DLLUtil.CheckDllError(result);
+                return isNormalGmlLevel;
+            }
+        }
+        
+        /// <summary>
+        /// 1段階上のレベルのグリッドコードに変換します。
+        /// </summary>
+        /// <returns>1段階上のレベルのグリッドコードオブジェクト</returns>
+        public GridCode Upper()
+        {
+            var result = NativeMethods.plateau_grid_code_upper(Handle, out var upperGridCodePtr);
+            DLLUtil.CheckDllError(result);
+            return new GridCode(upperGridCodePtr);
+        }
+        
         public bool IsValid
         {
             get
@@ -70,7 +117,7 @@ namespace PLATEAU.Dataset
         private void ThrowIfInvalid()
         {
             if (IsValid) return;
-            throw new Exception("Invalid GridCode.");
+            throw new Exception("Invalid GridCode: " + StringCode);
         }
 
         protected override void DisposeNative()
@@ -106,6 +153,30 @@ namespace PLATEAU.Dataset
             internal static extern APIResult plateau_grid_code_get_string_code_size(
                 [In] IntPtr gridCodePtr,
                 out int strSize
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_grid_code_is_largest_level(
+                [In] IntPtr gridCodePtr,
+                [MarshalAs(UnmanagedType.U1)] out bool outIsLargestLevel
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_grid_code_is_smaller_than_normal_gml(
+                [In] IntPtr gridCodePtr,
+                [MarshalAs(UnmanagedType.U1)] out bool isSmallerThanNormalGml
+            );
+
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_grid_code_is_normal_gml_level(
+                [In] IntPtr gridCodePtr,
+                [MarshalAs(UnmanagedType.U1)] out bool isNormalGmlLevel
+            );
+            
+            [DllImport(DLLUtil.DllName)]
+            internal static extern APIResult plateau_grid_code_upper(
+                [In] IntPtr gridCodePtr,
+                out IntPtr outUpperGridCodePtr
             );
             
             [DllImport(DLLUtil.DllName)]

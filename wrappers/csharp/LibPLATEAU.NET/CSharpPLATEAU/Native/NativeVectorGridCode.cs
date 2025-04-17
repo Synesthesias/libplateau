@@ -5,6 +5,10 @@ using PLATEAU.Interop;
 
 namespace PLATEAU.Native
 {
+    /// <summary>
+    /// GridCodeのC++ Vectorです。
+    /// 中身はVectorの廃棄時の削除するので、それまでは中身が削除されないよう注意してください。
+    /// </summary>
     public class NativeVectorGridCode : NativeVectorDisposableBase<GridCode>
     {
         private NativeVectorGridCode(IntPtr ptr) : base(ptr)

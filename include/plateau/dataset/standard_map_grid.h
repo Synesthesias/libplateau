@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <tuple>
 
 #include <libplateau_api.h>
 #include "plateau/geometry/geo_coordinate.h"
@@ -16,7 +15,7 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT StandardMapGrid : public GridCode {
     public:
-        explicit StandardMapGrid(const std::string& code);
+        explicit StandardMapGrid(std::string  code);
         StandardMapGrid() = default;
 
         /**
@@ -30,11 +29,6 @@ namespace plateau::dataset {
         geometry::Extent getExtent() const override;
 
         /**
-         * \brief 図郭が他の図郭に内包されるかどうかを計算します。
-         */
-        bool isWithin(const GridCode& other) const override;
-
-        /**
          * \brief 図郭コードが適切な値かどうかを返します。
          */
         bool isValid() const override;
@@ -42,7 +36,8 @@ namespace plateau::dataset {
         /**
          * \brief １段階上のレベルのグリッドコードに変換します。
          */
-        std::shared_ptr<GridCode> upper() override;
+        std::shared_ptr<GridCode> upper() const override;
+        GridCode* upperRaw() const override;
 
         /**
          * \brief コードのレベル（詳細度）を取得します。
@@ -53,14 +48,15 @@ namespace plateau::dataset {
          * \brief コードのレベル（詳細度）が、PLATEAUの仕様上考えられる中でもっとも大きいものであるときにtrueを返します。
          */
         bool isLargestLevel() const override;
+        bool isSmallerThanNormalGml() const override;
+        bool isNormalGmlLevel() const override;
 
         bool operator==(const StandardMapGrid& other) const;
-        bool operator<(StandardMapGrid& other) const;
         bool operator<(const StandardMapGrid& other) const;
 
     private:
         std::string code_;  // 図郭コード
-        bool is_valid_;     // コードが有効かどうか
+        bool is_valid_ = false;     // コードが有効かどうか
         StandardMapGridLevel level_;
 
         int coordinate_origin_; // 原点

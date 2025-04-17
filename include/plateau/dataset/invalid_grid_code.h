@@ -26,17 +26,11 @@ namespace plateau::dataset {
          * \return 原点（0,0,0）を中心とする無効な範囲を返します。
          */
         geometry::Extent getExtent() const override {
-            return geometry::Extent(
+            return {
                 geometry::GeoCoordinate(0, 0, 0),
                 geometry::GeoCoordinate(0, 0, 0)
-            );
+            };
         }
-
-        /**
-         * \brief このコードが他のコードに内包されるかどうかを計算します。
-         * \return 常にfalseを返します。
-         */
-        bool isWithin(const GridCode& other) const override { return false; }
 
         /**
          * \brief コードが適切な値かどうかを返します。
@@ -48,11 +42,17 @@ namespace plateau::dataset {
          * \brief １段階上のレベルのグリッドコードに変換します。
          * \return 無効なグリッドコードを返します。
          */
-        std::shared_ptr<GridCode> upper() override { 
+        std::shared_ptr<GridCode> upper() const override {
             return std::make_shared<InvalidGridCode>(); 
+        }
+
+        GridCode* upperRaw() const override {
+            return new InvalidGridCode();
         }
 
         int getLevel() const override { return -1; }
         bool isLargestLevel() const override { return true; }
+        bool isSmallerThanNormalGml() const override { return false; }
+        bool isNormalGmlLevel() const override { return true; }
     };
 } 

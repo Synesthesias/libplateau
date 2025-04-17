@@ -1,11 +1,8 @@
 #include "plateau/dataset/standard_map_grid.h"
-
 #include <algorithm>
-
 #include "plateau/geometry/geo_coordinate.h"
-#include <cctype>
 #include <stdexcept>
-#include <plateau/geometry/geo_reference.h>
+#include <utility>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
 
 namespace plateau::dataset {
@@ -77,7 +74,7 @@ namespace plateau::dataset {
         return StandardMapGridLevel::Invalid;
     }
 
-    StandardMapGrid::StandardMapGrid(const std::string& code) : code_(code), is_valid_(true) {
+    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code), is_valid_(true)) {
         // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
         if (!std::all_of(code_.begin(), code_.end(), [](char c)
         {
@@ -147,7 +144,7 @@ namespace plateau::dataset {
             // 南北方向（行）のインデックス計算
             // A行から数えて何番目かを計算（0始まり）
             int row_index = first_row_ - 'A';
-            
+
             // 東西方向（列）のインデックス計算
             // A列から数えて何番目かを計算（0始まり）
             int col_index = first_col_ - 'A';
@@ -240,13 +237,13 @@ namespace plateau::dataset {
         // 平面直角座標系から緯度経度に変換
         const auto min_coordinate = geo_reference.unproject(planeMin);
         const auto max_coordinate = geo_reference.unproject(planeMax);
-        
+
         return geometry::Extent(min_coordinate, max_coordinate);
     }
 
     bool StandardMapGrid::isWithin(const GridCode& other) const {
         if (!isValid()) return false;
-        
+
         // 同じ型の場合のみ比較
         const auto* other_grid = dynamic_cast<const StandardMapGrid*>(&other);
         if (other_grid == nullptr) return false;
@@ -272,6 +269,11 @@ namespace plateau::dataset {
         return new_code;
     }
 
+    GridCode* StandardMapGrid::upperRaw() const {
+        // 仮実装: 自分自身のコピーを返す
+        return new StandardMapGrid(code_);
+    }
+
     int StandardMapGrid::getLevel() const {
         return (int)level_;
     }
@@ -280,12 +282,18 @@ namespace plateau::dataset {
         return level_ == StandardMapGridLevel::Level50000;
     }
 
-    bool StandardMapGrid::operator==(const StandardMapGrid& other) const {
-        return code_ == other.code_;
+    bool StandardMapGrid::isSmallerThanNormalGml() const {
+        // 仮実装
+        return false;
     }
 
-    bool StandardMapGrid::operator<(StandardMapGrid& other) const {
-        return code_ < other.code_;
+    bool StandardMapGrid::isNormalGmlLevel() const {
+        // 仮実装: 常にtrueを返す
+        return true;
+    }
+
+    bool StandardMapGrid::operator==(const StandardMapGrid& other) const {
+        return code_ == other.code_;
     }
 
     bool StandardMapGrid::operator<(const StandardMapGrid& other) const {

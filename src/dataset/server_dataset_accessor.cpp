@@ -2,14 +2,17 @@
 #include <plateau/geometry/geo_coordinate.h>
 #include <plateau/geometry/geo_reference.h>
 
+#include <utility>
+
 #include "server_dataset_accessor.h"
+#include "grid_code_utils.h"
 
 namespace plateau::dataset {
     using namespace network;
 
-    ServerDatasetAccessor::ServerDatasetAccessor(const std::string& dataset_id, const Client& client)
-        : client_(client)
-        , dataset_id_(dataset_id) {
+    ServerDatasetAccessor::ServerDatasetAccessor(std::string  dataset_id, Client  client)
+        : client_(std::move(client))
+        , dataset_id_(std::move(dataset_id)) {
     }
 
     void ServerDatasetAccessor::loadFromServer() {
@@ -80,9 +83,7 @@ namespace plateau::dataset {
     }
 
     void ServerDatasetAccessor::addFile(const std::string& sub_folder, const DatasetFileItem& gml_file_info) {
-        if (dataset_files_.find(sub_folder) == dataset_files_.end()) {
-            dataset_files_.emplace(sub_folder, std::vector<DatasetFileItem>());
-        }
+        dataset_files_.try_emplace(sub_folder, std::vector<DatasetFileItem>());
         dataset_files_[sub_folder].push_back(gml_file_info);
     }
 
@@ -99,7 +100,9 @@ namespace plateau::dataset {
 
         for (const auto& [package, files] : dataset_files_) {
             for (const auto& file : files) {
-                auto extent = GridCode::create(file.grid_code)->getExtent();
+                auto tmp_grid_code = GridCode::create(file.grid_code);
+                if(!tmp_grid_code->isValid()) continue;
+                auto extent = tmp_grid_code->getExtent();
                 if (extent_filter.intersects2D(extent)) {
                     out_collection_ptr->addFile(package, file);
                 }
@@ -113,26 +116,13 @@ namespace plateau::dataset {
         if (out_collection_ptr == nullptr)
             return;
 
-        // 検索用に、引数の mesh_codes を文字列のセットにします。
-        // TODO ここの処理はlocal_dataset_accessor.cppと重複する
-        auto mesh_codes_str_set = std::set<std::string>();
-        for (auto grid_code : grid_codes) {
-            // 各地域メッシュについて上位の地域メッシュも含め登録する。
-            // 重複する地域メッシュはinsert関数で弾かれる。
-            auto next_grid_code = GridCode::create(grid_code->get());
-            for (; !next_grid_code->isLargestLevel(); ) {
-                if (!grid_code->isValid())
-                    break;
-                mesh_codes_str_set.insert(grid_code->get());
+        // 検索用に、引数の grid_codes を文字列のセットにします。
+        auto grid_codes_str_set = utils::createExpandedGridCodeSet(grid_codes);
 
-                next_grid_code = next_grid_code->upper();
-            }
-        }
-
-        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [sub_folder, files] : dataset_files_) {
             for (const auto& file : files) {
-                if (mesh_codes_str_set.find(file.grid_code) != mesh_codes_str_set.end()) {
+                if (grid_codes_str_set.find(file.grid_code) != grid_codes_str_set.end()) {
                     out_collection_ptr->addFile(sub_folder, file);
                 }
             }
@@ -142,6 +132,7 @@ namespace plateau::dataset {
     std::shared_ptr<IDatasetAccessor>
         ServerDatasetAccessor::filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const {
         auto result = std::make_shared<ServerDatasetAccessor>(dataset_id_, client_);
+        // 生ポインタに変換しますが、生ポインタはfilterByGridCodes内でのみ使用されます。これにより共有ポインタのライフタイム内となるので問題ありません。
         std::vector<GridCode*> raw_grid_codes;
         raw_grid_codes.reserve(grid_codes.size());
         for(const auto grid_code : grid_codes) {
