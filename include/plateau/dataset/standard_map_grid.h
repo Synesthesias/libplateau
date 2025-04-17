@@ -56,7 +56,7 @@ namespace plateau::dataset {
 
     private:
         std::string code_;  // 図郭コード
-        bool is_valid_ = false;     // コードが有効かどうか
+        bool is_valid_ = true;     // コードが有効かどうか
         StandardMapGridLevel level_;
 
         int coordinate_origin_; // 原点

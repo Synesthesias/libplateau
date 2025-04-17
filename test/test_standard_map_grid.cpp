@@ -77,35 +77,6 @@ TEST(StandardMapGrid, Level2500_OutOfBounds) {
     );
 }
 
-TEST(StandardMapGrid, isWithinTest) {
-    // Level50000とLevel5000の包含関係
-    const auto grid50000 = StandardMapGrid("09AE");
-    const auto grid5000 = StandardMapGrid("09AE09");
-    const auto grid2500 = StandardMapGrid("09AE091");
-    const auto grid1000 = StandardMapGrid("09AE091A");
-    const auto grid500 = StandardMapGrid("09AE0911");
-
-    // 同じコードは包含関係にある
-    ASSERT_TRUE(grid50000.isWithin(grid50000));
-    ASSERT_TRUE(grid5000.isWithin(grid5000));
-
-    // Level50000は下位レベルを包含する
-    ASSERT_TRUE(grid50000.isWithin(grid5000));
-    ASSERT_TRUE(grid50000.isWithin(grid2500));
-    ASSERT_TRUE(grid50000.isWithin(grid1000));
-    ASSERT_TRUE(grid50000.isWithin(grid500));
-
-    // Level5000は下位レベルを包含する
-    ASSERT_TRUE(grid5000.isWithin(grid2500));
-    ASSERT_TRUE(grid5000.isWithin(grid1000));
-    ASSERT_TRUE(grid5000.isWithin(grid500));
-
-    // 下位レベルは上位レベルを包含しない
-    ASSERT_FALSE(grid5000.isWithin(grid50000));
-    ASSERT_FALSE(grid2500.isWithin(grid50000));
-    ASSERT_FALSE(grid2500.isWithin(grid5000));
-}
-
 TEST(StandardMapGrid, invalidGridCode) {
     // 無効な図郭コードのテスト
     ASSERT_FALSE(StandardMapGrid("invalid").isValid());
@@ -121,4 +92,42 @@ TEST(StandardMapGrid, levelCheck) {
     ASSERT_EQ(StandardMapGrid("09AE091").getLevel(), 2);  // Level2500
     ASSERT_EQ(StandardMapGrid("09AE091A").getLevel(), 3); // Level1000
     ASSERT_EQ(StandardMapGrid("09AE0911").getLevel(), 4); // Level500
+}
+
+TEST(StandardMapGrid, upperMethodTest) {
+    // Level500からLevel50000までの変換をテスト
+    auto grid = StandardMapGrid("09AE0911");  // Level500
+    ASSERT_EQ(grid.upper()->get(), "09AE091"); // Level1000
+    
+    grid = StandardMapGrid("09AE091A");  // Level1000
+    ASSERT_EQ(grid.upper()->get(), "09AE091"); // Level2500
+    
+    grid = StandardMapGrid("09AE091");  // Level2500
+    ASSERT_EQ(grid.upper()->get(), "09AE09"); // Level5000
+    
+    grid = StandardMapGrid("09AE09");  // Level5000
+    ASSERT_EQ(grid.upper()->get(), "09AE"); // Level50000
+    
+    // Level50000からの変換は無効になるはず
+    grid = StandardMapGrid("09AE");  // Level50000
+    auto upper_grid = grid.upper();
+    ASSERT_FALSE(upper_grid->isValid());
+}
+
+TEST(StandardMapGrid, levelCheckMethods) {
+    // isLargestLevelのテスト
+    ASSERT_TRUE(StandardMapGrid("09AE").isLargestLevel());      // Level50000
+    ASSERT_FALSE(StandardMapGrid("09AE09").isLargestLevel());   // Level5000
+    
+    // isSmallerThanNormalGmlのテスト
+    ASSERT_TRUE(StandardMapGrid("09AE").isSmallerThanNormalGml());   // Level50000
+    ASSERT_TRUE(StandardMapGrid("09AE09").isSmallerThanNormalGml()); // Level5000
+    ASSERT_FALSE(StandardMapGrid("09AE091").isSmallerThanNormalGml()); // Level2500
+    ASSERT_FALSE(StandardMapGrid("09AE091A").isSmallerThanNormalGml()); // Level1000
+    
+    // isNormalGmlLevelのテスト
+    ASSERT_FALSE(StandardMapGrid("09AE").isNormalGmlLevel());     // Level50000
+    ASSERT_FALSE(StandardMapGrid("09AE09").isNormalGmlLevel());   // Level5000
+    ASSERT_TRUE(StandardMapGrid("09AE091").isNormalGmlLevel());   // Level2500
+    ASSERT_FALSE(StandardMapGrid("09AE091A").isNormalGmlLevel()); // Level1000
 } 

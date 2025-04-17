@@ -3,6 +3,7 @@
 #include "plateau/geometry/geo_coordinate.h"
 #include <stdexcept>
 #include <utility>
+#include <plateau/geometry/geo_reference.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
 
 namespace plateau::dataset {
@@ -74,7 +75,7 @@ namespace plateau::dataset {
         return StandardMapGridLevel::Invalid;
     }
 
-    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code), is_valid_(true)) {
+    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code)) {
         // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
         if (!std::all_of(code_.begin(), code_.end(), [](char c)
         {
@@ -241,37 +242,22 @@ namespace plateau::dataset {
         return geometry::Extent(min_coordinate, max_coordinate);
     }
 
-    bool StandardMapGrid::isWithin(const GridCode& other) const {
-        if (!isValid()) return false;
-
-        // 同じ型の場合のみ比較
-        const auto* other_grid = dynamic_cast<const StandardMapGrid*>(&other);
-        if (other_grid == nullptr) return false;
-
-        if (code_ == other_grid->code_) {
-            return true;
-        }
-
-        // Level50000の場合は先頭4文字、Level50000以外の場合は先頭6文字で比較
-        const size_t compare_length = (level_ == StandardMapGridLevel::Level50000) ? 4 : 6;
-        return code_.substr(0, compare_length) == other_grid->code_.substr(0, compare_length);
-    }
-
     bool StandardMapGrid::isValid() const {
         return is_valid_;
     }
 
-    std::shared_ptr<GridCode> StandardMapGrid::upper() {
+    std::shared_ptr<GridCode> StandardMapGrid::upper() const {
         // １段階上のレベルの図郭コードに変換
-        auto new_code = std::make_shared<StandardMapGrid>(code_);
-        new_code->level_ = static_cast<StandardMapGridLevel>(static_cast<int>(level_) - 1);
-        new_code->is_valid_ = new_code->level_ >= StandardMapGridLevel::Level50000;
-        return new_code;
+        auto new_grid_code = std::shared_ptr<GridCode>(upperRaw());
+        return new_grid_code;
     }
 
     GridCode* StandardMapGrid::upperRaw() const {
-        // 仮実装: 自分自身のコピーを返す
-        return new StandardMapGrid(code_);
+        // １段階上のレベルの図郭コードに変換
+        auto new_code = new StandardMapGrid(code_);
+        new_code->level_ = static_cast<StandardMapGridLevel>(static_cast<int>(level_) - 1);
+        new_code->is_valid_ = new_code->level_ >= StandardMapGridLevel::Level50000;
+        return new_code;
     }
 
     int StandardMapGrid::getLevel() const {
@@ -283,13 +269,11 @@ namespace plateau::dataset {
     }
 
     bool StandardMapGrid::isSmallerThanNormalGml() const {
-        // 仮実装
-        return false;
+        return  level_ < StandardMapGridLevel::Level2500;
     }
 
     bool StandardMapGrid::isNormalGmlLevel() const {
-        // 仮実装: 常にtrueを返す
-        return true;
+        return level_ == StandardMapGridLevel::Level2500;
     }
 
     bool StandardMapGrid::operator==(const StandardMapGrid& other) const {
