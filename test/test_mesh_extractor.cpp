@@ -221,11 +221,12 @@ namespace plateau::polygonMesh {
         mesh_extract_options.coordinate_zone_id = 8;
 		mesh_extract_options.unit_scale = 1.0;
         mesh_extract_options.mesh_axes = CoordinateSystem::ENU;
-        mesh_extract_options.is_polar_coordinate_system = false;
+        mesh_extract_options.epsg_code = 10169;
+
         const std::shared_ptr<const CityModel> city_model = load(gml_path, params);
 
         const auto& gml = plateau::dataset::GmlFile((city_model->getGmlPath()));
-        ASSERT_FALSE(gml.isPolarCoordinateSystem());
+        ASSERT_FALSE(plateau::geometry::CoordinateReferenceFactory::IsPolarCoordinateSystem(gml.getEpsg()));
 
         auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
         ASSERT_GE(1, model->getRootNodeCount());   
@@ -244,11 +245,15 @@ namespace plateau::polygonMesh {
         const auto& city_model_polygon = root_geometry.getPolygon(0);
         const auto& city_model_vertices = city_model_polygon->getVertices();
 
-        // 変換されないのでscale:1でENUであればCityModelと座標が同じになる
+        // scale:1でENUであればCityModelとほぼ同一座標
+        // 平面直角座標は、XYZ => YXZの変換が行われる
         for (int i = 0; i < city_model_vertices.size(); i++) {
             const auto& city_model_vertex = city_model_vertices[i];
             const auto& vertex = vertices[i];
-            ASSERT_EQ(vertex, city_model_vertex);
+            
+            ASSERT_NEAR(vertex.y, city_model_vertex.x, 0.1);
+            ASSERT_NEAR(vertex.x, city_model_vertex.y, 0.1);
+            ASSERT_NEAR(vertex.z, city_model_vertex.z, 0.1);
         }
     }
 

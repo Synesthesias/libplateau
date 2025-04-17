@@ -22,7 +22,6 @@ namespace plateau::dataset {
         void setPath(const std::string& path);
         MeshCode getMeshCode() const;
         double getEpsg() const;
-        bool isPolarCoordinateSystem() const;
         const std::string& getFeatureType() const;
         PredefinedCityModelPackage getPackage() const;
         std::string getAppearanceDirectoryPath() const;

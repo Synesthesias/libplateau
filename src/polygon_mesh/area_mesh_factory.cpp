@@ -20,19 +20,7 @@ namespace {
             return false;
 
         for (const auto& extent : extents) {
-
-            if (!options.is_polar_coordinate_system) {
-                // 平面直角座標系の判定
-                plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
-                try {
-                    auto pos = PolygonMeshUtils::cityObjPos(city_obj);
-                    if (extent.contains(geo_ref.unproject(pos)))
-                        return false;
-                }
-                catch (std::invalid_argument& e) {}
-            }
-
-            if (extent.contains(city_obj))
+            if (extent.containsInPolar(city_obj, options.epsg_code))
                 return false;
         }
 

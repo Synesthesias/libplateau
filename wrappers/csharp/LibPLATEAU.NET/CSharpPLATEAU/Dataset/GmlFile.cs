@@ -117,8 +117,8 @@ namespace PLATEAU.Dataset
             get
             {
                 ThrowIfDisposed();
-                var isPolar = DLLUtil.GetNativeValue<bool>(Handle,
-                    NativeMethods.plateau_gml_file_is_polar_coordinate_system);
+                var result = NativeMethods.plateau_geometry_utils_is_polar_coordinate_system(Epsg, out var isPolar);
+                DLLUtil.CheckDllError(result);
                 return isPolar;
             }
         }
@@ -249,9 +249,9 @@ namespace PLATEAU.Dataset
                 out double outEpsg);
 
             [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_gml_file_is_polar_coordinate_system(
-                [In] IntPtr gmlFilePtr,
-                out bool outBool);
+            internal static extern APIResult plateau_geometry_utils_is_polar_coordinate_system(
+                double epsg,
+                [MarshalAs(UnmanagedType.U1)] out bool outBool);
 
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(

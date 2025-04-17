@@ -25,24 +25,10 @@ namespace {
         // 範囲外を省く設定ならば省きます。
         if (!options.exclude_city_object_outside_extent)
             return false;
-
-        if (!options.is_polar_coordinate_system) {
-            // 平面直角座標系の判定
-            plateau::geometry::GeoReference geo_ref(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);  
-            try {
-                auto pos = geo_ref.unproject(PolygonMeshUtils::cityObjPos(city_obj));
-                for (const auto& extent : extents) {
-                    if (extent.contains(pos))
-                        return false;
-                }
-            }
-            catch (std::invalid_argument& e) {}
-        }
-        else {
-            for (const auto& extent : extents) {
-                if (extent.contains(city_obj))
-                    return false;
-            }
+        
+        for (const auto& extent : extents) {
+            if (extent.containsInPolar(city_obj, options.epsg_code))
+                return false;
         }
         return true;
     }

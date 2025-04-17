@@ -1,6 +1,7 @@
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include "plateau/polygon_mesh/mesh.h"
 #include "plateau/geometry/geo_reference.h"
+#include "plateau/geometry/geo_coordinate.h"
 #include "citygml/citymodel.h"
 #include <plateau/dataset/gml_file.h>
 
@@ -62,7 +63,7 @@ namespace plateau::polygonMesh {
         }
         const auto& gml = plateau::dataset::GmlFile(city_model.getGmlPath()); // 平面直角座標系の判定用
         auto city_center = (envelope.getLowerBound() + envelope.getUpperBound()) / 2.0;
-        return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.isPolarCoordinateSystem());
+        return geometry::GeoReference(coordinate_zone_id).convert(city_center, true, gml.getEpsg());
     }
 
     /**

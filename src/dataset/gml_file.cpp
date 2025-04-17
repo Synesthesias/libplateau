@@ -60,16 +60,6 @@ namespace plateau::dataset {
         }
     }
 
-    bool GmlFile::isPolarCoordinateSystem() const {
-        double epsg = getEpsg();
-        // 平面直角座標系の区分についてはこちらを参照してください :
-        // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
-        if (epsg >= 10162 && epsg <= 10174) {
-            return false;
-        }
-        return true;
-    }
-
     const std::string& GmlFile::getFeatureType() const {
         return feature_type_;
     }

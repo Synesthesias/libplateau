@@ -24,18 +24,26 @@ namespace plateau::geometry {
         return converted_point;
     }
 
-    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const bool project) const {
+    //平面直角座標判定を含むproject, projectWithoutAxisConvert処理と同様の処理
+    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const double epsg) const {
         //平面直角座標変換、座標軸変換をフラグに応じてスキップします。
         TVec3d point = lat_lon;
-		// 平面直角座標系に変換
-        if (project)
-            PolarToPlaneCartesian().project(point, zone_id_);
+
+        // 極座標系・平面直角座標系判定
+        const bool is_polar = CoordinateReferenceFactory::IsPolarCoordinateSystem(epsg);
+        if (!is_polar) {
+            //平面直角座標の場合は緯度経度に変換
+            const auto& unprojected = planeToPolar(point, CoordinateReferenceFactory::GetZoneId(epsg));
+            point = { unprojected.latitude, unprojected.longitude, unprojected.height };
+        }
+
+        PolarToPlaneCartesian().project(point, zone_id_);
         if (!convert_axis) {
-			// 座標軸変換をしない場合
+            // 座標軸変換をしない場合
             TVec3 converted_point = point / unit_scale_ - convertAxisToENU(coordinate_system_, reference_point_);
             return converted_point;
         }
-		// 座標軸変換をする場合
+        // 座標軸変換をする場合
         TVec3 converted_point = convertAxisFromENUTo(coordinate_system_, point);
         converted_point = converted_point / unit_scale_ - reference_point_;
         return converted_point;
@@ -86,6 +94,21 @@ namespace plateau::geometry {
         default:
             throw std::out_of_range("Invalid argument");
         }
+    }
+
+    //平面直角座標のGMLの座標は xyが反転しているので変換
+    TVec3d GeoReference::reverseXY(const TVec3d& vertex) {
+        return { vertex.y, vertex.x, vertex.z }; //x,y反転
+    }
+
+    //平面直角座標から緯度経度に変換
+    GeoCoordinate GeoReference::planeToPolar(const TVec3d& vertex, const int coordinate_zone_id) {
+        TVec3d point = vertex;
+        point = reverseXY(point);
+        plateau::geometry::GeoReference geo_ref(coordinate_zone_id);
+        const auto unprojected = geo_ref.unproject(point);
+        //point = { unprojected.latitude, unprojected.longitude, unprojected.height };
+        return unprojected;
     }
 
     void GeoReference::setReferencePoint(TVec3d point) {

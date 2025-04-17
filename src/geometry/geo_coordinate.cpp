@@ -64,6 +64,32 @@ namespace plateau::geometry {
         }
     }
 
+    bool Extent::containsInPolar(TVec3d point, const double epsg, bool ignore_height) const {
+
+        if (!CoordinateReferenceFactory::IsPolarCoordinateSystem(epsg)) {
+            // 平面直角座標系の判定
+            const auto& unprojected = GeoReference::planeToPolar(point, CoordinateReferenceFactory::GetZoneId(epsg));
+            point = { unprojected.latitude, unprojected.longitude, unprojected.height };
+        }
+        return contains(GeoCoordinate(point.x, point.y, point.z), ignore_height);
+    }
+
+    bool Extent::containsInPolar(const CityObject& city_obj, const double epsg, bool ignore_height) const {
+
+        if (!CoordinateReferenceFactory::IsPolarCoordinateSystem(epsg)) {
+            // 平面直角座標系の判定
+            try {
+                const auto pos = PolygonMeshUtils::cityObjPos(city_obj);
+                return containsInPolar(pos, epsg, ignore_height);
+            }
+            catch (std::invalid_argument& e) {
+                // 位置不明は false 扱いとします。
+                return false;
+            }
+        }
+        return contains(city_obj, ignore_height);
+    }
+
     bool Extent::intersects2D(const Extent& other) const {
         const auto center_1 = centerPoint();
         const auto center_2 = other.centerPoint();
