@@ -6,6 +6,8 @@
 
 #include <plateau/geometry/geo_reference.h>
 #include "local_dataset_accessor.h"
+#include "plateau/dataset/grid_code.h"
+#include "grid_code_utils.h"
 
 namespace plateau::dataset {
     namespace fs = std::filesystem;
@@ -152,12 +154,11 @@ namespace plateau::dataset {
             auto& gml_files = collection.files_.at(package);
             findGMLsBFS(entry.path(), gml_files);
             for (const auto& gml_file: gml_files) {
-                auto mesh_code = gml_file.getMeshCode();
+                auto grid_code = gml_file.getGridCode();
                 if (!gml_file.isValid()) continue;
-                if (collection.files_by_code_.count(mesh_code.get()) == 0) {
-                    collection.files_by_code_.emplace(mesh_code.get(), std::vector<GmlFile>());
-                }
-                collection.files_by_code_[mesh_code.get()].push_back(gml_file);
+                if (!grid_code->isValid()) continue;
+                collection.files_by_code_.try_emplace(grid_code->get(), std::vector<GmlFile>());
+                collection.files_by_code_[grid_code->get()].push_back(gml_file);
             }
         }
     }
@@ -175,7 +176,8 @@ namespace plateau::dataset {
 
         out_collection_ptr->setUdxPath(udx_path_);
         for (const auto& [code, files] : files_by_code_) {
-            if (extent_filter.intersects2D(MeshCode(code).getExtent())) {
+            auto tmp_grid_code = GridCode::create(code);
+            if (tmp_grid_code->isValid() && extent_filter.intersects2D(tmp_grid_code->getExtent())) {
                 for (const auto& file : files) {
                     out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
@@ -183,7 +185,7 @@ namespace plateau::dataset {
         }
     }
 
-    void LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes,
+    void LocalDatasetAccessor::filterByGridCodes(const std::vector<GridCode*>& grid_codes,
                                                  IDatasetAccessor& collection) const {
         const auto out_collection_ptr = dynamic_cast<LocalDatasetAccessor*>(&collection);
         if (out_collection_ptr == nullptr)
@@ -191,20 +193,12 @@ namespace plateau::dataset {
 
         // これがないとフィルターの結果に対して fetch を実行するときにパスがずれます。
         out_collection_ptr->setUdxPath(udx_path_);
-        // 検索用に、引数の mesh_codes を文字列のセットにします。
-        auto mesh_codes_str_set = std::set<std::string>();
-        for (auto mesh_code : mesh_codes) {
-            // 各地域メッシュについて上位の地域メッシュも含め登録する。
-            // 重複する地域メッシュはinsert関数で弾かれる。
-            for (; mesh_code.getLevel() >= 2; mesh_code = mesh_code.upper()) {
-                if (!mesh_code.isValid())
-                    break;
-                mesh_codes_str_set.insert(mesh_code.get());
-            }
-        }
-        // ファイルごとに mesh_codes_str_set に含まれるなら追加していきます。
+        // 検索用に、引数の grid_codes を文字列のセットにします。
+        auto grid_codes_str_set = utils::createExpandedGridCodeSet(grid_codes);
+
+        // ファイルごとに grid_codes_str_set に含まれるなら追加していきます。
         for (const auto& [code, files] : files_by_code_) {
-            if (mesh_codes_str_set.find(code) != mesh_codes_str_set.end()) {
+            if (grid_codes_str_set.find(code) != grid_codes_str_set.end()) {
                 for (const auto& file : files) {
                     out_collection_ptr->addFile(UdxSubFolder::getPackage(file.getFeatureType()), file);
                 }
@@ -213,9 +207,14 @@ namespace plateau::dataset {
     }
 
     std::shared_ptr<IDatasetAccessor>
-        LocalDatasetAccessor::filterByMeshCodes(const std::vector<MeshCode>& mesh_codes) const {
+        LocalDatasetAccessor::filterByGridCodes(const std::vector<std::shared_ptr<GridCode>>& grid_codes) const {
         auto result = std::make_shared<LocalDatasetAccessor>();
-        filterByMeshCodes(mesh_codes, *result);
+        std::vector<GridCode*> raw_grid_codes;
+        raw_grid_codes.reserve(grid_codes.size());
+        for(const auto grid_code : grid_codes) {
+            raw_grid_codes.push_back(grid_code.get());
+        }
+        filterByGridCodes(raw_grid_codes, *result);
         return result;
     }
 
@@ -285,13 +284,14 @@ namespace plateau::dataset {
         double lat_sum = 0;
         double lon_sum = 0;
         double height_sum = 0;
-        for (const auto& mesh_code : mesh_codes_) {
-            const auto& center = mesh_code.getExtent().centerPoint();
+        for (const auto& grid_code : grid_codes_) {
+            if (grid_code == nullptr || !grid_code->isValid()) continue;
+            const auto& center = grid_code->getExtent().centerPoint();
             lat_sum += center.latitude;
             lon_sum += center.longitude;
             height_sum += center.height;
         }
-        auto num = (double)mesh_codes_.size();
+        auto num = (double)grid_codes_.size();
         geometry::GeoCoordinate geo_average = geometry::GeoCoordinate(lat_sum / num, lon_sum / num, height_sum / num);
         auto euclid_average = geo_reference.project(geo_average);
         return euclid_average;
@@ -301,30 +301,28 @@ namespace plateau::dataset {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::set<MeshCode>& LocalDatasetAccessor::getMeshCodes() {
-        if (mesh_codes_.empty()) {
+    std::set<std::shared_ptr<GridCode>, GridCodeComparator>& LocalDatasetAccessor::getGridCodes() {
+        if (grid_codes_.empty()) {
             for (const auto& [_, files]: files_) {
                 for (const auto& file: files) {
-                    auto mesh_code = file.getMeshCode();
-                    if (!mesh_code.isValid()) continue;
-                    mesh_codes_.insert(file.getMeshCode());
+                    auto grid_code = file.getGridCode();
+                    if (!grid_code->isValid()) continue;
+                    grid_codes_.insert(grid_code);
                 }
             }
         }
-        return mesh_codes_;
+        return grid_codes_;
     }
 
     void LocalDatasetAccessor::addFile(PredefinedCityModelPackage sub_folder, const GmlFile& gml_file_info) {
-        if (files_.count(sub_folder) <= 0) {
-            files_.emplace(sub_folder, std::vector<GmlFile>());
-        }
+        files_.try_emplace(sub_folder, std::vector<GmlFile>());
         files_.at(sub_folder).push_back(gml_file_info);
 
-        const auto mesh_code = gml_file_info.getMeshCode().get();
-        if (files_by_code_.count(mesh_code) == 0) {
-            files_by_code_.emplace(mesh_code, std::vector<GmlFile>());
-        }
-        files_by_code_[mesh_code].push_back(gml_file_info);
+        auto code_ptr = gml_file_info.getGridCode();
+        if(!code_ptr->isValid()) return;
+        const auto grid_code = gml_file_info.getGridCode()->get();
+        files_by_code_.try_emplace(grid_code, std::vector<GmlFile>());
+        files_by_code_[grid_code].push_back(gml_file_info);
     }
 
     void LocalDatasetAccessor::setUdxPath(std::string udx_path) {

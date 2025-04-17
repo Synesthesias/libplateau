@@ -115,7 +115,7 @@ namespace plateau::network {
                 for (const auto& file_item: file_items) { // 各ファイルについて
                     DatasetFileItem dataset_file;
                     dataset_file.max_lod = file_item.at("maxLod").get<int>();
-                    dataset_file.mesh_code = file_item.at("code");
+                    dataset_file.grid_code = file_item.at("code");
                     dataset_file.url = file_item.at("url");
 
                     dataset_files.at(key).push_back(dataset_file);

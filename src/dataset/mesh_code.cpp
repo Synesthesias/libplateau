@@ -234,26 +234,26 @@ namespace plateau::dataset {
         return result;
     }
 
-    bool MeshCode::isWithin(const MeshCode& other) const {
-        if (get() == other.get())
-            return true;
-
-        return get().substr(0, 6) == other.get();
-    }
-
     MeshCode MeshCode::asSecond() const {
         auto result = *this;
         result.level_ = 2;
         return result;
     }
 
-    MeshCode& MeshCode::upper() {
+    std::shared_ptr<GridCode> MeshCode::upper() const {
         // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
-        level_ = std::max(1, level_ - 1);
-        if (level_ < 2)
-            is_valid_ = false;
+        auto new_grid_code = std::shared_ptr<GridCode>(upperRaw());
+        return new_grid_code;
+    }
 
-        return *this;
+    GridCode* MeshCode::upperRaw() const {
+        // レベル2以上の範囲で１段階上のレベルの地域メッシュに変換
+        auto new_mesh_code = new MeshCode(*this);
+        new_mesh_code->level_ = std::max(1, level_ - 1);
+        if (new_mesh_code->level_ < 2)
+            new_mesh_code->is_valid_ = false;
+
+        return new_mesh_code;
     }
 
     std::string MeshCode::get() const {
@@ -294,17 +294,23 @@ namespace plateau::dataset {
         return is_valid_;
     }
 
+    bool MeshCode::isLargestLevel() const {
+        return getLevel() == 2;
+    }
+
+    bool MeshCode::isSmallerThanNormalGml() const {
+        return getLevel() >= 4;
+    }
+
+    bool MeshCode::isNormalGmlLevel() const {
+        return getLevel() == 3;
+    }
+
     bool MeshCode::operator==(const MeshCode& other) const {
         return get() == other.get();
     }
 
-    bool MeshCode::operator<(MeshCode& other) const {
-        return std::stoi(get()) < std::stoi(other.get());
-    }
 
-    bool MeshCode::operator<(const MeshCode& other) const {
-        return std::stoi(get()) < std::stoi(other.get());
-    }
 
     void MeshCode::nextCol(MeshCode& mesh_code) {
         if (mesh_code.third_col_ < third_division_count - 1) {

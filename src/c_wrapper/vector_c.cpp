@@ -30,7 +30,15 @@ extern "C"{
  * その実体が P/Invoke で直接に値渡しできる(簡単な構造体など)場合は 4 を利用、
  * できない場合は 3 を利用することを想定しています。
  */
-#define PLATEAU_VECTOR(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+#define PLATEAU_VECTOR_GET_BY_PTR(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    PLATEAU_VECTOR_BASE(FUNC_NAME, VECTOR_ELEMENT_TYPE)           \
+    GET_BY_PTR(FUNC_NAME, VECTOR_ELEMENT_TYPE)
+
+#define PLATEAU_VECTOR_GET_BY_VALUE(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    PLATEAU_VECTOR_BASE(FUNC_NAME, VECTOR_ELEMENT_TYPE)           \
+    GET_BY_VALUE(FUNC_NAME, VECTOR_ELEMENT_TYPE)
+
+#define PLATEAU_VECTOR_BASE(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME ( \
     std::vector< VECTOR_ELEMENT_TYPE >** out_vector_ptr){ \
     *out_vector_ptr = new std::vector< VECTOR_ELEMENT_TYPE >(); \
@@ -44,18 +52,6 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
         return APIResult::Success; \
     } \
     \
-    DLL_PTR_FUNC_WITH_INDEX_CHECK (plateau_vector_ ## FUNC_NAME ## _get_pointer, \
-        std::vector< VECTOR_ELEMENT_TYPE >, \
-        VECTOR_ELEMENT_TYPE, \
-        &(handle->at(index)), \
-        index >= handle->size()) \
-    \
-    DLL_VALUE_FUNC_WITH_INDEX_CHECK (plateau_vector_ ## FUNC_NAME ## _get_value,   \
-        std::vector< VECTOR_ELEMENT_TYPE >, \
-        VECTOR_ELEMENT_TYPE, \
-        handle->at(index), \
-        index >= handle->size()) \
-        \
     DLL_VALUE_FUNC (plateau_vector_ ## FUNC_NAME ## _count, \
         std::vector< VECTOR_ELEMENT_TYPE >, \
         int, \
@@ -71,12 +67,45 @@ LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_API plateau_create_vector_ ## FUNC_NAME
         VECTOR_ELEMENT_TYPE* element_ptr, /*NOLINT*/ \
         vector->push_back(*element_ptr))
 
-    PLATEAU_VECTOR(gml_file, GmlFile)
-    PLATEAU_VECTOR(mesh_code, MeshCode)
-    PLATEAU_VECTOR(dataset_metadata_group, DatasetMetadataGroup)
-    PLATEAU_VECTOR(dataset_metadata, DatasetMetadata)
-    PLATEAU_VECTOR(string, std::string)
-    PLATEAU_VECTOR(city_object_index, CityObjectIndex)
-    PLATEAU_VECTOR(extent, Extent)
+
+#define GET_BY_PTR(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    DLL_PTR_FUNC_WITH_INDEX_CHECK (plateau_vector_ ## FUNC_NAME ## _get_pointer, \
+            std::vector< VECTOR_ELEMENT_TYPE >, \
+            VECTOR_ELEMENT_TYPE, \
+            &(handle->at(index)), \
+            index >= handle->size())
+
+#define GET_BY_VALUE(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    DLL_VALUE_FUNC_WITH_INDEX_CHECK (plateau_vector_ ## FUNC_NAME ## _get_value,   \
+        std::vector< VECTOR_ELEMENT_TYPE >, \
+        VECTOR_ELEMENT_TYPE, \
+        handle->at(index), \
+        index >= handle->size())
+
+/**
+ * vector<ポインタ型> の要素をdeleteしてからvectorをクリアするための関数を生成するマクロです。
+ * これはvectorがポインタを含む場合（例：vector<GridCode*>）に使用します。
+ * 生成される関数は plateau_cleanup_vector_FUNC_NAME という名前になります。
+ */
+#define CLEANUP(FUNC_NAME, VECTOR_ELEMENT_TYPE) \
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_cleanup_vector_ ## FUNC_NAME ( \
+        std::vector< VECTOR_ELEMENT_TYPE >* vector_ptr \
+    ){ \
+        if (vector_ptr == nullptr) return APIResult::ErrorInvalidArgument; \
+        for (auto* element : *vector_ptr) { \
+            delete element; \
+        } \
+        vector_ptr->clear(); \
+        return APIResult::Success; \
+    }
+
+    PLATEAU_VECTOR_GET_BY_PTR(gml_file, GmlFile)
+    PLATEAU_VECTOR_GET_BY_VALUE(grid_code, GridCode*)
+    CLEANUP(grid_code, GridCode*)
+    PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata_group, DatasetMetadataGroup)
+    PLATEAU_VECTOR_GET_BY_PTR(dataset_metadata, DatasetMetadata)
+    PLATEAU_VECTOR_GET_BY_PTR(string, std::string)
+    PLATEAU_VECTOR_GET_BY_VALUE(city_object_index, CityObjectIndex)
+    PLATEAU_VECTOR_GET_BY_VALUE(extent, Extent)
 
 }

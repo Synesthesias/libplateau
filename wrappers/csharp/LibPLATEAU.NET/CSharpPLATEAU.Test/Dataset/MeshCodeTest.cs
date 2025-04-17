@@ -10,7 +10,7 @@ namespace PLATEAU.Test.Dataset
         [TestMethod]
         public void Get_Extent_Calculates_Returns_Proper_Coordinate()
         {
-            var extent = MeshCode.Parse("53394525").Extent;
+            var extent = GridCode.Create("53394525").Extent;
             var expected = new GeoCoordinate(35.68731814, 139.68926804, 0);
 
             AssertGE(extent.Max.Latitude, expected.Latitude);

@@ -48,15 +48,15 @@ extern "C" {
                     MeshCode,
                     handle->getMeshCode())
 
+    DLL_PTR_FUNC(plateau_gml_file_get_grid_code,
+                   GmlFile,
+                   GridCode,
+                   handle->getGridCodeRaw())
+
     DLL_VALUE_FUNC(plateau_gml_file_get_epsg,
                     GmlFile,
                     double,
                     handle->getEpsg())
-
-	//DLL_VALUE_FUNC(plateau_gml_file_is_polar_coordinate_system,
-	//	            GmlFile,
-	//	            bool,
-	//	            handle->isPolarCoordinateSystem())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
             const GmlFile* const gml_file_info,

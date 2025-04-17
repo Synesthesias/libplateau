@@ -79,7 +79,7 @@ namespace PLATEAU.Test.GeometryModel
                 for (int j = 1; j <= 4; ++j)
                 {
                     var meshCodeStr = thirdMeshCodeStr + $"{i}{j}";
-                    extents.Add(MeshCode.Parse(meshCodeStr).Extent);
+                    extents.Add(GridCode.Create(meshCodeStr).Extent);
                 }
             }
 

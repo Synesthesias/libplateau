@@ -1,0 +1,88 @@
+#include "libplateau_c.h"
+#include <plateau/dataset/grid_code.h>
+#include <plateau/dataset/i_dataset_accessor.h>
+
+using namespace libplateau;
+using namespace plateau::dataset;
+using namespace plateau::geometry;
+
+extern "C" {
+
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_parse(
+        const char* code,
+        GridCode** out_grid_code
+    ) {
+        API_TRY {
+            if(code == nullptr) return APIResult::ErrorInvalidArgument;
+            if(out_grid_code == nullptr) return APIResult::ErrorInvalidArgument;
+            *out_grid_code = GridCode::createRaw(code);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_get_extent(
+        const GridCode* grid_code, Extent* extent
+    ) {
+        API_TRY{
+            if (grid_code == nullptr) return APIResult::ErrorInvalidArgument;
+            if (extent == nullptr) return APIResult::ErrorInvalidArgument;
+            *extent = grid_code->getExtent();
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    DLL_2_ARG_FUNC(plateau_grid_code_is_valid,
+                   const GridCode* grid_code,
+                   bool* out_is_valid,
+                   if (grid_code == nullptr) { *out_is_valid = false; return APIResult::ErrorInvalidArgument; }
+                   *out_is_valid = grid_code->isValid())
+
+    DLL_STRING_VALUE_FUNC(plateau_grid_code_get_string_code,
+                        GridCode,
+                        handle->get())
+
+    DLL_2_ARG_FUNC(plateau_grid_code_is_largest_level,
+                   const GridCode* grid_code,
+                   bool* out_is_largest_level,
+                   if (grid_code == nullptr) { *out_is_largest_level = false; return APIResult::ErrorInvalidArgument; }
+                   *out_is_largest_level = grid_code->isLargestLevel()
+                   )
+
+    DLL_2_ARG_FUNC(plateau_grid_code_is_smaller_than_normal_gml,
+                   const GridCode* grid_code,
+                   bool* out_is_smaller_than_normal_gml,
+                   if (grid_code == nullptr) { *out_is_smaller_than_normal_gml = false; return APIResult::ErrorInvalidArgument; }
+                   *out_is_smaller_than_normal_gml = grid_code->isSmallerThanNormalGml())
+
+    DLL_2_ARG_FUNC(plateau_grid_code_is_normal_gml_level,
+                   const GridCode* grid_code,
+                   bool* out_is_normal_gml_level,
+                   if (grid_code == nullptr) { *out_is_normal_gml_level = false; return APIResult::ErrorInvalidArgument; }
+                   *out_is_normal_gml_level = grid_code->isNormalGmlLevel())
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_delete(
+        GridCode* grid_code
+    ) {
+        delete grid_code;
+        return APIResult::Success;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_grid_code_upper(
+        const GridCode* grid_code,
+        GridCode** out_upper_grid_code
+    ) {
+        API_TRY{
+            if (grid_code == nullptr) return APIResult::ErrorInvalidArgument;
+            *out_upper_grid_code = grid_code->upperRaw();
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+}
