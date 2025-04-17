@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <tuple>
 
 #include <libplateau_api.h>
 #include "plateau/geometry/geo_coordinate.h"
 #include "plateau/dataset/grid_code.h"
 
 namespace plateau::dataset {
+    enum class StandardMapGridLevel;
     /**
      * \brief 国土基本図図郭を表します。
      * 
@@ -59,5 +61,40 @@ namespace plateau::dataset {
     private:
         std::string code_;  // 図郭コード
         bool is_valid_;     // コードが有効かどうか
+        StandardMapGridLevel level_;
+
+        int coordinate_origin_; // 原点
+        char first_row_;       // 1文字目の行（A-T）
+        char first_col_;       // 2文字目の列（A-H）
+        int second_row_;
+        int second_col_;
+        int third_row_;
+        int third_col_;
+
+        /**
+         * \brief 図郭コードから平面直角座標系での範囲を計算します。
+         * \return 平面直角座標系での範囲（min, max）
+         */
+        std::pair<TVec3d, TVec3d> calculateGridExtent() const;
+
+        /**
+         * サブグリッドの範囲を計算します。
+         * @param min_x 最小X座標（入出力）
+         * @param min_y 最小Y座標（入出力）
+         * @param max_x 最大X座標（出力）
+         * @param max_y 最大Y座標（出力）
+         * @param row_index 行インデックス
+         * @param col_index 列インデックス
+         * @param cell_width セルの幅
+         * @param cell_height セルの高さ
+         * @param is_x_right X方向の向き（右方向ならtrue）
+         * @param is_y_upper Y方向の向き（上方向ならtrue）
+         */
+        void calculateSubGridExtent(
+            double& min_x, double& min_y,
+            double& max_x, double& max_y,
+            int row_index, int col_index,
+            double cell_width, double cell_height,
+            bool is_x_right, bool is_y_upper) const;
     };
 } 
