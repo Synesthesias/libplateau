@@ -80,6 +80,7 @@ namespace plateau::geometry {
 
         /**
          * 平面直角座標系の判定を含む処理です
+         * 平面直角座標の場合はunprojectして緯度経度に変換してから判定します。
          */
         bool containsInPolar(TVec3d point,const double epsg, bool ignore_height = true) const;
         bool containsInPolar(const citygml::CityObject& city_obj,const double epsg, bool ignore_height = true) const;

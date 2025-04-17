@@ -107,7 +107,6 @@ namespace plateau::geometry {
         point = reverseXY(point);
         plateau::geometry::GeoReference geo_ref(coordinate_zone_id);
         const auto unprojected = geo_ref.unproject(point);
-        //point = { unprojected.latitude, unprojected.longitude, unprojected.height };
         return unprojected;
     }
 
