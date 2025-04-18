@@ -43,11 +43,6 @@ extern "C" {
                     GmlFile,
                     handle->getFeatureType())
 
-    DLL_VALUE_FUNC(plateau_gml_file_get_mesh_code,
-                    GmlFile,
-                    MeshCode,
-                    handle->getMeshCode())
-
     DLL_PTR_FUNC(plateau_gml_file_get_grid_code,
                    GmlFile,
                    GridCode,
