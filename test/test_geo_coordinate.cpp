@@ -20,6 +20,11 @@ namespace plateau::geometry {
         ASSERT_FALSE(ext.contains(GeoCoordinate(40, 0, 0)));
         ASSERT_FALSE(ext.contains(GeoCoordinate(0, -100, 0)));
 
+        // 6697の場合は同様の処理
+        ASSERT_EQ(ext.contains(TVec3d(0, 0, 0)), ext.containsInPolar(TVec3d(0, 0, 0), 6697));
+        ASSERT_EQ(ext.contains(TVec3d(80, 90, 0)), ext.containsInPolar(TVec3d(80, 90, 0), 6697));
+
+        // 平面直角座標
         const auto& zoneRefPoint = GeoReference::planeToPolar(TVec3d(), 8);// 10169 は zone id:8
         ASSERT_FLOAT_EQ(36.0, zoneRefPoint.latitude);
         ASSERT_FLOAT_EQ(138.5, zoneRefPoint.longitude);

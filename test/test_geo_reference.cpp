@@ -78,4 +78,19 @@ namespace plateau::geometry {
         ASSERT_EQ(expected_point, point);
     }
 
+    // 平面直角座標のGMLの値を緯度経度に変換
+    TEST_F(GeoReferenceTest, PlaneToPolarConversion) { // NOLINT       
+        TVec3d base_position(100, -100, 1); // 経度、緯度、高さ
+
+        const auto& polar = GeoReference::planeToPolar(base_position, 9);
+        TVec3d polar_vector = { polar.latitude, polar.longitude, polar.height };
+
+        // xy反転してunprojectした値
+        TVec3d position = { base_position.y, base_position.x, base_position.z }; // xy反転
+        PolarToPlaneCartesian().unproject(position, 9);
+        const auto& expected_point = position;
+
+        ASSERT_EQ(expected_point, polar_vector);
+    }
+
 }
