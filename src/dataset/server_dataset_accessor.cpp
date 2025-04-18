@@ -21,7 +21,7 @@ namespace plateau::dataset {
         grid_codes_.clear();
     }
 
-    std::set<std::shared_ptr<GridCode>, GridCodeComparator>& ServerDatasetAccessor::getGridCodes() {
+    const std::set<std::shared_ptr<GridCode>, GridCodeComparator>& ServerDatasetAccessor::getGridCodes() {
         if (grid_codes_.empty()) {
             for (const auto& [_, files] : dataset_files_) {
                 for (const auto& file : files) {
