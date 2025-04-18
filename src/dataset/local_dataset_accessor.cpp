@@ -301,7 +301,7 @@ namespace plateau::dataset {
         return fs::relative(fs::u8path(path).make_preferred(), fs::u8path(udx_path_)).make_preferred().string();
     }
 
-    std::set<std::shared_ptr<GridCode>, GridCodeComparator>& LocalDatasetAccessor::getGridCodes() {
+    const std::set<std::shared_ptr<GridCode>, GridCodeComparator>& LocalDatasetAccessor::getGridCodes() {
         if (grid_codes_.empty()) {
             for (const auto& [_, files]: files_) {
                 for (const auto& file: files) {
