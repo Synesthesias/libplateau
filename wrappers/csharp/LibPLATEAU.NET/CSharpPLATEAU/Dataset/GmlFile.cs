@@ -100,32 +100,16 @@ namespace PLATEAU.Dataset
         /// GMLファイルのEPSGコードを返します。
         /// 取得失敗時のデフォルト値はEPSG:6697です。
         /// </summary>
-        public double Epsg
+        public int Epsg
         {
             get
             {
                 ThrowIfDisposed();
-                var epsg = DLLUtil.GetNativeValue<double>(Handle,
+                var epsg = DLLUtil.GetNativeValue<int>(Handle,
                     NativeMethods.plateau_gml_file_get_epsg);
                 return epsg;
             }
         }
-
-        /// <summary>
-        /// 平面直角座標系への変換が必要なGMLファイルかどうかを返します。
-        /// 取得失敗時のデフォルト値はtrueです。
-        /// </summary>
-        public bool isPolarCoordinateSystem
-        {
-            get
-            {
-                ThrowIfDisposed();
-                var result = NativeMethods.plateau_geometry_utils_is_polar_coordinate_system(Epsg, out var isPolar);
-                DLLUtil.CheckDllError(result);
-                return isPolar;
-            }
-        }
-
 
         public string[] SearchAllCodelistPathsInGml()
         {
@@ -249,12 +233,7 @@ namespace PLATEAU.Dataset
             [DllImport(DLLUtil.DllName)]
             internal static extern APIResult plateau_gml_file_get_epsg(
                 [In] IntPtr gmlFilePtr,
-                out double outEpsg);
-
-            [DllImport(DLLUtil.DllName)]
-            internal static extern APIResult plateau_geometry_utils_is_polar_coordinate_system(
-                double epsg,
-                [MarshalAs(UnmanagedType.U1)] out bool outBool);
+                out int outEpsg);
 
             [DllImport(DLLUtil.DllName, CharSet = CharSet.Ansi)]
             internal static extern APIResult plateau_gml_file_fetch(

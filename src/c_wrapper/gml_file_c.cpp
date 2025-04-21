@@ -50,7 +50,7 @@ extern "C" {
 
     DLL_VALUE_FUNC(plateau_gml_file_get_epsg,
                     GmlFile,
-                    double,
+                    int,
                     handle->getEpsg())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(

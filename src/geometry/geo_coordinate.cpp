@@ -64,7 +64,7 @@ namespace plateau::geometry {
         }
     }
 
-    bool Extent::containsInPolar(TVec3d point, const double epsg, bool ignore_height) const {
+    bool Extent::containsInPolar(TVec3d point, const int epsg, bool ignore_height) const {
 
         if (!CoordinateReferenceFactory::IsPolarCoordinateSystem(epsg)) {
             // 平面直角座標系の判定
@@ -74,7 +74,7 @@ namespace plateau::geometry {
         return contains(GeoCoordinate(point.x, point.y, point.z), ignore_height);
     }
 
-    bool Extent::containsInPolar(const CityObject& city_obj, const double epsg, bool ignore_height) const {
+    bool Extent::containsInPolar(const CityObject& city_obj, const int epsg, bool ignore_height) const {
 
         if (!CoordinateReferenceFactory::IsPolarCoordinateSystem(epsg)) {
             // 平面直角座標系の判定

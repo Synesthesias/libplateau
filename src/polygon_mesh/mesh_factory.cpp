@@ -32,7 +32,7 @@ namespace plateau::polygonMesh {
          */
         void cityGmlPolygonToMesh(
             const Polygon& polygon, const std::string& gml_path,
-            const GeoReference& geo_reference, Mesh& out_mesh, double epsg) {
+            const GeoReference& geo_reference, Mesh& out_mesh, int epsg) {
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon = polygon.getVertices();

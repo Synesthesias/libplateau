@@ -25,7 +25,7 @@ namespace plateau::geometry {
     }
 
     //平面直角座標判定を含むproject, projectWithoutAxisConvert処理と同様の処理
-    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const double epsg) const {
+    TVec3d GeoReference::convert(const TVec3d& lat_lon, const bool convert_axis, const int epsg) const {
         //平面直角座標変換、座標軸変換をフラグに応じてスキップします。
         TVec3d point = lat_lon;
 

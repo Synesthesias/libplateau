@@ -15,7 +15,7 @@ DLL_VALUE_FUNC(plateau_geometry_utils_get_center_point,
                ,int coordinate_zone_id)
 
 LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_geometry_utils_is_polar_coordinate_system(
-    double epsg,
+    int epsg,
     bool* out
 ) {
 API_TRY{
