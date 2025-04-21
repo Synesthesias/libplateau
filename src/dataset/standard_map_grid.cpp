@@ -5,6 +5,7 @@
 #include <utility>
 #include <plateau/geometry/geo_reference.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
+#include <iostream>
 
 namespace plateau::dataset {
 
@@ -25,107 +26,169 @@ namespace plateau::dataset {
         constexpr int level500_division_count = 10;
 
         // 1セルのサイズ
-        constexpr double level50000_cell_width = 40000.0;  // 40km
-        constexpr double level50000_cell_height = 30000.0; // 30km
-        constexpr int level50000_row_count = 20; // 縦方向の分割数
+        constexpr double level50000_cell_column = 30000.0;  // 南北30km
+        constexpr double level50000_cell_row = 40000.0;  // 東西40km
 
-        constexpr double level5000_cell_height = level50000_cell_height / level5000_division_count; // 3km
-        constexpr double level5000_cell_width = level50000_cell_width / level5000_division_count; // 4km
+        constexpr double level5000_cell_column = level50000_cell_column / level5000_division_count;   // 南北4km
+        constexpr double level5000_cell_row = level50000_cell_row / level5000_division_count;   // 東西3km
 
-        constexpr double level2500_cell_height = level5000_cell_height / level2500_division_count; // 1.5km
-        constexpr double level2500_cell_width = level5000_cell_width / level2500_division_count; // 2km
+        constexpr double level2500_cell_column = level5000_cell_column / level2500_division_count;    // 南北2km
+        constexpr double level2500_cell_row = level5000_cell_row / level2500_division_count;    // 東西1.5km
 
-        constexpr double level1000_cell_height = level5000_cell_height / level1000_division_count; // 600m
-        constexpr double level1000_cell_width = level5000_cell_width / level1000_division_count; // 800m
+        constexpr double level1000_cell_column = level5000_cell_column / level1000_division_count;    // 南北800m
+        constexpr double level1000_cell_row = level5000_cell_row / level1000_division_count;    // 東西600m
 
-        constexpr double level500_cell_height = level5000_cell_height / level500_division_count; // 300m
-        constexpr double level500_cell_width = level5000_cell_width / level500_division_count; // 400m
+        constexpr double level500_cell_column = level5000_cell_column / level500_division_count;      // 南北400m
+        constexpr double level500_cell_row = level5000_cell_row / level500_division_count;      // 東西300m
 
-        // 原点から端までのセル数
-        constexpr double row_half_count = 10.0;
-        constexpr double col_half_count = 4.0;
-    }
-
-    /**
-     * 図郭コードの文字列からレベル（詳細度）を返します。
-     */
-    StandardMapGridLevel parseLevel(const std::string& code) {
-
-        if (code.size() == 4) {
-            return StandardMapGridLevel::Level50000;
-        }
-        if (code.size() == 6) {
-            return StandardMapGridLevel::Level5000;
-        }
-        if (code.size() == 7) {
-            return StandardMapGridLevel::Level2500;
-        }
-        if (code.size() == 8) {
-            // 末尾がアルファベットであれば1000
-            if (std::isalpha(code.back())) {
-                return StandardMapGridLevel::Level1000;
+        /**
+         * 図郭コードの文字列からレベル（詳細度）を返します。
+         */
+        StandardMapGridLevel parseLevel(const std::string& code) {
+            if (code.size() == 4) {
+                return StandardMapGridLevel::Level50000;
             }
-            // 末尾が数字であれば500
-            else {
-                return StandardMapGridLevel::Level500;
+            if (code.size() == 6) {
+                return StandardMapGridLevel::Level5000;
             }
+            if (code.size() == 7) {
+                return StandardMapGridLevel::Level2500;
+            }
+            if (code.size() == 8) {
+                // 末尾がアルファベットであれば1000
+                if (std::isalpha(code.back())) {
+                    return StandardMapGridLevel::Level1000;
+                }
+                // 末尾が数字であれば500
+                else {
+                    return StandardMapGridLevel::Level500;
+                }
+            }
+
+            // サポート対象外
+            return StandardMapGridLevel::Invalid;
         }
 
-        // サポート対象外
-        return StandardMapGridLevel::Invalid;
+        /**
+         * 計算された平面直角座標をTVec3dのペアに変換します。
+         */
+        std::pair<TVec3d, TVec3d> createExtentPair(
+            double min_column, double min_row,
+            double max_column, double max_row) {
+            // column: 南北方向（緯度）:Y軸
+            // row: 東西方向（経度）：X軸
+            return {TVec3d(min_row, 0, min_column), TVec3d(max_row, 0, max_column)};
+        }
+
+        void calculateSubGridExtent(
+            double& min_column, double& min_row,
+            double& max_column, double& max_row,
+            int column_index, int row_index,
+            double cell_column, double cell_row) {
+
+            // column座標（南北）の計算
+            min_column = min_column + (column_index * cell_column);
+            max_column = min_column + cell_column;
+
+            // row座標（東西）の計算
+            min_row = min_row + (row_index * cell_row);
+            max_row = min_row + cell_row;
+        }
     }
 
     StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code)) {
-        // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
-        if (!std::all_of(code_.begin(), code_.end(), [](char c)
-        {
-            return std::isalnum(c);
-        })) {
+        try {
+            // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
+            if (!std::all_of(code_.begin(), code_.end(), [](char c)
+            {
+                return std::isalnum(c);
+            })) {
+                is_valid_ = false;
+                return;
+            }
+
+            // 図郭コードのレベル（詳細度）をチェックします。
+            level_ = parseLevel(code_);
+            if (level_ == StandardMapGridLevel::Invalid) {
+                is_valid_ = false;
+                return;
+            }
+
+            // 原点設定
+            coordinate_origin_ = std::stoi(code_.substr(0, 2));
+
+            // 図郭コードのcolumn, row座標を取得します。
+            first_column_ = code_[2];  // 1文字目はcolumn座標（南北）
+            first_row_ = code_[3];     // 2文字目はrow座標（東西）
+
+            // 文字の範囲チェック
+            if (first_column_ < 'A' || first_column_ > 'T' ||
+                first_row_ < 'A' || first_row_ > 'H') {
+                is_valid_ = false;
+                return;
+            }
+
+            if (level_ == StandardMapGridLevel::Level50000) {
+                return;
+            }
+
+            // 基点は左下（90）
+            second_column_ = 9 - std::stoi(code_.substr(4, 1));
+            second_row_ = std::stoi(code_.substr(5, 1));
+
+            if (level_ == StandardMapGridLevel::Level5000) {
+                return;
+            }
+
+            if (level_ == StandardMapGridLevel::Level2500) {
+                // 基点は左下
+                int third = std::stoi(code_.substr(6, 1));  // 1-4
+                switch (third) {
+                    case 1:  // 左上
+                        third_column_ = 1;
+                        third_row_ = 0;
+                        break;
+                    case 2:  // 右上
+                        third_column_ = 1;
+                        third_row_ = 1;
+                        break;
+                    case 3:  // 左下
+                        third_column_ = 0;
+                        third_row_ = 0;
+                        break;
+                    case 4:  // 右下
+                        third_column_ = 0;
+                        third_row_ = 1;
+                        break;
+                    default:
+                        is_valid_ = false;
+                        break;
+                }
+                return;
+            }
+
+            if (level_ == StandardMapGridLevel::Level1000) {
+                // 基点は左下（4A）
+                third_column_ = 4 - std::stoi(code_.substr(6, 1));  // 0-4
+                third_row_ = code_.substr(7, 1)[0] - 'A';  // 0-4 (A-E)
+
+                // Level1000の範囲チェック
+                if (third_column_ < 0 || third_column_ > 4 ||
+                    third_row_ < 0 || third_row_ > 4) {
+                    is_valid_ = false;
+                }
+                return;
+            }
+
+            // Level500
+            // 基点は左下（9A）
+            third_column_ = 9 - std::stoi(code_.substr(6, 1));  // 0-9
+            third_row_ = std::stoi(code_.substr(7, 1));  // 0-9
+
+        } catch (const std::exception& e) {
             is_valid_ = false;
-            return;
+            std::cerr << "Failed to parse grid code " << code_ << ": " << e.what() << std::endl;
         }
-
-        // 図郭コードのレベル（詳細度）をチェックします。
-        level_ = parseLevel(code);
-        if (level_ == StandardMapGridLevel::Invalid) {
-            is_valid_ = false;
-            return;
-        }
-
-        // 原点設定
-        coordinate_origin_ = std::stoi(code.substr(0, 2));
-
-        // 図郭コードの行番号、列番号を取得します。
-        first_row_ = code[2];  // 1文字目は行
-        first_col_ = code[3];  // 2文字目は列
-        if (level_ == StandardMapGridLevel::Level50000) {
-            return;
-        }
-
-        second_row_ = std::stoi(code.substr(4, 1));
-        second_col_ = std::stoi(code.substr(5, 1));
-
-        if (level_ == StandardMapGridLevel::Level5000) {
-            return;
-        }
-
-        if (level_ == StandardMapGridLevel::Level2500) {
-            // 2×2分割のインデックスを計算
-            int third = std::stoi(code.substr(6, 1));  // 1-4
-            third_row_ = (third - 1) / 2;  // 0 or 1
-            third_col_ = (third - 1) % 2;  // 0 or 1
-            return;
-        }
-
-        if (level_ == StandardMapGridLevel::Level1000) {
-            third_row_ = std::stoi(code.substr(6, 1));  // 0-4
-            third_col_ = code.substr(7, 1)[0] - 'A';  // 0-4 (A-E)
-            return;
-        }
-
-        // Level500
-        third_row_ = std::stoi(code.substr(6, 1));  // 0-9
-        third_col_ = std::stoi(code.substr(7, 1));  // 0-9
     }
 
     std::string StandardMapGrid::get() const {
@@ -133,94 +196,59 @@ namespace plateau::dataset {
     }
 
     std::pair<TVec3d, TVec3d> StandardMapGrid::calculateGridExtent() const {
-        double min_x = 0.0, min_y = 0.0;
-        double max_x = 0.0, max_y = 0.0;
+        // 東西方向のインデックスを計算（東がプラス、西がマイナス）
+        int row_index = first_row_ - 'E';
 
-        // 親セルの位置に基づいて方向フラグを設定（スコープ外でも使用するため、ここで定義）
-        bool is_x_right = false;
-        bool is_y_upper = false;
+        // 南北方向のインデックスを計算（北がプラス、南がマイナス）
+        int column_index = 'J' - first_column_;
 
         // Level50000の計算
-        {
-            // 南北方向（行）のインデックス計算
-            // A行から数えて何番目かを計算（0始まり）
-            int row_index = first_row_ - 'A';
+        // column座標（南北）の計算
+        double min_column = column_index * level50000_cell_column;
+        double max_column = min_column + level50000_cell_column;
 
-            // 東西方向（列）のインデックス計算
-            // A列から数えて何番目かを計算（0始まり）
-            int col_index = first_col_ - 'A';
-
-            // 基準点からの距離を計算
-            // 列（X座標）: 原点から左右対称（左が負、右が正）
-            min_x = (col_index - col_half_count) * level50000_cell_width;
-            max_x = min_x + level50000_cell_width;
-
-            // 行（Y座標）: 原点から上下対称（上が正、下が負）
-            min_y = (row_half_count - row_index) * level50000_cell_height;
-            max_y = min_y + level50000_cell_height;
-
-            // 親セルの位置に基づいて方向フラグを設定
-            is_x_right = col_index >= col_half_count;   // E列より右側
-            is_y_upper = row_index <= row_half_count;   // 中央より上側
-        }
+        // row座標（東西）の計算
+        double min_row = row_index * level50000_cell_row;
+        double max_row = min_row + level50000_cell_row;
 
         if (level_ == StandardMapGridLevel::Level50000) {
-            return {TVec3d(min_x, min_y, 0), TVec3d(max_x, max_y, 0)};
+            return createExtentPair(min_column, min_row, max_column, max_row);
         }
 
         // Level5000の計算
         calculateSubGridExtent(
-            min_x, min_y, max_x, max_y,
-            second_row_, second_col_,
-            level5000_cell_width, level5000_cell_height,
-            is_x_right, is_y_upper);
+            min_column, min_row, max_column, max_row,
+            second_column_, second_row_,
+            level5000_cell_column, level5000_cell_row);
 
         if (level_ == StandardMapGridLevel::Level5000) {
-            return {TVec3d(min_x, min_y, 0), TVec3d(max_x, max_y, 0)};
+            return createExtentPair(min_column, min_row, max_column, max_row);
         }
 
         if (level_ == StandardMapGridLevel::Level2500) {
+
             calculateSubGridExtent(
-                min_x, min_y, max_x, max_y,
-                third_row_, third_col_,
-                level2500_cell_width, level2500_cell_height,
-                is_x_right, is_y_upper);
-            return {TVec3d(min_x, min_y, 0), TVec3d(max_x, max_y, 0)};
+                min_column, min_row, max_column, max_row,
+                third_column_, third_row_,
+                level2500_cell_column, level2500_cell_row);
+            return createExtentPair(min_column, min_row, max_column, max_row);
+
         } else if (level_ == StandardMapGridLevel::Level1000) {
+
             calculateSubGridExtent(
-                min_x, min_y, max_x, max_y,
-                third_row_, third_col_,
-                level1000_cell_width, level1000_cell_height,
-                is_x_right, is_y_upper);
-            return {TVec3d(min_x, min_y, 0), TVec3d(max_x, max_y, 0)};
+                min_column, min_row, max_column, max_row,
+                third_column_, third_row_,
+                level1000_cell_column, level1000_cell_row);
+            return createExtentPair(min_column, min_row, max_column, max_row);
+
         } else {  // Level500
+
             calculateSubGridExtent(
-                min_x, min_y, max_x, max_y,
-                third_row_, third_col_,
-                level500_cell_width, level500_cell_height,
-                is_x_right, is_y_upper);
-            return {TVec3d(min_x, min_y, 0), TVec3d(max_x, max_y, 0)};
+                min_column, min_row, max_column, max_row,
+                third_column_, third_row_,
+                level500_cell_column, level500_cell_row);
+            return createExtentPair(min_column, min_row, max_column, max_row);
         }
-    }
-
-    void StandardMapGrid::calculateSubGridExtent(
-        double& min_x, double& min_y,
-        double& max_x, double& max_y,
-        int row_index, int col_index,
-        double cell_width, double cell_height,
-        bool is_x_right, bool is_y_upper) const {
-
-        // X座標の計算
-        // is_x_rightがtrueの場合、親セルの左端から右方向に移動
-        // is_x_rightがfalseの場合、親セルの左端から左方向に移動
-        min_x = min_x + (is_x_right ? col_index * cell_width : -col_index * cell_width);
-        max_x = min_x + cell_width;
-
-        // Y座標の計算
-        // is_y_upperがtrueの場合、親セルの下端から上方向に移動
-        // is_y_upperがfalseの場合、親セルの下端から下方向に移動
-        min_y = min_y + (is_y_upper ? row_index * cell_height : -row_index * cell_height);
-        max_y = min_y + cell_height;
     }
 
     geometry::Extent StandardMapGrid::getExtent() const {
@@ -253,11 +281,31 @@ namespace plateau::dataset {
     }
 
     GridCode* StandardMapGrid::upperRaw() const {
-        // １段階上のレベルの図郭コードに変換
-        auto new_code = new StandardMapGrid(code_);
-        new_code->level_ = static_cast<StandardMapGridLevel>(static_cast<int>(level_) - 1);
-        new_code->is_valid_ = new_code->level_ >= StandardMapGridLevel::Level50000;
-        return new_code;
+        auto* new_grid = new StandardMapGrid(code_);
+
+        switch (level_) {
+            case StandardMapGridLevel::Level500:
+            case StandardMapGridLevel::Level1000:
+            case StandardMapGridLevel::Level2500:
+                // 6桁のLevel5000コードにする（末尾を削除）
+                new_grid->code_ = code_.substr(0, 6);
+                new_grid->level_ = StandardMapGridLevel::Level5000;
+                break;
+
+            case StandardMapGridLevel::Level5000:
+                // 4桁のLevel50000コードにする（末尾を削除）
+                new_grid->code_ = code_.substr(0, 4);
+                new_grid->level_ = StandardMapGridLevel::Level50000;
+                break;
+
+            case StandardMapGridLevel::Level50000:
+            default:
+                // 不正なレベルの場合も無効にする
+                new_grid->is_valid_ = false;
+                break;
+        }
+
+        return new_grid;
     }
 
     int StandardMapGrid::getLevel() const {

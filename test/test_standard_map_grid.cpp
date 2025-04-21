@@ -9,9 +9,15 @@ using namespace citygml;
 using namespace plateau::dataset;
 using namespace plateau::geometry;
 
-TEST(StandardMapGrid, Level5000_WithinBounds) {
-    const auto extent = StandardMapGrid("08EE54").getExtent();    // Level5000
-    const auto expected = GeoCoordinate(37.4689, 138.7113, 0);
+TEST(StandardMapGrid, Level50000_WithinBounds) {
+    const auto extent = StandardMapGrid("08JE").getExtent();
+    const auto expected = GeoCoordinate(36.0935, 138.8013, 0);
+
+    const auto extent2 = StandardMapGrid("08KD").getExtent();
+    const auto expected2 = GeoCoordinate(35.7532, 138.0981, 0);
+
+    const auto extent3 = StandardMapGrid("08KC").getExtent();
+    const auto expected3 = GeoCoordinate(35.7978, 137.8043, 0);
 
     std::stringstream ss;
     ss << "Extent bounds: (" << extent.min.latitude << ", " << extent.min.longitude << ") - ("
@@ -24,28 +30,52 @@ TEST(StandardMapGrid, Level5000_WithinBounds) {
         extent.min.latitude <= expected.latitude &&
         extent.min.longitude <= expected.longitude
     );
+
+    std::stringstream ss2;
+    ss2 << "Extent2 bounds: (" << extent2.min.latitude << ", " << extent2.min.longitude << ") - ("
+        << extent2.max.latitude << ", " << extent2.max.longitude << ")\n"
+        << "Expected point2: (" << expected2.latitude << ", " << expected2.longitude << ")";
+    SCOPED_TRACE(ss2.str());
+    ASSERT_TRUE(
+        extent2.max.latitude >= expected2.latitude &&
+        extent2.max.longitude >= expected2.longitude &&
+        extent2.min.latitude <= expected2.latitude &&
+        extent2.min.longitude <= expected2.longitude
+    );
+
+    std::stringstream ss3;
+    ss3 << "Extent3 bounds: (" << extent3.min.latitude << ", " << extent3.min.longitude << ") - ("
+        << extent3.max.latitude << ", " << extent3.max.longitude << ")\n"
+        << "Expected point3: (" << expected3.latitude << ", " << expected3.longitude << ")";
+    SCOPED_TRACE(ss3.str());
+    ASSERT_TRUE(
+        extent3.max.latitude >= expected3.latitude &&
+        extent3.max.longitude >= expected3.longitude &&
+        extent3.min.latitude <= expected3.latitude &&
+        extent3.min.longitude <= expected3.longitude
+    );
 }
 
-TEST(StandardMapGrid, Level5000_OutOfBounds) {
-    const auto extent = StandardMapGrid("08EE54").getExtent();    // Level5000
-    const auto nonexpected = GeoCoordinate(37.4659, 138.7283, 0);
+TEST(StandardMapGrid, Level5000_WithinBounds) {
+    const auto extent = StandardMapGrid("08JE54").getExtent();    // Level5000
+    const auto expected = GeoCoordinate(36.1125, 138.6911, 0);
 
     std::stringstream ss;
     ss << "Extent bounds: (" << extent.min.latitude << ", " << extent.min.longitude << ") - ("
        << extent.max.latitude << ", " << extent.max.longitude << ")\n"
-       << "Non-expected point: (" << nonexpected.latitude << ", " << nonexpected.longitude << ")";
+       << "Expected point: (" << expected.latitude << ", " << expected.longitude << ")";
     SCOPED_TRACE(ss.str());
-    ASSERT_FALSE(
-        extent.max.latitude >= nonexpected.latitude &&
-        extent.max.longitude >= nonexpected.longitude &&
-        extent.min.latitude <= nonexpected.latitude &&
-        extent.min.longitude <= nonexpected.longitude
+    ASSERT_TRUE(
+        extent.max.latitude >= expected.latitude &&
+        extent.max.longitude >= expected.longitude &&
+        extent.min.latitude <= expected.latitude &&
+        extent.min.longitude <= expected.longitude
     );
 }
 
 TEST(StandardMapGrid, Level2500_WithinBounds) {
     const auto extent = StandardMapGrid("08EE554").getExtent();   // Level2500
-    const auto expected = GeoCoordinate(37.4661, 138.7678, 0);
+    const auto expected = GeoCoordinate(37.4669, 138.7544, 0);
 
     std::stringstream ss;
     ss << "Extent bounds: (" << extent.min.latitude << ", " << extent.min.longitude << ") - ("
@@ -60,20 +90,20 @@ TEST(StandardMapGrid, Level2500_WithinBounds) {
     );
 }
 
-TEST(StandardMapGrid, Level2500_OutOfBounds) {
-    const auto extent = StandardMapGrid("08EE554").getExtent();   // Level2500
-    const auto nonexpected = GeoCoordinate(37.4631, 138.7848, 0);
+TEST(StandardMapGrid, Level1000_WithinBounds) {
+    const auto extent = StandardMapGrid("08JE640E").getExtent();   // Level2500
+    const auto expected = GeoCoordinate(36.1053, 138.7151, 0);
 
     std::stringstream ss;
     ss << "Extent bounds: (" << extent.min.latitude << ", " << extent.min.longitude << ") - ("
        << extent.max.latitude << ", " << extent.max.longitude << ")\n"
-       << "Non-expected point: (" << nonexpected.latitude << ", " << nonexpected.longitude << ")";
+       << "Expected point: (" << expected.latitude << ", " << expected.longitude << ")";
     SCOPED_TRACE(ss.str());
-    ASSERT_FALSE(
-        extent.max.latitude >= nonexpected.latitude &&
-        extent.max.longitude >= nonexpected.longitude &&
-        extent.min.latitude <= nonexpected.latitude &&
-        extent.min.longitude <= nonexpected.longitude
+    ASSERT_TRUE(
+        extent.max.latitude >= expected.latitude &&
+        extent.max.longitude >= expected.longitude &&
+        extent.min.latitude <= expected.latitude &&
+        extent.min.longitude <= expected.longitude
     );
 }
 
@@ -81,7 +111,7 @@ TEST(StandardMapGrid, invalidGridCode) {
     // 無効な図郭コードのテスト
     ASSERT_FALSE(StandardMapGrid("invalid").isValid());
     ASSERT_FALSE(StandardMapGrid("09").isValid());        // 短すぎる
-    ASSERT_FALSE(StandardMapGrid("09AE09-1-1").isValid()); // 長すぎる
+    ASSERT_FALSE(StandardMapGrid("09AE09111").isValid()); // 長すぎる
     ASSERT_FALSE(StandardMapGrid("09ZZ09").isValid());    // 無効な文字
 }
 
@@ -97,10 +127,10 @@ TEST(StandardMapGrid, levelCheck) {
 TEST(StandardMapGrid, upperMethodTest) {
     // Level500からLevel50000までの変換をテスト
     auto grid = StandardMapGrid("09AE0911");  // Level500
-    ASSERT_EQ(grid.upper()->get(), "09AE091"); // Level1000
+    ASSERT_EQ(grid.upper()->get(), "09AE09"); // Level5000
     
     grid = StandardMapGrid("09AE091A");  // Level1000
-    ASSERT_EQ(grid.upper()->get(), "09AE091"); // Level2500
+    ASSERT_EQ(grid.upper()->get(), "09AE09"); // Level5000
     
     grid = StandardMapGrid("09AE091");  // Level2500
     ASSERT_EQ(grid.upper()->get(), "09AE09"); // Level5000
@@ -130,4 +160,172 @@ TEST(StandardMapGrid, levelCheckMethods) {
     ASSERT_FALSE(StandardMapGrid("09AE09").isNormalGmlLevel());   // Level5000
     ASSERT_TRUE(StandardMapGrid("09AE091").isNormalGmlLevel());   // Level2500
     ASSERT_FALSE(StandardMapGrid("09AE091A").isNormalGmlLevel()); // Level1000
-} 
+}
+
+TEST(StandardMapGrid, calculateGridExtent_Level50000) {
+    // 基準点のテスト
+    {
+        const auto grid = StandardMapGrid("08JE");
+        const auto [min, max] = grid.calculateGridExtent();
+        
+        EXPECT_DOUBLE_EQ(min.x, 0);
+        EXPECT_DOUBLE_EQ(min.z, 0);
+        EXPECT_DOUBLE_EQ(max.x, 40000);
+        EXPECT_DOUBLE_EQ(max.z, 30000);
+
+        std::cout << "Grid 08JE: "
+                  << "(" << min.x << ", " << min.z << ") - (" 
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    {
+        const auto grid = StandardMapGrid("08NA");  // N（南）, A（東西）
+        const auto [min, max] = grid.calculateGridExtent();
+        
+        EXPECT_DOUBLE_EQ(min.x, -160000);
+        EXPECT_DOUBLE_EQ(min.z, -120000);
+        EXPECT_DOUBLE_EQ(max.x, -120000);
+        EXPECT_DOUBLE_EQ(max.z, -90000);
+
+        std::cout << "Grid 08NA: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    {
+        const auto grid = StandardMapGrid("08FA");  // F（北）, A（東西）
+        const auto [min, max] = grid.calculateGridExtent();
+        
+        EXPECT_DOUBLE_EQ(min.x, -160000);
+        EXPECT_DOUBLE_EQ(min.z, 120000);
+        EXPECT_DOUBLE_EQ(max.x, -120000);
+        EXPECT_DOUBLE_EQ(max.z, 150000);
+
+        std::cout << "Grid 08FA: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+}
+
+TEST(StandardMapGrid, calculateGridExtent_Level5000) {
+    // Level5000表面直角座標計算テスト
+    {
+        const auto grid = StandardMapGrid("08JE54");  // Level5000
+        const auto [min, max] = grid.calculateGridExtent();
+        
+        EXPECT_DOUBLE_EQ(min.x, 16000.0);
+        EXPECT_DOUBLE_EQ(min.z, 12000.0);
+        EXPECT_DOUBLE_EQ(max.x, 20000.0);
+        EXPECT_DOUBLE_EQ(max.z, 15000.0);
+
+        std::cout << "\n08JE54:" << std::endl
+                  << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    // Level5000表面直角座標計算テスト（別のケース）
+    {
+        const auto grid = StandardMapGrid("08NA54");  // Level5000
+        const auto [min, max] = grid.calculateGridExtent();
+        
+
+        EXPECT_DOUBLE_EQ(min.x, -144000.0);
+        EXPECT_DOUBLE_EQ(min.z, -108000.0);
+        EXPECT_DOUBLE_EQ(max.x, -140000.0);
+        EXPECT_DOUBLE_EQ(max.z, -105000.0);
+
+        std::cout << "\n08NA54: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+}
+
+TEST(StandardMapGrid, calculateGridExtent_Level2500) {
+    {
+        const auto grid = StandardMapGrid("08JE541");
+        const auto [min, max] = grid.calculateGridExtent();
+
+        EXPECT_DOUBLE_EQ(min.x, 16000.0);
+        EXPECT_DOUBLE_EQ(min.z, 13500.0);
+        EXPECT_DOUBLE_EQ(max.x, 18000.0);
+        EXPECT_DOUBLE_EQ(max.z, 15000.0);
+
+        std::cout << "\n08JE54:" << std::endl
+                  << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    {
+        const auto grid = StandardMapGrid("08NA542");
+        const auto [min, max] = grid.calculateGridExtent();
+
+
+        EXPECT_DOUBLE_EQ(min.x, -142000.0);
+        EXPECT_DOUBLE_EQ(min.z, -106500.0);
+        EXPECT_DOUBLE_EQ(max.x, -140000.0);
+        EXPECT_DOUBLE_EQ(max.z, -105000.0);
+
+        std::cout << "\n08NA54: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+}
+
+TEST(StandardMapGrid, calculateGridExtent_Level1000) {
+    {
+        const auto grid = StandardMapGrid("08JE640E");
+        const auto [min, max] = grid.calculateGridExtent();
+
+        EXPECT_DOUBLE_EQ(min.x, 19200.0);
+        EXPECT_DOUBLE_EQ(min.z, 11400.0);
+        EXPECT_DOUBLE_EQ(max.x, 20000.0);
+        EXPECT_DOUBLE_EQ(max.z, 12000.0);
+
+        std::cout << "\n08JE54:" << std::endl
+                  << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    {
+        const auto grid = StandardMapGrid("08NA542B");
+        const auto [min, max] = grid.calculateGridExtent();
+
+
+        EXPECT_DOUBLE_EQ(min.x, -143200.0);
+        EXPECT_DOUBLE_EQ(min.z, -106800.0);
+        EXPECT_DOUBLE_EQ(max.x, -142400.0);
+        EXPECT_DOUBLE_EQ(max.z, -106200.0);
+
+        std::cout << "\n08NA54: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+}
+
+
+TEST(StandardMapGrid, calculateGridExtent_Level500) {
+    {
+        const auto grid = StandardMapGrid("08JE6421");
+        const auto [min, max] = grid.calculateGridExtent();
+
+        EXPECT_DOUBLE_EQ(min.x, 16400.0);
+        EXPECT_DOUBLE_EQ(min.z, 11100.0);
+        EXPECT_DOUBLE_EQ(max.x, 16800.0);
+        EXPECT_DOUBLE_EQ(max.z, 11400.0);
+
+        std::cout << "\n08JE54:" << std::endl
+                  << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
+    }
+
+    {
+        const auto grid = StandardMapGrid("08NA5476");
+        const auto [min, max] = grid.calculateGridExtent();
+
+
+        EXPECT_DOUBLE_EQ(min.x, -141600.0);
+        EXPECT_DOUBLE_EQ(min.z, -107400.0);
+        EXPECT_DOUBLE_EQ(max.x, -141200.0);
+        EXPECT_DOUBLE_EQ(max.z, -107100.0);
+
+        std::cout << "\n08NA54: "
+                  << "(" << min.x << ", " << min.z << ") - ("
+                  << max.x << ", " << max.z << ")" << std::endl;
+    }
+}
