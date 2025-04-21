@@ -68,7 +68,7 @@ namespace plateau::dataset {
         /**
          * \brief 都市モデルデータが存在するGridCodeのリストを取得します。
          */
-        std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
+        const std::set<std::shared_ptr<GridCode>, GridCodeComparator>& getGridCodes() override;
 
         std::string getRelativePath(const std::string& path) const;
         std::string getU8RelativePath(const std::string& path) const;
