@@ -96,7 +96,8 @@ namespace plateau::dataset {
         }
     }
 
-    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code)) {
+    StandardMapGrid::StandardMapGrid(std::string code, bool is_valid = true) :
+        code_(std::move(code)), is_valid_(is_valid) {
         try {
             // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
             if (!std::all_of(code_.begin(), code_.end(), [](char c)
