@@ -9,16 +9,6 @@
 
 namespace plateau::dataset {
 
-    enum class StandardMapGridLevel
-    {
-        Invalid = -1,
-        Level50000 = 0,
-        Level5000 = 1,
-        Level2500 = 2,
-        Level1000 = 3,
-        Level500 = 4,
-    };
-
     namespace {
         constexpr int level5000_division_count = 10;
         constexpr int level2500_division_count = 2;
@@ -96,13 +86,14 @@ namespace plateau::dataset {
         }
     }
 
-    StandardMapGrid::StandardMapGrid(std::string code, bool is_valid = true) :
-        code_(std::move(code)), is_valid_(is_valid) {
+    StandardMapGrid::StandardMapGrid(std::string code) : code_(std::move(code)) {
         try {
+            is_valid_ = true;
+
             // 図郭コードの文字列が数字とアルファベットからなることをチェックします。
             if (!std::all_of(code_.begin(), code_.end(), [](char c)
             {
-                return std::isalnum(c);
+                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
             })) {
                 is_valid_ = false;
                 return;
@@ -282,31 +273,16 @@ namespace plateau::dataset {
     }
 
     GridCode* StandardMapGrid::upperRaw() const {
-        auto* new_grid = new StandardMapGrid(code_);
-
-        switch (level_) {
-            case StandardMapGridLevel::Level500:
-            case StandardMapGridLevel::Level1000:
-            case StandardMapGridLevel::Level2500:
-                // 6桁のLevel5000コードにする（末尾を削除）
-                new_grid->code_ = code_.substr(0, 6);
-                new_grid->level_ = StandardMapGridLevel::Level5000;
-                break;
-
-            case StandardMapGridLevel::Level5000:
-                // 4桁のLevel50000コードにする（末尾を削除）
-                new_grid->code_ = code_.substr(0, 4);
-                new_grid->level_ = StandardMapGridLevel::Level50000;
-                break;
-
-            case StandardMapGridLevel::Level50000:
-            default:
-                // 不正なレベルの場合も無効にする
-                new_grid->is_valid_ = false;
-                break;
+        if (level_ == StandardMapGridLevel::Level50000) {
+            auto* new_grid = new StandardMapGrid(code_);
+            new_grid->is_valid_ = false;
+            return new_grid;
         }
 
-        return new_grid;
+        const std::string upper_code = level_ > StandardMapGridLevel::Level5000
+                                   ? code_.substr(0, 6)
+                                   : code_.substr(0, 4);
+        return new StandardMapGrid(upper_code);
     }
 
     int StandardMapGrid::getLevel() const {

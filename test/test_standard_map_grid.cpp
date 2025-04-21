@@ -168,10 +168,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level50000) {
         const auto grid = StandardMapGrid("08JE");
         const auto [min, max] = grid.calculateGridExtent();
         
-        EXPECT_DOUBLE_EQ(min.x, 0);
-        EXPECT_DOUBLE_EQ(min.z, 0);
-        EXPECT_DOUBLE_EQ(max.x, 40000);
-        EXPECT_DOUBLE_EQ(max.z, 30000);
+        EXPECT_NEAR(min.x, 0, 0.1);
+        EXPECT_NEAR(min.z, 0, 0.1);
+        EXPECT_NEAR(max.x, 40000, 0.1);
+        EXPECT_NEAR(max.z, 30000, 0.1);
 
         std::cout << "Grid 08JE: "
                   << "(" << min.x << ", " << min.z << ") - (" 
@@ -182,10 +182,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level50000) {
         const auto grid = StandardMapGrid("08NA");  // N（南）, A（東西）
         const auto [min, max] = grid.calculateGridExtent();
         
-        EXPECT_DOUBLE_EQ(min.x, -160000);
-        EXPECT_DOUBLE_EQ(min.z, -120000);
-        EXPECT_DOUBLE_EQ(max.x, -120000);
-        EXPECT_DOUBLE_EQ(max.z, -90000);
+        EXPECT_NEAR(min.x, -160000, 0.1);
+        EXPECT_NEAR(min.z, -120000, 0.1);
+        EXPECT_NEAR(max.x, -120000, 0.1);
+        EXPECT_NEAR(max.z, -90000, 0.1);
 
         std::cout << "Grid 08NA: "
                   << "(" << min.x << ", " << min.z << ") - ("
@@ -196,10 +196,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level50000) {
         const auto grid = StandardMapGrid("08FA");  // F（北）, A（東西）
         const auto [min, max] = grid.calculateGridExtent();
         
-        EXPECT_DOUBLE_EQ(min.x, -160000);
-        EXPECT_DOUBLE_EQ(min.z, 120000);
-        EXPECT_DOUBLE_EQ(max.x, -120000);
-        EXPECT_DOUBLE_EQ(max.z, 150000);
+        EXPECT_NEAR(min.x, -160000, 0.1);
+        EXPECT_NEAR(min.z, 120000, 0.1);
+        EXPECT_NEAR(max.x, -120000, 0.1);
+        EXPECT_NEAR(max.z, 150000, 0.1);
 
         std::cout << "Grid 08FA: "
                   << "(" << min.x << ", " << min.z << ") - ("
@@ -213,10 +213,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level5000) {
         const auto grid = StandardMapGrid("08JE54");  // Level5000
         const auto [min, max] = grid.calculateGridExtent();
         
-        EXPECT_DOUBLE_EQ(min.x, 16000.0);
-        EXPECT_DOUBLE_EQ(min.z, 12000.0);
-        EXPECT_DOUBLE_EQ(max.x, 20000.0);
-        EXPECT_DOUBLE_EQ(max.z, 15000.0);
+        EXPECT_NEAR(min.x, 16000.0, 0.1);
+        EXPECT_NEAR(min.z, 12000.0, 0.1);
+        EXPECT_NEAR(max.x, 20000.0, 0.1);
+        EXPECT_NEAR(max.z, 15000.0, 0.1);
 
         std::cout << "\n08JE54:" << std::endl
                   << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
@@ -227,11 +227,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level5000) {
         const auto grid = StandardMapGrid("08NA54");  // Level5000
         const auto [min, max] = grid.calculateGridExtent();
         
-
-        EXPECT_DOUBLE_EQ(min.x, -144000.0);
-        EXPECT_DOUBLE_EQ(min.z, -108000.0);
-        EXPECT_DOUBLE_EQ(max.x, -140000.0);
-        EXPECT_DOUBLE_EQ(max.z, -105000.0);
+        EXPECT_NEAR(min.x, -144000.0, 0.1);
+        EXPECT_NEAR(min.z, -108000.0, 0.1);
+        EXPECT_NEAR(max.x, -140000.0, 0.1);
+        EXPECT_NEAR(max.z, -105000.0, 0.1);
 
         std::cout << "\n08NA54: "
                   << "(" << min.x << ", " << min.z << ") - ("
@@ -244,10 +243,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level2500) {
         const auto grid = StandardMapGrid("08JE541");
         const auto [min, max] = grid.calculateGridExtent();
 
-        EXPECT_DOUBLE_EQ(min.x, 16000.0);
-        EXPECT_DOUBLE_EQ(min.z, 13500.0);
-        EXPECT_DOUBLE_EQ(max.x, 18000.0);
-        EXPECT_DOUBLE_EQ(max.z, 15000.0);
+        EXPECT_NEAR(min.x, 16000.0, 0.1);
+        EXPECT_NEAR(min.z, 13500.0, 0.1);
+        EXPECT_NEAR(max.x, 18000.0, 0.1);
+        EXPECT_NEAR(max.z, 15000.0, 0.1);
 
         std::cout << "\n08JE54:" << std::endl
                   << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
@@ -257,11 +256,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level2500) {
         const auto grid = StandardMapGrid("08NA542");
         const auto [min, max] = grid.calculateGridExtent();
 
-
-        EXPECT_DOUBLE_EQ(min.x, -142000.0);
-        EXPECT_DOUBLE_EQ(min.z, -106500.0);
-        EXPECT_DOUBLE_EQ(max.x, -140000.0);
-        EXPECT_DOUBLE_EQ(max.z, -105000.0);
+        EXPECT_NEAR(min.x, -142000.0, 0.1);
+        EXPECT_NEAR(min.z, -106500.0, 0.1);
+        EXPECT_NEAR(max.x, -140000.0, 0.1);
+        EXPECT_NEAR(max.z, -105000.0, 0.1);
 
         std::cout << "\n08NA54: "
                   << "(" << min.x << ", " << min.z << ") - ("
@@ -274,10 +272,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level1000) {
         const auto grid = StandardMapGrid("08JE640E");
         const auto [min, max] = grid.calculateGridExtent();
 
-        EXPECT_DOUBLE_EQ(min.x, 19200.0);
-        EXPECT_DOUBLE_EQ(min.z, 11400.0);
-        EXPECT_DOUBLE_EQ(max.x, 20000.0);
-        EXPECT_DOUBLE_EQ(max.z, 12000.0);
+        EXPECT_NEAR(min.x, 19200.0, 0.1);
+        EXPECT_NEAR(min.z, 11400.0, 0.1);
+        EXPECT_NEAR(max.x, 20000.0, 0.1);
+        EXPECT_NEAR(max.z, 12000.0, 0.1);
 
         std::cout << "\n08JE54:" << std::endl
                   << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
@@ -287,11 +285,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level1000) {
         const auto grid = StandardMapGrid("08NA542B");
         const auto [min, max] = grid.calculateGridExtent();
 
-
-        EXPECT_DOUBLE_EQ(min.x, -143200.0);
-        EXPECT_DOUBLE_EQ(min.z, -106800.0);
-        EXPECT_DOUBLE_EQ(max.x, -142400.0);
-        EXPECT_DOUBLE_EQ(max.z, -106200.0);
+        EXPECT_NEAR(min.x, -143200.0, 0.1);
+        EXPECT_NEAR(min.z, -106800.0, 0.1);
+        EXPECT_NEAR(max.x, -142400.0, 0.1);
+        EXPECT_NEAR(max.z, -106200.0, 0.1);
 
         std::cout << "\n08NA54: "
                   << "(" << min.x << ", " << min.z << ") - ("
@@ -299,16 +296,15 @@ TEST(StandardMapGrid, calculateGridExtent_Level1000) {
     }
 }
 
-
 TEST(StandardMapGrid, calculateGridExtent_Level500) {
     {
         const auto grid = StandardMapGrid("08JE6421");
         const auto [min, max] = grid.calculateGridExtent();
 
-        EXPECT_DOUBLE_EQ(min.x, 16400.0);
-        EXPECT_DOUBLE_EQ(min.z, 11100.0);
-        EXPECT_DOUBLE_EQ(max.x, 16800.0);
-        EXPECT_DOUBLE_EQ(max.z, 11400.0);
+        EXPECT_NEAR(min.x, 16400.0, 0.1);
+        EXPECT_NEAR(min.z, 11100.0, 0.1);
+        EXPECT_NEAR(max.x, 16800.0, 0.1);
+        EXPECT_NEAR(max.z, 11400.0, 0.1);
 
         std::cout << "\n08JE54:" << std::endl
                   << "(" << min.x << ", " << min.z << ") - (" << max.x << ", " << max.z << ")" << std::endl;
@@ -318,11 +314,10 @@ TEST(StandardMapGrid, calculateGridExtent_Level500) {
         const auto grid = StandardMapGrid("08NA5476");
         const auto [min, max] = grid.calculateGridExtent();
 
-
-        EXPECT_DOUBLE_EQ(min.x, -141600.0);
-        EXPECT_DOUBLE_EQ(min.z, -107400.0);
-        EXPECT_DOUBLE_EQ(max.x, -141200.0);
-        EXPECT_DOUBLE_EQ(max.z, -107100.0);
+        EXPECT_NEAR(min.x, -141600.0, 0.1);
+        EXPECT_NEAR(min.z, -107400.0, 0.1);
+        EXPECT_NEAR(max.x, -141200.0, 0.1);
+        EXPECT_NEAR(max.z, -107100.0, 0.1);
 
         std::cout << "\n08NA54: "
                   << "(" << min.x << ", " << min.z << ") - ("

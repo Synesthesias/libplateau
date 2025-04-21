@@ -7,7 +7,17 @@
 #include "plateau/dataset/grid_code.h"
 
 namespace plateau::dataset {
-    enum class StandardMapGridLevel;
+
+    enum class StandardMapGridLevel
+    {
+        Invalid = -1,
+        Level50000 = 0,
+        Level5000 = 1,
+        Level2500 = 2,
+        Level1000 = 3,
+        Level500 = 4,
+    };
+
     /**
      * \brief 国土基本図図郭を表します。
      * 
@@ -15,7 +25,7 @@ namespace plateau::dataset {
      */
     class LIBPLATEAU_EXPORT StandardMapGrid : public GridCode {
     public:
-        explicit StandardMapGrid(std::string code, bool is_valid);
+        explicit StandardMapGrid(std::string code);
         StandardMapGrid() = default;
 
         /**
