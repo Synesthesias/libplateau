@@ -54,12 +54,12 @@ namespace plateau::dataset {
         return GridCode::createRaw(grid_code_->get());
     }
 
-    double GmlFile::getEpsg() const {
+    double GmlFile::getEpsg() const {		
         try {
-            return epsg_.empty() ? 6697 : std::stod(epsg_);
+            return epsg_.empty() ? plateau::geometry::CoordinateReferenceFactory::default_epsg : std::stod(epsg_);
         }
         catch (const std::exception&) {
-            return 6697; 
+            return plateau::geometry::CoordinateReferenceFactory::default_epsg;
         }
     }
 

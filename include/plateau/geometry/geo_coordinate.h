@@ -112,51 +112,18 @@ namespace plateau::geometry {
     */
     struct CoordinateReferenceFactory {
 
-        static constexpr int default_epsg_ = 6697;
+        static constexpr int default_epsg = 6697;
 
         // EPSGごとのzone取得
         static int GetZoneId(int epsg) {
             // 日本測地系2011（JGD2011）に基づく平面直角座標系
-            if (epsg == 10162) {
-                return 1; // 1系
-            }
-            else if (epsg == 10163) {
-                return 2; // 2系
-            }
-            else if (epsg == 10164) {
-                return 3; // 3系
-            }
-            else if (epsg == 10165) {
-                return 4; // 4系
-            }
-            else if (epsg == 10166) {
-                return 5; // 5系
-            }
-            else if (epsg == 10167) {
-                return 6; // 6系
-            }
-            else if (epsg == 10168) {
-                return 7; // 7系
-            }
-            else if (epsg == 10169) {
-                return 8; // 8系
-            }
-            else if (epsg == 10170) {
-                return 9; // 9系
-            }
-            else if (epsg == 10171) {
-                return 10; // 10系
-            }
-            else if (epsg == 10172) {
-                return 11; // 11系
-            }
-            else if (epsg == 10173) {
-                return 12; // 12系
-            }
-            else if (epsg == 10174) {
-                return 13; // 13系
-            }
-            return 0;
+            static const std::map<int, int> epsg_to_zone = {
+                {10162, 1}, {10163, 2}, {10164, 3}, {10165, 4}, {10166, 5},
+                {10167, 6}, {10168, 7}, {10169, 8}, {10170, 9}, {10171, 10},
+                {10172, 11}, {10173, 12}, {10174, 13}
+            };
+            auto it = epsg_to_zone.find(epsg);
+            return it != epsg_to_zone.end() ? it->second : 0;
         }
 
         // EPSGごとの基準点取得
@@ -170,48 +137,29 @@ namespace plateau::geometry {
         // Zone IDごとの基準点
         // zoneに紐づく基準点はPolarToPlaneCartesianにハードコードで持っているが値が取得できないので、ここで定義
         static GeoCoordinate GetReferencePointByZone(int zone_id) {
-            switch (zone_id) {
-            case 1:
-                return GeoCoordinate(33, 129.5, 0);
-            case 2:
-                return GeoCoordinate(33, 131, 0);
-            case 3:
-                return GeoCoordinate(36, 132.166667, 0);
-            case 4:
-                return GeoCoordinate(33, 133.5, 0);
-            case 5:
-                return GeoCoordinate(36, 134.333333, 0);
-            case 6:
-                return GeoCoordinate(36, 136, 0);
-            case 7:
-                return GeoCoordinate(36, 137.166667, 0);
-            case 8:
-                return GeoCoordinate(36, 138.5, 0);
-            case 9:
-                return GeoCoordinate(35, 139.833333, 0);
-            case 10:
-                return GeoCoordinate(40, 140.833333, 0);
-            case 11:
-                return GeoCoordinate(44, 140.25, 0);
-            case 12:
-                return GeoCoordinate(44, 142, 0);
-            case 13:
-                return GeoCoordinate(43, 144, 0);
-            case 14:
-                return GeoCoordinate(26, 142, 0);
-            case 15:
-                return GeoCoordinate(26, 127.5, 0);
-            case 16:
-                return GeoCoordinate(24, 124, 0);
-            case 17:
-                return GeoCoordinate(31, 131, 0);
-            case 18:
-                return GeoCoordinate(20, 136, 0);
-            case 19:
-                return GeoCoordinate(25, 154, 0);
-            default:
-                return GeoCoordinate();
-            }
+            static const std::map<int, GeoCoordinate> zone_to_point = {
+                {1, GeoCoordinate(33, 129.5, 0)}, 
+                {2, GeoCoordinate(33, 131, 0)},
+                {3, GeoCoordinate(36, 132.166667, 0)}, 
+                {4, GeoCoordinate(33, 133.5, 0)},
+                {5, GeoCoordinate(36, 134.333333, 0)}, 
+                {6, GeoCoordinate(36, 136, 0)},
+                {7, GeoCoordinate(36, 137.166667, 0)}, 
+                {8, GeoCoordinate(36, 138.5, 0)},
+                {9, GeoCoordinate(35, 139.833333, 0)}, 
+                {10, GeoCoordinate(40, 140.833333, 0)},
+                {11, GeoCoordinate(44, 140.25, 0)}, 
+                {12, GeoCoordinate(44, 142, 0)},
+                {13, GeoCoordinate(43, 144, 0)}, 
+                {14, GeoCoordinate(26, 142, 0)},
+                {15, GeoCoordinate(26, 127.5, 0)}, 
+                {16, GeoCoordinate(24, 124, 0)},
+                {17, GeoCoordinate(31, 131, 0)}, 
+                {18, GeoCoordinate(20, 136, 0)},
+                {19, GeoCoordinate(25, 154, 0)}
+            };
+            auto it = zone_to_point.find(zone_id);
+            return it != zone_to_point.end() ? it->second : GeoCoordinate();
         }
 
         // 極座標系・平面直角座標系判定
