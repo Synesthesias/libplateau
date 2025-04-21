@@ -2,7 +2,8 @@
 
 #include "citygml/vecs.hpp"
 #include "citygml/cityobject.h"
-
+#include <array>
+#include <utility>
 
 namespace plateau::geometry {
 
@@ -107,69 +108,59 @@ namespace plateau::geometry {
         }
     };
 
-    /**
-    * 平面直角座標判定、平面直角座標の基準点取得
-    */
+	/**
+	 * 平面直角座標系の判定、平面直角座標の基準点取得
+	 */
     struct CoordinateReferenceFactory {
-
         static constexpr int default_epsg = 6697;
 
+        // EPSGとZone IDのマッピング
+        static constexpr std::array<std::pair<int, int>, 13> epsg_to_zone = { {
+            {10162, 1}, {10163, 2}, {10164, 3}, {10165, 4}, {10166, 5},
+            {10167, 6}, {10168, 7}, {10169, 8}, {10170, 9}, {10171, 10},
+            {10172, 11}, {10173, 12}, {10174, 13}
+        } };
+
+        // Zone IDごとの座標データ
+        static constexpr std::array<std::pair<int, std::array<double, 3>>, 13> zone_to_point = { {
+            {1, {33.0, 129.5, 0.0}}, {2, {33.0, 131.0, 0.0}}, {3, {36.0, 132.166667, 0.0}},
+            {4, {33.0, 133.5, 0.0}}, {5, {36.0, 134.333333, 0.0}}, {6, {36.0, 136.0, 0.0}},
+            {7, {36.0, 137.166667, 0.0}}, {8, {36.0, 138.5, 0.0}}, {9, {35.0, 139.833333, 0.0}},
+            {10, {40.0, 140.833333, 0.0}}, {11, {44.0, 140.25, 0.0}}, {12, {44.0, 142.0, 0.0}},
+            {13, {43.0, 144.0, 0.0}}
+        } };
+
         // EPSGごとのzone取得
-        static int GetZoneId(int epsg) {
-            // 日本測地系2011（JGD2011）に基づく平面直角座標系
-            static const std::map<int, int> epsg_to_zone = {
-                {10162, 1}, {10163, 2}, {10164, 3}, {10165, 4}, {10166, 5},
-                {10167, 6}, {10168, 7}, {10169, 8}, {10170, 9}, {10171, 10},
-                {10172, 11}, {10173, 12}, {10174, 13}
-            };
-            auto it = epsg_to_zone.find(epsg);
-            return it != epsg_to_zone.end() ? it->second : 0;
+        static constexpr int GetZoneId(int epsg) {
+            for (const auto& pair : epsg_to_zone) {
+                if (pair.first == epsg) {
+                    return pair.second;
+                }
+            }
+            return 0;
         }
 
         // EPSGごとの基準点取得
         static GeoCoordinate GetReferencePoint(int epsg) {
             const int zone = GetZoneId(epsg);
-            if (zone != 0)
-                return GetReferencePointByZone(zone);
+            if (zone != 0) {
+                for (const auto& pair : zone_to_point) {
+                    if (pair.first == zone) {
+                        const auto& coords = pair.second;
+                        return GeoCoordinate(coords[0], coords[1], coords[2]);
+                    }
+                }
+            }
             return GeoCoordinate();
         }
 
-        // Zone IDごとの基準点
-        // zoneに紐づく基準点はPolarToPlaneCartesianにハードコードで持っているが値が取得できないので、ここで定義
-        static GeoCoordinate GetReferencePointByZone(int zone_id) {
-            static const std::map<int, GeoCoordinate> zone_to_point = {
-                {1, GeoCoordinate(33, 129.5, 0)}, 
-                {2, GeoCoordinate(33, 131, 0)},
-                {3, GeoCoordinate(36, 132.166667, 0)}, 
-                {4, GeoCoordinate(33, 133.5, 0)},
-                {5, GeoCoordinate(36, 134.333333, 0)}, 
-                {6, GeoCoordinate(36, 136, 0)},
-                {7, GeoCoordinate(36, 137.166667, 0)}, 
-                {8, GeoCoordinate(36, 138.5, 0)},
-                {9, GeoCoordinate(35, 139.833333, 0)}, 
-                {10, GeoCoordinate(40, 140.833333, 0)},
-                {11, GeoCoordinate(44, 140.25, 0)}, 
-                {12, GeoCoordinate(44, 142, 0)},
-                {13, GeoCoordinate(43, 144, 0)}, 
-                {14, GeoCoordinate(26, 142, 0)},
-                {15, GeoCoordinate(26, 127.5, 0)}, 
-                {16, GeoCoordinate(24, 124, 0)},
-                {17, GeoCoordinate(31, 131, 0)}, 
-                {18, GeoCoordinate(20, 136, 0)},
-                {19, GeoCoordinate(25, 154, 0)}
-            };
-            auto it = zone_to_point.find(zone_id);
-            return it != zone_to_point.end() ? it->second : GeoCoordinate();
-        }
-
         // 極座標系・平面直角座標系判定
+        // 平面直角座標系の区分についてはこちらを参照してください :
+        // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
+        // “該当範囲でなければ極座標” と単純化していますが、
+        // EPSG 4301(JGD2000) 等の別 CRS を誤って極座標と判定する恐れがあります。
         static bool IsPolarCoordinateSystem(int epsg) {
-            // 平面直角座標系の区分についてはこちらを参照してください :
-            // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
-            if (epsg >= 10162 && epsg <= 10174) {
-                return false;
-            }
-            return true;
+            return !(epsg >= 10162 && epsg <= 10174);
         }
     };
 }

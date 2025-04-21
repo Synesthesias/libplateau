@@ -233,9 +233,9 @@ namespace plateau::polygonMesh {
 
         // Extracted Model
         auto model = MeshExtractor::extract(*city_model, mesh_extract_options);
-        ASSERT_GE(1, model->getRootNodeCount());   
+        ASSERT_GE(model->getRootNodeCount(),1);   
         const auto& lod_node = model->getRootNodeAt(0);
-        ASSERT_GE(1, lod_node.getChildCount());
+        ASSERT_GE(lod_node.getChildCount(),1);
         const auto& first_model_node = lod_node.getChildAt(0);
         const auto& mesh = first_model_node.getMesh();
 

@@ -128,7 +128,7 @@ namespace plateau::polygonMesh {
         void findAllPolygonsInGeometry(
             const Geometry& geom, std::list<const citygml::Polygon*>& polygons,
             const unsigned lod, long long& out_vertices_count,
-            const std::vector<plateau::geometry::Extent> extents, const MeshExtractOptions& options) {
+            const std::vector<plateau::geometry::Extent>& extents, const MeshExtractOptions& options) {
 
             // 子のジオメトリのポリゴンをすべて取得
             const unsigned int child_count = geom.getGeometriesCount();
