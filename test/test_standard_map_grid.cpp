@@ -74,7 +74,7 @@ TEST(StandardMapGrid, Level5000_WithinBounds) {
 }
 
 TEST(StandardMapGrid, Level2500_WithinBounds) {
-    const auto extent = StandardMapGrid("08EE554").getExtent();   // Level2500
+    const auto extent = StandardMapGrid("08EE554").getExtent();
     const auto expected = GeoCoordinate(37.4669, 138.7544, 0);
 
     std::stringstream ss;
@@ -91,7 +91,7 @@ TEST(StandardMapGrid, Level2500_WithinBounds) {
 }
 
 TEST(StandardMapGrid, Level1000_WithinBounds) {
-    const auto extent = StandardMapGrid("08JE640E").getExtent();   // Level2500
+    const auto extent = StandardMapGrid("08JE640E").getExtent();
     const auto expected = GeoCoordinate(36.1053, 138.7151, 0);
 
     std::stringstream ss;
