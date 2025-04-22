@@ -30,7 +30,6 @@ add_executable(plateau_test
     "test_mesh_extractor.cpp"
     "test_grid_merger.cpp"
     "test_mesh_code.cpp"
-    "test_dataset.cpp"
     "test_vector_tile.cpp"
     "test_obj_writer.cpp"
     "test_gltf_writer.cpp"
@@ -49,6 +48,7 @@ add_executable(plateau_test
     "test_map_zoom_level_searcher.cpp"
     "test_height_map_aligner.cpp"
     "test_heightmap_mesh_generator.cpp"
+    "test_standard_map_grid.cpp"
     "test_geo_reference.cpp"
     )
 

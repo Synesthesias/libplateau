@@ -165,8 +165,8 @@ namespace PLATEAU.Test.Dataset
             // テスト用のデータは、基準点からおおむね南に50km, 西に5km の地点にあります。
             // ここでいう基準点とは、下のWebサイトにおける 9番の地点です。
             // https://www.gsi.go.jp/sokuchikijun/jpc.html
-            Assert.IsTrue(Math.Abs(center.Z - /*(-51000)*/(-369082/*国土基本図の図郭を実装するまでの一時的な値*/)) < 2000, "南に51km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
-            Assert.IsTrue(Math.Abs(center.X - /*(-9000))*/(-5132542)/*国土基本図の図郭を実装するまでの一時的な値*/) < 5000, "西に9km");
+            Assert.IsTrue(Math.Abs(center.Z - 18000) < 2000, "北に18km"); // Local と Server で値がちょっと違うので2kmの誤差猶予を持たせます。
+            Assert.IsTrue(Math.Abs(center.X - (-37000)) < 5000, "西に37km");
         }
         
         
