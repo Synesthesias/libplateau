@@ -4,10 +4,6 @@
 namespace plateau::geometry {
     class GeoCoordinateTest : public ::testing::Test {
     protected:
-        void SetUp() override {
-        }
-        void TearDown() override {
-        }
     };
 
     TEST_F(GeoCoordinateTest, ExtentContains) { // NOLINT
@@ -20,12 +16,13 @@ namespace plateau::geometry {
         ASSERT_FALSE(ext.contains(GeoCoordinate(40, 0, 0)));
         ASSERT_FALSE(ext.contains(GeoCoordinate(0, -100, 0)));
 
-        // 6697の場合は同様の処理
+        // 極座標系EPSG:6697（日本測地系2000）の場合、containsとcontainsInPolarの結果が一致することを確認
         ASSERT_EQ(ext.contains(TVec3d(0, 0, 0)), ext.containsInPolar(TVec3d(0, 0, 0), 6697));
         ASSERT_EQ(ext.contains(TVec3d(80, 90, 0)), ext.containsInPolar(TVec3d(80, 90, 0), 6697));
 
         // 平面直角座標
-        const auto& zoneRefPoint = GeoReference::planeToPolar(TVec3d(), 8);// 10169 は zone id:8
+        // EPSG:10169は平面直角座標系（第8系）
+        const auto& zoneRefPoint = GeoReference::planeToPolar(TVec3d(), 8);
         ASSERT_FLOAT_EQ(36.0, zoneRefPoint.latitude);
         ASSERT_FLOAT_EQ(138.5, zoneRefPoint.longitude);
         ASSERT_FALSE(ext.containsInPolar(TVec3d(), 10169));
@@ -50,8 +47,8 @@ namespace plateau::geometry {
         ASSERT_TRUE(CoordinateReferenceFactory::IsPolarCoordinateSystem(0)); // 不明なEPSG
 
         const auto& refPoint = CoordinateReferenceFactory::GetOriginPoint(10169);
-        ASSERT_EQ(36.0, refPoint.latitude);
-        ASSERT_EQ(138.5, refPoint.longitude);
+        ASSERT_FLOAT_EQ(36.0, refPoint.latitude);
+        ASSERT_FLOAT_EQ(138.5, refPoint.longitude);
         
         // 無効なEPSGの場合、空のGeoCoordinateが返されること
         const auto & invalidRefPoint = CoordinateReferenceFactory::GetOriginPoint(0);
