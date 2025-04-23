@@ -81,8 +81,14 @@ namespace plateau::geometry {
         bool contains(const citygml::CityObject& city_obj, bool ignore_height = true) const;
 
         /**
-         * 平面直角座標系の判定を含む処理です
-         * 平面直角座標の場合はunprojectして緯度経度に変換してから判定します。
+         * 座標系のEPSGコードに応じて適切な座標変換を行い、点が範囲内に含まれるかを判定します。
+         * 平面直角座標系（EPSG 10162～10174）の場合は、平面座標を緯度経度座標に変換してから判定します。
+         * 極座標系（それ以外のEPSG）の場合は、通常のcontainsメソッドと同様に直接判定します。
+         *
+         * @param point 判定対象の点
+         * @param epsg 座標系を識別するEPSGコード
+         * @param ignore_height 高さを無視する場合はtrue
+         * @return 点が範囲内に含まれる場合はtrue
          */
         bool containsInPolar(TVec3d point,const int epsg, bool ignore_height = true) const;
         bool containsInPolar(const citygml::CityObject& city_obj,const int epsg, bool ignore_height = true) const;
