@@ -52,8 +52,8 @@ namespace plateau::geometry {
         
         // 無効なEPSGの場合、空のGeoCoordinateが返されること
         const auto & invalidRefPoint = CoordinateReferenceFactory::GetOriginPoint(0);
-        ASSERT_EQ(0.0, invalidRefPoint.latitude);
-        ASSERT_EQ(0.0, invalidRefPoint.longitude);
-        ASSERT_EQ(0.0, invalidRefPoint.height);
+        ASSERT_FLOAT_EQ(0.0, invalidRefPoint.latitude);
+        ASSERT_FLOAT_EQ(0.0, invalidRefPoint.longitude);
+        ASSERT_FLOAT_EQ(0.0, invalidRefPoint.height);
     }
 }
