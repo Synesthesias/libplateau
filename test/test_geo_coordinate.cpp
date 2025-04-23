@@ -34,12 +34,29 @@ namespace plateau::geometry {
 
     TEST_F(GeoCoordinateTest, CoordinateReference) { // NOLINT
 
-        ASSERT_EQ(8, CoordinateReferenceFactory::GetZoneId(10169));
+        // 正常系テスト - EPSGから正しいゾーンIDが取得できること
+        ASSERT_EQ(1, CoordinateReferenceFactory::GetZoneId(10162)); // 最小値
+        ASSERT_EQ(8, CoordinateReferenceFactory::GetZoneId(10169)); // 中間値
+        ASSERT_EQ(13, CoordinateReferenceFactory::GetZoneId(10174)); // 最大値
+        
+        // 異常系テスト - 範囲外のEPSGでは0が返されること
+        ASSERT_EQ(0, CoordinateReferenceFactory::GetZoneId(10161)); // 境界外（最小値-1）
+        ASSERT_EQ(0, CoordinateReferenceFactory::GetZoneId(10175)); // 境界外（最大値+1）
+        ASSERT_EQ(0, CoordinateReferenceFactory::GetZoneId(6697)); // 極座標系EPSG
+        
         ASSERT_FALSE(CoordinateReferenceFactory::IsPolarCoordinateSystem(10169));
         ASSERT_TRUE(CoordinateReferenceFactory::IsPolarCoordinateSystem(6697));
+        ASSERT_TRUE(CoordinateReferenceFactory::IsPolarCoordinateSystem(4301)); // JGD2000
+        ASSERT_TRUE(CoordinateReferenceFactory::IsPolarCoordinateSystem(0)); // 不明なEPSG
 
         const auto& refPoint = CoordinateReferenceFactory::GetOriginPoint(10169);
         ASSERT_EQ(36.0, refPoint.latitude);
         ASSERT_EQ(138.5, refPoint.longitude);
+        
+        // 無効なEPSGの場合、空のGeoCoordinateが返されること
+        const auto & invalidRefPoint = CoordinateReferenceFactory::GetOriginPoint(0);
+        ASSERT_EQ(0.0, invalidRefPoint.latitude);
+        ASSERT_EQ(0.0, invalidRefPoint.longitude);
+        ASSERT_EQ(0.0, invalidRefPoint.height);
     }
 }
