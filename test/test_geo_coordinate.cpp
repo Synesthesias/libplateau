@@ -38,7 +38,7 @@ namespace plateau::geometry {
         ASSERT_FALSE(CoordinateReferenceFactory::IsPolarCoordinateSystem(10169));
         ASSERT_TRUE(CoordinateReferenceFactory::IsPolarCoordinateSystem(6697));
 
-        const auto& refPoint = CoordinateReferenceFactory::GetReferencePoint(10169);
+        const auto& refPoint = CoordinateReferenceFactory::GetOriginPoint(10169);
         ASSERT_EQ(36.0, refPoint.latitude);
         ASSERT_EQ(138.5, refPoint.longitude);
     }
