@@ -25,9 +25,9 @@ namespace {
         // 範囲外を省く設定ならば省きます。
         if (!options.exclude_city_object_outside_extent)
             return false;
-
+        
         for (const auto& extent : extents) {
-            if (extent.contains(city_obj))
+            if (extent.containsInPolar(city_obj, options.epsg_code))
                 return false;
         }
         return true;

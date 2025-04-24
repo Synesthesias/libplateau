@@ -16,11 +16,11 @@ namespace plateau::dataset {
     TEST_F(GmlFileTest, get_epsg) { // NOLINT
         auto info1 = GmlFile(std::string("foobar/udx/unf/08EE751_unf_10169_water_op.gml"));
         ASSERT_EQ(10169, info1.getEpsg());
-        ASSERT_FALSE(info1.isPolarCoordinateSystem());
+        ASSERT_FALSE(plateau::geometry::CoordinateReferenceFactory::IsPolarCoordinateSystem(info1.getEpsg()));
 
         auto info2 = GmlFile(std::string("foobar/udx/bldg/53392546_bldg_6697_2_op.gml"));
         ASSERT_EQ(6697, info2.getEpsg());
-        ASSERT_TRUE(info2.isPolarCoordinateSystem());     
+        ASSERT_TRUE(plateau::geometry::CoordinateReferenceFactory::IsPolarCoordinateSystem(info2.getEpsg()));
     }
 
     // fetch のテストは test_dataset.cpp にあります。

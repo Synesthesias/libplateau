@@ -7,6 +7,7 @@
 namespace {
     using namespace plateau;
     using namespace polygonMesh;
+    using namespace geometry;
 
     /**
     * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
@@ -19,7 +20,7 @@ namespace {
             return false;
 
         for (const auto& extent : extents) {
-            if (extent.contains(city_obj))
+            if (extent.containsInPolar(city_obj, options.epsg_code))
                 return false;
         }
 

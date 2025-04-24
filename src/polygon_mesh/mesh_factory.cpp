@@ -32,9 +32,7 @@ namespace plateau::polygonMesh {
          */
         void cityGmlPolygonToMesh(
             const Polygon& polygon, const std::string& gml_path,
-            const GeoReference& geo_reference, Mesh& out_mesh) {
-
-            const auto& gml = plateau::dataset::GmlFile(gml_path);
+            const GeoReference& geo_reference, Mesh& out_mesh, int epsg) {
 
             // マージ対象の情報を取得します。ここでの頂点は極座標です。
             const auto& vertices_lat_lon = polygon.getVertices();
@@ -56,7 +54,7 @@ namespace plateau::polygonMesh {
             auto& out_vertices = out_mesh.getVertices();
             out_vertices.reserve(vertices_lat_lon.size());
             for (const auto& lat_lon : vertices_lat_lon) {
-                auto xyz = geo_reference.convert(lat_lon, false, gml.isPolarCoordinateSystem());
+                auto xyz = geo_reference.convert(lat_lon, false, epsg);
                 out_vertices.push_back(xyz);
             }
             assert(out_vertices.size() == vertices_lat_lon.size());
@@ -130,12 +128,12 @@ namespace plateau::polygonMesh {
         void findAllPolygonsInGeometry(
             const Geometry& geom, std::list<const citygml::Polygon*>& polygons,
             const unsigned lod, long long& out_vertices_count,
-            const std::vector<plateau::geometry::Extent> extents) {
+            const std::vector<plateau::geometry::Extent>& extents, const MeshExtractOptions& options) {
 
             // 子のジオメトリのポリゴンをすべて取得
             const unsigned int child_count = geom.getGeometriesCount();
             for (unsigned int i = 0; i < child_count; i++) {
-                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count, extents);
+                findAllPolygonsInGeometry(geom.getGeometry(i), polygons, lod, out_vertices_count, extents, options);
             }
 
             if (geom.getLOD() != lod) return;
@@ -148,7 +146,7 @@ namespace plateau::polygonMesh {
                 // TODO: 計算コストが頂点数と範囲数に比例するため高速化
                 for (const auto& vertex : polygon->getVertices()) {
                     for (const auto& extent : extents) {
-                        if (extent.contains(vertex)) {
+                        if (extent.containsInPolar(vertex, options.epsg_code)) {
                             is_in_extent = true;
                             break;
                         }
@@ -206,7 +204,7 @@ namespace plateau::polygonMesh {
             return;
 
         Mesh mesh;
-        cityGmlPolygonToMesh(polygon, gml_path, geo_reference_, mesh);
+        cityGmlPolygonToMesh(polygon, gml_path, geo_reference_, mesh, options_.epsg_code);
 
         const auto from_axis = geometry::CoordinateSystem::ENU;
         const auto to_axis = options_.mesh_axes;
@@ -349,11 +347,11 @@ namespace plateau::polygonMesh {
         std::vector<Extent> extents = { Extent::all() };
         if (options_.exclude_polygons_outside_extent)
             extents = extents_;
-
+        
         for (unsigned i = 0; i < geometry_count; i++) {
             findAllPolygonsInGeometry(
                 city_obj.getGeometry(i), out_polygons, lod,
-                out_vertices_count, extents);
+                out_vertices_count, extents, options_);
         }
     }
 

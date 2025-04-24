@@ -50,6 +50,7 @@ add_executable(plateau_test
     "test_heightmap_mesh_generator.cpp"
     "test_standard_map_grid.cpp"
     "test_geo_reference.cpp"
+    "test_geo_coordinate.cpp"
     )
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test_granularity_convert")

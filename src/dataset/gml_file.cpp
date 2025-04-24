@@ -54,23 +54,13 @@ namespace plateau::dataset {
         return GridCode::createRaw(grid_code_->get());
     }
 
-    double GmlFile::getEpsg() const {
+    double GmlFile::getEpsg() const {		
         try {
-            return epsg_.empty() ? 6697 : std::stod(epsg_);
+            return epsg_.empty() ? plateau::geometry::CoordinateReferenceFactory::default_epsg : std::stod(epsg_);
         }
         catch (const std::exception&) {
-            return 6697; 
+            return plateau::geometry::CoordinateReferenceFactory::default_epsg;
         }
-    }
-
-    bool GmlFile::isPolarCoordinateSystem() const {
-        double epsg = getEpsg();
-        // 平面直角座標系の区分についてはこちらを参照してください :
-        // https://www.mlit.go.jp/plateaudocument/toc9/toc9_08/toc9_08_04/
-        if (epsg >= 10162 && epsg <= 10174) {
-            return false;
-        }
-        return true;
     }
 
     const std::string& GmlFile::getFeatureType() const {

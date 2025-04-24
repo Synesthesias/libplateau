@@ -40,13 +40,18 @@ extern "C" {
     }
 
     DLL_STRING_PTR_FUNC(plateau_gml_file_get_feature_type_str,
-                        GmlFile,
-                        handle->getFeatureType())
+                    GmlFile,
+                    handle->getFeatureType())
 
     DLL_PTR_FUNC(plateau_gml_file_get_grid_code,
                    GmlFile,
                    GridCode,
                    handle->getGridCodeRaw())
+
+    DLL_VALUE_FUNC(plateau_gml_file_get_epsg,
+                    GmlFile,
+                    int,
+                    handle->getEpsg())
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_gml_file_fetch(
             const GmlFile* const gml_file_info,

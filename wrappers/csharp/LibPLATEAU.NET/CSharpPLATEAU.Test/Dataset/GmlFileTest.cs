@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PLATEAU.Dataset;
+using PLATEAU.Geometries;
 using PLATEAU.Network;
 
 namespace PLATEAU.Test.Dataset
@@ -35,7 +36,28 @@ namespace PLATEAU.Test.Dataset
             Assert.AreEqual("53392642", info.GridCode.ToString());
             info.Dispose();
         }
-        
+
+        [TestMethod]
+        public void TestEpsgCode()
+        {
+            string path = "data/udx/bldg/53392642_bldg_6697_op2.gml";
+            var info = GmlFile.Create(path);
+            Assert.AreEqual(6697, info.Epsg);
+            Assert.IsTrue(CoordinateReferenceFactory.IsPolarCoordinateSystem(info.Epsg));
+            info.Dispose();
+        }
+
+
+        [TestMethod]
+        public void TestEpsgCodePlane()
+        {
+            string path = "data/udx/unf/08EE763_unf_10169_sewer_op.gml";
+            var info = GmlFile.Create(path);
+            Assert.AreEqual(10169, info.Epsg);
+            Assert.IsFalse(CoordinateReferenceFactory.IsPolarCoordinateSystem(info.Epsg));
+            info.Dispose();
+        }
+
         [TestMethod]
         public void DirNameToPackage_Returns_Gml_Package()
         {

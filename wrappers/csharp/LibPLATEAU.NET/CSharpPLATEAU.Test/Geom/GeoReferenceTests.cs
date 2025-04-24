@@ -121,5 +121,16 @@ namespace PLATEAU.Test.Geom
             Assert.IsTrue(Math.Abs(lat.Latitude - latitude) < 0.00000001);//およそ1mm相当の誤差以内か
             Assert.IsTrue(Math.Abs(lat.Longitude - longitude) < 0.00000001);//およそ1mm相当の誤差以内か
         }
+
+        [TestMethod]
+        public void Convert_returns_same_values()
+        {
+            using var geoReference = GeoReference.Create(
+                new PlateauVector3d(0, 0, 0), 1.0f, CoordinateSystem.EUN, 5
+            );
+            var xyz = new PlateauVector3d(1, 2, 3);
+            Assert.AreEqual(geoReference.Project(xyz), geoReference.Convert(xyz, true, 6697));
+            Assert.AreEqual(geoReference.ProjectWithoutAxisConvert(xyz), geoReference.Convert(xyz, false, 6697));
+        }
     }
 }
