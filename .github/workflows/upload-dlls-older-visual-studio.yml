@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2019, macos-14, ubuntu-20.04]
+        os: [windows-2019, macos-14, ubuntu-24.04] # UbuntuはUnity LTSの対応バージョンに合わせておきます
         arch: [x86_64]
         include:
           - os: macos-14
@@ -43,7 +43,7 @@ jobs:
         uses: ./.github/actions/upload-dll
         with:
           shell_type: ${{ (runner.os == 'Windows' && 'powershell') || 'bash' }}
-          visual_studio_version: "16 2019"
+          visual_studio_version: "17 2022"
 
   # 2つ目のジョブ。
   # AndroidとiOS用にライブラリをビルド。

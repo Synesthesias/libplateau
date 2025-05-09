@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-14, ubuntu-20.04]
+        os: [windows-2022, macos-14, ubuntu-24.04] # UbuntuはUnity LTSの対応バージョンに合わせておきます
         arch: [x86_64]
         include:
           - os: macos-14
