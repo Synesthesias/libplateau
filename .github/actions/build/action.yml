@@ -89,13 +89,6 @@ runs:
         echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=cl.exe" >> $env:GITHUB_ENV
       shell: ${{ inputs.shell_type }}
 
-      # Linuxで使うコンパイラを明示(g++-9)
-    # - name: Setup Additional Cmake Options in Linux
-    #   if: runner.os == 'Linux'
-    #   run: |
-    #     echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=\"/usr/bin/g++-9\"" >> $GITHUB_ENV
-    #   shell: ${{ inputs.shell_type }}
-
     - name: Configure CMake for Unity
       run: >
         cmake
