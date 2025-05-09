@@ -131,7 +131,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 ### Linuxでの手動ビルド
 利用する Linux は、Unityの対応OSに合わせて Ubuntu 24.04 とします。
 #### C++のビルド
-* Ubuntu 20 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
+* Ubuntuでgit lfsを使うために`sudo apt install git-lfs` します。
 * OpenGL API が必要なので、なければ以下のコマンドでインストールします。
 ```
 sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
