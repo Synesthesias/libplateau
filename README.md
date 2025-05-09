@@ -129,7 +129,7 @@ fbx_sdk は Autodesk社が公開するSDKです。これは自由に製品に組
 * C#ユニットテストも合わせて実行可能です。
 
 ### Linuxでの手動ビルド
-利用する Linux は、Unityの対応OSに合わせて Ubuntu 20.04 とします。
+利用する Linux は、Unityの対応OSに合わせて Ubuntu 24.04 とします。
 #### C++のビルド
 * Ubuntu 20 はデフォルトでは git lfs がないので、`sudo apt install git-lfs` します。
 * OpenGL API が必要なので、なければ以下のコマンドでインストールします。
