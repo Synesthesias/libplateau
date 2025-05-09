@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-14, ubuntu-20.04]
+        os: [windows-2022, macos-14, ubuntu-24.04] # UbuntuはUnity LTSの対応バージョンに合わせておきます
         arch: [x86_64]
         include:
           - os: macos-14
@@ -101,7 +101,7 @@ jobs:
           mkdir -p ~/a/plateau-plugins/dynamic-libs/iOS/plateau.framework
           cp ~/a/libplateau-windows/plateau.dll ~/a/plateau-plugins/dynamic-libs/Windows/x86_64
           cp ~/a/libplateau-windows/CSharpPLATEAU.dll ~/a/plateau-plugins/dynamic-libs/ManagedDLL
-          cp ~/a/libplateau-ubuntu-20.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
+          cp ~/a/libplateau-ubuntu-24.04/*.so ~/a/plateau-plugins/dynamic-libs/Linux/x86_64
           cp ~/a/libplateau-macos-14-x86_64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/x86_64
           cp ~/a/libplateau-macos-14-arm64/*.dylib ~/a/plateau-plugins/dynamic-libs/MacOS/arm64
           cp ~/a/libplateau-android-dll/libplateau.so ~/a/plateau-plugins/dynamic-libs/Android
@@ -114,7 +114,7 @@ jobs:
           mkdir -p ~/a/plateau-plugins/static-libs/macos/x86_64
           mkdir -p ~/a/plateau-plugins/static-libs/macos/arm64
           cp ~/a/libplateau-windows/*.lib ~/a/plateau-plugins/static-libs/windows
-          cp ~/a/libplateau-ubuntu-20.04/*.a ~/a/plateau-plugins/static-libs/linux
+          cp ~/a/libplateau-ubuntu-24.04/*.a ~/a/plateau-plugins/static-libs/linux
           cp ~/a/libplateau-macos-14-x86_64/*.a ~/a/plateau-plugins/static-libs/macos/x86_64
           cp ~/a/libplateau-macos-14-arm64/*.a ~/a/plateau-plugins/static-libs/macos/arm64
 

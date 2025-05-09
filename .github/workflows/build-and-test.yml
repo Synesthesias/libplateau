@@ -24,7 +24,7 @@ jobs:
             arch: x86_64
           - os: macos-14
             arch: arm64
-          - os: ubuntu-20.04
+          - os: ubuntu-24.04 # Unity LTSの対応バージョンに合わせておきます
             arch: x86_64
 
     steps:
