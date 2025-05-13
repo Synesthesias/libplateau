@@ -44,34 +44,6 @@ namespace plateau::meshWriter {
             ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
             ios->SetBoolProp(EXP_ASCIIFBX, options.file_format == FbxFileFormat::ASCII);
             const auto fbx_scene = FbxScene::Create(manager_, "");
-            FbxAxisSystem axis_system;
-            switch (options.coordinate_system) {
-            case geometry::CoordinateSystem::ENU:
-                axis_system = FbxAxisSystem(
-                    FbxAxisSystem::EUpVector::eZAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
-                    FbxAxisSystem::eRightHanded);
-                break;
-            case geometry::CoordinateSystem::ESU:
-                axis_system = FbxAxisSystem(
-                    FbxAxisSystem::EUpVector::eZAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
-                    FbxAxisSystem::eLeftHanded);
-                break;
-            case geometry::CoordinateSystem::WUN:
-                axis_system = FbxAxisSystem(
-                    FbxAxisSystem::EUpVector::eYAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
-                    FbxAxisSystem::eRightHanded);
-                break;
-            case geometry::CoordinateSystem::EUN:
-                axis_system = FbxAxisSystem(
-                    FbxAxisSystem::EUpVector::eYAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
-                    FbxAxisSystem::eLeftHanded);
-                break;
-            }
-            axis_system.ConvertScene(fbx_scene);
 
             // create scene info
             FbxDocumentInfo* SceneInfo = FbxDocumentInfo::Create(manager_, "SceneInfo");
