@@ -63,7 +63,7 @@ namespace plateau::meshWriter {
                 axis_system = FbxAxisSystem(
                     FbxAxisSystem::EUpVector::eYAxis,
                     FbxAxisSystem::EFrontVector::eParityOdd,
-                    FbxAxisSystem::eLeftHanded);
+                    FbxAxisSystem::eRightHanded);
                 break;
             case geometry::CoordinateSystem::EUN:
                 axis_system = FbxAxisSystem(
