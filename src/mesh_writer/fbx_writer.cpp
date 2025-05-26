@@ -46,17 +46,19 @@ namespace plateau::meshWriter {
             const auto fbx_scene = FbxScene::Create(manager_, "");
 
             FbxAxisSystem axis_system;
+            // FBXのデファクトは右手座標系です。
+            // 左手座標系ではUnityやUEで正しく読み込めないことがあるため非推奨です。
             switch (options.coordinate_system) {
             case geometry::CoordinateSystem::ENU:
                 axis_system = FbxAxisSystem(
                     FbxAxisSystem::EUpVector::eZAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::EFrontVector::eParityOdd,
                     FbxAxisSystem::eRightHanded);
                 break;
             case geometry::CoordinateSystem::ESU:
                 axis_system = FbxAxisSystem(
                     FbxAxisSystem::EUpVector::eZAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::EFrontVector::eParityOdd,
                     FbxAxisSystem::eLeftHanded);
                 break;
             case geometry::CoordinateSystem::WUN:
@@ -68,7 +70,7 @@ namespace plateau::meshWriter {
             case geometry::CoordinateSystem::EUN:
                 axis_system = FbxAxisSystem(
                     FbxAxisSystem::EUpVector::eYAxis,
-                    FbxAxisSystem::EFrontVector::eParityEven,
+                    FbxAxisSystem::EFrontVector::eParityOdd,
                     FbxAxisSystem::eLeftHanded);
                 break;
             }

@@ -86,7 +86,7 @@ namespace plateau::geometry {
             // WUN → ENU の式は 逆変換 ENU → WUN と同じです。
             return { -vertex.x, vertex.z, vertex.y };
         case CoordinateSystem::ESU:
-            // EUN → ESU の式は 逆変換 ESU → EUN と同じです。
+            // ENU → ESU の式は 逆変換 ESU → ENU と同じです。
             return { vertex.x, -vertex.y, vertex.z };
         case CoordinateSystem::EUN:
             // EUN → ENU の式は 逆変換 ENU → EUN と同じです。
