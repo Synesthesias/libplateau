@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PLATEAU.Geometries;
 using PLATEAU.MeshWriter;
 using PLATEAU.Test.CityGML;
 using PLATEAU.Test.GeometryModel;
@@ -19,7 +20,7 @@ namespace PLATEAU.Test.MeshWriter
             string gmlPath = TestUtil.GetGmlPath(TestUtil.GmlFileCase.Simple);
             string fbxFileName = Path.GetFileNameWithoutExtension(gmlPath) + ".fbx";
             string fbxPath = Path.Combine(testDir, fbxFileName);
-            var option = new FbxWriteOptions(FbxFileFormat.Binary);
+            var option = new FbxWriteOptions(FbxFileFormat.Binary, CoordinateSystem.ENU);
             
             bool isSucceed = FbxWriter.Write(fbxPath, model, option);
             
