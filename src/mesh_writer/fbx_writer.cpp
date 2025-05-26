@@ -52,8 +52,8 @@ namespace plateau::meshWriter {
             case geometry::CoordinateSystem::ENU:
                 axis_system = FbxAxisSystem(
                     FbxAxisSystem::EUpVector::eZAxis,
-                    FbxAxisSystem::EFrontVector::eParityOdd,
-                    FbxAxisSystem::eRightHanded);
+                    FbxAxisSystem::EFrontVector::eParityOdd, // X,Y,ZからUp軸を除いて、残った2軸のうち前者ならParityEven, 後者ならParityOdd
+                    FbxAxisSystem::eRightHanded); // フレミングの法則の要領で中指を折ったとき、親指がX、人差し指がY、中指がZ。左右どちらの手に合うか。
                 break;
             case geometry::CoordinateSystem::ESU:
                 axis_system = FbxAxisSystem(
@@ -74,6 +74,11 @@ namespace plateau::meshWriter {
                     FbxAxisSystem::eLeftHanded);
                 break;
             }
+            // 座標軸の向きをFBXファイルに書き込みます。
+            // これを確認するには、FBXをASCIIフォーマットで出力してテキストエディタで開き、
+            // GlobalSettingsのPropertiesのAxis系プロパティを確認します。
+            // これにより、どの座標軸で書き出したとしてもアプリケーションにFBXをインポートするときに向き補正が働き、
+            // 同じ向きに読み込めるはずです（非推奨の左手座標系は除く）。
             fbx_scene->GetGlobalSettings().SetAxisSystem(axis_system);
 
             // create scene info
