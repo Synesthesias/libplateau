@@ -6,8 +6,6 @@
 - [ ] 自動ビルド・テストが通っていること
 
 ## ✅ マージ前確認項目
-- [ ] 自動ビルド・テストが通っていること
-- [ ] Squash and Mergeが選択されていること
 - [ ] (libcitygmlの変更がある場合)libcitygmlがmasterの最新版になっていること
 <!--
  libcitygmlの変更がある場合、以下の手順でlibcitygmlのPRを先にマージしてからsubmoduleをmasterに更新する。
@@ -26,7 +24,6 @@ git commit -m "Update submodule"
 git push origin {ブランチ名}
 ```
 -->
-
 
 
 <!-- 社内の人向け: 以下の項目は、開発当初のストーリー設計書通りであれば省略可能です。
