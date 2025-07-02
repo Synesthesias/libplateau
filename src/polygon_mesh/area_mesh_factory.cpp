@@ -82,6 +82,49 @@ namespace plateau::polygonMesh {
     using namespace citygml;
 
     GridMergeResult
+        AreaMeshFactory::multiGridMerge(std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options, unsigned lod,
+            const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
+
+		const auto& gmlPath = city_models->empty() ? "" : city_models->front()->getGmlPath();
+        std::shared_ptr <std::vector<const CityObject*>> all_primary_city_objects = std::make_shared<std::vector<const CityObject*>>();
+
+		const auto& _city_models = *city_models;
+		for (const auto& city_model : _city_models) {
+            auto city_objects =
+                city_model->getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
+            
+            all_primary_city_objects->insert(all_primary_city_objects->end(),
+                city_objects.begin(), city_objects.end());
+		}
+        
+        auto merged_meshes = GridMergeResult();
+
+        // メッシュ生成
+        MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
+
+        // グループ内の各主要地物のループ
+		const auto& all_primary_city_objects_in_model = *all_primary_city_objects;
+        for (const auto& primary_object : all_primary_city_objects_in_model) {
+            if (MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
+            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
+                mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, gmlPath);
+            }
+
+            if (lod >= 2) {
+                // 主要地物の子である各最小地物をメッシュに加えます。
+                auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_object);
+                mesh_factory.addPolygonsInAtomicCityObjects(*primary_object, atomic_objects, lod, gmlPath);
+            }
+            mesh_factory.incrementPrimaryIndex();
+        }
+        mesh_factory.optimizeMesh();
+        merged_meshes.emplace(0, mesh_factory.releaseMesh());
+        
+        return merged_meshes;
+    }
+
+
+    GridMergeResult
         AreaMeshFactory::gridMerge(const CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
                               const geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
         // city_model に含まれる 主要地物 をグリッドに分類します。

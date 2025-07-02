@@ -24,5 +24,9 @@ namespace plateau::polygonMesh {
         static GridMergeResult
         gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
                   const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
+
+        static GridMergeResult
+            multiGridMerge(std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options, unsigned lod,
+                const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
     };
 }
