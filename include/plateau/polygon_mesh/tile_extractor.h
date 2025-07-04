@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <libplateau_api.h>
@@ -10,22 +10,21 @@
 
 namespace plateau::polygonMesh {
 
+    using CityModelVector = std::shared_ptr<std::vector<std::weak_ptr<const citygml::CityModel>>>;
+
     /**
-     * CityModelからModel(メッシュ等)を構築します。
-     * このクラスの利用者である各ゲームエンジンは、このクラスから受け取った Model を元に
-     * ゲームオブジェクト、メッシュ、テクスチャを生成することが期待されます。
-     *
-     * 詳しくは Model クラスのコメントを参照してください。
+	 * TileExtractorは、複数のCityModelからメッシュを抽出し、指定された範囲(extents)に基づいて結合メッシュを抽出するクラスです。
+     * 
      */
     class LIBPLATEAU_EXPORT TileExtractor : MeshExtractor {
     public:
 
         static std::shared_ptr<Model> extractInExtents(
-            std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options,
+            CityModelVector city_models, const MeshExtractOptions& options,
             const std::vector<plateau::geometry::Extent>& extents);
 
         static void extractInExtents(Model& out_model,
-            std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options,
+            CityModelVector city_models, const MeshExtractOptions& options,
             const std::vector<plateau::geometry::Extent>& extents);
     };
 }

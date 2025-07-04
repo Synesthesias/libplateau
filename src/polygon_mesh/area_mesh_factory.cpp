@@ -82,16 +82,19 @@ namespace plateau::polygonMesh {
     using namespace citygml;
 
     GridMergeResult
-        AreaMeshFactory::multiGridMerge(std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options, unsigned lod,
+        AreaMeshFactory::multiGridMerge(CityModelVector city_models, const MeshExtractOptions& options, unsigned lod,
             const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
 
-		const auto& gmlPath = city_models->empty() ? "" : city_models->front()->getGmlPath();
+		const auto& gmlPath = city_models->empty() || city_models->front().expired() ? "" : city_models->front().lock()->getGmlPath();
         std::shared_ptr <std::vector<const CityObject*>> all_primary_city_objects = std::make_shared<std::vector<const CityObject*>>();
 
 		const auto& _city_models = *city_models;
 		for (const auto& city_model : _city_models) {
+
+			if (city_model.expired()) continue; // 参照が切れている場合はスキップ
+
             auto city_objects =
-                city_model->getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
+                city_model.lock()->getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
             
             all_primary_city_objects->insert(all_primary_city_objects->end(),
                 city_objects.begin(), city_objects.end());

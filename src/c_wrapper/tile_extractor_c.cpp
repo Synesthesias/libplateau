@@ -1,4 +1,4 @@
-#include "libplateau_c.h"
+﻿#include "libplateau_c.h"
 #include "city_model_c.h"
 #include <plateau/polygon_mesh/tile_extractor.h>
 #include <plateau/geometry/geo_coordinate.h>
@@ -14,21 +14,21 @@ extern "C"{
         const MeshExtractOptions options,
         const std::vector<plateau::geometry::Extent>* extents,
         Model* const out_model) {
-        //API_TRY{
+        API_TRY{
 
-        std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models = std::make_shared<std::vector<std::shared_ptr<const citygml::CityModel>>>();
-        for (size_t i = 0; i < city_model_size; ++i) {
+            CityModelVector city_models = std::make_shared<std::vector<std::weak_ptr<const citygml::CityModel>>>();
+            for (size_t i = 0; i < city_model_size; ++i) {
 
-			const auto& ptr = city_model_handles[i]->getCityModelPtr(); // ここで city_model_handles[i] のポインタを取得
-            city_models->push_back(ptr);
+			    const auto& ptr = city_model_handles[i]->getCityModelPtr(); // ここで city_model_handles[i] のポインタを取得
+                std::weak_ptr<const citygml::CityModel> weak = ptr;
+                city_models->push_back(weak);
+            }
+
+            TileExtractor::extractInExtents(*out_model, city_models, options, *extents);
+            return APIResult::Success;
+
         }
-
-        TileExtractor::extractInExtents(*out_model, city_models, options, *extents);
-        return APIResult::Success;
-
-
-        //}
-        //API_CATCH;
-        //return APIResult::ErrorUnknown;
+        API_CATCH;
+        return APIResult::ErrorUnknown;
     }
 }

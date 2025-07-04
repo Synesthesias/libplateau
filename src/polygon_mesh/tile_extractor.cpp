@@ -1,4 +1,4 @@
-#include "plateau/polygon_mesh/tile_extractor.h"
+ï»¿#include "plateau/polygon_mesh/tile_extractor.h"
 #include <plateau/polygon_mesh/primary_city_object_types.h>
 #include "citygml/texture.h"
 #include "citygml/cityobject.h"
@@ -17,7 +17,7 @@ namespace {
     using namespace citygml;
     namespace fs = std::filesystem;
 
-    /// extents‚Ì•‚Æ‰œs‚«‚Ì’·‚³‚ğ multiplier ”{‚É‚µ‚Ü‚·B
+    /// extentsã®å¹…ã¨å¥¥è¡Œãã®é•·ã•ã‚’ multiplier å€ã«ã—ã¾ã™ã€‚
     std::vector<geometry::Extent> extendExtents(const std::vector<geometry::Extent>& src_extents, float multiplier) {
         auto result = std::vector<geometry::Extent>();
 
@@ -33,7 +33,7 @@ namespace {
     }
 
     void extractInner(
-        Model& out_model, std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models,
+        Model& out_model, CityModelVector city_models,
         const MeshExtractOptions& options,
         const std::vector<geometry::Extent>& extents_before_adjust) {
 
@@ -41,23 +41,22 @@ namespace {
 
         const auto geo_reference = geometry::GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
 
-        // ”ÍˆÍ‚Ì‹«ŠEã‚É‚ ‚é’n•¨‚ğæ‚è“¦‚³‚È‚¢‚æ‚¤‚ÉA”ÍˆÍ‚ğ­‚µL‚°‚Ü‚·B
+        // ç¯„å›²ã®å¢ƒç•Œä¸Šã«ã‚ã‚‹åœ°ç‰©ã‚’å–ã‚Šé€ƒã•ãªã„ã‚ˆã†ã«ã€ç¯„å›²ã‚’å°‘ã—åºƒã’ã¾ã™ã€‚
         auto extents = extendExtents(extents_before_adjust, 1.2f);
 
-        // rootNode ‚Æ‚µ‚Ä LODƒm[ƒh ‚ğì‚è‚Ü‚·B
+        // rootNode ã¨ã—ã¦ LODãƒãƒ¼ãƒ‰ ã‚’ä½œã‚Šã¾ã™ã€‚
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
             auto lod_node = Node("LOD" + std::to_string(lod));
 
-            // LODƒm[ƒh‚Ì‰º‚ÉƒƒbƒVƒ…”z’u—pƒm[ƒh‚ğì‚è‚Ü‚·B
+            // LODãƒãƒ¼ãƒ‰ã®ä¸‹ã«ãƒ¡ãƒƒã‚·ãƒ¥é…ç½®ç”¨ãƒãƒ¼ãƒ‰ã‚’ä½œã‚Šã¾ã™ã€‚
             {
-                // Ÿ‚Ì‚æ‚¤‚ÈŠK‘w\‘¢‚ğì‚è‚Ü‚·:
-                // model -> LODƒm[ƒh -> ƒOƒ‹[ƒv‚²‚Æ‚Ìƒm[ƒh
+                // æ¬¡ã®ã‚ˆã†ãªéšå±¤æ§‹é€ ã‚’ä½œã‚Šã¾ã™:
+                // model -> LODãƒãƒ¼ãƒ‰ -> ã‚°ãƒ«ãƒ¼ãƒ—ã”ã¨ã®ãƒãƒ¼ãƒ‰
 
-                // 3D“ssƒ‚ƒfƒ‹‚ğƒOƒ‹[ƒv‚É•ª‚¯AƒOƒ‹[ƒv‚²‚Æ‚ÉƒƒbƒVƒ…‚ğƒ}[ƒW‚µ‚Ü‚·B
-                //auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
+                // 3Déƒ½å¸‚ãƒ¢ãƒ‡ãƒ«ã‚’ã‚°ãƒ«ãƒ¼ãƒ—ã«åˆ†ã‘ã€ã‚°ãƒ«ãƒ¼ãƒ—ã”ã¨ã«ãƒ¡ãƒƒã‚·ãƒ¥ã‚’ãƒãƒ¼ã‚¸ã—ã¾ã™ã€‚
 				auto result = AreaMeshFactory::multiGridMerge(city_models, options, lod, geo_reference, extents);
 
-                // ƒOƒ‹[ƒv‚²‚Æ‚Ìƒm[ƒh‚ğ’Ç‰Á‚µ‚Ü‚·B
+                // ã‚°ãƒ«ãƒ¼ãƒ—ã”ã¨ã®ãƒãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ã¾ã™ã€‚
                 for (auto& [group_id, mesh] : result) {
                     auto node = Node("group" + std::to_string(group_id), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
@@ -68,15 +67,15 @@ namespace {
         out_model.eraseEmptyNodes();
         out_model.assignNodeHierarchy();
 
-        // ƒeƒNƒXƒ`ƒƒ‚ğŒ‹‡‚µ‚Ü‚·B
+        // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’çµåˆã—ã¾ã™ã€‚
         if (options.enable_texture_packing) {
             TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
             packer.process(out_model);
         }
 
-        const auto& gmlPath = city_models->empty() ? "" : city_models->front()->getGmlPath();
+        const auto& gmlPath = city_models->empty() || city_models->front().expired() ? "" : city_models->front().lock()->getGmlPath();
 
-        // Œ»İ‚Ì“ssƒ‚ƒfƒ‹‚ª’nŒ`‚Å‚ ‚é‚È‚çA‰q¯Ê^‚Ü‚½‚Í’n}—p‚ÌUV‚ğ•t—^‚µA’n}ƒ^ƒCƒ‹‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ü‚·B
+        // ç¾åœ¨ã®éƒ½å¸‚ãƒ¢ãƒ‡ãƒ«ãŒåœ°å½¢ã§ã‚ã‚‹ãªã‚‰ã€è¡›æ˜Ÿå†™çœŸã¾ãŸã¯åœ°å›³ç”¨ã®UVã‚’ä»˜ä¸ã—ã€åœ°å›³ã‚¿ã‚¤ãƒ«ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ã€‚
         auto package = GmlFile(gmlPath).getPackage();
         if (package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
             const auto gml_path = fs::u8path(gmlPath);
@@ -90,7 +89,7 @@ namespace {
 namespace plateau::polygonMesh {
 
     std::shared_ptr<Model> TileExtractor::extractInExtents(
-        std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options,
+        CityModelVector city_models, const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
         auto result = std::make_shared<Model>();
         extractInExtents(*result, city_models, options, extents);
@@ -99,7 +98,7 @@ namespace plateau::polygonMesh {
 
     void TileExtractor::extractInExtents(
         Model& out_model,
-        std::shared_ptr<std::vector<std::shared_ptr<const citygml::CityModel>>> city_models, const MeshExtractOptions& options,
+        CityModelVector city_models, const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
         extractInner(out_model, city_models, options, extents);
     }
