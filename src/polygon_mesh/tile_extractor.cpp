@@ -54,7 +54,7 @@ namespace {
                 // model -> LODノード -> グループごとのノード
 
                 // 3D都市モデルをグループに分け、グループごとにメッシュをマージします。
-				auto result = AreaMeshFactory::multiGridMerge(city_models, options, lod, geo_reference, extents);
+				auto result = AreaMeshFactory::combine(city_models, options, lod, geo_reference, extents);
 
                 // グループごとのノードを追加します。
                 for (auto& [group_id, mesh] : result) {

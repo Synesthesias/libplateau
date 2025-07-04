@@ -2,7 +2,6 @@
 
 #include "citygml/citymodel.h"
 #include "plateau/geometry/geo_reference.h"
-//#include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/polygon_mesh/tile_extractor.h>
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
@@ -26,8 +25,11 @@ namespace plateau::polygonMesh {
         gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
                   const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
 
+        /**
+         * 複数のcity_model内のメッシュを結合して返します。
+         */
         static GridMergeResult
-        multiGridMerge(CityModelVector city_models, const MeshExtractOptions& options, unsigned lod,
+        combine(CityModelVector city_models, const MeshExtractOptions& options, unsigned lod,
             const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
     };
 }
