@@ -82,26 +82,49 @@ namespace {
         // 範囲の境界上にある地物を取り逃さないように、範囲を少し広げます。
         auto extents = MeshExtractor::extendExtents(extents_before_adjust, 1.2f);
 
+		std::map<unsigned, Node*> grid_nodes; // グリッドIDとグリッドノードのマップ
+
         // rootNode として LODノード を作ります。
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
-            auto lod_node = Node("LOD" + std::to_string(lod));
+                       
+            // 3D都市モデルをグリッドに分け、グリッドごとにメッシュをマージします。
+            auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
 
-            // LODノードの下にメッシュ配置用ノードを作ります。
+            if (result.size() > 1) {
+                // 次のような階層構造を作ります:
+                // model -> GRIDノード -> LODノード -> ノード
+                for (auto& [grid_id, mesh] : result) {
+
+					if (grid_nodes.find(grid_id) == grid_nodes.end()) {
+						// 存在しない場合 新しいグリッドノードとLODノードを作成
+                        auto grid_node = Node("GRID_" + std::to_string(grid_id));
+                        auto& new_grid_node = out_model.addNode(std::move(grid_node));
+						grid_nodes[grid_id] = &new_grid_node; // 新しいグリッドノードを保存
+					}
+
+                    auto outer_it = grid_nodes.find(grid_id);
+                    if (outer_it != grid_nodes.end()) {
+                        Node* grid_node = outer_it->second;
+                        auto node = Node("LOD" + std::to_string(lod), std::move(mesh));
+                        grid_node->addChildNode(std::move(node));
+                    }
+                }
+            }
+            else 
             {
                 // 次のような階層構造を作ります:
                 // model -> LODノード -> ノード
-
-                // 3D都市モデルをグリッドに分け、グリッドごとにメッシュをマージします。
-                auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
-
-                // グループごとのノードを追加します。
-                for (auto& [group_id, mesh] : result) {
-                    auto node = Node("group" + std::to_string(group_id), std::move(mesh));
+                auto lod_node = Node("LOD" + std::to_string(lod));
+                for (auto& [grid_id, mesh] : result) {
+                    auto node = Node("group" + std::to_string(grid_id), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
                 }
-            }
-            out_model.addNode(std::move(lod_node));
+                out_model.addNode(std::move(lod_node));
+            } 
+            
         }
+        grid_nodes.clear(); // グリッドノードのマップをクリア
+
         out_model.eraseEmptyNodes();
         out_model.assignNodeHierarchy();
 

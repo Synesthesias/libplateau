@@ -127,7 +127,7 @@ namespace plateau::polygonMesh {
 				}
 
                 // グループに追加します。
-                unsigned group_id = grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;
+                unsigned group_id = options.highest_lod_only ? grid_id : grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj; // highest_lod_only オプションが有効な場合 Grid id をそのまま使用
                 if (group_id_to_primary_objects_map.find(group_id) == group_id_to_primary_objects_map.end())
                     group_id_to_primary_objects_map[group_id] = std::list<const CityObject*>();
 
@@ -138,12 +138,8 @@ namespace plateau::polygonMesh {
         // グループごとにメッシュを結合します。
         auto merged_meshes = GridMergeResult();
 
-		// 最も高いLODのみを対象とする場合、グリッドIDとグループIDのマッピングを切り替えます。
-        auto id_to_primary_objects_map = options.highest_lod_only ?
-            grid_id_to_primary_objects_map : group_id_to_primary_objects_map;
-
         // グループごとのループ
-        for (const auto& [id, primary_objects] : id_to_primary_objects_map) {
+        for (const auto& [id, primary_objects] : group_id_to_primary_objects_map) {
             // 1グループのメッシュ生成
             MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
 
