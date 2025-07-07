@@ -117,6 +117,15 @@ namespace plateau::polygonMesh {
                         break;
                     }
                 }
+
+				if (options.highest_lod_only) {
+					// highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
+					if (lod != max_lod_in_obj) {
+						// 最大LOD以外はスキップします。
+						continue;
+					}
+				}
+
                 // グループに追加します。
                 unsigned group_id = grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;
                 if (group_id_to_primary_objects_map.find(group_id) == group_id_to_primary_objects_map.end())
@@ -128,8 +137,13 @@ namespace plateau::polygonMesh {
 
         // グループごとにメッシュを結合します。
         auto merged_meshes = GridMergeResult();
+
+		// 最も高いLODのみを対象とする場合、グリッドIDとグループIDのマッピングを切り替えます。
+        auto id_to_primary_objects_map = options.highest_lod_only ?
+            grid_id_to_primary_objects_map : group_id_to_primary_objects_map;
+
         // グループごとのループ
-        for (const auto& [group_id, primary_objects] : group_id_to_primary_objects_map) {
+        for (const auto& [id, primary_objects] : id_to_primary_objects_map) {
             // 1グループのメッシュ生成
             MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
 
@@ -148,7 +162,7 @@ namespace plateau::polygonMesh {
                 mesh_factory.incrementPrimaryIndex();
             }
             mesh_factory.optimizeMesh();
-            merged_meshes.emplace(group_id, mesh_factory.releaseMesh());
+            merged_meshes.emplace(id, mesh_factory.releaseMesh());
         }
         return merged_meshes;
     }
@@ -181,18 +195,21 @@ namespace plateau::polygonMesh {
         const auto& all_primary_city_objects_in_model = *all_primary_city_objects;
         for (const auto& primary_object : all_primary_city_objects_in_model) {
 
-            unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
-            for (unsigned target_lod = lod + 1; target_lod <= PolygonMeshUtils::max_lod_in_specification_; ++target_lod) {
-                bool target_lod_exists =
-                    PolygonMeshUtils::findFirstPolygon(primary_object, target_lod) != nullptr;
-                if (!target_lod_exists) {
-                    max_lod_in_obj = target_lod - 1;
-                    break;
+			if (options.highest_lod_only) {
+				// highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
+                unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
+                for (unsigned target_lod = lod + 1; target_lod <= PolygonMeshUtils::max_lod_in_specification_; ++target_lod) {
+                    bool target_lod_exists =
+                        PolygonMeshUtils::findFirstPolygon(primary_object, target_lod) != nullptr;
+                    if (!target_lod_exists) {
+                        max_lod_in_obj = target_lod - 1;
+                        break;
+                    }
                 }
-            }
-			if (lod != max_lod_in_obj) {
-				// 最大LOD以外はスキップします。
-				continue;
+                if (lod != max_lod_in_obj) {
+                    // 最大LOD以外はスキップします。
+                    continue;
+                }
 			}
 
             if (MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
