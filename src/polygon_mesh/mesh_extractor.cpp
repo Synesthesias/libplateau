@@ -59,8 +59,8 @@ namespace {
                 // 3D都市モデルをグループに分け、グループごとにメッシュをマージします。
                 auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
                 // グループごとのノードを追加します。
-                for (auto& [group_id, mesh] : result) {
-                    auto node = Node("group" + std::to_string(group_id), std::move(mesh));
+                for (auto& [group_grid_id, mesh] : result) {
+                    auto node = Node("group" + std::to_string(group_grid_id.first), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
                 }
             }

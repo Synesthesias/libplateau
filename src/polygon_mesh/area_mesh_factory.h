@@ -8,7 +8,7 @@
 
 namespace plateau::polygonMesh {
     /// グループIDと、その結合後Meshのmapです。
-    using GridMergeResult = std::map<unsigned, std::unique_ptr<Mesh>>;
+    using GridMergeResult = std::map<std::pair<unsigned, unsigned>, std::unique_ptr<Mesh>>;
 
     /**
      * cityModel をグリッド状に分割し、各地物オブジェクトをグリッドに分類します。

@@ -13,7 +13,7 @@ namespace {
     * グリッド番号と、そのグリッドに属する CityObject のリストを対応付ける辞書です。
     */
     using GridIDToObjectsMap = std::map<unsigned, std::list<const citygml::CityObject*>>;
-    using GroupIDToObjectsMap = GridIDToObjectsMap;
+    using GroupGridIDToObjectsMap = std::map<std::pair<unsigned, unsigned>, std::list<const citygml::CityObject*>>;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
         if (!options.exclude_city_object_outside_extent)
@@ -104,7 +104,7 @@ namespace plateau::polygonMesh {
         // 仕様上、あるオブジェクトのLOD i が存在すれば、同じオブジェクトの lod 0 to i-1 がすべて存在します。したがって、各オブジェクトは必ず上記グループのどれか1つに該当するはずです。
         // そのようにグループ分けする利点は、
         // 「高いLODを表示したが、低いLODにしか対応していない箇所が穴になってしまう」という状況で、穴をちょうど埋める範囲の低LODグループが存在することです。
-        auto group_id_to_primary_objects_map = GroupIDToObjectsMap();
+        auto group_id_to_primary_objects_map = GroupGridIDToObjectsMap();
         for (const auto& [grid_id, primary_objects_in_grid] : grid_id_to_primary_objects_map) {
             for (const auto& primary_object : primary_objects_in_grid) {
                 // この CityObject について、最大でどのLODまで存在するか確認します。
@@ -127,11 +127,12 @@ namespace plateau::polygonMesh {
 				}
 
                 // グループに追加します。
-                unsigned group_id = options.highest_lod_only ? grid_id : grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj; // highest_lod_only オプションが有効な場合 Grid id をそのまま使用
-                if (group_id_to_primary_objects_map.find(group_id) == group_id_to_primary_objects_map.end())
-                    group_id_to_primary_objects_map[group_id] = std::list<const CityObject*>();
+                unsigned group_id = grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;
+				const auto group_grid_id = std::make_pair(group_id, grid_id);
+                if (group_id_to_primary_objects_map.find(group_grid_id) == group_id_to_primary_objects_map.end())
+                    group_id_to_primary_objects_map[group_grid_id] = std::list<const CityObject*>();
 
-                group_id_to_primary_objects_map.at(group_id).push_back(primary_object);
+                group_id_to_primary_objects_map.at(group_grid_id).push_back(primary_object);
             }
         }
 
@@ -221,7 +222,7 @@ namespace plateau::polygonMesh {
             mesh_factory.incrementPrimaryIndex();
         }
         mesh_factory.optimizeMesh();
-        merged_meshes.emplace(0, mesh_factory.releaseMesh());
+        merged_meshes.emplace(std::make_pair(0,0), mesh_factory.releaseMesh());
 
         return merged_meshes;
     }
