@@ -82,9 +82,6 @@ namespace {
         // 範囲の境界上にある地物を取り逃さないように、範囲を少し広げます。
         auto extents = MeshExtractor::extendExtents(extents_before_adjust, 1.2f);
 
-		std::map<unsigned, Node*> grid_nodes; // グリッドIDとグリッドノードのマップ
-
-        // rootNode として LODノード を作ります。
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
                        
             // 3D都市モデルをグリッドに分け、グリッドごとにメッシュをマージします。
@@ -95,18 +92,33 @@ namespace {
                 // model -> GRIDノード -> LODノード -> ノード
                 for (auto& [grid_id, mesh] : result) {
 
-					if (grid_nodes.find(grid_id) == grid_nodes.end()) {
-						// 存在しない場合 新しいグリッドノードとLODノードを作成
-                        auto grid_node = Node("GRID_" + std::to_string(grid_id));
-                        auto& new_grid_node = out_model.addNode(std::move(grid_node));
-						grid_nodes[grid_id] = &new_grid_node; // 新しいグリッドノードを保存
-					}
+					const auto& grid_name = "GRID_" + std::to_string(grid_id);
+                    const auto& lod_name = "LOD" + std::to_string(lod);
 
-                    auto outer_it = grid_nodes.find(grid_id);
-                    if (outer_it != grid_nodes.end()) {
-                        Node* grid_node = outer_it->second;
-                        auto node = Node("LOD" + std::to_string(lod), std::move(mesh));
-                        grid_node->addChildNode(std::move(node));
+                    const auto grid_index = out_model.getRootNodeIndexByName(grid_name);	
+                    auto node = Node("LOD" + std::to_string(lod), std::move(mesh));
+
+					if (grid_index == -1) {
+						// 存在しない場合 新しいグリッドノードとLODノードを作成
+						auto grid_node = Node(grid_name);
+						auto& new_grid_node = out_model.addNode(std::move(grid_node));			
+                        auto lod_node = Node(lod_name);
+                        lod_node.addChildNode(std::move(node));
+                        new_grid_node.addChildNode(std::move(lod_node));
+                    }
+                    else {
+						auto& grid_node = out_model.getRootNodeAt(grid_index);  
+                        const auto lod_index = grid_node.getChildIndexByName(lod_name);
+						if (lod_index == -1) {
+							// LODノードが存在しない場合、新しいLODノードを作成
+							auto lod_node = Node(lod_name);
+							lod_node.addChildNode(std::move(node));
+							grid_node.addChildNode(std::move(lod_node));
+						}
+						else {
+							// 既存のLODノードにノードを追加
+							grid_node.getChildAt(lod_index).addChildNode(std::move(node));
+						}
                     }
                 }
             }
@@ -123,7 +135,6 @@ namespace {
             } 
             
         }
-        grid_nodes.clear(); // グリッドノードのマップをクリア
 
         out_model.eraseEmptyNodes();
         out_model.assignNodeHierarchy();
