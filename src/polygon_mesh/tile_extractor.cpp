@@ -92,7 +92,7 @@ namespace {
                 // model -> GRIDノード -> LODノード -> ノード
                 for (auto& [group_grid_id, mesh] : result) {
 
-					const auto& grid_name = "0" + std::to_string(group_grid_id.second);
+					const auto& grid_name = "GRID" + std::to_string(group_grid_id.second + 1); // 1,2,3,4
                     const auto& lod_name = "LOD" + std::to_string(lod);
                     auto node = Node("group" + std::to_string(group_grid_id.first), std::move(mesh));
 
