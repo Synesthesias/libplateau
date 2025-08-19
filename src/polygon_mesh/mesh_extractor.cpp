@@ -60,8 +60,7 @@ namespace {
                 auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
                 // グループごとのノードを追加します。
                 for (auto& [group_grid_id, mesh] : result) {
-                    const auto & [group_id, grid_id] = group_grid_id;
-                    auto node = Node("group" + std::to_string(group_id) + "_grid" + std::to_string(grid_id), std::move(mesh));
+                    auto node = Node("group" + std::to_string(group_grid_id.first), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
                 }
             }
