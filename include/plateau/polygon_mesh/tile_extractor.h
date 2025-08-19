@@ -16,7 +16,7 @@ namespace plateau::polygonMesh {
 	 * TileExtractorは、複数のCityModelからメッシュを抽出し、指定された範囲(extents)に基づいて結合メッシュを抽出するクラスです。
      * 
      */
-    class LIBPLATEAU_EXPORT TileExtractor : MeshExtractor {
+    class LIBPLATEAU_EXPORT TileExtractor : public MeshExtractor {
     public:
 
         /**

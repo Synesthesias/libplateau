@@ -58,7 +58,7 @@ namespace {
             packer.process(out_model);
         }
 
-        const auto& gmlPath = city_models->empty() || city_models->front().expired() ? "" : city_models->front().lock()->getGmlPath();
+        const auto& gmlPath = (!city_models || city_models->empty() || city_models->front().expired()) ? "" : city_models->front().lock()->getGmlPath();
 
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(gmlPath).getPackage();
