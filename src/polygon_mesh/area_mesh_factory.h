@@ -4,10 +4,9 @@
 #include "plateau/geometry/geo_reference.h"
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
+#include <plateau/polygon_mesh/polygon_mesh_types.h>
 
 namespace plateau::polygonMesh {
-    using CityModelVector = std::shared_ptr<std::vector<std::weak_ptr<const citygml::CityModel>>>;
-
     // グループIDとグリッドIDのペアをキーとし、その結合後Meshのmapです。
     // キー: std::pair<group_id, grid_id>
     using GridMergeResult = std::map<std::pair<unsigned, unsigned>, std::unique_ptr<Mesh>>;

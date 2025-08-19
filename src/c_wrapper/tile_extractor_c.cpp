@@ -8,7 +8,7 @@ using namespace plateau::polygonMesh;
 extern "C"{
 
     LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_tile_extractor_extract_with_combine(
-        const CityModelHandle** const city_model_handles,
+        const CityModelHandle* const* city_model_handles,
         const int city_model_size,
         const MeshExtractOptions options,
         const std::vector<plateau::geometry::Extent>* extents,
@@ -62,6 +62,11 @@ extern "C"{
                 return APIResult::ErrorInvalidArgument;
             }
             TileExtractor::extractWithGrid(*out_model, city_model_handle->getCityModel(), options, *extents);
+            auto cityModelPtr = city_model_handle->getCityModelPtr();
+            if (!cityModelPtr) {
+                return APIResult::ErrorInvalidArgument;
+            }
+            TileExtractor::extractWithGrid(*out_model, *cityModelPtr, options, *extents);
             return APIResult::Success;
         }
         API_CATCH;

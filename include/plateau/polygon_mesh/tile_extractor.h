@@ -5,12 +5,11 @@
 #include <memory>
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/geometry/geo_coordinate.h>
+#include <plateau/polygon_mesh/polygon_mesh_types.h>
 #include "citygml/citymodel.h"
 #include "model.h"
 
 namespace plateau::polygonMesh {
-
-    using CityModelVector = std::shared_ptr<std::vector<std::weak_ptr<const citygml::CityModel>>>;
 
     /**
 	 * TileExtractorは、複数のCityModelからメッシュを抽出し、指定された範囲(extents)に基づいて結合メッシュを抽出するクラスです。
