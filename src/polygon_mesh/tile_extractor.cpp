@@ -58,15 +58,16 @@ namespace {
             packer.process(out_model);
         }
 
-        const auto& gmlPath = (!city_models || city_models->empty() || city_models->front().expired()) ? "" : city_models->front().lock()->getGmlPath();
-
+        const auto & gmlPath = (!city_models || city_models->empty() || city_models->front().expired()) ? "" : city_models->front().lock()->getGmlPath();
+        
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
-        auto package = GmlFile(gmlPath).getPackage();
-        if (package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
-            const auto gml_path = fs::u8path(gmlPath);
-            const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
-            MapAttacher().attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
-                geo_reference);
+        if (!gmlPath.empty()) {
+            auto package = GmlFile(gmlPath).getPackage();
+            if (package == PredefinedCityModelPackage::Relief && options.attach_map_tile) {
+                const auto gml_path = fs::u8path(gmlPath);
+                const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
+                MapAttacher().attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level, geo_reference);
+            }
         }
     }
 

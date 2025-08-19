@@ -16,6 +16,16 @@ extern "C"{
         Model* const out_model) {
         API_TRY{
 
+            if (out_model == nullptr || extents == nullptr) {
+                return APIResult::ErrorInvalidArgument;
+            }
+            if (city_model_size < 0) {
+                return APIResult::ErrorInvalidArgument;
+            }
+                if (city_model_size > 0 && city_model_handles == nullptr) {
+                return APIResult::ErrorInvalidArgument;
+            }
+
             CityModelVector city_models = std::make_shared<std::vector<std::weak_ptr<const citygml::CityModel>>>();
             for (int i = 0; i < city_model_size; ++i) {
                 if (!city_model_handles[i]) {
@@ -24,6 +34,11 @@ extern "C"{
                 const auto & ptr = city_model_handles[i]->getCityModelPtr(); // ここで city_model_handles[i] のポインタを取得
                 std::weak_ptr<const citygml::CityModel> weak = ptr;
                 city_models->push_back(weak);
+            }
+
+            if (city_models->empty()) {
+                // 入力に有効な CityModel が含まれていない
+                return APIResult::ErrorInvalidArgument;   
             }
 
             TileExtractor::extractWithCombine(*out_model, city_models, options, *extents);
@@ -40,6 +55,9 @@ extern "C"{
         const std::vector<plateau::geometry::Extent>* extents,
         Model* const out_model) {
         API_TRY{
+            if (out_model == nullptr || extents == nullptr || city_model_handle == nullptr) {
+                return APIResult::ErrorInvalidArgument;
+            }
             TileExtractor::extractWithGrid(*out_model, city_model_handle->getCityModel(), options, *extents);
             return APIResult::Success;
         }
