@@ -165,7 +165,7 @@ namespace {
 namespace plateau::polygonMesh {
 
     std::shared_ptr<Model> TileExtractor::extractWithCombine(
-        CityModelVector city_models, const MeshExtractOptions& options,
+        const CityModelVector& city_models, const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
         auto result = std::make_shared<Model>();
         extractWithCombine(*result, city_models, options, extents);
@@ -174,7 +174,7 @@ namespace plateau::polygonMesh {
 
     void TileExtractor::extractWithCombine(
         Model& out_model,
-        CityModelVector city_models, const MeshExtractOptions& options,
+        const CityModelVector& city_models, const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
         extractWithCombineInner(out_model, city_models, options, extents);
     }

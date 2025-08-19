@@ -5,6 +5,9 @@
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
 #include <plateau/polygon_mesh/polygon_mesh_types.h>
+#include <map>
+#include <memory>
+#include <utility>
 
 namespace plateau::polygonMesh {
     // グループIDとグリッドIDのペアをキーとし、その結合後Meshのmapです。
@@ -30,7 +33,7 @@ namespace plateau::polygonMesh {
          * 複数のcity_model内のメッシュを結合して返します。
          */
         static GridMergeResult
-        combine(CityModelVector city_models, const MeshExtractOptions& options, unsigned lod,
+        combine(const CityModelVector& city_models, const MeshExtractOptions& options, unsigned lod,
             const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
     };
 }

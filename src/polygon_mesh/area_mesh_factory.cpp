@@ -166,7 +166,7 @@ namespace plateau::polygonMesh {
     }
 
     GridMergeResult
-        AreaMeshFactory::combine(CityModelVector city_models, const MeshExtractOptions& options, unsigned lod,
+        AreaMeshFactory::combine(const CityModelVector& city_models, const MeshExtractOptions& options, unsigned lod,
             const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
 
         const auto& gmlPath = city_models->empty() || city_models->front().expired() ? "" : city_models->front().lock()->getGmlPath();

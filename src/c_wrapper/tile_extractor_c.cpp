@@ -61,7 +61,6 @@ extern "C"{
             if (out_model == nullptr || extents == nullptr || city_model_handle == nullptr) {
                 return APIResult::ErrorInvalidArgument;
             }
-            TileExtractor::extractWithGrid(*out_model, city_model_handle->getCityModel(), options, *extents);
             auto cityModelPtr = city_model_handle->getCityModelPtr();
             if (!cityModelPtr) {
                 return APIResult::ErrorInvalidArgument;

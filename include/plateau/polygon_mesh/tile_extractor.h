@@ -1,11 +1,9 @@
 ﻿#pragma once
 
 #include <plateau/polygon_mesh/mesh_extractor.h>
+#include <plateau/polygon_mesh/polygon_mesh_types.h>
 #include <libplateau_api.h>
 #include <memory>
-#include <plateau/polygon_mesh/mesh.h>
-#include <plateau/geometry/geo_coordinate.h>
-#include <plateau/polygon_mesh/polygon_mesh_types.h>
 #include "citygml/citymodel.h"
 #include "model.h"
 
@@ -22,14 +20,14 @@ namespace plateau::polygonMesh {
          * CityModelのリストを結合し範囲内のModelを取り出します。
          */
         static std::shared_ptr<Model> extractWithCombine(
-            CityModelVector city_models, const MeshExtractOptions& options,
+            const CityModelVector& city_models, const MeshExtractOptions& options,
             const std::vector<plateau::geometry::Extent>& extents);
 
         /**
          * CityModelのリストを結合し範囲内のModelを取り出します。
          */
         static void extractWithCombine(Model& out_model,
-            CityModelVector city_models, const MeshExtractOptions& options,
+            const CityModelVector& city_models, const MeshExtractOptions& options,
             const std::vector<plateau::geometry::Extent>& extents);
 
         /**
