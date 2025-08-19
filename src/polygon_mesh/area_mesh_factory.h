@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 namespace plateau::polygonMesh {
     // グループIDとグリッドIDのペアをキーとし、その結合後Meshのmapです。
