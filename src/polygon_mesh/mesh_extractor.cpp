@@ -216,7 +216,7 @@ namespace plateau::polygonMesh {
             type == CityObject::CityObjectsType::COT_CityObjectGroup;
     }
 
-    /// extentsの幅と奥行きの長さを multiplier 倍にします。
+    /// extentsの幅と奥行き(と高さ)の長さを multiplier 倍にします。
     std::vector<plateau::geometry::Extent> MeshExtractor::extendExtents(const std::vector<plateau::geometry::Extent>& src_extents, float multiplier) {
         auto result = std::vector<plateau::geometry::Extent>();
         result.reserve(src_extents.size());
