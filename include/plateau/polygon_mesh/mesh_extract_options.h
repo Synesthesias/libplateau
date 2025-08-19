@@ -119,11 +119,12 @@ namespace plateau::polygonMesh {
          */
         int epsg_code;
 
-		/**
-		 * 最高LODのみを抽出するかどうかを指定します。
-		 * true の場合、最高LODのポリゴンのみを抽出し、他のLODは無視します。
-		 * false の場合、min_lod から max_lod までの範囲のポリゴンを抽出します。
-		 */
+        /**
+        * 最高LODのみを抽出するかどうかを指定します。
+        * true の場合、min_lod..max_lod の範囲のうち最大のLOD（= max_lod）に相当するポリゴンのみを抽出し、
+        * 他のLODは無視します。false の場合、min_lod から max_lod までの範囲のポリゴンを抽出します。
+        * （もし「データセット内で検出された実在の最大LOD」のみを対象にする仕様であれば、その旨に書き換えてください）
+        */
         bool highest_lod_only;
     };
 }

@@ -1,7 +1,6 @@
 ﻿#include "libplateau_c.h"
 #include "city_model_c.h"
 #include <plateau/polygon_mesh/tile_extractor.h>
-#include <plateau/geometry/geo_coordinate.h>
 
 using namespace libplateau;
 using namespace plateau::polygonMesh;
@@ -27,11 +26,15 @@ extern "C"{
             }
 
             CityModelVector city_models = std::make_shared<std::vector<std::weak_ptr<const citygml::CityModel>>>();
+            city_models->reserve(static_cast<size_t>(city_model_size));
             for (int i = 0; i < city_model_size; ++i) {
                 if (!city_model_handles[i]) {
                     continue; // nullptr の場合はスキップ  
                 }
-                const auto & ptr = city_model_handles[i]->getCityModelPtr(); // ここで city_model_handles[i] のポインタを取得
+                auto ptr = city_model_handles[i]->getCityModelPtr(); // 共有所有権を値で受ける
+                if (!ptr) {
+                    continue; // 空の shared_ptr はスキップ 
+                }
                 std::weak_ptr<const citygml::CityModel> weak = ptr;
                 city_models->push_back(weak);
             }

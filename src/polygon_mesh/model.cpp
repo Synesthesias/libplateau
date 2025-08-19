@@ -34,12 +34,12 @@ namespace plateau::polygonMesh {
         return root_nodes_.at(index);
     }
 
-    const int Model::getRootNodeIndexByName(const std::string name) const {
-        int num_children = getRootNodeCount();
-        for (int i = 0; i < num_children; ++i) {
-            auto& child_node = getRootNodeAt(i);
+    const int Model::getRootNodeIndexByName(const std::string & name) const {
+        size_t num_children = getRootNodeCount();
+        for (size_t i = 0; i < num_children; ++i) {
+            const auto & child_node = getRootNodeAt(i);
             if (child_node.getName() == name) {
-                return i;
+                return static_cast<int>(i);
             }
         }
         return -1;

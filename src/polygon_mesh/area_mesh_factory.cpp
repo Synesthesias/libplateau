@@ -3,6 +3,7 @@
 #include <plateau/polygon_mesh/primary_city_object_types.h>
 #include <plateau/polygon_mesh/mesh_factory.h>
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
+#include <plateau/polygon_mesh/tile_extractor.h>
 
 namespace {
     using namespace plateau;
@@ -118,13 +119,13 @@ namespace plateau::polygonMesh {
                     }
                 }
 
-				if (options.highest_lod_only) {
-					// highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
-					if (lod != max_lod_in_obj) {
-						// 最大LOD以外はスキップします。
-						continue;
-					}
-				}
+                if (options.highest_lod_only) {
+                    // highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
+                    if (lod != max_lod_in_obj) {
+                        // 最大LOD以外はスキップします。
+                        continue;
+                    }
+                }
 
                 // グループに追加します。
                 unsigned group_id = grid_id * (PolygonMeshUtils::max_lod_in_specification_ + 1) + max_lod_in_obj;

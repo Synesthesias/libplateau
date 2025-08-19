@@ -60,7 +60,8 @@ namespace {
                 auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
                 // グループごとのノードを追加します。
                 for (auto& [group_grid_id, mesh] : result) {
-                    auto node = Node("group" + std::to_string(group_grid_id.first), std::move(mesh));
+                    const auto & [group_id, grid_id] = group_grid_id;
+                    auto node = Node("group" + std::to_string(group_id) + "_grid" + std::to_string(grid_id), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
                 }
             }
@@ -217,9 +218,9 @@ namespace plateau::polygonMesh {
     }
 
     /// extentsの幅と奥行きの長さを multiplier 倍にします。
-    std::vector<geometry::Extent> MeshExtractor::extendExtents(const std::vector<geometry::Extent>& src_extents, float multiplier) {
-        auto result = std::vector<geometry::Extent>();
-
+    std::vector<plateau::geometry::Extent> MeshExtractor::extendExtents(const std::vector<plateau::geometry::Extent>& src_extents, float multiplier) {
+        auto result = std::vector<plateau::geometry::Extent>();
+        result.reserve(src_extents.size());
         for (const auto& src_extent : src_extents) {
             const auto center = src_extent.centerPoint();
             const auto prev_min = src_extent.min;
