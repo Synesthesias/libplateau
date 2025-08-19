@@ -31,14 +31,14 @@ namespace plateau::polygonMesh {
             const std::vector<plateau::geometry::Extent>& extents);
 
         /**
-         * CityModelから範囲内のModelを取り出します。
+         * CityModelから範囲内のModelを取り出しグリッド分割します。
          */
         static std::shared_ptr<Model> extractWithGrid(
             const citygml::CityModel& city_model, const MeshExtractOptions& options, 
             const std::vector<plateau::geometry::Extent>& extents);
 
         /**
-         * CityModelから範囲内のModelを取り出します。
+         * CityModelから範囲内のModelを取り出しグリッド分割します。
          */
         static void extractWithGrid(Model& out_model,
             const citygml::CityModel& city_model, const MeshExtractOptions& options, 
