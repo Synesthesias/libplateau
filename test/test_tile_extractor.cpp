@@ -21,7 +21,7 @@ namespace plateau::polygonMesh {
 
     TEST_F(TileExtractorTest, extract_with_grid) { // NOLINT
 
-        const std::string gml_path = u8"../data/日本語パステスト/udx/tile_test/52353549_tran_6697_op.gml";
+        const std::string gml_path = u8"../data/日本語パステスト/tile_test/tran/52353549_tran_6697_op.gml";
         const std::shared_ptr<const CityModel> city_model = load(gml_path, params_);
 
         // zoomLevel 11の場合のグリッド分割
@@ -69,8 +69,8 @@ namespace plateau::polygonMesh {
         mesh_extract_options.highest_lod_only = true;
         mesh_extract_options.grid_count_of_side = 1;
 
-        const std::string gml_path1 = u8"../data/日本語パステスト/udx/tile_test/52353548_tran_6697_op.gml";
-        const std::string gml_path2 = u8"../data/日本語パステスト/udx/tile_test/52353549_tran_6697_op.gml";
+        const std::string gml_path1 = u8"../data/日本語パステスト/tile_test/tran/52353548_tran_6697_op.gml";
+        const std::string gml_path2 = u8"../data/日本語パステスト/tile_test/tran/52353549_tran_6697_op.gml";
         const std::shared_ptr<const CityModel> city_model1 = load(gml_path1, params_);
         const std::shared_ptr<const CityModel> city_model2 = load(gml_path2, params_);
 
