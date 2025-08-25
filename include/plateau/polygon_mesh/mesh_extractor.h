@@ -61,5 +61,7 @@ namespace plateau::polygonMesh {
          */
         static bool shouldContainPrimaryMesh(unsigned lod, const citygml::CityObject& primary_obj);
         static bool isTypeToSkip(citygml::CityObject::CityObjectsType type);
+
+        static std::vector<plateau::geometry::Extent> extendExtents(const std::vector<plateau::geometry::Extent>& src_extents, float multiplier);
     };
 }

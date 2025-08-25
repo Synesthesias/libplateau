@@ -121,6 +121,17 @@ namespace plateau::polygonMesh {
         return child_nodes_.at(index);
     }
 
+    int Node::getChildIndexByName(const std::string & name) const {
+        const size_t num_children = getChildCount();
+        for (size_t i = 0; i < num_children; ++i) {
+            const auto & child_node = getChildAt(static_cast<unsigned int>(i));
+            if (child_node.getName() == name) {
+                return static_cast<int>(i);
+            }
+        }
+        return -1;
+    }
+
     void Node::eraseEmptyChildren() {
         const auto new_end = std::remove_if(child_nodes_.begin(), child_nodes_.end(), [](Node& child) {
             child.eraseEmptyChildren();

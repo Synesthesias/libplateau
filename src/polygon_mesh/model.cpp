@@ -34,6 +34,17 @@ namespace plateau::polygonMesh {
         return root_nodes_.at(index);
     }
 
+    const int Model::getRootNodeIndexByName(const std::string & name) const {
+        size_t num_children = getRootNodeCount();
+        for (size_t i = 0; i < num_children; ++i) {
+            const auto & child_node = getRootNodeAt(i);
+            if (child_node.getName() == name) {
+                return static_cast<int>(i);
+            }
+        }
+        return -1;
+    }
+
     void Model::eraseEmptyNodes() {
         auto new_end = std::remove_if(root_nodes_.begin(), root_nodes_.end(), [](Node& node) {
             node.eraseEmptyChildren();

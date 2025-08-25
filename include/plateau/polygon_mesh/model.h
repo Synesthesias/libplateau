@@ -40,6 +40,7 @@ namespace plateau::polygonMesh {
 
         Node& getRootNodeAt(size_t index);
         const Node& getRootNodeAt(size_t index) const;
+        const int getRootNodeIndexByName(const std::string& name) const;
 
         /// 各ノードのペアレント、ルートを設定します。
         void assignNodeHierarchy();

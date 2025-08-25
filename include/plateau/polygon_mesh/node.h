@@ -54,6 +54,8 @@ namespace plateau::polygonMesh {
         Node& getChildAt(unsigned int index);
         const Node& getChildAt(unsigned int index) const;
 
+        int getChildIndexByName(const std::string& name) const; // 見つからない場合は -1 を返す
+
         /// Parent Node設定
         void setParentNode(Node* node);  
         const Node& getParentNode() const; //Model.assignNodeHierarchyを呼ぶことで取得可能になります。

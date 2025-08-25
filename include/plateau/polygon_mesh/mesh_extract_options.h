@@ -38,7 +38,8 @@ namespace plateau::polygonMesh {
                 attach_map_tile(true),
                 map_tile_zoom_level(15),
                 map_tile_url("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"),
-                epsg_code(plateau::geometry::CoordinateReferenceFactory::default_epsg)
+                epsg_code(plateau::geometry::CoordinateReferenceFactory::default_epsg),
+			    highest_lod_only(false)
                 {}
 
     public:
@@ -117,5 +118,13 @@ namespace plateau::polygonMesh {
          * 平面直角座標系は、EPSGコードに応じて基準点を取得します。
          */
         int epsg_code;
+
+        /**
+        * 最高LODのみを抽出するかどうかを指定します。
+        * true の場合、min_lod..max_lod の範囲のうち最大のLOD（= max_lod）に相当するポリゴンのみを抽出し、
+        * 他のLODは無視します。false の場合、min_lod から max_lod までの範囲のポリゴンを抽出します。
+        * （もし「データセット内で検出された実在の最大LOD」のみを対象にする仕様であれば、その旨に書き換えてください）
+        */
+        bool highest_lod_only;
     };
 }

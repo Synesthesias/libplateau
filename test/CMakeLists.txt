@@ -28,6 +28,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/gtest/googletest/include")
 add_executable(plateau_test
     "test_primary_city_object_types.cpp"
     "test_mesh_extractor.cpp"
+    "test_tile_extractor.cpp"
     "test_grid_merger.cpp"
     "test_mesh_code.cpp"
     "test_vector_tile.cpp"

@@ -11,4 +11,5 @@ target_sources(plateau PRIVATE
 	    "city_object_list.cpp"
 		"map_attacher.cpp"
 		"transform.cpp"
+        "tile_extractor.cpp"
 )

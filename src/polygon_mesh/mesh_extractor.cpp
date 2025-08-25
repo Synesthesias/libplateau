@@ -33,21 +33,6 @@ namespace {
         return true;
     }
 
-    /// extentsの幅と奥行きの長さを multiplier 倍にします。
-    std::vector<geometry::Extent> extendExtents(const std::vector<geometry::Extent>& src_extents, float multiplier) {
-        auto result = std::vector<geometry::Extent>();
-
-        for (const auto& src_extent : src_extents) {
-            const auto center = src_extent.centerPoint();
-            const auto prev_min = src_extent.min;
-            const auto prev_max = src_extent.max;
-            auto next_min = center + (prev_min - center) * multiplier;
-            auto next_max = center + (prev_max - center) * multiplier;
-            result.emplace_back(next_min, next_max);
-        }
-        return result;
-    }
-
     void extractInner(
         Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
@@ -58,7 +43,7 @@ namespace {
         const auto geo_reference = geometry::GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
 
         // 範囲の境界上にある地物を取り逃さないように、範囲を少し広げます。
-        auto extents = extendExtents(extents_before_adjust, 1.2f);
+        auto extents = MeshExtractor::extendExtents(extents_before_adjust, 1.2f);
 
         // rootNode として LODノード を作ります。
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
@@ -74,8 +59,8 @@ namespace {
                 // 3D都市モデルをグループに分け、グループごとにメッシュをマージします。
                 auto result = AreaMeshFactory::gridMerge(city_model, options, lod, geo_reference, extents);
                 // グループごとのノードを追加します。
-                for (auto& [group_id, mesh] : result) {
-                    auto node = Node("group" + std::to_string(group_id), std::move(mesh));
+                for (auto& [group_grid_id, mesh] : result) {
+                    auto node = Node("group" + std::to_string(group_grid_id.first), std::move(mesh));
                     lod_node.addChildNode(std::move(node));
                 }
             }
@@ -229,5 +214,20 @@ namespace plateau::polygonMesh {
             type == CityObject::CityObjectsType::COT_Room ||
             // COT_CityObjectGroupも省きます。なぜなら、LOD4の建物でbldg以下の建物パーツと重複するのをなくしたいからです。
             type == CityObject::CityObjectsType::COT_CityObjectGroup;
+    }
+
+    /// extentsの幅と奥行き(と高さ)の長さを multiplier 倍にします。
+    std::vector<plateau::geometry::Extent> MeshExtractor::extendExtents(const std::vector<plateau::geometry::Extent>& src_extents, float multiplier) {
+        auto result = std::vector<plateau::geometry::Extent>();
+        result.reserve(src_extents.size());
+        for (const auto& src_extent : src_extents) {
+            const auto center = src_extent.centerPoint();
+            const auto prev_min = src_extent.min;
+            const auto prev_max = src_extent.max;
+            auto next_min = center + (prev_min - center) * multiplier;
+            auto next_max = center + (prev_max - center) * multiplier;
+            result.emplace_back(next_min, next_max);
+        }
+        return result;
     }
 }

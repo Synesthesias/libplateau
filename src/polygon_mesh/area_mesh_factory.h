@@ -2,13 +2,18 @@
 
 #include "citygml/citymodel.h"
 #include "plateau/geometry/geo_reference.h"
-#include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/polygon_mesh/mesh.h>
 #include <plateau/polygon_mesh/mesh_extract_options.h>
+#include <plateau/polygon_mesh/polygon_mesh_types.h>
+#include <map>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace plateau::polygonMesh {
-    /// グループIDと、その結合後Meshのmapです。
-    using GridMergeResult = std::map<unsigned, std::unique_ptr<Mesh>>;
+    // グループIDとグリッドIDのペアをキーとし、その結合後Meshのmapです。
+    // キー: std::pair<group_id, grid_id>
+    using GridMergeResult = std::map<std::pair<unsigned, unsigned>, std::unique_ptr<Mesh>>;
 
     /**
      * cityModel をグリッド状に分割し、各地物オブジェクトをグリッドに分類します。
@@ -24,5 +29,12 @@ namespace plateau::polygonMesh {
         static GridMergeResult
         gridMerge(const citygml::CityModel& city_model, const MeshExtractOptions& options, unsigned lod,
                   const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
+
+        /**
+         * 複数のcity_model内のメッシュを結合して返します。
+         */
+        static GridMergeResult
+        combine(const CityModelVector& city_models, const MeshExtractOptions& options, unsigned lod,
+            const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents);
     };
 }
