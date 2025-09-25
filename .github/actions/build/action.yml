@@ -100,14 +100,21 @@ runs:
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
         -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
+        -D CMAKE_POLICY_VERSION_MINIMUM=3.5
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
 
-
     - name: Build by CMake for Unity
       run: cmake --build ${{github.workspace}}/out/build/x64-Release-Unity --config ${{env.BUILD_TYPE}}
       shell: ${{ inputs.shell_type }}
+
+    - name: Patch libcitygml CMakeLists.txt
+      run: >
+        FILE="3rdparty/libcitygml/CMakeLists.txt"
+        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
+          sed -i '' 's/CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)/CMAKE_MINIMUM_REQUIRED(VERSION 3.5)/' "$FILE"
+        fi
 
     - name: Configure CMake for Unreal for non-Windows
       if: runner.os != 'Windows'
