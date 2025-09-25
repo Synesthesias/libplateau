@@ -90,7 +90,7 @@ runs:
       shell: ${{ inputs.shell_type }}
 
       # Macで使うコンパイラを明示
-    - name: Setup Additional Cmake Options in Mac
+    - name: Setup Additional Cmake Options in non-Windows
       if: runner.os != 'Windows'
       run: |
         echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5" >> $env:GITHUB_ENV
@@ -107,6 +107,7 @@ runs:
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
         -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
+        -D CMAKE_POLICY_VERSION=3.5
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
