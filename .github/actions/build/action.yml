@@ -89,6 +89,13 @@ runs:
         echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_CXX_COMPILER=cl.exe" >> $env:GITHUB_ENV
       shell: ${{ inputs.shell_type }}
 
+      # Macで使うコンパイラを明示
+    - name: Setup Additional Cmake Options in Mac
+      if: runner.os != 'Windows'
+      run: |
+        echo "ADDITIONAL_CMAKE_OPTIONS=-DCMAKE_POLICY_VERSION_MINIMUM=3.5" >> $env:GITHUB_ENV
+      shell: ${{ inputs.shell_type }}
+
     - name: Configure CMake for Unity
       run: >
         cmake
@@ -100,7 +107,6 @@ runs:
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
         -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
-        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
