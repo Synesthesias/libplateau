@@ -40,8 +40,6 @@ runs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
       shell: ${{ inputs.shell_type }}
 
-
-
     # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
     # 参考: https://github.com/actions/runner-images/issues/9701
     - name: Delete components
@@ -75,7 +73,13 @@ runs:
         $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
       shell: ${{ inputs.shell_type }}
 
-
+    - name: Patch libcitygml CMakeLists.txt
+      run: |
+        FILE="3rdparty/libcitygml/CMakeLists.txt"
+        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
+          sed -i '' 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' "$FILE"
+        fi
+      shell: ${{ inputs.shell_type }}
 
 #     Windowsのみコンパイラパスを通します。
     - name: Add msbuild to PATH
@@ -108,13 +112,6 @@ runs:
     - name: Build by CMake for Unity
       run: cmake --build ${{github.workspace}}/out/build/x64-Release-Unity --config ${{env.BUILD_TYPE}}
       shell: ${{ inputs.shell_type }}
-
-    - name: Patch libcitygml CMakeLists.txt
-      run: >
-        FILE="3rdparty/libcitygml/CMakeLists.txt"
-        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
-          sed -i '' 's/CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)/CMAKE_MINIMUM_REQUIRED(VERSION 3.5)/' "$FILE"
-        fi
 
     - name: Configure CMake for Unreal for non-Windows
       if: runner.os != 'Windows'
