@@ -81,6 +81,14 @@ runs:
         fi
       shell: ${{ inputs.shell_type }}
 
+      - name: Patch glTF-SDK CMakeLists.txt
+      run: |
+        FILE="3rdparty/glTF-SDK/CMakeLists.txt"
+        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
+          sed -i '' 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' "$FILE"
+        fi
+      shell: ${{ inputs.shell_type }}
+
 #     Windowsのみコンパイラパスを通します。
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
