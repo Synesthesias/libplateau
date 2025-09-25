@@ -100,6 +100,7 @@ runs:
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
         -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
