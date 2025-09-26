@@ -42,9 +42,12 @@ runs:
 
       # CMakeのセットアップ
     - name: Setup CMake
-      uses: lukka/get-cmake@latest
+      uses: jwlawson/actions-setup-cmake@v1
       with:
-        cmakeVersion: '3.25.2'  # ← 使用したいバージョンを指定
+        version: '3.25.2'
+
+    - name: Check CMake version
+      run: cmake --version
       shell: ${{ inputs.shell_type }}
 
     # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
