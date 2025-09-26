@@ -56,6 +56,13 @@ runs:
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
 
+    # Mac向けのCMakeのセットアップ
+    - name: Setup CMake on macOS
+      if: runner.os == 'macOS'
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: '3.27.x'  # cmakeバージョンを指定
+
     - name: Configure CMake for Android
       if: runner.os == 'Linux'
       run: >
