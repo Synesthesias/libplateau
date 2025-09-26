@@ -76,12 +76,12 @@ runs:
     - name: Patch CMakeLists.txt
       run: |
         FILE="3rdparty/libcitygml/CMakeLists.txt"
-        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
-          sed -i '' 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' "$FILE"
+        if grep -q "CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)" "$FILE"; then
+          sed -i 's/CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)/cmake_minimum_required(VERSION 3.8)/' "$FILE"
         fi
         FILE="3rdparty/glTF-SDK/CMakeLists.txt"
-        if grep -q "cmake_minimum_required(VERSION 2.8)" "$FILE"; then
-          sed -i '' 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' "$FILE"
+        if grep -q "cmake_minimum_required(VERSION 3.5)" "$FILE"; then
+          sed -i 's/cmake_minimum_required(VERSION 3.5)/cmake_minimum_required(VERSION 3.8)/' "$FILE"
         fi
       shell: ${{ inputs.shell_type }}
 
