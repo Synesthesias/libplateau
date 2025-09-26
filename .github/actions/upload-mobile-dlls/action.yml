@@ -78,7 +78,7 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Configure CMake for iOS
-      if: runner.os == 'MacOS'
+      if: runner.os == 'macOS'
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -102,7 +102,7 @@ runs:
         path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
 
     - name: Upload framework for iOS
-      if: runner.os == 'MacOS'
+      if: runner.os == 'macOS'
       uses: actions/upload-artifact@v4
       with:
         name: libplateau-ios-dll
