@@ -40,11 +40,12 @@ runs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
       shell: ${{ inputs.shell_type }}
 
-      # CMakeのセットアップ
-    - name: Setup CMake
+      # Mac向けのCMakeのセットアップ
+    - name: Setup CMake on macOS
+      if: runner.os == 'macOS'
       uses: lukka/get-cmake@latest
       with:
-        cmakeVersion: '3.25.2'  # ← 使用したいバージョンを指定
+        cmakeVersion: '3.27.x'  # cmakeバージョンを指定
 
     - name: Check CMake version
       run: cmake --version
@@ -106,7 +107,6 @@ runs:
         -D BUILD_LIB_TYPE=dynamic
         -D RUNTIME_LIB_TYPE=MT
         -D CMAKE_OSX_ARCHITECTURES:STRING="${{ inputs.arch }}"
-        -D CMAKE_POLICY_VERSION_MINIMUM=3.5
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
