@@ -288,7 +288,41 @@ set(PNG_ARM_NEON "off"
 set(PNG_ARM_NEON_OPT "0"
         CACHE STRING "Enable ARM NEON optimizations")
 set(PNG_STATIC "defined" CACHE STRING "" FORCE)
+
+# macOS 15 (Sequoia) 以降でfp.hが無いことによるエラーの対応
+# libpng 1.6.37ではfp.hをincludeしているが、
+# macOS 15以降では fp.h がシステムから削除されているためビルドエラーになる。math.hに統合されている
+# libpngはUnrealEngineで利用している物とバージョンを揃える必要があるためアップデートが出来ないため、fp.hという名前のヘッダーを作成し、
+# その中でmath.hをincludeするというアプローチでコンパイルを通す
+
+if(APPLE)
+  set(FP_H_COMPAT_DIR "${CMAKE_CURRENT_BINARY_DIR}/include_compat")
+  file(MAKE_DIRECTORY "${FP_H_COMPAT_DIR}")
+  file(WRITE "${FP_H_COMPAT_DIR}/fp.h"
+"/* macOS 15以降で削除された fp.h の互換ヘッダー
+ * fp.h の機能は math.h に統合されているため、math.h をインクルードします。
+ */
+#ifndef _FP_H_COMPAT_
+#define _FP_H_COMPAT_
+#include <math.h>
+#endif
+")
+  include_directories(BEFORE SYSTEM "${FP_H_COMPAT_DIR}")
+
+  # libpngのビルド時のみCFLAGSを一時的に変更するため、現在の値を保存
+  set(CMAKE_C_FLAGS_SAVE "${CMAKE_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS_SAVE "${CMAKE_CXX_FLAGS}")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -isystem ${FP_H_COMPAT_DIR}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${FP_H_COMPAT_DIR}")
+endif()
+
 add_subdirectory("3rdparty/libpng")
+
+# libpngのビルド後、CFLAGSを元に戻す（他のサブプロジェクトに影響を与えないため）
+if(APPLE)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_SAVE}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVE}")
+endif()
 set(PNG_INCLUDE_DIRS
         "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libpng"
         "${CMAKE_CURRENT_BINARY_DIR}/3rdparty/libpng")
