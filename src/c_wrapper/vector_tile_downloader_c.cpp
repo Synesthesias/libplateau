@@ -42,7 +42,7 @@ using namespace plateau::geometry;
 
     DLL_STRING_VALUE_FUNC(plateau_vector_tile_downloader_calc_destination_path,
                           VectorTileDownloader,
-                          handle->calcDestinationPath(index).string(), , int index)
+                          handle->calcDestinationPath(index).u8string(), , int index)
 
     DLL_VALUE_FUNC(plateau_vector_tile_downloader_get_tile,
                    VectorTileDownloader,

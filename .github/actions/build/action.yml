@@ -40,7 +40,16 @@ runs:
       run: sudo apt-get install libgl1-mesa-dev libglu1-mesa-dev
       shell: ${{ inputs.shell_type }}
 
+      # Mac向けのCMakeのセットアップ
+    - name: Setup CMake on macOS
+      if: runner.os == 'macOS'
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: '3.27.x'  # cmakeバージョンを指定
 
+    - name: Check CMake version
+      run: cmake --version
+      shell: ${{ inputs.shell_type }}
 
     # Unreal Engineと合わせたバージョンでMSVCを用意する準備として、始めからある望みでないバージョンを消します。
     # 参考: https://github.com/actions/runner-images/issues/9701
@@ -75,8 +84,6 @@ runs:
         $process = Start-Process -FilePath cmd.exe -ArgumentList $Arguments -Wait -PassThru -WindowStyle Hidden
       shell: ${{ inputs.shell_type }}
 
-
-
 #     Windowsのみコンパイラパスを通します。
     - name: Add msbuild to PATH
       if: runner.os == 'Windows'
@@ -103,7 +110,6 @@ runs:
         ${{ env.ADDITIONAL_CMAKE_OPTIONS }}
       shell: ${{ inputs.shell_type }}
     # 10万行超えの警告が出るので一時的な処置として警告を抑制しています。
-
 
     - name: Build by CMake for Unity
       run: cmake --build ${{github.workspace}}/out/build/x64-Release-Unity --config ${{env.BUILD_TYPE}}

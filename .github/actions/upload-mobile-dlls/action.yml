@@ -56,6 +56,13 @@ runs:
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
 
+    # Mac向けのCMakeのセットアップ
+    - name: Setup CMake on macOS
+      if: runner.os == 'macOS'
+      uses: lukka/get-cmake@latest
+      with:
+        cmakeVersion: '3.27.x'  # cmakeバージョンを指定
+
     - name: Configure CMake for Android
       if: runner.os == 'Linux'
       run: >
@@ -71,7 +78,7 @@ runs:
       shell: ${{ inputs.shell_type }}
 
     - name: Configure CMake for iOS
-      if: runner.os == 'MacOS'
+      if: runner.os == 'macOS'
       run: >
         cmake
         -S ${{github.workspace}} 
@@ -95,7 +102,7 @@ runs:
         path: ${{github.workspace}}/out/build/x64-Release/src/libplateau.so
 
     - name: Upload framework for iOS
-      if: runner.os == 'MacOS'
+      if: runner.os == 'macOS'
       uses: actions/upload-artifact@v4
       with:
         name: libplateau-ios-dll
