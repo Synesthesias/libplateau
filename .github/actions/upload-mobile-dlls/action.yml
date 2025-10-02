@@ -88,6 +88,7 @@ runs:
         -D CMAKE_OSX_ARCHITECTURES="arm64" 
         -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 
         -D CMAKE_BUILD_TYPE=Release
+        -D CMAKE_C_FLAGS="-DPNG_ARM_NEON_OPT=0"
       shell: ${{ inputs.shell_type }}
 
     - name: Build by CMake
