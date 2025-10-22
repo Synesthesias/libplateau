@@ -8,6 +8,9 @@
 #include <plateau/polygon_mesh/polygon_mesh_utils.h>
 #include <plateau/dataset/gml_file.h>
 #include <plateau/texture/texture_packer.h>
+#include <chrono>
+
+#include "plateau_dll_logger.h"
 
 namespace {
     using namespace plateau;
@@ -16,6 +19,34 @@ namespace {
     using namespace texture;
     using namespace citygml;
     namespace fs = std::filesystem;
+
+    class Stopwatch {
+    public:
+        Stopwatch(std::shared_ptr<citygml::CityGMLLogger> logger, const std::string& task_name)
+            : logger_(std::move(logger)), task_name_(task_name) {
+            total_start_time_ = std::chrono::steady_clock::now();
+            stage_start_time_ = total_start_time_;
+            logger_->log(citygml::CityGMLLogger::LOGLEVEL::LL_INFO, task_name_ + " start.");
+        }
+
+        ~Stopwatch() {
+            const auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - total_start_time_).count();
+            logger_->log(citygml::CityGMLLogger::LOGLEVEL::LL_INFO, task_name_ + " finished. Total: " + std::to_string(total_duration) + "ms");
+        }
+
+        void log_stage(const std::string& stage_name) {
+            const auto end_time = std::chrono::steady_clock::now();
+            const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - stage_start_time_).count();
+            logger_->log(citygml::CityGMLLogger::LOGLEVEL::LL_INFO, "  " + stage_name + " : " + std::to_string(duration) + "ms");
+            stage_start_time_ = end_time;
+        }
+
+    private:
+        std::shared_ptr<citygml::CityGMLLogger> logger_;
+        std::string task_name_;
+        std::chrono::steady_clock::time_point total_start_time_;
+        std::chrono::steady_clock::time_point stage_start_time_;
+    };
 
     bool shouldSkipCityObj(const CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
 
@@ -36,14 +67,25 @@ namespace {
     void extractInner(
         Model& out_model, const CityModel& city_model,
         const MeshExtractOptions& options,
-        const std::vector<geometry::Extent>& extents_before_adjust) {
+        const std::vector<geometry::Extent>& extents_before_adjust,
+        std::shared_ptr<citygml::CityGMLLogger> logger) {
 
-        if (options.max_lod < options.min_lod) throw std::logic_error("Invalid LOD range.");
+        if (logger == nullptr) {
+            logger = std::make_shared<PlateauDllLogger>();
+        }
+
+        Stopwatch stopwatch(logger, "MeshExtractor");
+
+        if (options.max_lod < options.min_lod) {
+            logger->log(citygml::CityGMLLogger::LOGLEVEL::LL_ERROR, "Invalid LOD range.");
+            throw std::logic_error("Invalid LOD range.");
+        }
 
         const auto geo_reference = geometry::GeoReference(options.coordinate_zone_id, options.reference_point, options.unit_scale, options.mesh_axes);
 
         // 範囲の境界上にある地物を取り逃さないように、範囲を少し広げます。
         auto extents = MeshExtractor::extendExtents(extents_before_adjust, 1.2f);
+        stopwatch.log_stage("Initialize");
 
         // rootNode として LODノード を作ります。
         for (unsigned lod = options.min_lod; lod <= options.max_lod; lod++) {
@@ -143,14 +185,17 @@ namespace {
 
             out_model.addNode(std::move(lod_node));
         }
+        stopwatch.log_stage("LOD loop");
         out_model.eraseEmptyNodes();
         out_model.assignNodeHierarchy();
+        stopwatch.log_stage("Node arrange");
 
         // テクスチャを結合します。
         if (options.enable_texture_packing) {
             TexturePacker packer(options.texture_packing_resolution, options.texture_packing_resolution);
             packer.process(out_model);
         }
+        stopwatch.log_stage("Texture packing");
 
         // 現在の都市モデルが地形であるなら、衛星写真または地図用のUVを付与し、地図タイルをダウンロードします。
         auto package = GmlFile(city_model.getGmlPath()).getPackage();
@@ -158,8 +203,9 @@ namespace {
             const auto gml_path = fs::u8path(city_model.getGmlPath());
             const auto map_download_dest = gml_path.parent_path() / (gml_path.filename().u8string() + "_map");
             MapAttacher().attach(out_model, options.map_tile_url, map_download_dest, options.map_tile_zoom_level,
-                                geo_reference);
+                                 geo_reference);
         }
+        stopwatch.log_stage("Map attach");
     }
 }
 
@@ -173,7 +219,11 @@ namespace plateau::polygonMesh {
 
     void MeshExtractor::extract(Model& out_model, const CityModel& city_model,
                                 const MeshExtractOptions& options) {
-        extractInner(out_model, city_model, options, { plateau::geometry::Extent::all() });
+        extractInner(out_model, city_model, options, { plateau::geometry::Extent::all() }, nullptr);
+    }
+
+    void MeshExtractor::extract(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options, const std::shared_ptr<citygml::CityGMLLogger>& logger) {
+        extractInner(out_model, city_model, options, { plateau::geometry::Extent::all() }, logger);
     }
 
     std::shared_ptr<Model> MeshExtractor::extractInExtents(
@@ -190,7 +240,11 @@ namespace plateau::polygonMesh {
         const MeshExtractOptions& options,
         const std::vector<plateau::geometry::Extent>& extents) {
 
-        extractInner(out_model, city_model, options, extents);
+        extractInner(out_model, city_model, options, extents, nullptr);
+    }
+
+    void MeshExtractor::extractInExtents(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options, const std::vector<plateau::geometry::Extent>& extents, const std::shared_ptr<citygml::CityGMLLogger>& logger) {
+        extractInner(out_model, city_model, options, extents, logger);
     }
 
 

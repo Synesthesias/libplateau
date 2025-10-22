@@ -2,6 +2,7 @@
 #include "city_model_c.h"
 #include <plateau/polygon_mesh/mesh_extractor.h>
 #include <plateau/geometry/geo_coordinate.h>
+#include <plateau_dll_logger.h>
 
 using namespace libplateau;
 using namespace plateau::polygonMesh;
@@ -38,6 +39,25 @@ extern "C"{
             Model* const out_model) {
         API_TRY{
             MeshExtractor::extractInExtents(*out_model, city_model_handle->getCityModel(), options, *extents);
+            return APIResult::Success;
+        }
+        API_CATCH;
+        return APIResult::ErrorUnknown;
+    }
+
+    LIBPLATEAU_C_EXPORT APIResult LIBPLATEAU_C_API plateau_mesh_extractor_extract_in_extents_with_log(
+            const CityModelHandle* const city_model_handle,
+            const MeshExtractOptions options,
+            const std::vector<plateau::geometry::Extent>* extents,
+            Model* const out_model,
+            const DllLogLevel logLevel,
+            LogCallbackFuncPtr logErrorCallback,
+            LogCallbackFuncPtr logWarnCallback,
+            LogCallbackFuncPtr logInfoCallback) {
+        API_TRY{
+            auto logger = std::make_shared<PlateauDllLogger>(logLevel);
+            logger->setLogCallbacks(logErrorCallback, logWarnCallback, logInfoCallback);
+            MeshExtractor::extractInExtents(*out_model, city_model_handle->getCityModel(), options, *extents, logger);
             return APIResult::Success;
         }
         API_CATCH;
