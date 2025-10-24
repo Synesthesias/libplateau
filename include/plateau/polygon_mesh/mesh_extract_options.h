@@ -39,7 +39,8 @@ namespace plateau::polygonMesh {
                 map_tile_zoom_level(15),
                 map_tile_url("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"),
                 epsg_code(plateau::geometry::CoordinateReferenceFactory::default_epsg),
-			    highest_lod_only(false)
+			             highest_lod_only(false),
+                enable_lod_grouping(true)
                 {}
 
     public:
@@ -126,5 +127,10 @@ namespace plateau::polygonMesh {
         * （もし「データセット内で検出された実在の最大LOD」のみを対象にする仕様であれば、その旨に書き換えてください）
         */
         bool highest_lod_only;
+
+        /**
+        * 各LOD内でのグルーピングを有効にするかどうかを指定します。
+        */
+        bool enable_lod_grouping;
     };
 }
