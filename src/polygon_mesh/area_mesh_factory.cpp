@@ -184,46 +184,68 @@ namespace plateau::polygonMesh {
                 city_objects.begin(), city_objects.end());
         }
 
-        auto merged_meshes = GridMergeResult();
-
-        // メッシュ生成
-        MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
-
-        // グループ内の各主要地物のループ
+        // LODレベルでグループ分けします。
+        // グループIDとグリッドIDのペアをキーとし、グリッドIDは常に0（グリッド分割なし）
+        auto group_id_to_primary_objects_map = GroupGridIDToObjectsMap();
         const auto& all_primary_city_objects_in_model = *all_primary_city_objects;
-        for (const auto& primary_object : all_primary_city_objects_in_model) {
 
-			if (options.highest_lod_only) {
-				// highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
-                unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
-                for (unsigned target_lod = lod + 1; target_lod <= PolygonMeshUtils::max_lod_in_specification_; ++target_lod) {
-                    bool target_lod_exists =
-                        PolygonMeshUtils::findFirstPolygon(primary_object, target_lod) != nullptr;
-                    if (!target_lod_exists) {
-                        max_lod_in_obj = target_lod - 1;
-                        break;
-                    }
+        for (const auto& primary_object : all_primary_city_objects_in_model) {
+            // この CityObject について、最大でどのLODまで存在するか確認します。
+            unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
+            for (unsigned target_lod = lod + 1; target_lod <= PolygonMeshUtils::max_lod_in_specification_; ++target_lod) {
+                bool target_lod_exists =
+                    PolygonMeshUtils::findFirstPolygon(primary_object, target_lod) != nullptr;
+                if (!target_lod_exists) {
+                    max_lod_in_obj = target_lod - 1;
+                    break;
                 }
+            }
+
+            if (options.highest_lod_only) {
+                // highest_lod_only オプションが有効な場合、最大LODのみを対象とします。
                 if (lod != max_lod_in_obj) {
                     // 最大LOD以外はスキップします。
                     continue;
                 }
-			}
-
-            if (MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
-            if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
-                mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, gmlPath);
             }
 
-            if (lod >= 2) {
-                // 主要地物の子である各最小地物をメッシュに加えます。
-                auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_object);
-                mesh_factory.addPolygonsInAtomicCityObjects(*primary_object, atomic_objects, lod, gmlPath);
-            }
-            mesh_factory.incrementPrimaryIndex();
+            // グループに追加します。
+            // grid_idは常に0（グリッド分割なし）
+            unsigned grid_id = 0;
+            unsigned group_id = max_lod_in_obj;
+            const auto group_grid_id = std::make_pair(group_id, grid_id);
+
+            if (group_id_to_primary_objects_map.find(group_grid_id) == group_id_to_primary_objects_map.end())
+                group_id_to_primary_objects_map[group_grid_id] = std::list<const CityObject*>();
+
+            group_id_to_primary_objects_map.at(group_grid_id).push_back(primary_object);
         }
-        mesh_factory.optimizeMesh();
-        merged_meshes.emplace(std::make_pair(0,0), mesh_factory.releaseMesh());
+
+        // グループごとにメッシュを結合します。
+        auto merged_meshes = GridMergeResult();
+
+        // グループごとのループ
+        for (const auto& [id, primary_objects] : group_id_to_primary_objects_map) {
+            // 1グループのメッシュ生成
+            MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
+
+            // グループ内の各主要地物のループ
+            for (const auto& primary_object : primary_objects) {
+                if(MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
+                if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
+                    mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, gmlPath);
+                }
+
+                if (lod >= 2) {
+                    // 主要地物の子である各最小地物をメッシュに加えます。
+                    auto atomic_objects = PolygonMeshUtils::getChildCityObjectsRecursive(*primary_object);
+                    mesh_factory.addPolygonsInAtomicCityObjects(*primary_object, atomic_objects, lod, gmlPath);
+                }
+                mesh_factory.incrementPrimaryIndex();
+            }
+            mesh_factory.optimizeMesh();
+            merged_meshes.emplace(id, mesh_factory.releaseMesh());
+        }
 
         return merged_meshes;
     }
