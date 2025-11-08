@@ -15,6 +15,7 @@ namespace {
     */
     using GridIDToObjectsMap = std::map<unsigned, std::list<const citygml::CityObject*>>;
     using GroupGridIDToObjectsMap = std::map<std::pair<unsigned, unsigned>, std::list<const citygml::CityObject*>>;
+    using GroupGridIDToObjectsWithPathMap = std::map<std::pair<unsigned, unsigned>, std::list<std::pair<const citygml::CityObject*, std::string>>>;
 
     bool shouldSkipCityObj(const citygml::CityObject& city_obj, const MeshExtractOptions& options, const std::vector<geometry::Extent>& extents) {
         if (!options.exclude_city_object_outside_extent)
@@ -169,27 +170,30 @@ namespace plateau::polygonMesh {
         AreaMeshFactory::combine(const CityModelVector& city_models, const MeshExtractOptions& options, unsigned lod,
             const plateau::geometry::GeoReference& geo_reference, const std::vector<plateau::geometry::Extent>& extents) {
 
-        const auto& gmlPath = city_models->empty() || city_models->front().expired() ? "" : city_models->front().lock()->getGmlPath();
-        std::shared_ptr <std::vector<const CityObject*>> all_primary_city_objects = std::make_shared<std::vector<const CityObject*>>();
+        // 各CityObjectとそのソースのgmlPathをペアで保持
+        std::shared_ptr<std::vector<std::pair<const CityObject*, std::string>>> all_primary_city_objects =
+            std::make_shared<std::vector<std::pair<const CityObject*, std::string>>>();
 
         const auto& _city_models = *city_models;
         for (const auto& city_model : _city_models) {
 
             if (city_model.expired()) continue; // 参照が切れている場合はスキップ
 
+            const auto& gmlPath = city_model.lock()->getGmlPath();
             auto city_objects =
                 city_model.lock()->getAllCityObjectsOfType(PrimaryCityObjectTypes::getPrimaryTypeMask());
 
-            all_primary_city_objects->insert(all_primary_city_objects->end(),
-                city_objects.begin(), city_objects.end());
+            for (const auto& city_obj : city_objects) {
+                all_primary_city_objects->emplace_back(city_obj, gmlPath);
+            }
         }
 
         // LODレベルでグループ分けします。
         // グループIDとグリッドIDのペアをキーとし、グリッドIDは常に0（グリッド分割なし）
-        auto group_id_to_primary_objects_map = GroupGridIDToObjectsMap();
+        auto group_id_to_primary_objects_map = GroupGridIDToObjectsWithPathMap();
         const auto& all_primary_city_objects_in_model = *all_primary_city_objects;
 
-        for (const auto& primary_object : all_primary_city_objects_in_model) {
+        for (const auto& [primary_object, gmlPath] : all_primary_city_objects_in_model) {
             // この CityObject について、最大でどのLODまで存在するか確認します。
             unsigned max_lod_in_obj = PolygonMeshUtils::max_lod_in_specification_;
             for (unsigned target_lod = lod + 1; target_lod <= PolygonMeshUtils::max_lod_in_specification_; ++target_lod) {
@@ -216,9 +220,9 @@ namespace plateau::polygonMesh {
             const auto group_grid_id = std::make_pair(group_id, grid_id);
 
             if (group_id_to_primary_objects_map.find(group_grid_id) == group_id_to_primary_objects_map.end())
-                group_id_to_primary_objects_map[group_grid_id] = std::list<const CityObject*>();
+                group_id_to_primary_objects_map[group_grid_id] = std::list<std::pair<const CityObject*, std::string>>();
 
-            group_id_to_primary_objects_map.at(group_grid_id).push_back(primary_object);
+            group_id_to_primary_objects_map.at(group_grid_id).emplace_back(primary_object, gmlPath);
         }
 
         // グループごとにメッシュを結合します。
@@ -230,7 +234,7 @@ namespace plateau::polygonMesh {
             MeshFactory mesh_factory(nullptr, options, extents, geo_reference);
 
             // グループ内の各主要地物のループ
-            for (const auto& primary_object : primary_objects) {
+            for (const auto& [primary_object, gmlPath] : primary_objects) {
                 if(MeshExtractor::isTypeToSkip(primary_object->getType())) continue;
                 if (MeshExtractor::shouldContainPrimaryMesh(lod, *primary_object)) {
                     mesh_factory.addPolygonsInPrimaryCityObject(*primary_object, lod, gmlPath);
