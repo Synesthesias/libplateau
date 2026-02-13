@@ -6,6 +6,7 @@
 #include <plateau/polygon_mesh/mesh_extract_options.h>
 #include <plateau/geometry/geo_coordinate.h>
 #include "citygml/citymodel.h"
+#include "citygml/citygmllogger.h"
 #include "model.h"
 
 namespace plateau::polygonMesh {
@@ -33,6 +34,7 @@ namespace plateau::polygonMesh {
          * 生ポインタのdeleteはDLLの利用者の責任です。
          */
         static void extract(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options);
+        static void extract(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options, const std::shared_ptr<citygml::CityGMLLogger>& logger);
 
         /**
          * CityModelから範囲内のModelを取り出します。
@@ -43,6 +45,7 @@ namespace plateau::polygonMesh {
          * CityModelから範囲内のModelを取り出します。
          */
         static void extractInExtents(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options, const std::vector<plateau::geometry::Extent>& extents);
+        static void extractInExtents(Model& out_model, const citygml::CityModel& city_model, const MeshExtractOptions& options, const std::vector<plateau::geometry::Extent>& extents, const std::shared_ptr<citygml::CityGMLLogger>& logger);
 
         /**
          * 引数で与えられた LOD の主要地物について、次を判定して bool で返します。
