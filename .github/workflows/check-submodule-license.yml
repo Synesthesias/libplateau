@@ -33,5 +33,19 @@ jobs:
       with:
         version: '4.x'
 
+    # licensed が other と判定する json は、確認済みコミットと MIT 本文を固定して照合します。
+    # submodule を更新した場合は、ライセンス本文を再確認して両方の値を更新してください。
+    - name: Verify reviewed JSON license
+      shell: bash
+      run: |
+        set -euo pipefail
+        expected_commit=a3e6e26dc83a726b292f5be0492fcc408663ce55
+        actual_commit=$(git -C 3rdparty/json rev-parse HEAD)
+        if [ "$actual_commit" != "$expected_commit" ]; then
+          echo "::error::JSON submodule changed; review its license before updating the approved commit."
+          exit 1
+        fi
+        echo '86b998c792894ccb911a1cb7994f7a9652894e7a094c0b5e45be2f553f45cf14  3rdparty/json/LICENSE.MIT' | sha256sum --check --strict
+
     - run: licensed cache
     - run: licensed status
