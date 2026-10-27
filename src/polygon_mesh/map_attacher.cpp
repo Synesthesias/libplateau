@@ -3,6 +3,7 @@
 #include <plateau/texture/texture_image_base.h>
 #include <plateau/texture/texture_packer.h>
 #include <cassert>
+#include <cmath>
 
 namespace plateau::polygonMesh {
     namespace fs = std::filesystem;
@@ -11,38 +12,34 @@ namespace plateau::polygonMesh {
     namespace {
 
 
-        /// 地図タイルを貼り付ける準備として、メッシュにUVを設定します。
-        /// まず、UVを0を最小、1を最大と仮定して計算します。
-        /// 頂点の高さは考慮しません。
-        /// 次に、UVの最小から最大の範囲について、(0,0)から(1,1)の範囲を変換してuv_minからuv_maxの範囲に投影します。
-        void setUVForMap(Mesh& mesh, const TVec3d bounding_box_min_arg, const TVec3d bounding_box_max_arg, const GeoReference& geo_ref, const TVec2f uv_min, const TVec2f uv_max) { // NOLINT(performance-unnecessary-value-param)
+        /// ウェブメルカトルの南北成分です。緯度が高いほど大きくなります。
+        /// 地理院タイルの Y 計算（TileProjection）と同じ投影です。
+        double webMercatorY(const double latitude_deg) {
+            constexpr double deg_to_rad = 0.017453292519943295;
+            const double lat_rad = latitude_deg * deg_to_rad;
+            return std::asinh(std::tan(lat_rad));
+        }
+
+        /// 結合した地図タイル画像へ、頂点ごとのUVを設定します。
+        /// 画像の西端が U=0、東端が U=1、南端が V=0、北端が V=1 です。
+        /// 経度はタイル上で線形、緯度はウェブメルカトルです。
+        /// メッシュの外接矩形で線形補間すると、3次メッシュ境界の同じ頂点が隣のメッシュと別の画素を指します。
+        void setUVForMap(Mesh& mesh, const GeoReference& geo_ref, const Extent& image_extent) {
             const auto& vertices = mesh.getVertices();
             const auto vertices_count = vertices.size();
             auto uv = std::vector<TVec2f>();
             uv.reserve(vertices_count);
-            auto min = geo_ref.convertAxisToENU(bounding_box_min_arg);
-            auto max = geo_ref.convertAxisToENU(bounding_box_max_arg);
 
-            // 座標変換後に大小関係逆転することがあるため修正
-            const auto tmp = min;
-            min.x = std::min(tmp.x, max.x);
-            min.y = std::min(tmp.y, max.y);
-            min.z = std::min(tmp.z, max.z);
-            max.x = std::max(tmp.x, max.x);
-            max.y = std::max(tmp.y, max.y);
-            max.z = std::max(tmp.z, max.z);
+            const auto longitude_min = image_extent.min.longitude;
+            const auto longitude_span = image_extent.max.longitude - longitude_min;
+            const auto mercator_south = webMercatorY(image_extent.min.latitude);
+            const auto mercator_span = webMercatorY(image_extent.max.latitude) - mercator_south;
 
-            const auto diff = max - min;
-            const auto size2d = TVec2d(diff.x, diff.y);
-//            const auto size_longer = std::max(size2d.x, size2d.y); // 縦と横のうち長い方の長さを採用します。非正方形の地形でテクスチャが引き伸ばされることを防ぎます。
             for(int i=0; i<vertices_count; i++) {
-                const auto v_with_src_axis = vertices.at(i);
-                const auto v = GeoReference::convertAxisToENU(geo_ref.getCoordinateSystem(), v_with_src_axis);
-                const auto uv_x_norm = (float)((v.x - min.x) / size2d.x);
-                const auto uv_y_norm = (float)((v.y - min.y) / size2d.y);
-                const auto uv_norm = TVec2f(uv_x_norm, uv_y_norm);
-                const auto uv_corrected = uv_min + uv_norm * (uv_max - uv_min);
-                uv.push_back(uv_corrected);
+                const auto geo = geo_ref.unproject(vertices.at(i));
+                const auto uv_x = static_cast<float>((geo.longitude - longitude_min) / longitude_span);
+                const auto uv_y = static_cast<float>((webMercatorY(geo.latitude) - mercator_south) / mercator_span);
+                uv.push_back(TVec2f(uv_x, uv_y));
             }
             mesh.setUV1(std::move(uv));
         }
@@ -148,13 +145,8 @@ namespace plateau::polygonMesh {
             }
             packer.flush();
 
-            // 緯度経度を計算します。
-            const auto image_extent = tiles.extent();
-            const auto mesh_uv_min = image_extent.uvAt(extent.min);
-            const auto mesh_uv_max = image_extent.uvAt(extent.max);
-
-            // UVを貼ります。
-            setUVForMap(*mesh, min, max, geo_reference, mesh_uv_min, mesh_uv_max);
+            // 結合画像の範囲へ、頂点ごとにUVを貼ります。
+            setUVForMap(*mesh, geo_reference, tiles.extent());
 
             // テクスチャを結合後の地図タイルにします。
             for(auto& sub_mesh : mesh->getSubMeshes()) {
