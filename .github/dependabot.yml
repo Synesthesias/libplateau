@@ -1,0 +1,75 @@
+version: 2
+updates:
+- package-ecosystem: bundler
+  directory: /
+  schedule:
+    interval: weekly
+    day: monday
+    time: '10:00'
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 3
+  groups:
+    routine-updates:
+      patterns:
+      - '*'
+      update-types:
+      - minor
+      - patch
+    security-updates:
+      applies-to: security-updates
+      patterns:
+      - '*'
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: weekly
+    day: monday
+    time: '10:00'
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 3
+  groups:
+    routine-updates:
+      patterns:
+      - '*'
+      update-types:
+      - minor
+      - patch
+    security-updates:
+      applies-to: security-updates
+      patterns:
+      - '*'
+- package-ecosystem: gitsubmodule
+  directory: /
+  schedule:
+    interval: weekly
+    day: monday
+    time: '10:00'
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 3
+  groups:
+    routine-updates:
+      patterns:
+      - '*'
+    security-updates:
+      applies-to: security-updates
+      patterns:
+      - '*'
+- package-ecosystem: nuget
+  directory: /wrappers/csharp/LibPLATEAU.NET/CSharpPLATEAU.Test
+  schedule:
+    interval: weekly
+    day: monday
+    time: '10:00'
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 3
+  groups:
+    routine-updates:
+      patterns:
+      - '*'
+      update-types:
+      - minor
+      - patch
+    security-updates:
+      applies-to: security-updates
+      patterns:
+      - '*'
