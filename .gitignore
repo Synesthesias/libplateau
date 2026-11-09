@@ -35,3 +35,4 @@ bin
 3rdparty/*/*.tar.gz
 .editorconfig
 .idea/cmake.xml
+**/.claude/settings.local.json
