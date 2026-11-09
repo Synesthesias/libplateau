@@ -9,6 +9,7 @@ allowed:
 
 reviewed:
   git_submodule:
+    - json # MIT。CI で確認済みコミット・ライセンス本文のハッシュを照合
     - libxml2 # MITライセンスなのでOK
     - openssl-cmake # 再配布可能、要著作権表示
     - pybind11 # BSD-3ライセンスなのでOK
